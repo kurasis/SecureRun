@@ -142,8 +142,11 @@ try {
         [P02Bridge]::MinimizeProcessEnvironment($engine)
         $receipt=$bridge.Launch($box,$shell,[string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome 'p04_boxed.ps1'),'-Manager',$app,'-Fixture',$fixture))
         try{
-            Require ([P02Bridge]::Completed($receipt,35000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'BOXED_MANAGER_GATE_FAILED'
-            $files=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'boxed-manager.json');Require ($files.Count -eq 1 -and $files[0].Length -lt 4096) 'BOXED_MANAGER_REPORT_MISSING'
+            $completed=[P02Bridge]::Completed($receipt,35000);$c.observed=@{completed=$completed;exit_code=$(if($completed){[P02Bridge]::ExitCode($receipt)}else{-1})}
+            $files=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'boxed-manager.json');$c.observed.report_count=$files.Count
+            if($files.Count -eq 1 -and $files[0].Length -lt 4096){$c.observed.report=Get-Content $files[0].FullName -Raw|ConvertFrom-Json}
+            Require ($completed -and [P02Bridge]::ExitCode($receipt) -eq 43) 'BOXED_MANAGER_GATE_FAILED'
+            Require ($files.Count -eq 1 -and $files[0].Length -lt 4096) 'BOXED_MANAGER_REPORT_MISSING'
             $result=Get-Content $files[0].FullName -Raw|ConvertFrom-Json
             Require ($result.actual_manager_executed -and $result.manager_context -ne 'UNBOXED' -and $result.boxes_observed -eq 0 -and -not $result.production_launch_available) 'BOXED_MANAGER_UNEXPECTED_ACCESS'
             $result

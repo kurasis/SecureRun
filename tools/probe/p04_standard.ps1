@@ -21,6 +21,8 @@ try {
             if($b.Count -eq 1 -and $b[0].complete -and @($b[0].processes.session|Select-Object -Unique).Count -ge 2){break}
             Start-Sleep -Milliseconds 200
         }while($clock.ElapsedMilliseconds -lt 45000)
+        $result.observed_reason=$o.reason;$result.observed_trust=$o.trust;$result.observed_manager_context=$o.manager_context;$result.observed_bridge_context=$o.bridge_context;$result.matching_box_count=$b.Count
+        if($b.Count -eq 1){$result.box_complete=$b[0].complete;$result.box_reason=$b[0].reason;$result.process_count=$b[0].processes.Count;$result.simultaneous_session_count=@($b[0].processes.session|Select-Object -Unique).Count}
         if($o.reason -ne 'OBSERVED' -or $b.Count -ne 1 -or -not $b[0].complete -or $b[0].activity -ne 'RUNNING' -or @($b[0].processes.session|Select-Object -Unique).Count -lt 2){throw 'PRODUCTION_SAME_SID_SESSION_OBSERVATION_FAILED'}
         $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
         if(@($b[0].processes|Where-Object owner_sid -ne $sid).Count -ne 0 -or $b[0].owned -or -not $b[0].read_only){throw 'PRODUCTION_OWNER_OR_UNOWNED_SCOPE_FAILED'}

@@ -507,6 +507,18 @@ pub fn run() {
     #[cfg(not(feature = "foundation-ci"))]
     let (profile, fixture, writer): (Option<std::path::PathBuf>, bool, Option<File>) =
         (None, false, None);
+    let mut health = Health::default();
+    if !fixture {
+        let observation = securerun_sandboxie_adapter::windows::bounded_observe();
+        if observation.manager_context == securerun_sandboxie_adapter::Context::Boxed
+            || observation.bridge_context == securerun_sandboxie_adapter::Context::Boxed
+        {
+            eprintln!("MANAGER_CONTEXT_UNSAFE");
+            std::process::exit(78);
+        }
+        let ticket = health.begin(Instant::now());
+        health.accept(ticket, observation, Instant::now());
+    }
     let store = match &profile {
         Some(path) => Store::open(&path.join("manager.sqlite"), &owner),
         None => Store::memory(&owner),
@@ -516,7 +528,7 @@ pub fn run() {
         Err(_) => return,
     };
     let backend = Backend {
-        health: Health::default(),
+        health,
         observation_inflight: false,
         store,
         state_channels: HashMap::new(),

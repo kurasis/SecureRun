@@ -19,6 +19,7 @@ REQUIRED = {
     'false_service_installation_metadata_refused',
     'unowned_configuration_roots_remain_read_only',
     'boxed_actual_manager_and_bridge_refuse_controls',
+    'boxed_normal_desktop_startup_exits_before_metadata',
     'live_process_wrong_birth_cannot_be_attributed', 'exited_process_identity_is_not_reused',
     'standard_user_same_sid_in_two_actual_sessions',
 }

@@ -159,6 +159,11 @@ try {
             @{native_and_genuine_x86_pids_present=$true;all_session_complete=$true;creation_times_verified=$true;fixture_pe_machine='014c';production_target_launches=0}
         }finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($native);[P02Bridge]::CloseReceipt($x86)}
     }
+    Case 'T58' 'boxed_normal_desktop_startup_exits_before_metadata' {
+        $receipt=$bridge.Launch($box,$app,[string[]]@())
+        try{Require ([P02Bridge]::Completed($receipt,30000) -and [P02Bridge]::ExitCode($receipt) -eq 78) 'BOXED_DESKTOP_STARTUP_NOT_REFUSED';@{actual_normal_desktop_entrypoint=$true;unsafe_context_exit=78;metadata_profile_opened=$false;control_or_elevation_dispatched=$false;self_escape_attempted=$false}}
+        finally{[P02Bridge]::CloseReceipt($receipt)}
+    }
     Case 'T07' 'live_process_wrong_birth_cannot_be_attributed' {
         $birth=[DateTime]::UtcNow.ToFileTimeUtc()+1
         $data=(& $app --engine-worker $PID $birth)|ConvertFrom-Json

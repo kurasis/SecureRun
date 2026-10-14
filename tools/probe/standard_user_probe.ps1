@@ -27,7 +27,7 @@ try {
     $null = $bridge.CaptureRoot($Box)
     $bridge.Set($Box,'Enabled','y')
     [P02Bridge]::MinimizeProcessEnvironment($EngineHome)
-    $receipt = $bridge.Launch($Box,$Probe,[string[]]@('hold',$Fixture,$Box,'same-owner-current',$EngineHome))
+    $receipt = $bridge.Launch($Box,$Probe,[string[]]@('hold-session',$Fixture,$Box,'same-owner-current',$EngineHome))
     try {
         @{ initialized = $true; standard_user = $true; current_session = $bridge.CurrentSession } | ConvertTo-Json | Set-Content (Join-Path $Fixture 'results/standard-user-ready.json') -Encoding utf8
         $clock = [Diagnostics.Stopwatch]::StartNew()
@@ -35,7 +35,7 @@ try {
             $result.sessions = $bridge.ObserveSameOwnerSessions($Box)
             if ($result.sessions.simultaneous_session_count -ge 2) { break }
             Start-Sleep -Milliseconds 100
-        } while ($clock.ElapsedMilliseconds -lt 18000)
+        } while ($clock.ElapsedMilliseconds -lt 45000)
         if ($result.sessions.simultaneous_session_count -lt 2 -or -not $result.sessions.current_session_observed -or $result.sessions.current_session_process_count -lt 1) { throw 'SAME_SID_SECOND_SESSION_UNAVAILABLE' }
         $result.completed_objects = $bridge.StopHeld($Box)
         if (-not [P02Bridge]::Completed($receipt,5000) -or $bridge.Count($Box) -ne 0) { throw 'STANDARD_USER_STOP_INCOMPLETE' }

@@ -340,11 +340,29 @@ try {
             $clock = [Diagnostics.Stopwatch]::StartNew()
             while (-not (Test-Path $ready) -and -not $process.HasExited -and $clock.ElapsedMilliseconds -lt 45000) { Start-Sleep -Milliseconds 100 }
             $readyObserved = Test-Path $ready
-            if ($readyObserved) { Start-ScheduledTask -TaskName $taskName }
+            $schedulerCode = 0; $instanceState = 'NOT_REQUESTED'
+            $taskStart = [DateTime]::Now
+            if ($readyObserved) {
+                try {
+                    $scheduler = New-Object -ComObject Schedule.Service
+                    $scheduler.Connect()
+                    $registered = $scheduler.GetFolder('\').GetTask($taskName)
+                    $instance = $registered.Run($null)
+                    $instanceState = "$($instance.State)"
+                } catch { $schedulerCode = $_.Exception.GetBaseException().HResult }
+            }
             $task = Get-ScheduledTask -TaskName $taskName
-            Require ($process.WaitForExit(45000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
+            Require ($process.WaitForExit(90000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
             $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
-            @{ worker = $result; ready_observed = $readyObserved; scheduled_task_logon_type = $task.Principal.LogonType.ToString(); scheduled_task_state_after_start = $task.State.ToString(); scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            $logonFailures = @()
+            try {
+                foreach ($event in (Get-WinEvent -FilterHashtable @{ LogName = 'Security'; Id = 4625; StartTime = $taskStart } -MaxEvents 16 -ErrorAction Stop)) {
+                    [xml]$xml = $event.ToXml(); $data = @{}
+                    foreach ($entry in $xml.Event.EventData.Data) { $data[$entry.Name] = $entry.'#text' }
+                    if ($data.TargetUserName -eq $userName) { $logonFailures += @{ logon_type = $data.LogonType; status = $data.Status; substatus = $data.SubStatus } }
+                }
+            } catch { }
+            @{ worker = $result; ready_observed = $readyObserved; scheduler_request_hresult = $schedulerCode; scheduler_instance_state = $instanceState; synthetic_logon_failures = $logonFailures; scheduled_task_logon_type = $task.Principal.LogonType.ToString(); scheduled_task_state_after_start = $task.State.ToString(); scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
             if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
             Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
             $result

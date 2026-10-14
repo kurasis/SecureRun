@@ -55,6 +55,29 @@ fn process_sid(process: HANDLE) -> R<String> {
         sid_string(user.User.Sid)
     }
 }
+fn os_identity() -> R<String> {
+    // RtlGetVersion returns the actual kernel version independent of application
+    // compatibility manifests. An OS update must expire cached enforcement.
+    type Version = unsafe extern "system" fn(*mut OSVERSIONINFOW) -> i32;
+    let module = unsafe { GetModuleHandleW(wide("ntdll.dll").as_ptr()) };
+    let address = unsafe { GetProcAddress(module, c"RtlGetVersion".as_ptr().cast()) }
+        .ok_or("OS_VERSION_UNKNOWN")?;
+    let version: Version = unsafe { std::mem::transmute(address) };
+    let mut info = OSVERSIONINFOEXW {
+        dwOSVersionInfoSize: std::mem::size_of::<OSVERSIONINFOEXW>() as u32,
+        ..Default::default()
+    };
+    if unsafe { version((&mut info as *mut OSVERSIONINFOEXW).cast()) } != 0 {
+        return Err("OS_VERSION_UNKNOWN");
+    }
+    Ok(fingerprint(&(
+        info.dwMajorVersion,
+        info.dwMinorVersion,
+        info.dwBuildNumber,
+        info.wProductType,
+        std::env::consts::ARCH,
+    )))
+}
 fn session_owner(session: u32) -> R<String> {
     use windows_sys::Win32::System::RemoteDesktop::*;
     fn field(session: u32, kind: WTS_INFO_CLASS) -> R<String> {
@@ -563,6 +586,7 @@ struct NativeEngine {
     profile: PathBuf,
     image: PathBuf,
     manager_hash: String,
+    os_identity: String,
     probe: PathBuf,
     probe_hash: String,
     additional_probes: Vec<(PathBuf, String)>,
@@ -589,6 +613,7 @@ impl NativeEngine {
             return Err("MANAGER_CONTEXT_UNSAFE");
         }
         let owner = process_sid(unsafe { GetCurrentProcess() })?;
+        let os_identity = os_identity()?;
         let parent = unsafe {
             OpenProcess(
                 PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE,
@@ -756,6 +781,7 @@ impl NativeEngine {
             profile,
             image,
             manager_hash,
+            os_identity,
             probe,
             probe_hash,
             additional_probes,
@@ -1035,6 +1061,7 @@ impl Engine for NativeEngine {
             FAMILY,
             &self.trusted.identity,
             &self.manager_hash,
+            &self.os_identity,
             &self.probe_hash,
             self.additional_probes
                 .iter()
@@ -1274,9 +1301,11 @@ struct CanaryReport {
     dns_network: bool,
     dns_cached_answer: bool,
     icmp_echo: bool,
+    icmp_status: u32,
     smb_denied: bool,
     mapped_share_denied: Option<bool>,
     raw: network::RawReport,
+    bits_activation_status: i32,
     child_network: ChildNetwork,
 }
 fn hex(bytes: &[u8]) -> String {
@@ -1353,6 +1382,7 @@ struct ChildNetwork {
     sockets: [bool; 6],
     dns_network: bool,
     icmp_echo: bool,
+    icmp_status: u32,
 }
 fn exercise_network(canary: &Canary) -> ChildNetwork {
     let mut sockets = [false; 6];
@@ -1392,10 +1422,12 @@ fn exercise_network(canary: &Canary) -> ChildNetwork {
             }
         }
     }
+    let icmp_echo = network::icmp_echo(&canary.registry_leaf);
     ChildNetwork {
         sockets,
         dns_network: network::dns_query(&canary.dns_target, false),
-        icmp_echo: network::icmp_echo(),
+        icmp_echo,
+        icmp_status: network::icmp_status(),
     }
 }
 fn spawn_canary_child(canary: &Canary) -> R<ChildNetwork> {
@@ -1540,7 +1572,9 @@ pub fn run_canary(encoded: &str) -> i32 {
             dns_network: network.dns_network,
             dns_cached_answer: network::dns_query(&canary.dns_cached, true),
             icmp_echo: network.icmp_echo,
+            icmp_status: network.icmp_status,
             raw: network::raw_echo(&canary.registry_leaf),
+            bits_activation_status: network::bits_activation_status(),
             child_network,
             smb_denied: denied(network::SHARE_CANARY),
             mapped_share_denied: canary.mapped_share.then(|| denied(network::MAPPED_CANARY)),
@@ -2104,9 +2138,17 @@ impl NativeEngine {
             .borrow_mut()
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
         let endpoints = Endpoints::new()?;
+        let icmp_observer = network::IcmpObserver::new(&nonce)?;
         let dns = network::DnsControl::new(&nonce, &self.profile.join("metadata"))?;
         let raw_host = network::raw_echo(&format!("control-{nonce}"));
         if raw_host.created && !raw_host.echo_received {
+            std::fs::write(
+                self.profile
+                    .join("metadata")
+                    .join(format!("raw-status-{nonce}.json")),
+                serde_json::to_vec(&raw_host).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+            )
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
             return Err("RAW_CONTROL_POSITIVE_FAILED");
         }
         let icmp_before = network::icmp_sent()?;
@@ -2228,6 +2270,7 @@ impl NativeEngine {
         fenced?;
         let report = result?;
         let incoming_observed = incoming.observed()?;
+        let icmp_observed = icmp_observer.observed();
         // Preserve the typed, minimized result even when a mandatory check
         // below refuses verification. These booleans contain no target data
         // and never constitute an enforcement receipt on their own.
@@ -2235,7 +2278,7 @@ impl NativeEngine {
             self.profile
                 .join("metadata")
                 .join(format!("probe-result-{nonce}.json")),
-            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"server_observed":observed,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
+            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"server_observed":observed,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
                 .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
@@ -2272,6 +2315,10 @@ impl NativeEngine {
             ),
             (report.smb_denied, "CANARY_SMB_DENIAL_FAILED"),
             (
+                report.bits_activation_status == 0x80070005u32 as i32,
+                "CANARY_BITS_ACTIVATION_NOT_DENIED",
+            ),
+            (
                 report.mapped_share_denied.unwrap_or(!mapped_positive),
                 "CANARY_MAPPED_SHARE_DENIAL_FAILED",
             ),
@@ -2305,7 +2352,13 @@ impl NativeEngine {
             || report.dns_network == owned.compiled.offline
             || dns.observed() == owned.compiled.offline
             || report.icmp_echo == owned.compiled.offline
-            || (owned.compiled.offline && network::icmp_sent()? != icmp_before)
+            || (icmp_observed.available && icmp_observed.control_packets == 0)
+            || (icmp_observed.available
+                && (icmp_observed.target_packets > 0) == owned.compiled.offline)
+            || (owned.compiled.offline
+                && (report.icmp_status != ERROR_ACCESS_DENIED
+                    || report.child_network.icmp_status != ERROR_ACCESS_DENIED
+                    || report.raw.send_accepted))
             || report.sockets != expected
             || observed != expected
             || report.incoming != [!owned.compiled.offline; 4]
@@ -2313,7 +2366,7 @@ impl NativeEngine {
         {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")
@@ -2327,6 +2380,7 @@ impl NativeEngine {
             &report,
             observed,
             incoming_observed,
+            icmp_observed,
         )))
     }
 }

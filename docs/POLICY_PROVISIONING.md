@@ -95,15 +95,20 @@ the manager's original user and storage authority. Only the exact signed protect
 original RpcSs and DcomLaunch images are accepted for such diagnostic companions;
 driver box SID, held process birth and current membership must still match.
 There is no caller-selected process stop or product Stop command in P05.
-Stored verification binds the current manager/probe binaries and original engine;
+Stored verification binds the current manager/probe binaries, original engine,
+actual Windows kernel version, OS product type and native manager architecture;
 updating code invalidates cached proof rather than retaining a Verified label.
 
 Current probes check actual file and registry virtualization, explicit read/write
 denials, metadata/sibling denials, ordinary host visibility and controlled IPv4/
-IPv6 TCP/UDP handshakes with independent host server positive controls. Minimized
-fresh listener tests also check unsolicited incoming TCP/UDP on both address
+IPv6 TCP/UDP handshakes with independent host server positive controls. Fresh
+listener tests also check unsolicited incoming TCP/UDP on both address
 families. Raw ICMP uses a valid checksummed unique synthetic request and reply,
-with independent host echo observations; a socket handle alone is not egress.
+with unique-payload host observations; a socket handle alone is not egress.
+Machine-wide ICMP statistics are labeled unattributed and cannot authorize or
+reject verification. A capture-capable token validates a scoped observer against
+its positive control. An ordinary token requires explicit broker handle refusal
+before sending and a refused raw send, without an elevation route.
 Unboxed raw controls explicitly distinguish ordinary-user denial from an
 available transport. Minimized
 probe results, verified receipts and numeric failed exit statuses contain no paths, arguments, SIDs,

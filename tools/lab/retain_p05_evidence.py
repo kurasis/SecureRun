@@ -12,6 +12,7 @@ IDS = {f'T{i:02}' for i in (*range(8, 19), 27, 31, 35, *range(37, 41), 47, 51, 5
 REQUIRED = {
     'native_pending_root_and_verified_policy', 'baseline_effective_file_registry_network_evidence',
     'unsolicited_incoming_ipv4_ipv6_tcp_udp_denied',
+    'bits_com_activation_is_explicitly_denied',
     'paid_presets_rejected_without_entitlement', 'literal_grammar_and_root_grants_rejected',
     'online_policy_keeps_file_and_sibling_protection', 'wfp_loss_invalidates_offline_policy',
     'external_owned_setting_requires_reviewed_repair', 'global_template_changes_block_without_overwrite',

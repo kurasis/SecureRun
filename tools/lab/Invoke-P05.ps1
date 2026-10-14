@@ -107,7 +107,7 @@ try {
     foreach($id in @('T09','T10','T11','T12','T31','T40')) {
         Case $id ('actual_baseline_report_'+$id.ToLowerInvariant()) {
             Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'ACTUAL_ENFORCEMENT_REPORTS_REQUIRED'
-            foreach($p in $reports){Require ($p.report.member -and $p.report.blocked_read -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied -and $p.report.read_only_read -and $p.report.read_only_write_denied -and $p.report.registry_virtualized -and $p.report.standard_read_visible -and $p.report.smb_denied -and $p.smb_host_positive -and $p.mapped_share_host_positive -and $p.report.mapped_share_denied -and -not $p.report.dns_network -and -not $p.report.child_network.dns_network -and -not $p.report.icmp_echo -and -not $p.report.raw.echo_received -and $p.icmp_host_echo_delta -eq 0 -and @($p.report.sockets|Where-Object {$_}).Count -eq 0 -and @($p.report.child_network.sockets|Where-Object {$_}).Count -eq 0) 'ACTUAL_BASELINE_REPORT_FAILED'}
+            foreach($p in $reports){Require ($p.report.member -and $p.report.blocked_read -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied -and $p.report.read_only_read -and $p.report.read_only_write_denied -and $p.report.registry_virtualized -and $p.report.standard_read_visible -and $p.report.smb_denied -and $p.smb_host_positive -and $p.mapped_share_host_positive -and $p.report.mapped_share_denied -and -not $p.report.dns_network -and -not $p.report.child_network.dns_network -and -not $p.report.icmp_echo -and -not $p.report.raw.echo_received -and $p.icmp_observer.target_packets -eq 0 -and $p.report.icmp_status -eq 5 -and $p.report.child_network.icmp_status -eq 5 -and -not $p.report.raw.send_accepted -and @($p.report.sockets|Where-Object {$_}).Count -eq 0 -and @($p.report.child_network.sockets|Where-Object {$_}).Count -eq 0) 'ACTUAL_BASELINE_REPORT_FAILED'}
             @{reports=$reports;actual_native_path=$true;scoped_scenario=$id}
         }
     }
@@ -115,6 +115,15 @@ try {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'ACTUAL_INCOMING_REPORTS_REQUIRED'
         foreach($p in $reports){Require ($p.report.incoming.Count -eq 4 -and @($p.report.incoming|Where-Object {$_}).Count -eq 0 -and $p.incoming_host_observed.Count -eq 4 -and @($p.incoming_host_observed|Where-Object {$_}).Count -eq 0) 'UNSOLICITED_INCOMING_TRAFFIC_ALLOWED'}
         @{actual_reports=$reports;channels=@('TCP_IPV4','TCP_IPV6','UDP_IPV4','UDP_IPV6');inferred_mock_enforcement=$false}
+    }
+    Case 'T40' 'bits_com_activation_is_explicitly_denied' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'BITS_NATIVE_REPORTS_REQUIRED'
+        # Disposable clean host positive control only. Product diagnostics never
+        # activate a host COM registration that an ordinary user can override.
+        $bitsControl=$null;$hostStatus='AVAILABLE';$hostCode=0
+        try{$bitsType=[type]::GetTypeFromCLSID([Guid]'4991D34B-80A1-4291-83B6-3328366B9097');$bitsControl=[Activator]::CreateInstance($bitsType)}catch{$hostStatus='UNAVAILABLE';$hostCode=$_.Exception.GetBaseException().HResult}finally{if($null -ne $bitsControl){$null=[Runtime.InteropServices.Marshal]::FinalReleaseComObject($bitsControl)}}
+        foreach($p in $reports){Require ($p.report.bits_activation_status -eq -2147024891) 'BITS_ACTIVATION_NOT_EXPLICITLY_DENIED'}
+        @{actual_boxed_status='E_ACCESSDENIED';host_control=$hostStatus;host_hresult=$hostCode;source='PINNED_TEMPLATE_COM';production_host_com_activations=0;transfer_job_created=$false;reports=$reports}
     }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
     foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1','p05_metadata.ps1','p05_boxed.ps1','p05_noenforcement.ps1','p05_sessions.ps1','p05_lab.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
@@ -349,7 +358,7 @@ try {
     if($failed -ne 0){throw 'P05_NATIVE_VALIDATION_FAILED'}
 }finally{
     $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
-    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','dns-status-','scope-status-','identity-status-','image-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','dns-status-','raw-status-','scope-status-','identity-status-','image-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
     $events=@(Get-WinEvent -FilterHashtable @{LogName=@('Application','System');StartTime=(Get-Date).AddMinutes(-35)} -MaxEvents 2000 -ErrorAction SilentlyContinue | Where-Object ProviderName -Match 'Sandboxie|Sbie' | ForEach-Object {@{event_id=$_.Id;codes=@([regex]::Matches($_.Message,'SBIE[0-9]{4}|\[[0-9A-Fa-f ,/x]+\]|status=[0-9A-Fa-f]{8}')|ForEach-Object Value)}})
     ConvertTo-Json -InputObject $events -Depth 5|Set-Content (Join-Path $out 'engine-events.json') -Encoding utf8
     Pop-Location

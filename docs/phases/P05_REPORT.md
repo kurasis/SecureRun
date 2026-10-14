@@ -98,6 +98,29 @@ controls distinguish an available channel from ordinary-user denial. New fresh
 diagnostic listeners also cover unsolicited incoming TCP/UDP on IPv4/IPv6, with
 explicit online positive controls. These corrected native checks remain pending.
 
+Run [38639328513](https://github.com/kurasis/SecureRun/actions/runs/38639328513),
+source `dbf8af8bddf6ee603d9a79c60733c011ec2d4447`, passes 28 adapter tests on each
+platform. Server passes 42 scenarios with two fixture failures and one explicit
+helper exclusion. It verifies every architecture, online/offline incoming and
+outgoing traffic, actual ordinary-user provisioning/second-user ACL denial,
+populated read-only reversal, actual future-sibling denial and all seven real
+interruption stages. ARM passes 18 scenarios with 26 failures: a change of two
+packets in the machine-wide ICMP counter fails initial provisioning, while the
+probe reports denied ICMP requests and raw sends. That counter cannot attribute
+the changed packets to the target. Ordinary-user provisioning and all
+seven interruption stages still pass on ARM. The counter is now explicitly
+unattributed and cannot decide containment. A bounded raw observer instead matches
+only the diagnostic's unique synthetic ICMP payloads and verifies its own positive
+control; ordinary tokens require explicit broker refusal before sending.
+
+The two remaining fixture failures use implicit PowerShell native invocation and
+exit state. These scripts now start bounded processes with explicit output/exit
+capture and retain minimized exception type and source-line diagnostics. A fresh
+boxed BITS activation test checks the pinned Template_COM class denial without
+activating user-overridable COM registration in the unboxed product. Cached
+verification now also binds the actual Windows kernel/product/architecture tuple.
+The corrected complete native gate and final regressions remain pending.
+
 The lab now builds actual x86 probes alongside the native binary, plus emulated
 x64 probes on ARM. Each architecture gets a fresh diagnostic box. Controlled
 checks include IPv4/IPv6 TCP/UDP, DNS API/broker requests with distinct cached

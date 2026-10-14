@@ -9,6 +9,40 @@ use windows_sys::Win32::NetworkManagement::{Dns::*, IpHelper::*};
 pub(super) const SHARE_CANARY: &str = "\\\\127.0.0.1\\SecureRunP05Synthetic\\canary.txt";
 pub(super) const MAPPED_CANARY: &str = "Q:\\canary.txt";
 
+pub(super) fn bits_activation_status() -> i32 {
+    use windows_sys::{Win32::System::Com::*, core::GUID};
+    // Pinned Template_COM blocks the documented BackgroundCopyManager CLSID.
+    // This function is called only by the already-boxed fresh canary, never by
+    // the unboxed product worker against user-overridable COM registration.
+    let initialized = unsafe { CoInitializeEx(ptr::null(), COINIT_MULTITHREADED as u32) };
+    if initialized < 0 && initialized != 0x80010106u32 as i32 {
+        return initialized;
+    }
+    let class = GUID::from_u128(0x4991d34b80a1429183b63328366b9097);
+    let unknown = GUID::from_u128(0x00000000_0000_0000_c000_000000000046);
+    let mut object = ptr::null_mut();
+    let status = unsafe {
+        CoCreateInstance(
+            &class,
+            ptr::null_mut(),
+            CLSCTX_LOCAL_SERVER,
+            &unknown,
+            &mut object,
+        )
+    };
+    if !object.is_null() {
+        // IUnknown's documented QueryInterface/AddRef/Release vtable.
+        type Release = unsafe extern "system" fn(*mut std::ffi::c_void) -> u32;
+        let vtable = unsafe { *(object as *const *const usize) };
+        let release: Release = unsafe { std::mem::transmute(*vtable.add(2)) };
+        unsafe { release(object) };
+    }
+    if initialized >= 0 {
+        unsafe { CoUninitialize() };
+    }
+    status
+}
+
 // Fresh boxed listeners test unsolicited incoming traffic as well as replies
 // on established outbound flows. Four OS-assigned ports are the entire private
 // rendezvous; neither peer supplies a remote address or executable.
@@ -218,6 +252,8 @@ pub(super) struct RawReport {
     pub(super) created: bool,
     pub(super) send_accepted: bool,
     pub(super) echo_received: bool,
+    pub(super) send_error: i32,
+    pub(super) receive_error: i32,
 }
 pub(super) fn raw_echo(nonce: &str) -> RawReport {
     use windows_sys::Win32::Networking::WinSock::*;
@@ -225,6 +261,8 @@ pub(super) fn raw_echo(nonce: &str) -> RawReport {
         created: false,
         send_accepted: false,
         echo_received: false,
+        send_error: 0,
+        receive_error: 0,
     };
     // Valid ICMP echo request with a unique synthetic payload. Creation of a
     // socket alone does not prove target-caused network traffic.
@@ -242,6 +280,7 @@ pub(super) fn raw_echo(nonce: &str) -> RawReport {
     unsafe {
         let socket = socket(AF_INET as i32, SOCK_RAW, IPPROTO_ICMP);
         if socket == INVALID_SOCKET {
+            report.send_error = WSAGetLastError();
             return report;
         }
         report.created = true;
@@ -270,12 +309,16 @@ pub(super) fn raw_echo(nonce: &str) -> RawReport {
             (&address as *const SOCKADDR_IN).cast(),
             std::mem::size_of::<SOCKADDR_IN>() as i32,
         ) == packet.len() as i32;
+        if !report.send_accepted {
+            report.send_error = WSAGetLastError();
+        }
         if report.send_accepted {
             let clock = Instant::now();
             let mut bytes = [0u8; 512];
             while clock.elapsed() < Duration::from_millis(950) {
                 let n = recv(socket, bytes.as_mut_ptr(), bytes.len() as i32, 0);
                 if n <= 0 {
+                    report.receive_error = WSAGetLastError();
                     break;
                 }
                 let n = n as usize;
@@ -353,24 +396,37 @@ pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
     passed
 }
 
-pub(super) fn icmp_echo() -> bool {
+thread_local! { static ICMP_STATUS: std::cell::Cell<u32> = const { std::cell::Cell::new(0) }; }
+pub(super) fn icmp_status() -> u32 {
+    ICMP_STATUS.with(|v| v.get())
+}
+pub(super) fn icmp_echo(nonce: &str) -> bool {
     unsafe {
         let handle = IcmpCreateFile();
         if handle == INVALID_HANDLE_VALUE {
+            ICMP_STATUS.with(|v| v.set(GetLastError()));
             return false;
         }
+        let payload = format!("SecureRunP05Icmp-{nonce}");
         let mut reply = [0u64; 128];
         let count = IcmpSendEcho(
             handle,
             u32::from_ne_bytes([127, 0, 0, 1]),
-            b"P05".as_ptr().cast(),
-            3,
+            payload.as_ptr().cast(),
+            payload.len() as u16,
             ptr::null(),
             reply.as_mut_ptr().cast(),
             1024,
             750,
         );
         let passed = count > 0 && (*(reply.as_ptr() as *const ICMP_ECHO_REPLY)).Status == 0;
+        ICMP_STATUS.with(|v| {
+            v.set(if count == 0 {
+                GetLastError()
+            } else {
+                (*(reply.as_ptr() as *const ICMP_ECHO_REPLY)).Status
+            })
+        });
         IcmpCloseHandle(handle);
         passed
     }
@@ -381,6 +437,122 @@ pub(super) fn icmp_sent() -> R<u32> {
         return Err("ICMP_OBSERVER_UNAVAILABLE");
     }
     Ok(statistics.stats.icmpOutStats.dwEchos)
+}
+
+#[derive(Serialize)]
+pub(super) struct IcmpObservation {
+    pub(super) available: bool,
+    pub(super) control_packets: usize,
+    pub(super) target_packets: usize,
+}
+pub(super) struct IcmpObserver {
+    controls: Arc<AtomicUsize>,
+    targets: Arc<AtomicUsize>,
+    stop: Arc<AtomicBool>,
+    thread: Option<std::thread::JoinHandle<()>>,
+}
+impl IcmpObserver {
+    pub(super) fn new(nonce: &str) -> R<Self> {
+        use windows_sys::Win32::Networking::WinSock::*;
+        let controls = Arc::new(AtomicUsize::new(0));
+        let targets = Arc::new(AtomicUsize::new(0));
+        let stop = Arc::new(AtomicBool::new(false));
+        let socket = unsafe { socket(AF_INET as i32, SOCK_RAW, IPPROTO_ICMP) };
+        if socket == INVALID_SOCKET {
+            if unsafe { WSAGetLastError() } != WSAEACCES {
+                return Err("ICMP_OBSERVER_UNAVAILABLE");
+            }
+            // No elevation: an ordinary token instead requires actual broker
+            // handle refusal before any ICMP send, and a refused raw send.
+            return Ok(Self {
+                controls,
+                targets,
+                stop,
+                thread: None,
+            });
+        }
+        let address = SOCKADDR_IN {
+            sin_family: AF_INET,
+            sin_addr: IN_ADDR {
+                S_un: IN_ADDR_0 {
+                    S_addr: u32::from_ne_bytes([127, 0, 0, 1]),
+                },
+            },
+            ..Default::default()
+        };
+        let mut nonblocking = 1;
+        if unsafe {
+            bind(
+                socket,
+                (&address as *const SOCKADDR_IN).cast(),
+                std::mem::size_of::<SOCKADDR_IN>() as i32,
+            )
+        } != 0
+            || unsafe { ioctlsocket(socket, FIONBIO, &mut nonblocking) } != 0
+        {
+            unsafe { closesocket(socket) };
+            return Err("ICMP_OBSERVER_UNAVAILABLE");
+        }
+        let expected = [
+            format!("SecureRunP05Icmp-{nonce}"),
+            format!("SecureRunP05Raw-{nonce}"),
+        ];
+        let positive = [
+            format!("SecureRunP05Icmp-control-{nonce}"),
+            format!("SecureRunP05Raw-control-{nonce}"),
+        ];
+        let control_count = controls.clone();
+        let target_count = targets.clone();
+        let stopped = stop.clone();
+        let thread = std::thread::spawn(move || {
+            let mut bytes = [0u8; 512];
+            while !stopped.load(Ordering::SeqCst) {
+                let n = unsafe { recv(socket, bytes.as_mut_ptr(), bytes.len() as i32, 0) };
+                if n >= 28 && bytes[0] >> 4 == 4 {
+                    let header = (bytes[0] as usize & 15) * 4;
+                    if header >= 20 && header + 8 <= n as usize && matches!(bytes[header], 0 | 8) {
+                        let payload = &bytes[header + 8..n as usize];
+                        if expected.iter().any(|v| v.as_bytes() == payload) {
+                            target_count.fetch_add(1, Ordering::SeqCst);
+                        }
+                        if positive.iter().any(|v| v.as_bytes() == payload) {
+                            control_count.fetch_add(1, Ordering::SeqCst);
+                        }
+                    }
+                } else {
+                    std::thread::sleep(Duration::from_millis(5));
+                }
+            }
+            unsafe { closesocket(socket) };
+        });
+        Ok(Self {
+            controls,
+            targets,
+            stop,
+            thread: Some(thread),
+        })
+    }
+    pub(super) fn observed(mut self) -> IcmpObservation {
+        let available = self.thread.is_some();
+        std::thread::sleep(Duration::from_millis(50));
+        self.stop.store(true, Ordering::SeqCst);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+        IcmpObservation {
+            available,
+            control_packets: self.controls.load(Ordering::SeqCst),
+            target_packets: self.targets.load(Ordering::SeqCst),
+        }
+    }
+}
+impl Drop for IcmpObserver {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::SeqCst);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
 }
 
 pub(super) struct DnsControl {
@@ -464,7 +636,7 @@ impl DnsControl {
             .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
             return Err("DNS_CONTROL_POSITIVE_FAILED");
         }
-        if !icmp_echo() {
+        if !icmp_echo(&format!("control-{nonce}")) {
             return Err("ICMP_CONTROL_POSITIVE_FAILED");
         }
         Ok(control)

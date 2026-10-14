@@ -3,8 +3,9 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-This repository currently contains the P01 repository and lab foundation, not a
-working sandbox manager. Read [STATUS](docs/STATUS.md) for exact evidence and blockers.
+P01 and P02 feasibility are complete. The repository contains the Windows lab,
+source-pinned native adapter spike and retained evidence; a production sandbox
+manager is not implemented yet. Read [STATUS](docs/STATUS.md) for the phase boundaries.
 
 The complete, unchanged specification is in
 [docs/specification/00_README.md](docs/specification/00_README.md).
@@ -25,6 +26,10 @@ python -m unittest discover -s tests -v
 x64 machine. The `P01 validation` workflow builds and executes a harmless native
 probe and verifies the pinned official installer without installing a driver.
 The Windows 11 ARM64 runner executes the x64 probe through Windows emulation.
-This does not validate the x64 Sandboxie kernel driver or x64 engine compatibility.
+P02 additionally installs the authenticated original native engine on Windows
+Server 2025 x64 and Windows 11 ARM64, runs genuine native/emulated target probes
+and computes the representative feasibility gate. [P02 report](docs/phases/P02_REPORT.md)
+and [operation map](docs/OPERATION_MAP.md) describe the proven routes. This does
+not declare native Windows 11 x64 release compatibility or product acceptance.
 
 No manager license has been selected. No engine source or binaries are included.

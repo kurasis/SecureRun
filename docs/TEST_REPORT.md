@@ -29,54 +29,59 @@ The full [66-scenario catalog](test-catalog.json) preserves expected outcomes fr
 NOT_STARTED. No acceptance scenario is passed or waived by setup. No expected
 failure, skip or Not applicable result is used to hide missing runtime evidence.
 
-## P02 feasibility probes
+## P02 completed feasibility probes
 
-Authoritative run: [38550922299](https://github.com/kurasis/SecureRun/actions/runs/38550922299),
-code `2eb5fd0bb6e93921fd3ffdd415990633a79aabc0`, 2026-10-14 UTC.
-[Original JSON and SHA256/size manifest](evidence/p02/manifest.json).
+Authoritative run: [38557903464](https://github.com/kurasis/SecureRun/actions/runs/38557903464),
+source 0cf59a67041364209d6f42ac393db3ecaa73e044, 2026-10-14 UTC.
+[Original JSON, exact runtime source hashes and SHA256/size manifest](evidence/p02/manifest.json).
 
-| Actual lab | Passed smoke | Failed | Blocked | Helper NA | Pending/skip/not-run declared smoke |
+| Actual lab | Passed smoke | Failed | Blocked | NA | Not-run/pending |
 |---|---:|---:|---:|---:|---:|
-| Windows Server 2025 x64; x86/x64 target PEs | 43 | 0 | 2 | 1 | 0 |
-| Windows 11 ARM64; ARM64/x86/x64 target PEs | 56 | 0 | 2 | 1 | 0 |
+| Server 2025 x64; genuine x86/x64 target PEs | 49 | 0 | 0 | 2 | 0 |
+| Windows 11 ARM64; native ARM64 and emulated x86/x64 PEs | 62 | 0 | 0 | 2 | 0 |
 
-These counts cover explicitly declared representative probes only. Untested
-mandatory protocol variants below remain blocked; zero not-run declared cases
-does not imply complete acceptance coverage. Job success means evidence collection
-completed, while phase-result is BLOCKED. The 66 production scenarios remain
-NOT_STARTED and must execute again with production feature paths.
+Both computed phase-result files are DONE with no gate blockers. CI now fails
+if a declared mandatory smoke fails, is blocked/incomplete or a required scenario
+ID has no passing variant. Only optional engine access-event streaming and absent
+product helper checks are NA. They do not supply mandatory passing evidence.
 
-| Scenario | Observed prototype result | Remaining scope |
+| Scenario | Actual representative result | Production work still required |
 |---|---|---|
-| T01 | Missing box rejected; host execution marker absent | Other missing/stopped/updated engine failure variants and launch journal |
-| T05 | Native/emulated parent, child and grandchild verify selected membership | Production target/browser/broker types |
-| T04 | Exact fixed argument equality including quotes, slash, option-like value and Unicode | Complete target parser/length matrix |
-| T08 | Boxed writes/read view change; host canary hash unchanged; actual handle mapping boxed | Hostile application/alias/write-path suite |
-| T09 | Selected host secret and manager metadata read denied (5), unboxed controls read successfully | Wider inheritance/permission matrix |
-| T12 | Source-backed WFP enabled in fresh engine; unboxed/online socket controls succeed and offline TCP/UDP v4/v6 deny | DNS/LAN/SMB/broker/raw/inbound and full release tuple |
-| T33 | Each of four automation settings blocks dispatch; synthetic settings removed before real cleanup | All inherited templates and every host-side consumer |
-| T35 | Same-user sibling storage denied; second standard account has public read success and root/metadata access denied | Other aliases, writes and host-actor races |
-| T36 | Actual successful capacity-one truncation rejected; session-zero SYSTEM target included by all-session query and excluded by current-session query | BLOCKED same-SID second interactive session and adversarial concurrent clients |
-| T55 | Absent root observed, fixed host initializer applies NTFS DACL and captures identity before target | BLOCKED parent/root substitution at named provisioning steps |
-| T57 | Windows-root redirection rejected before config mutation | Helper enrollment/path-swap tests NA while helper absent; normal-user authority unresolved |
-| T58 | Native guard and actual managed bridge return refusal when boxed, without mutation/elevation | Query-failure injection and future manager/helper entrypoints |
-| T60 | Affected running box defers materialization; stopped policy readback precedes data; direct and junction alias read denied | Additional aliases and external client creation races |
-| T62 | Actual held-handle birth/box/SID validation, object completion and fresh membership; no numeric kill fallback | Scope-change/PID-churn fault injection and standard-user permissions |
-| T16 | Missing/wrong synthetic password C000006A, unchanged key; correct private-IPC mutation read back and fixture restored | Production secret memory lifecycle/user interaction |
-| T19 | Physical private copy mapped by original API/hash checked; trusted boxed Start stage launches logical EXE with actual membership | P07/P09 safe transfers, retained ancestry and reset/reference invalidation |
-| T24 | Original QSbieAPI native clears selected contents, retains root identity, returns expected final unlink sharing denial, host/sibling hashes unchanged | BLOCKED hostile descendant replacement/external launch exclusion; no broader status acceptance |
-| T25 | Fresh never-materialized owned definition removed via native '*' route and absence read back | Used definition removal blocked until cleanup gate passes |
-| T02 | Installed component/health/config/entitlement query succeeds; no paid profile enabled | BLOCKED internal engine message reader: C0000022, signed session-leader requirement |
+| T01 | Missing box rejected; forbidden host marker absent | Complete engine-unavailable/update and launch journal matrix |
+| T05 | Native/emulated parent, child and grandchild membership | Production target/browser/broker paths |
+| T04 | Exact synthetic argv including quotes, slash, Unicode and option-like value | Full parser/length/target matrix |
+| T08 | Virtual writes/read view; host hash unchanged; boxed mapping | Hostile application and complete write/alias suite |
+| T09 | Selected secret/metadata/sibling reads denied, positive unboxed reads | Complete inherited permission matrix |
+| T12 | Kernel WFP path/flags; online/unboxed v4/v6 TCP/UDP succeed, offline deny | Controlled DNS/LAN/SMB/broker/raw/inbound release tests |
+| T33 | Four automation settings block dispatch; source consumer/inheritance resolved | Product configuration conflict/consumer matrix |
+| T35 | Same-user sibling deny and second-account public read success/root-metadata deny | Further aliases and write variants |
+| T36 | Actual same SID concurrently in sessions 0/2; all/current-session contrast; SUCCESS truncation refused; foreign SYSTEM owner observed | Desktop/UI and high-churn production concurrency |
+| T55 | Standard-user native relative FILE_CREATE, DACL before lease release, identity from created handle | Durable provisioning journal/ownership and failure recovery |
+| T57 | Actual parent junction rejected before create; pinned rename blocked; changed root identity and Windows-root redirection refused | Enrollment/spoof tests if a product helper is introduced |
+| T58 | Native and actual managed bridge refuse controls while boxed | Production manager/helper entrypoints and unknown-context faults |
+| T60 | Running box defers future materialization; stopped policy readback precedes data; direct/junction alias denial | Complete production sibling/policy matrix |
+| T62 | Actual dispatch checks held birth/box/SID; wrong live scope untouched, naturally exited object not redispatched; standard-user all-session stop | Stress/PID-churn and full production failure handling |
+| T16 | Missing/wrong password C000006A leaves key unchanged; correct private-IPC change/readback/restoration | Product secret memory/user interaction |
+| T19 | Original physical mapping and hash; trusted boxed Start stage executes logical boxed EXE with membership | Safe import/export, stream/collision/ancestry/journal rules |
+| T24 | Standard-user and elevated original cleanup with launch fence, sealed namespace, empty contents and retained identity; outside/sibling canaries unchanged | Full product reset/recovery/cancellation/stress paths |
+| T25 | Fresh section removal and used section removal only after verified cleanup | Durable archive/removal reconciliation |
+| T02 | Original health/config/entitlement observation and redacted MANAGER_OBSERVATION diagnostics | Optional upstream native events unavailable; paid profiles remain disabled |
 
-Linux tooling: validator and six regression tests pass. Windows compilation keeps
-/W4 /WX; PE machine values 014c/8664/aa64 prove actual targets rather than filenames.
-The unchanged specification's 26 hashes pass on Linux and Windows. Native engine
-version and ABI must both match the pin. Security observations/limitations are in
-[ENGINE_MATRIX](ENGINE_MATRIX.md); no security bypass or production support claim.
+The sealed cleanup tests attempt new entry creation, WRITE_DAC and an
+attribute-only junction substitution before native dispatch. Those attempts are
+denied and the seal remains held through dispatch; this is not a claim of an
+executed concurrent stress harness. Existing reparse/hardlink fixtures are rejected
+before calling the original cleanup export. The retained root intentionally blocks
+final unlink (C0000043); empty contents and exact identity are required.
 
-Historical failing runs diagnosed probe mistakes before the final run: wrong
-BOOLEAN width, uninitialized PROCESS_INFORMATION, expanded config comparison,
-PowerShell empty-string removal, x86 alias/calling convention, reused compiler
-target, unboxed GetHandlePath, invalid NT dot-name and process exit races. They
-are not final evidence. An internal engine log denial is a confirmed integration
-limitation, not an error made to pass by changing signing/security settings.
+Seven Linux tooling tests and validator pass. The historical P01 section above
+records its original six-test run, not today's suite size. Windows /W4 /WX,
+explicit compiler/library selection and PE 014c/8664/aa64 prove actual architectures.
+All 26 specification hashes remain unchanged. All 66 product acceptance entries
+stay NOT_STARTED and must run again on the production paths in owning phases.
+
+The manifest preserves the earlier BLOCKED research run from PR #2 as historical.
+Its two blockers and limited cleanup proof are superseded by the current run, not
+relabeled. Source hashes prevent stale prototype evidence being used for changed
+runtime code. [Security observations and native Windows 11 x64 gap](ENGINE_MATRIX.md)
+remain explicit; no Windows security setting was changed.

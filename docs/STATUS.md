@@ -2,42 +2,35 @@
 
 Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P02.
 
-P02 continuation is in progress on `p02/complete-feasibility`. The retained
-`2eb5fd0` evidence is historical for interfaces changed by this continuation;
-new ordinary-user, same-SID session and sealed-cleanup results must be retained
-before the gate can change. Every source and Markdown change is published.
-
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
-| P02 | BLOCKED (spike and research implemented) | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03–P12 | NOT_STARTED | P02 exit gate has unresolved mandatory variants |
+| P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
+| P03–P12 | NOT_STARTED | P03 is eligible; no later phase is implemented by this request |
 
-The full 26-document specification remains unchanged. P02 adds disposable Actions
-labs on Windows Server 2025 x64 (genuine x86/x64 target probes) and Windows 11 ARM64
-(native ARM64 plus emulated x86/x64 targets), as the owner requested. No supported
-production tuple or production acceptance scenario is declared. All T01–T66 remain
-NOT_STARTED; smoke evidence is separate and must be repeated in owning phases.
+The complete 26-document specification remains byte-for-byte unchanged.
+Every mandatory adapter operation has a tested viable route on the owner-selected
+disposable Actions laboratories: Windows Server 2025 x64 with actual x86/x64
+target PEs, and Windows 11 ARM64 with native ARM64 and emulated x86/x64 target PEs.
+Final source 0cf59a67041364209d6f42ac393db3ecaa73e044, run [38557903464](https://github.com/kurasis/SecureRun/actions/runs/38557903464):
+49 Server and 62 ARM smoke cases passed; zero failed, blocked or not-run; two
+explicit not-applicable cases per platform.
 
-Implemented: source-pinned original DLL adapter, authenticated engine install and
-component inventory, explicit PE targets, fresh-box native configuration/readback,
-representative kernel WFP controls, virtual write/read exclusion tests, ACL tests
-with a second standard account, bounded all-session enumeration, held-object stop,
-boxed-context refusal, future-sibling direct/junction denial, private workspace
-mapping and narrow original-library cleanup research. Exact current outcomes and
-failed/blocked cases are retained in [Windows evidence](evidence/p02/manifest.json).
+New evidence proves ordinary-user provisioning, parent/root replacement refusal,
+same-SID processes concurrently in real Windows sessions 0 and 2, held-object stop,
+future-sibling protection and sealed original-library cleanup. Used-definition
+removal follows confirmed cleanup. No elevated product helper is needed for these
+baseline routes. Redacted manager-owned diagnostics are proven; the optional native
+engine access-event stream remains unavailable to an unsigned session reader.
 
-P02 remains BLOCKED on same-SID second interactive session, ordinary-user
-provisioning, parent/descendant replacement and concurrent external-launch safety,
-termination fault variants, signed engine-log reader integration and complete
-baseline release coverage. Cleanup smoke
-success does not prove hostile race containment. No broad Start.exe phase2,
-arbitrary DeleteCommand, generic root deleter, permanent privileged manager or
-security-setting bypass is used. Concrete resolutions are recorded in the report.
+These results complete P02 feasibility, not production acceptance. All T01–T66
+remain NOT_STARTED and must run on the production paths in their owning phases.
+No Windows 11 x64 production tuple is declared. Full network/broker, transfer,
+recovery, stress and release security matrices belong to later phases. Paid
+features remain disabled without verified entitlement. Original QSbieAPI cleanup
+requires the documented runtime dependency/license assessment before distribution.
 
-No production app/helper/launcher/installer is implemented. No SandMan code or
-engine binary is copied/bundled. Original installed QSbieAPI native cleanup adds
-an explicit runtime licensing/dependency decision before production distribution.
-The hosted security observations and Windows 11 x64 compatibility gap remain
-visible in [the candidate matrix](ENGINE_MATRIX.md). Next eligible work: remaining
-P02 gates; P03 is not automatically started after a green artifact-collection job.
+No production app, helper, user-target launcher or installer is implemented.
+No SandMan implementation or engine binary is copied or bundled. All project
+source, Markdown and reviewed JSON evidence are published as authorized by the
+owner. Historical BLOCKED evidence is preserved separately in the [manifest](evidence/p02/manifest.json).

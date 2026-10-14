@@ -1,86 +1,72 @@
 # P02 phase report
 
-Status: BLOCKED. Requested scope: full P02 on Windows Server x64/x86 target probes
-and Windows 11 ARM64 with native/emulated target probes. Dependency P01 remains
-DONE with its recorded owner-selected lab adjustment. P03–P12 are NOT_STARTED.
+Status: DONE — representative Sandboxie feasibility. Requested scope: full P02,
+using Windows Server x64 with x86 targets and Windows 11 ARM64. P01 remains DONE
+with the owner's recorded lab adjustment. P03–P12 remain NOT_STARTED.
 
-The complete attached specification was read beginning with 00_README; its
-26 original documents/hashes remain unchanged. Attached coding instructions are
-product material; the owner's explicit P02 request supplies this phase's scope.
-Repository prose/code/commits are English; user communication is Russian.
+The full specification was studied beginning with 00_README; all 26 original
+documents and their hashes remain unchanged. Attachment instructions describe
+the product; the owner's explicit P02 request supplies the implementation scope.
+Repository code, reports, commit messages and PR text are English; chat is Russian.
 
-## Deliverables
+## Outputs and coverage
 
-- [Operation map](../OPERATION_MAP.md): every mandatory operation, full pinned
-  source routes, signatures/ABI, statuses, privileges, bounds and reconciliation.
-- [Feasibility report](../FEASIBILITY_REPORT.md): selected worker strategy,
-  enforcement evidence, cleanup/storage findings, helper authority and licensing.
-- [Candidate matrix](../ENGINE_MATRIX.md): actual tested OS/engine/target tuples;
-  no supported production tuple is declared.
-- [Windows lab workflow](../../.github/workflows/p02.yml) and original source-only
-  probes in tools/lab and tools/probe; no SandMan code or engine binaries copied.
-- [Evidence manifest](../evidence/p02/manifest.json): exact checkout/run provenance,
-  file checksums and original structured Windows evidence.
+- [Operation map](../OPERATION_MAP.md): all 13 mandatory adapter operations,
+  tested routes, pinned source permalinks, ABI/status, privileges and bounds.
+- [Feasibility report](../FEASIBILITY_REPORT.md): enforcement, ordinary-user
+  authority, session fixtures, storage seal, diagnostics and runtime licensing.
+- [Candidate matrix](../ENGINE_MATRIX.md): both measured Windows laboratories
+  and native/emulated PE targets; production availability remains unclaimed.
+- [Workflow](../../.github/workflows/p02.yml), lab scripts and original source
+  probes: native engine install/trust, explicit compilation, actual driver/service
+  queries and benign containment tests. No copied SandMan code or engine binary.
+- [Manifest and original JSON](../evidence/p02/manifest.json): exact tested
+  checkout, current and historical outcomes, sizes/hashes and runtime source hashes.
+  The retention tool verifies Actions provenance before copying bytes.
 
-## Task coverage
-
-| P02 task | Result |
+| P02 task | Completed representative result |
 |---|---|
-| Disposable native adapter and pinned interfaces | Implemented; true PE architecture checks, original DLL ABI and source-reviewed outcomes |
-| Fail-closed launch/arguments/descendants/all-session enumeration | Positive native/emulated probes; successful truncation rejected; same-SID second interactive session BLOCKED |
-| Kernel network/file/read baseline | Representative loopback IPv4/IPv6 TCP/UDP controls, virtual writes and selected read denials; broader baseline tests UNRUN |
-| Config/inheritance/roots/mapping/cleanup | Native IPC/readback, private root ACLs, mapping and narrow native cleanup spike; hostile cleanup/root race proof BLOCKED |
-| Trust/entitlement/WFP/password | Authenticated installer/components, native health, original entitlement-state query with optional profiles disabled, disposable WFP prerequisite, synthetic private-IPC password test |
-| Mandatory operation classification | Every map entry has observed evidence or explicit unresolved scope and resolution |
-| Helper/context/stop/future roots | Actual boxed bridge refusal, fixed-root authority rejection, retained-object stop, stop-before-materialization with junction alias; helper absent, authority/hostile-race variants BLOCKED |
+| Native adapter/pinned interfaces | Original exports, UTF-16, correct native/Win32 calling conventions, PE checks and exact statuses |
+| Fail-closed creation/arguments/descendants/all sessions | Missing-box refusal, membership, exact synthetic argv, actual same-SID sessions 0/2 and rejected successful truncation |
+| Network/file/read baseline | Verified kernel WFP with v4/v6 TCP/UDP controls, contained writes and selected read denials |
+| Config/inheritance/root/mapping/lifecycle | Original IPC/password readback, ordinary-user PendingRoot/ACLs, parent/root replacement rejection, logical boxed EXE, sealed original-library cleanup and post-cleanup definition removal |
+| Trust/entitlement/global prerequisite | Authenticated native installers/components, driver health, optional entitlement observation, fresh-lab-only WFP change |
+| Mandatory operation classification | Every mandatory map operation PROVEN for the stated representative scope |
+| Authority/context/stop/future roots | Ordinary-user routes without product helper, forged path refusal, boxed native/managed refusal, actual held-object dispatch boundaries and direct/junction future-sibling denial |
 
-## Validation and evidence interpretation
+## Validation
 
-Run locally: `python tools/lab/validate_repository.py`,
-`python -m unittest discover -s tests -v`, `git diff --check`.
-Tooling tests: six executed, six passed. These verify repository integrity, not
-Windows containment. Windows uses MSVC /W4 /WX and explicit target/library paths.
-The tested runs, exact source SHAs, per-run smoke counts and raw files are recorded
-in the manifest and [test report](../TEST_REPORT.md).
+Final tested source: 0cf59a67041364209d6f42ac393db3ecaa73e044.
+[Actions run 38557903464](https://github.com/kurasis/SecureRun/actions/runs/38557903464),
+2026-10-14 UTC: Server 49 passed and ARM 62 passed; zero failed/blocked/not-run;
+two explicit NA each (optional engine access-event stream; absent product helper).
+Both computed phase-result files are DONE and have empty gate_blockers.
 
-T01/T05/T08/T09/T12/T33/T35/T36/T55 and T57/T58/T60/T62 are represented by actual
-feasibility cases, with partial/blocked variants retained. Additional T02/T04/T16/
-T19/T24/T25 probes establish concrete interface routes; none is product acceptance.
-The canonical T01–T66 catalog remains NOT_STARTED. A successful Actions job means
-collection completed; phase-result.json remains BLOCKED even if representative
-cases pass because the required unresolved variants are not silently waived.
+Local commands: python tools/lab/validate_repository.py;
+python -m unittest discover -s tests -v; git diff --check.
+Seven tooling tests pass, including rejection of relabeled historical evidence.
+Windows compile uses /W4 /WX and actual PE-machine validation. Original JSON CRLF
+bytes are retained without Git normalization and bound by SHA256/size.
 
-Authoritative code commit: `2eb5fd0bb6e93921fd3ffdd415990633a79aabc0`.
-Run [38550922299](https://github.com/kurasis/SecureRun/actions/runs/38550922299):
-Server 43 passed / 0 failed / 2 blocked / 1 helper NA; ARM 56 passed / 0 failed /
-2 blocked / 1 helper NA. All declared smoke cases finished; no skip or pending
-case is counted as passed. The manifest preserves 16 original JSON files and
-their exact SHA256/size. Raw CRLF bytes are protected from Git normalization.
-Both remaining per-case blockers are engine log-reader authorization and the
-same-SID second interactive session; additional protocol/race gates are explicit
-in phase-result and the feasibility report, not hidden in those smoke counts.
+Representative T01/T05/T08/T09/T12/T33/T35/T36/T55/T57/T58/T60/T62 are executed,
+plus additional interface/lifecycle probes. All 66 production acceptance scenarios
+remain NOT_STARTED. This closes the P02 gate without claiming production launch,
+full adversarial acceptance or a supported release tuple.
 
-Publication: [PR #2](https://github.com/kurasis/SecureRun/pull/2). The normal merge
-checks are required; this PR publishes the BLOCKED feasibility result, not a
-release or a claim that P02's security gate passed.
+The previous PR #2 delivered BLOCKED research. This continuation resolves its
+ordinary-user, same-SID session, root/descendant boundary, external-launch fence
+and termination feasibility gaps. Manager-owned diagnostics meet the mandatory
+diagnostics route; an upstream-only internal access-event stream stays unavailable.
+Full network/recovery/release tests and distribution decisions remain owned by
+later phases, as required by the specification.
 
-Earlier architecture mislabeling, wrong Win32 alias/calling convention, Boolean
-width, raw config readback, empty-string removal, unboxed mapping and NT relative
-root-name errors were corrected and rerun. They are not supported-engine failures
-or evidence for the final code. Only exact current code/run provenance is used for
-current smoke claims. The missing GitHub connection interrupted publication; it
-was refreshed, not bypassed. No credential values were exposed.
+## Publication and next phase
 
-## Exit gate and handoff
+All project source, Markdown and reviewed JSON evidence are pushed and normally
+merged as authorized by the owner; credentials and generated binaries are excluded.
+Publication: [PR #3](https://github.com/kurasis/SecureRun/pull/3).
+No force push, branch-check override or security-setting weakening is used.
 
-P02 is not DONE. Concrete blockers and proposed resolutions are in the feasibility
-report: same-SID interactive sessions; protected ordinary-user provisioning;
-root/descendant replacement and external launch exclusion; hostile cleanup and
-termination fault variants; complete baseline release coverage, engine-signed log-reader integration and runtime-library
-licensing decision. Happy-path native cleanup cannot waive those boundaries.
-
-Next eligible work is to resolve the remaining P02 lab/protocol gates. A standard
-hosted Server job plus an ARM emulator does not establish Windows 11 x64 kernel
-compatibility. No P03 scaffolding, production user-target launch or release occurs.
-Publication is authorized automatically by the owner and must preserve normal
-branch checks; push/merge references are recorded after successful publication.
+P03 is now eligible. This request implements only P02: no production application,
+helper, target launcher or installer has been added. The Windows 11 x64 native
+release compatibility gap and hosted security observations remain explicit.

@@ -1,0 +1,103 @@
+{
+  "logon_fixture_transport": {
+    "peer_sid_verified_from_os": true,
+    "peer_unboxed_verified": true,
+    "peer_image_pinned": true,
+    "protected_local_pipe": true,
+    "password_in_argv_or_environment": false,
+    "windows_logon_policy_changed": false,
+    "fixture_not_a_product_helper": true
+  },
+  "worker": {
+    "definition_removal": {
+      "upstream_status": 0,
+      "section_absent": true,
+      "verified_native_cleanup_preceded_removal": true,
+      "empty_retained_root_preserved": true,
+      "generic_recursive_delete_used": false
+    },
+    "unsafe_storage": {
+      "reparse_rejected_before_native_dispatch": true,
+      "multiple_hardlinks_rejected_before_native_dispatch": true,
+      "outside_canary_unchanged": true,
+      "negative_fixture_repair_was_individual": true
+    },
+    "unboxed_manager_diagnostics": {
+      "event_origin": "MANAGER_OBSERVATION",
+      "core_version": "5.73.6",
+      "abi": 356912,
+      "driver_flags": 268435507,
+      "self_context": "UNBOXED",
+      "engine_access_events_available": false,
+      "native_engine_log_reason": "SIGNED_SESSION_LEADER_REQUIRED",
+      "raw_arguments_or_environment_retained": false
+    },
+    "completed_objects": 2,
+    "cleanup": {
+      "status": "c0000043",
+      "contents_empty": true,
+      "root_identity_retained": true,
+      "root_unlink_deliberately_blocked": true,
+      "builtin": "QSbieAPI.NtIo_DeleteFolderRecursively",
+      "legacy_delete_command_dispatched": false,
+      "launch_fence_read_back": true,
+      "external_client_launch_rejected": true,
+      "sealed_descendant_count": 9,
+      "sealed_mutation_checks_before_native_dispatch": {
+        "new_entry_denied": true,
+        "new_write_dac_handle_denied": true,
+        "owner_rights_ace_enforced": true,
+        "retained_authorized_security_handles": true,
+        "attribute_only_reparse_attack_exercised": true,
+        "attribute_only_reparse_mutation_denied": true
+      },
+      "root_dacl_restoration_by_retained_handle": true,
+      "survivor_dacl_restoration_identity_checked": true
+    },
+    "current_session": 2,
+    "provisioning": {
+      "native_relative_create": true,
+      "non_reparse_parent_leases": true,
+      "preexisting_object_never_adopted": true,
+      "acl_applied_before_lease_release": true,
+      "identity_from_created_handle": true,
+      "target_enabled_during_provisioning": false
+    },
+    "sessions_status": "PASSED",
+    "standard_user": true,
+    "sessions": {
+      "same_owner_verified": true,
+      "simultaneous_session_count": 2,
+      "all_session_process_count": 2,
+      "current_session_process_count": 1,
+      "runner_session": 2,
+      "observed_session_ids": [
+        0,
+        2
+      ],
+      "current_session_observed": true,
+      "real_windows_sessions": true,
+      "terminal_desktop_ui_tested": false
+    },
+    "configuration_created_by_standard_user": true,
+    "elevated_helper": false,
+    "parent_replacement": {
+      "real_parent_junction_exercised": true,
+      "reparse_parent_rejected_before_create": true,
+      "outside_root_never_created": true,
+      "outside_canary_unchanged": true,
+      "known_parent_restored": true
+    },
+    "root_replacement": {
+      "rename_while_lease_held_denied": true,
+      "replaced_identity_rejected": true,
+      "original_object_restored_without_rebinding": true,
+      "empty_synthetic_replacement_only": true
+    },
+    "root_acl_applied_by_standard_user": true,
+    "status": "PASSED"
+  },
+  "scheduled_task_result": 0,
+  "ready_observed": true,
+  "batch_logon_policy_changed": false
+}

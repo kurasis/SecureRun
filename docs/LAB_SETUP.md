@@ -119,7 +119,7 @@ The owner selected both Actions images: `windows-2025` (x64 OS, genuine x86 and
 x64 target probes) and `windows-11-arm` (native ARM64 driver/bridge, ARM64 and
 emulated x86/x64 target probes). Modern hosted Server images are x64, not x86 OSes.
 Workflow: [p02.yml](../.github/workflows/p02.yml). Manually dispatch with
-`gh workflow run p02.yml --ref p02/engine-feasibility` while developing, or `main`
+`gh workflow run p02.yml --ref p02/complete-feasibility` while developing, or `main`
 after publication. Never run these mutating lab scripts on an existing engine or
 on a workstation containing real box data. GITHUB_ACTIONS is an accident guard,
 not a security boundary or proof of disposable ownership.
@@ -140,13 +140,34 @@ engine. Do not transfer that mutation into production startup or cloud install
 scripts. OS boot/security/Defender settings are observed and preserved. The VM is
 discarded after the job; no generic recursive cleanup or engine uninstall is run.
 
-Structured artifacts are collected even when smoke cases fail; a green collection
-job is not a P02 gate pass. Download with `gh run download RUN_ID`; compare
+Structured artifacts are collected even when smoke cases fail. Invoke-P02 also
+computes the actual representative gate and fails the job if it is BLOCKED. Download with `gh run download RUN_ID`; compare
 installation.manager_commit and probe PE machines before using evidence. Artifacts
 have 14-day retention, so phase evidence is also retained under docs/evidence/p02.
 The phase result keeps failures, blocked portions and absent-helper NA distinct.
-Same-SID second interactive session is not supplied by the hosted-runner setup;
-SYSTEM session zero is explicitly different-owner partial evidence.
+A real standard-user worker in the runner session provisions/controls its own box.
+A disposable SYSTEM logon task obtains synthetic credentials only over a local
+protected pipe after OS peer token/image/context checks. It creates a fixed
+unboxed standard-user facade in session zero, which requests a boxed hold probe
+through the original engine. Actual same-SID membership is observed in sessions
+0 and 2, then the standard-user worker stops both sessions and performs sealed
+original cleanup and verified definition removal. No batch-logon security policy
+change, elevated product helper or password in argv/environment/artifact is used.
+The separately tested SYSTEM-owned session fixture is explicitly a different owner.
+
+To retain completed evidence after download, run:
+
+```sh
+gh run download RUN_ID --dir /tmp/p02-download
+python tools/lab/retain_p02_evidence.py --download-directory /tmp/p02-download --tested-commit FULL_SHA --run-id RUN_ID
+python tools/lab/validate_repository.py
+```
+
+The retention tool verifies the actual Actions run/checkout and both DONE results,
+checks current runtime sources against the tested Git commit and copies original
+JSON bytes. Review the non-sensitive JSON, preserve its byte format and commit
+all report/evidence files before artifact expiration. Historical BLOCKED evidence
+is retained separately; it cannot justify a current DONE gate.
 
 The Linux cloud needs only Python stdlib/Git/GitHub CLI for repository validation
 and Actions orchestration; no Windows services or app server run locally. No generic

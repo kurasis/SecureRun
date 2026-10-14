@@ -1,6 +1,6 @@
 {
   "phase": "P02",
-  "result": "BLOCKED",
+  "result": "DONE",
   "runs": [
     {
       "id": 38550922299,
@@ -78,10 +78,146 @@
             }
           ]
         }
+      ],
+      "role": "historical"
+    },
+    {
+      "id": 38557903464,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38557903464",
+      "tested_commit": "0cf59a67041364209d6f42ac393db3ecaa73e044",
+      "role": "current",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "0cf59a67041364209d6f42ac393db3ecaa73e044",
+          "evidence_directory": "completion-0cf59a6/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "0cf59a67041364209d6f42ac393db3ecaa73e044",
+          "evidence_directory": "completion-0cf59a6/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
       ]
     }
   ],
   "files": [
+    {
+      "path": "completion-0cf59a6/windows-11-arm/bootstrap-result.json",
+      "sha256": "ae36c7ac91c76b12c1f14c52e90444fc73267d2e3c2b14b921969f558af21d85",
+      "size": 123
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/bootstrap-stage.json",
+      "sha256": "39aa22ce4bb14b5cfd8c27bf445ee2ced5dfe10e9a3698bf5225400580cba694",
+      "size": 149
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/feasibility-cases.json",
+      "sha256": "7fba64b6a03b81ca1fe46e7db7ab40e601ac85cc312174cfa658042611a3bb5b",
+      "size": 33558
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/installation.json",
+      "sha256": "3dc8dbb61905dfa25dbefd1a2250247ad66bce5fbca9bcd47a73c33e7b798369",
+      "size": 11146
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "3e3c1adadd2bc59d5fc3a962228a25ed28de4a5467162fb2b7a331fc879b70a3",
+      "size": 277
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/phase-result.json",
+      "sha256": "1116196b9183eaae7aa0b9036e20debe83feadcc9da324c58725f45832382952",
+      "size": 702
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/probe-builds.json",
+      "sha256": "134a8ff135d181d3fb8a12617281b57718d9c64ef8ff3abcfcbdf18e09cd8cec",
+      "size": 980
+    },
+    {
+      "path": "completion-0cf59a6/windows-11-arm/standard-user-result.json",
+      "sha256": "f7a8152df16110ce0bd99a389f4a9f212848f0ed29af0c1863805c18039c388d",
+      "size": 3678
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/bootstrap-result.json",
+      "sha256": "4d91c614d9ad7c5bc7b565ee9556ce71b9653ae86f69e5e3025bcce1c7ae9176",
+      "size": 123
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/bootstrap-stage.json",
+      "sha256": "65fef7ddf4e3d274ff874632a0c184a60cf5fc626c9191da65c91a059d0d8b68",
+      "size": 149
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/feasibility-cases.json",
+      "sha256": "eb0acd2958efa043cc91e329673955b7268446b454226090c1ac580555382073",
+      "size": 27737
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/installation.json",
+      "sha256": "0ee25199ecef62bf4587bb4549356c688c7b30848b8265fc4209349b00eb3992",
+      "size": 10893
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/native-cleanup-discovery.json",
+      "sha256": "a9605c3a94314d3b89617ce8243d810af1fed175f9fe6154dafcfa207ca2bcf3",
+      "size": 277
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/phase-result.json",
+      "sha256": "13b7cf3693965067334655a2644b5c2b363d8b649d920ea8e40f2aa154bb734b",
+      "size": 702
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/probe-builds.json",
+      "sha256": "3c5261bf937d596db8d16af3c6e0c457940bbf943532eba4bc33f3f80ce62d06",
+      "size": 730
+    },
+    {
+      "path": "completion-0cf59a6/windows-2025/standard-user-result.json",
+      "sha256": "95c8c61490f8edb7e5c56c630b94ac088597fac290538ce1d79d2b61d5de4cba",
+      "size": 3677
+    },
     {
       "path": "windows-11-arm/bootstrap-result.json",
       "sha256": "40b67245a4281c03273a5723a87bcb37d8b67397d70ba26ea6d74b7aa13b6d0d",
@@ -164,5 +300,52 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Final source-backed smoke. No supported product tuple; explicit phase gates remain unresolved."
+  "note": "Completed representative P02 feasibility only. Historical blocked evidence is preserved; no production acceptance or supported release tuple.",
+  "tested_sources": [
+    {
+      "path": ".github/workflows/p02.yml",
+      "sha256": "94fe1c758577a38053d67e2ffd4fa9f1fdfc8458e88facc547a799172040e57f",
+      "size": 1360
+    },
+    {
+      "path": "tools/lab/Build-P02.ps1",
+      "sha256": "de432f36f8bd730bfb5b4ab43fe199789f7d3b2e83be8f6567f9ed77c6403acc",
+      "size": 2734
+    },
+    {
+      "path": "tools/lab/Initialize-P02.ps1",
+      "sha256": "a01c8994228d52d943770833a025f2a32c356a0db971de5de3e4a15d1aeaa58d",
+      "size": 6639
+    },
+    {
+      "path": "tools/lab/Invoke-P02.ps1",
+      "sha256": "ad87759ec7ab4999c6e2b84966fc338287275f97e9f4947c26a10ee1c96ae46d",
+      "size": 33625
+    },
+    {
+      "path": "tools/probe/boxed_bridge_guard.ps1",
+      "sha256": "13d61519813048e855c9d47e8d52192aa89496ee017ddde7040d6cf159141871",
+      "size": 587
+    },
+    {
+      "path": "tools/probe/engine_bridge.cs",
+      "sha256": "2e35948e7338d139d5635ddd611fe5d835e89cede3f99f24a3992652660cf674",
+      "size": 71287
+    },
+    {
+      "path": "tools/probe/engine_inspect.c",
+      "sha256": "b3196d52b7cb3eb6432dcad35dd6a7d0c766c15678f797c09854c424c522568e",
+      "size": 2605
+    },
+    {
+      "path": "tools/probe/feasibility_probe.c",
+      "sha256": "dc79f136bd62c2296dac66c8d1cabe48c03ec5bbf09909ec1cfb24fab4e2848c",
+      "size": 16911
+    },
+    {
+      "path": "tools/probe/standard_user_probe.ps1",
+      "sha256": "b4de16a59c3d5026faf7657401c07c455c930b814c2e0b8efe2d9554afa53daa",
+      "size": 3923
+    }
+  ]
 }

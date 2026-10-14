@@ -1860,6 +1860,37 @@ impl NativeEngine {
                         .to_string_lossy()
                         .eq_ignore_ascii_case(&expected.to_string_lossy())
                     {
+                        let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
+                        let allowed_name = [
+                            "SandboxieRpcSs.exe",
+                            "SandboxieDcomLaunch.exe",
+                            "SbieSvc.exe",
+                            "WerFault.exe",
+                            "conhost.exe",
+                            "securerun-policy-probe.exe",
+                        ]
+                        .iter()
+                        .find(|v| name.eq_ignore_ascii_case(v))
+                        .copied()
+                        .unwrap_or("UNREVIEWED_NAME_WITHHELD");
+                        let location = if image.starts_with(&self.trusted.home) {
+                            "ENGINE_HOME"
+                        } else if image.starts_with(self.profile.join("boxes")) {
+                            "DIAGNOSTIC_STORAGE"
+                        } else if image.starts_with(system_directory()?) {
+                            "OS_SYSTEM_DIRECTORY"
+                        } else {
+                            "OTHER_LOCATION"
+                        };
+                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location});
+                        std::fs::write(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("image-status-{}.json", diagnostic.id.simple())),
+                            serde_json::to_vec(&data)
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                         return Err("DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED");
                     }
                     let file = lease(&image, false)?;

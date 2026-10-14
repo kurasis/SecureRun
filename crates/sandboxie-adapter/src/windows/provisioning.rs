@@ -1276,6 +1276,7 @@ struct Canary {
     mapped_share: bool,
     lan_address: [u8; 4],
     child: bool,
+    offline: bool,
 }
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -1395,14 +1396,25 @@ fn exercise_network(canary: &Canary) -> ChildNetwork {
             std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], *port))
         };
         if i < 2 || i == 4 {
-            if let Ok(mut socket) =
-                std::net::TcpStream::connect_timeout(&address, Duration::from_millis(750))
-            {
-                let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
-                let mut reply = [0u8; 1];
-                sockets[i] = socket.write_all(b"P").is_ok()
-                    && socket.read_exact(&mut reply).is_ok()
-                    && reply == *b"R";
+            let deadline = Instant::now() + Duration::from_secs(4);
+            loop {
+                if let Ok(mut socket) =
+                    std::net::TcpStream::connect_timeout(&address, Duration::from_millis(1500))
+                {
+                    let _ = socket.set_read_timeout(Some(Duration::from_millis(1500)));
+                    let _ = socket.set_write_timeout(Some(Duration::from_millis(1500)));
+                    let mut reply = [0u8; 1];
+                    sockets[i] = socket.write_all(b"P").is_ok()
+                        && socket.read_exact(&mut reply).is_ok()
+                        && reply == *b"R";
+                }
+                // Only online availability retries the exact benign endpoint.
+                // Offline retains a single attempt and independent server/tag
+                // observations still reject any target-caused traffic.
+                if sockets[i] || canary.offline || Instant::now() >= deadline {
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(50));
             }
         } else {
             let bind = if i >= 4 {
@@ -2185,6 +2197,7 @@ impl NativeEngine {
             mapped_share: mapped_positive,
             lan_address: endpoints.lan_address,
             child: false,
+            offline: owned.compiled.offline,
         };
         let encoded = hex(&serde_json::to_vec(&canary).map_err(|_| "PROBE_REQUEST_INVALID")?);
         let command = wide(&format!("\"{}\" {encoded}", probe.to_string_lossy()));

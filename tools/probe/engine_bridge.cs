@@ -13,6 +13,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Security.AccessControl;
+using System.IO.Pipes;
 using Microsoft.Win32.SafeHandles;
 
 public sealed class P02Bridge {
@@ -27,6 +29,13 @@ public sealed class P02Bridge {
     [DllImport("kernel32")] static extern bool CloseHandle(IntPtr handle);
     [DllImport("kernel32")] static extern bool GetExitCodeProcess(IntPtr handle, out uint code);
     [DllImport("kernel32")] static extern uint GetCurrentProcessId();
+    [StructLayout(LayoutKind.Sequential)] struct SecurityAttributes {public uint length;public IntPtr descriptor;public int inherit;}
+    [DllImport("advapi32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool ConvertStringSecurityDescriptorToSecurityDescriptor(string text,uint revision,out IntPtr descriptor,out uint size);
+    [DllImport("kernel32")] static extern IntPtr LocalFree(IntPtr pointer);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafePipeHandle CreateNamedPipe(string name,uint open,uint mode,uint instances,uint output,uint input,uint timeout,ref SecurityAttributes attributes);
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetNamedPipeClientProcessId(SafePipeHandle pipe,out uint pid);
+    [DllImport("advapi32",SetLastError=true)] static extern bool OpenProcessToken(IntPtr process,uint access,out SafeAccessTokenHandle token);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool QueryFullProcessImageName(IntPtr process,uint flags,StringBuilder path,ref uint chars);
     [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
     [StructLayout(LayoutKind.Sequential,Pack=4)] public struct FileIdentity {
         public uint attributes; public long creation,access,write;
@@ -70,11 +79,13 @@ public sealed class P02Bridge {
     readonly HashSet<string> owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly HashSet<string> probes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly Dictionary<string,FileIdentity> rootIdentities=new Dictionary<string,FileIdentity>();
+    readonly HashSet<string> cleared=new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly string sid = WindowsIdentity.GetCurrent().User.Value;
     public readonly string Home;
     public readonly string Base;
     public int LastLaunchError { get; private set; }
     public bool DiagnosticsAvailable { get; private set; }
+    public bool NativeCleanupDispatched { get; private set; }
     public uint CurrentSession { get; private set; }
     T Bind<T>(IntPtr module, string name) where T : Delegate {
         IntPtr address = GetProcAddress(module, name);
@@ -140,6 +151,14 @@ public sealed class P02Bridge {
         if(status!=0||Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DEFINITION_REMOVAL_UNCONFIRMED");
         owned.Remove(box);return new Dictionary<string,object>{{"upstream_status",status},{"section_absent",true},{"root_was_never_materialized",true},{"used_definition_requires_verified_cleanup",true}};
     }
+    public Dictionary<string,object> RemoveClearedDefinition(string box) {
+        Scope(box);AssertRoot(box);
+        if(!cleared.Contains(box)||Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n"||Directory.GetFileSystemEntries(Root(box)).Length!=0)throw new InvalidOperationException("VERIFIED_CLEANUP_REQUIRED");
+        uint status=update('s',null,box,"*",null);
+        if(status!=0||Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DEFINITION_REMOVAL_UNCONFIRMED");
+        owned.Remove(box);cleared.Remove(box);rootIdentities.Remove(box);
+        return new Dictionary<string,object>{{"upstream_status",status},{"section_absent",true},{"verified_native_cleanup_preceded_removal",true},{"empty_retained_root_preserved",true},{"generic_recursive_delete_used",false}};
+    }
     public Dictionary<string,object> ExerciseProtectedConfiguration(string box) {
         Scope(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
         if(Read("GlobalSettings","EditPassword",0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_PASSWORD_NOT_CHANGED");
@@ -195,17 +214,104 @@ public sealed class P02Bridge {
         using(var handle=CreateFile(path,0x80,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
             FileIdentity identity;
             if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_HANDLE_UNVERIFIED");
+            if(rootIdentities.ContainsKey(box)&&!identity.Same(rootIdentities[box]))throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
             rootIdentities[box]=identity;return identity;
         }
     }
+    void AssertRoot(string box) {
+        if(!rootIdentities.ContainsKey(box))throw new InvalidOperationException("PENDING_ROOT_NOT_LAUNCHABLE");
+        CaptureRoot(box);
+    }
+    public Dictionary<string,object> ProvisionFreshRoot(string box) {
+        Scope(box);if(rootIdentities.ContainsKey(box)||Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("PENDING_ROOT_PRECONDITION_FAILED");
+        rootIdentities.Add(box,P02StorageSeal.CreateFreshDirectory(Root(box)));
+        AssertRoot(box);
+        return new Dictionary<string,object>{{"native_relative_create",true},{"non_reparse_parent_leases",true},{"preexisting_object_never_adopted",true},{"acl_applied_before_lease_release",true},{"identity_from_created_handle",true},{"target_enabled_during_provisioning",false}};
+    }
+    public Dictionary<string,object> ExerciseProvisionParentReplacement(string box) {
+        Scope(box);if(rootIdentities.ContainsKey(box)||Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("PENDING_ROOT_PRECONDITION_FAILED");
+        string path=Root(box),parent=Path.GetDirectoryName(path),backup=parent+".original",outside=Path.Combine(Base,"canaries","provision-outside");
+        Directory.CreateDirectory(outside);string canary=Path.Combine(outside,"keep.txt");File.WriteAllText(canary,"P02_PROVISION_OUTSIDE_CANARY");
+        byte[] hash=SHA256.HashData(File.ReadAllBytes(canary));bool rejected=false;
+        Directory.Move(parent,backup);
+        try {
+            Directory.CreateDirectory(parent);P02StorageSeal.MakeJunction(parent,outside,0x40000000U);
+            try{ProvisionFreshRoot(box);}catch(InvalidOperationException failure){rejected=failure.Message=="STORAGE_REPARSE_REJECTED";}
+            if(!rejected||Directory.Exists(Path.Combine(outside,box))||!CryptographicOperations.FixedTimeEquals(hash,SHA256.HashData(File.ReadAllBytes(canary))))throw new InvalidOperationException("PROVISION_PARENT_SUBSTITUTION_ACCEPTED");
+        } finally {Directory.Delete(parent,false);Directory.Move(backup,parent);}
+        return new Dictionary<string,object>{{"real_parent_junction_exercised",true},{"reparse_parent_rejected_before_create",true},{"outside_root_never_created",true},{"outside_canary_unchanged",true},{"known_parent_restored",true}};
+    }
+    public Dictionary<string,object> ExerciseRootReplacement(string box) {
+        Scope(box);AssertRoot(box);if(Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("ROOT_REPLACEMENT_PRECONDITION_FAILED");
+        string path=Root(box),backup=path+".original";bool pinnedRenameDenied=false;
+        using(var lease=new P02StorageSeal(path,rootIdentities[box])){
+            try{Directory.Move(path,backup);}catch(IOException failure){pinnedRenameDenied=(failure.HResult&0xffff)==32;}
+            if(!pinnedRenameDenied)throw new InvalidOperationException("ROOT_LEASE_RENAME_ALLOWED");
+        }
+        Directory.Move(path,backup);Directory.CreateDirectory(path);bool replacementRejected=false;
+        try{CaptureRoot(box);}catch(InvalidOperationException failure){replacementRejected=failure.Message=="ROOT_IDENTITY_CHANGED";}
+        if(!replacementRejected)throw new InvalidOperationException("REPLACED_ROOT_ADOPTED");
+        Directory.Delete(path,false);Directory.Move(backup,path);AssertRoot(box);
+        return new Dictionary<string,object>{{"rename_while_lease_held_denied",true},{"replaced_identity_rejected",true},{"original_object_restored_without_rebinding",true},{"empty_synthetic_replacement_only",true}};
+    }
+    public Dictionary<string,object> ObserveSameOwnerSessions(string box) {
+        Scope(box);var sessions=new HashSet<uint>();uint count=0;
+        foreach(uint pid in Pids(box)){var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);uint session;long born;
+            if(query((IntPtr)pid,0,actualBox,null,actualSid,out session,out born)!=0||actualBox.ToString()!=box||actualSid.ToString()!=sid)throw new InvalidOperationException("SESSION_OWNER_UNKNOWN");
+            sessions.Add(session);count++;
+        }
+        uint current=0;if(enumerate(BoxBuffer(box),false,CurrentSession,null,ref current)!=0)throw new InvalidOperationException("ENUMERATION_UNKNOWN");
+        return new Dictionary<string,object>{{"same_owner_verified",true},{"simultaneous_session_count",sessions.Count},{"all_session_process_count",count},{"current_session_process_count",current},{"runner_session",CurrentSession},{"observed_session_ids",new List<uint>(sessions).ToArray()},{"current_session_observed",sessions.Contains(CurrentSession)},{"real_windows_sessions",true},{"terminal_desktop_ui_tested",false}};
+    }
+    public Dictionary<string,object> ManagerDiagnostics() {
+        RequireUnboxed();var v=new StringBuilder(16);uint abi;
+        int status=version(v,out abi);if(status!=0)throw new InvalidOperationException("ENGINE_HEALTH_UNKNOWN");
+        return new Dictionary<string,object>{{"event_origin","MANAGER_OBSERVATION"},{"core_version",v.ToString()},{"abi",abi},{"driver_flags",Flags()},{"self_context","UNBOXED"},{"engine_access_events_available",DiagnosticsAvailable},{"native_engine_log_reason",DiagnosticsAvailable?"AVAILABLE":"SIGNED_SESSION_LEADER_REQUIRED"},{"raw_arguments_or_environment_retained",false}};
+    }
+    public Dictionary<string,object> SendFixtureLogon(Action start,string pipeName,string user,string password,string userSid,string fixture,string box,string approvedExe) {
+        RequireUnboxed();
+        if(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true"||!Regex.IsMatch(pipeName,@"\ASecureRunP02Logon_[0-9a-f]{32}\z")||!Regex.IsMatch(user,@"\ASRP02S_[0-9a-f]{10}\z")||!probes.Contains(approvedExe))throw new InvalidOperationException("LOGON_FIXTURE_SCOPE_REJECTED");
+        IntPtr descriptor;uint size;
+        if(!ConvertStringSecurityDescriptorToSecurityDescriptor("D:P(A;;GA;;;SY)(A;;GA;;;BA)",1,out descriptor,out size))throw new Win32Exception();
+        SafePipeHandle handle;
+        try {var attributes=new SecurityAttributes{length=(uint)Marshal.SizeOf<SecurityAttributes>(),descriptor=descriptor};
+            handle=CreateNamedPipe("\\\\.\\pipe\\"+pipeName,2|0x40000000U|0x00080000U,8,1,4096,4096,15000,ref attributes);
+        } finally {LocalFree(descriptor);}
+        if(handle.IsInvalid){handle.Dispose();throw new InvalidOperationException("LOGON_FIXTURE_PIPE_CREATE_FAILED");}
+        using(var pipe=new NamedPipeServerStream(PipeDirection.Out,true,false,handle)){
+            start();
+            using(var cancellation=new System.Threading.CancellationTokenSource(20000))pipe.WaitForConnectionAsync(cancellation.Token).GetAwaiter().GetResult();
+            uint pid;if(!GetNamedPipeClientProcessId(handle,out pid))throw new InvalidOperationException("LOGON_FIXTURE_PEER_UNKNOWN");
+            IntPtr process=OpenProcess(0x1000|0x100000,false,pid);if(process==IntPtr.Zero)throw new InvalidOperationException("LOGON_FIXTURE_PEER_HANDLE_FAILED");
+            try {
+                SafeAccessTokenHandle token;if(!OpenProcessToken(process,8,out token))throw new InvalidOperationException("LOGON_FIXTURE_PEER_TOKEN_FAILED");
+                using(token)using(var identity=new WindowsIdentity(token.DangerousGetHandle()))if(identity.User.Value!="S-1-5-18")throw new InvalidOperationException("LOGON_FIXTURE_PEER_NOT_SYSTEM");
+                var path=new StringBuilder(1024);uint chars=1024;
+                if(!QueryFullProcessImageName(process,0,path,ref chars)||!String.Equals(path.ToString(),approvedExe,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("LOGON_FIXTURE_PEER_IMAGE_REJECTED");
+                uint session;long born;
+                if(unchecked((uint)query((IntPtr)pid,0,new StringBuilder(40),null,null,out session,out born))!=0xc000000bU||WaitForSingleObject(process,0)==0)throw new InvalidOperationException("LOGON_FIXTURE_PEER_CONTEXT_UNKNOWN");
+                foreach(string value in new[]{user,password,userSid,fixture,box}){
+                    byte[] bytes=Encoding.Unicode.GetBytes(value),length=BitConverter.GetBytes(value.Length);
+                    try {pipe.Write(length,0,length.Length);pipe.Write(bytes,0,bytes.Length);}
+                    finally {Array.Clear(bytes,0,bytes.Length);}
+                }
+                pipe.Flush();
+            } finally {CloseHandle(process);}
+        }
+        return new Dictionary<string,object>{{"peer_sid_verified_from_os",true},{"peer_unboxed_verified",true},{"peer_image_pinned",true},{"protected_local_pipe",true},{"password_in_argv_or_environment",false},{"windows_logon_policy_changed",false},{"fixture_not_a_product_helper",true}};
+    }
     public Dictionary<string,object> ClearOwnedWithNative(string box) {
         Scope(box);
+        NativeCleanupDispatched=false;
         string reason=CleanupReason(box);
         if(reason=="UNAPPROVED_AUTOMATION"||reason=="BOX_BUSY")throw new InvalidOperationException(reason);
         if(Read(box,"UseFileImage",0)=="y"||Read(box,"NeverDelete",0)=="y")throw new InvalidOperationException("LIFECYCLE_UNSUPPORTED");
         if(!rootIdentities.ContainsKey(box))throw new InvalidOperationException("ROOT_NOT_ENROLLED");
         string path=Root(box);
-        using(var handle=CreateFile(path,0x81,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
+        if(update('s',null,box,"Enabled","n")!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_UNVERIFIED");
+        Dictionary<string,object> result;
+        using(var seal=new P02StorageSeal(path,rootIdentities[box])){
+            var handle=seal.RootHandle;
             FileIdentity identity;
             if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||!identity.Same(rootIdentities[box])||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
             int total=0;
@@ -221,7 +327,11 @@ public sealed class P02Bridge {
                     }
                 }
             }
+            seal.Freeze();
+            var denied=seal.ExerciseDeniedMutation();
             RequireUnboxed();if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+            if(Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_CHANGED");
+            if(!RejectFencedProbe(box))throw new InvalidOperationException("EXTERNAL_LAUNCH_FENCE_FAILED");
             IntPtr module=LoadLibraryEx(Path.Combine(Home,"QSbieAPI.dll"),IntPtr.Zero,0x100|0x800);
             if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
             // Exact exports observed in both authenticated v1.18.6 distributions.
@@ -232,6 +342,7 @@ public sealed class P02Bridge {
                 Marshal.StructureToPtr(new NtName{length=0,maximum=2,buffer=name},descriptor,false);
                 var attr=new NtAttributes{length=(uint)Marshal.SizeOf<NtAttributes>(),root=handle.DangerousGetHandle(),name=descriptor,flags=0x40};
                 var clock=Stopwatch.StartNew();CleanupCallback callback=(text,state)=>clock.ElapsedMilliseconds<30000;
+                NativeCleanupDispatched=true;
                 int status=remove(ref attr,callback,IntPtr.Zero);GC.KeepAlive(callback);
                 FileIdentity after;
                 bool same=GetFileInformationByHandle(handle,out after)&&identity.Same(after);
@@ -240,9 +351,39 @@ public sealed class P02Bridge {
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
                 if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
-                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false}};
+                result=new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"sealed_mutation_checks_before_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
+        cleared.Add(box);return result;
+    }
+    bool RejectFencedProbe(string box) {
+        string exe=null;foreach(string probe in probes){if(Path.GetFileName(probe).StartsWith("feasibility_probe_",StringComparison.Ordinal)){exe=probe;break;}}
+        if(exe==null)throw new InvalidOperationException("FENCE_POSITIVE_CONTROL_UNAVAILABLE");
+        var startup=new Startup();startup.size=(uint)Marshal.SizeOf<Startup>();Receipt receipt;
+        bool started=run(box,Quote(exe)+" "+Quote("forbidden-host-marker")+" "+Quote(Base),Base,0,ref startup,out receipt);
+        if(started){StopReceipt(receipt);return false;}
+        return Count(box)==0;
+    }
+    public Dictionary<string,object> ExerciseUnsafeStorage(string box) {
+        Scope(box);CaptureRoot(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+        string path=Root(box),outside=Path.Combine(Base,"canaries","cleanup-outside");Directory.CreateDirectory(outside);
+        string canary=Path.Combine(outside,"keep.txt");File.WriteAllText(canary,"P02_OUTSIDE_NATIVE_CLEANUP_CANARY");
+        byte[] hash=SHA256.HashData(File.ReadAllBytes(canary));
+        string junction=Path.Combine(path,"P02_JUNCTION_FIXTURE");Directory.CreateDirectory(junction);
+        P02StorageSeal.MakeJunction(junction,outside,0x40000000U);
+        bool junctionRejected=false;
+        try{ClearOwnedWithNative(box);}catch(InvalidOperationException failure){junctionRejected=failure.Message.Contains("REPARSE_REJECTED");}
+        if(!junctionRejected||NativeCleanupDispatched)throw new InvalidOperationException("JUNCTION_CLEANUP_DISPATCHED");
+        Directory.Delete(junction,false); // remove only the known synthetic junction itself
+        string link=Path.Combine(path,"P02_HARDLINK_FIXTURE.txt");
+        P02StorageSeal.MakeHardLink(link,canary);
+        bool linkRejected=false;
+        try{ClearOwnedWithNative(box);}catch(InvalidOperationException failure){linkRejected=failure.Message.Contains("HARDLINK_REJECTED");}
+        if(!linkRejected||NativeCleanupDispatched)throw new InvalidOperationException("HARDLINK_CLEANUP_DISPATCHED");
+        File.Delete(link); // remove only this individually known synthetic hard link
+        Directory.CreateDirectory(Path.Combine(path,"P02_REPARSE_SEALED"));
+        if(!CryptographicOperations.FixedTimeEquals(hash,SHA256.HashData(File.ReadAllBytes(canary))))throw new InvalidOperationException("OUTSIDE_CLEANUP_CANARY_CHANGED");
+        return new Dictionary<string,object>{{"reparse_rejected_before_native_dispatch",true},{"multiple_hardlinks_rejected_before_native_dispatch",true},{"outside_canary_unchanged",true},{"negative_fixture_repair_was_individual",true}};
     }
     public bool MayMaterializeSibling(string[] affected) {
         foreach(string box in affected){Scope(box);if(Count(box)!=0)return false;}
@@ -261,7 +402,7 @@ public sealed class P02Bridge {
         return full;
     }
     public Receipt LaunchSyntheticBoxExecutable(string box,string physical,string[] arguments) {
-        Scope(box);string full=Path.GetFullPath(physical);string logical=Path.Combine(Base,"workspace","boxed-probe.exe");
+        Scope(box);AssertRoot(box);string full=Path.GetFullPath(physical);string logical=Path.Combine(Base,"workspace","boxed-probe.exe");
         if(!full.StartsWith(Root(box)+"\\",StringComparison.OrdinalIgnoreCase)||!File.Exists(full)||File.Exists(logical))throw new InvalidOperationException("BOX_EXECUTABLE_UNVERIFIED");
         byte[] content=File.ReadAllBytes(full);bool matched=false;
         foreach(string probe in probes){if(!probe.EndsWith(".exe",StringComparison.OrdinalIgnoreCase))continue;byte[] expected=File.ReadAllBytes(probe);if(content.Length==expected.Length&&CryptographicOperations.FixedTimeEquals(SHA256.HashData(content),SHA256.HashData(expected)))matched=true;}
@@ -356,7 +497,7 @@ public sealed class P02Bridge {
         Environment.SetEnvironmentVariable("PATH",engineHome+";"+Environment.GetFolderPath(Environment.SpecialFolder.System));
     }
     public Receipt Launch(string box,string exe,string[] arguments) {
-        Scope(box);string full=Path.GetFullPath(exe);
+        Scope(box);AssertRoot(box);string full=Path.GetFullPath(exe);
         if(!probes.Contains(full))throw new InvalidOperationException("FIXED_PROBE_REQUIRED");
         if(Read(box,"Enabled",0)!="y")throw new InvalidOperationException("BOX_NOT_READY");
         string command=Quote(full);foreach(string arg in arguments)command+=" "+Quote(arg);
@@ -377,6 +518,38 @@ public sealed class P02Bridge {
     public static uint ExitCode(Receipt receipt) { uint code;if(!GetExitCodeProcess(receipt.process,out code))throw new Win32Exception();return code; }
     public static void CloseReceipt(Receipt receipt) { CloseHandle(receipt.thread);CloseHandle(receipt.process); }
     public static void StopReceipt(Receipt receipt) { TerminateProcess(receipt.process,99);WaitForSingleObject(receipt.process,5000);CloseReceipt(receipt); }
+    bool StopAuthorizedObject(string box,IntPtr handle,uint pid) {
+        Scope(box);
+        long born,exit,kernel,user,engineBorn;uint session;
+        var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);
+        if(!GetProcessTimes(handle,out born,out exit,out kernel,out user))throw new Win32Exception();
+        bool critical;if(!IsProcessCritical(handle,out critical)||critical)throw new InvalidOperationException("CRITICAL_PROCESS_REJECTED");
+        if(WaitForSingleObject(handle,0)==0)return false;
+        int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
+        if(status!=0||actualBox.ToString()!=box||actualSid.ToString()!=sid||born!=engineBorn){
+            if(WaitForSingleObject(handle,1000)==0)return false;
+            throw new InvalidOperationException("PROCESS_SCOPE_REJECTED_"+unchecked((uint)status).ToString("X8"));
+        }
+        TerminateProcess(handle,99);
+        if(WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
+        return true;
+    }
+    public Dictionary<string,object> ExerciseTerminationBoundaries(string box,string sibling,string exe) {
+        Scope(box);Scope(sibling);
+        var other=Launch(sibling,exe,new[]{"hold",Base,sibling,"wrong-scope",Home});
+        bool scopeRejected=false;
+        try {
+            try {StopAuthorizedObject(box,other.process,other.pid);}
+            catch(InvalidOperationException failure){scopeRejected=failure.Message.StartsWith("PROCESS_SCOPE_REJECTED_",StringComparison.Ordinal);}
+            if(!scopeRejected||Completed(other,0))throw new InvalidOperationException("STOP_OTHER_BOX_TOUCHED");
+        } finally {StopHeld(sibling);CloseReceipt(other);}
+        var exited=Launch(box,exe,new[]{"exit-fast",Base,box,"natural-exit",Home});
+        try {
+            if(!Completed(exited,10000)||ExitCode(exited)!=0)throw new InvalidOperationException("EXIT_POSITIVE_CONTROL_UNAVAILABLE");
+            if(StopAuthorizedObject(box,exited.process,exited.pid))throw new InvalidOperationException("EXITED_OBJECT_REDISPATCHED");
+        } finally {CloseReceipt(exited);StopHeld(box);}
+        return new Dictionary<string,object>{{"live_other_box_untouched",true},{"scope_rechecked_at_dispatch",true},{"natural_exit_on_retained_object",true},{"numeric_pid_kill_fallback",false},{"actual_dispatch_function_exercised",true}};
+    }
     public int StopHeld(string box) {
         Scope(box);int stopped=0;
         for(int attempt=0;attempt<10;attempt++){
@@ -390,27 +563,223 @@ public sealed class P02Bridge {
                     throw new InvalidOperationException("PROCESS_HANDLE_UNAVAILABLE");
                 }
                 try {
-                    long born,exit,kernel,user,engineBorn;uint session;var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);
-                    if(!GetProcessTimes(handle,out born,out exit,out kernel,out user))throw new Win32Exception();
-                    bool critical;if(!IsProcessCritical(handle,out critical) || critical)throw new InvalidOperationException("CRITICAL_PROCESS_REJECTED");
-                    if(WaitForSingleObject(handle,0)==0)continue;
-                    int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
-                    if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn){
-                        // A scope observation may race an exit. Never terminate on a
-                        // mismatch; only the retained object's completed wait permits
-                        // a fresh membership sweep, without acting on a reused PID.
-                        if(WaitForSingleObject(handle,1000)==0)continue;
-                        throw new InvalidOperationException("PROCESS_SCOPE_REJECTED_"+unchecked((uint)status).ToString("X8"));
-                    }
-                    // An object may naturally exit after authorization. Even if terminate
-                    // reports failure, only a signalled retained handle proves completion.
-                    TerminateProcess(handle,99);
-                    if(WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
-                    stopped++;
+                    if(StopAuthorizedObject(box,handle,pid))stopped++;
                 } finally { CloseHandle(handle); }
             }
         }
         throw new InvalidOperationException("STOP_RECONCILIATION_REQUIRED");
+    }
+}
+
+// Lab-only storage authority: Windows access checks use the caller token. No
+// elevation, generic deletion implementation, configurable ACL or helper IPC.
+internal sealed class P02StorageSeal : IDisposable {
+    [StructLayout(LayoutKind.Sequential)] struct NtName {public ushort length,maximum;public IntPtr buffer;}
+    [StructLayout(LayoutKind.Sequential)] struct NtAttributes {public uint length;public IntPtr root,name;public uint flags;public IntPtr security,quality;}
+    [StructLayout(LayoutKind.Sequential)] struct IoStatus {public IntPtr status;public UIntPtr information;}
+    [DllImport("ntdll")] static extern uint NtCreateFile(out SafeFileHandle file,uint access,ref NtAttributes attributes,out IoStatus status,IntPtr allocated,uint fileAttributes,uint share,uint disposition,uint options,IntPtr ea,uint eaSize);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle file,out P02Bridge.FileIdentity identity);
+    [StructLayout(LayoutKind.Sequential)] struct StandardInfo { public long allocated,length;public uint links;[MarshalAs(UnmanagedType.U1)]public bool pending;[MarshalAs(UnmanagedType.U1)]public bool directory; }
+    [StructLayout(LayoutKind.Sequential)] struct BasicInfo {public long creation,access,write,change;public uint attributes;}
+    [DllImport("kernel32",SetLastError=true)] static extern bool SetFileInformationByHandle(SafeFileHandle file,int kind,ref BasicInfo info,uint size);
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandleEx(SafeFileHandle file,int kind,out StandardInfo data,uint size);
+    [DllImport("advapi32",SetLastError=true)] static extern uint GetSecurityInfo(SafeFileHandle file,int type,uint information,out IntPtr owner,out IntPtr group,out IntPtr dacl,out IntPtr sacl,out IntPtr descriptor);
+    [DllImport("advapi32",SetLastError=true)] static extern uint SetSecurityInfo(SafeFileHandle file,int type,uint information,IntPtr owner,IntPtr group,IntPtr dacl,IntPtr sacl);
+    [DllImport("advapi32")] static extern uint GetSecurityDescriptorLength(IntPtr descriptor);
+    [DllImport("advapi32")] static extern bool GetSecurityDescriptorOwner(IntPtr descriptor,out IntPtr owner,out bool defaulted);
+    [DllImport("advapi32")] static extern bool GetSecurityDescriptorDacl(IntPtr descriptor,out bool present,out IntPtr dacl,out bool defaulted);
+    [DllImport("kernel32")] static extern IntPtr LocalFree(IntPtr pointer);
+    [DllImport("kernel32",SetLastError=true)] static extern bool DeviceIoControl(SafeFileHandle file,uint code,byte[] input,uint size,IntPtr output,uint capacity,out uint returned,IntPtr overlapped);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateHardLink(string link,string target,IntPtr security);
+    public static void MakeHardLink(string link,string target){if(!CreateHardLink(link,target,IntPtr.Zero))throw new InvalidOperationException("HARDLINK_POSITIVE_CONTROL_FAILED_"+Marshal.GetLastWin32Error());}
+    static byte[] JunctionData(string target) {
+        byte[] substitute=Encoding.Unicode.GetBytes("\\??\\"+Path.GetFullPath(target)),display=Encoding.Unicode.GetBytes(Path.GetFullPath(target));
+        var data=new byte[16+substitute.Length+2+display.Length+2];
+        BitConverter.GetBytes(0xa0000003U).CopyTo(data,0);BitConverter.GetBytes(checked((ushort)(data.Length-8))).CopyTo(data,4);
+        BitConverter.GetBytes(checked((ushort)substitute.Length)).CopyTo(data,10);
+        BitConverter.GetBytes(checked((ushort)(substitute.Length+2))).CopyTo(data,12);BitConverter.GetBytes(checked((ushort)display.Length)).CopyTo(data,14);
+        substitute.CopyTo(data,16);display.CopyTo(data,16+substitute.Length+2);return data;
+    }
+    public static void MakeJunction(string link,string target,uint rights) {
+        using(var handle=Open(link,rights,7)){uint returned;var data=JunctionData(target);
+            if(!DeviceIoControl(handle,0x000900a4U,data,(uint)data.Length,IntPtr.Zero,0,out returned,IntPtr.Zero))throw new InvalidOperationException("JUNCTION_CONTROL_FAILED_"+Marshal.GetLastWin32Error());
+        }
+    }
+    sealed class Node {
+        public string path;public bool directory;public SafeFileHandle pin,security;
+        public P02Bridge.FileIdentity identity;public byte[] descriptor;public bool changed;
+    }
+    readonly List<SafeFileHandle> ancestors=new List<SafeFileHandle>();
+    readonly List<Node> nodes=new List<Node>();
+    readonly string root;
+    bool frozen;
+    public SafeFileHandle RootHandle { get {return nodes[0].pin;} }
+    public int DescendantCount { get {return nodes.Count-1;} }
+    static SafeFileHandle Open(string path,uint rights,uint share) {
+        var handle=CreateFile(path,rights,share,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero);
+        if(handle.IsInvalid){handle.Dispose();throw new InvalidOperationException("STORAGE_HANDLE_UNAVAILABLE_"+Marshal.GetLastWin32Error());}return handle;
+    }
+    static P02Bridge.FileIdentity Identify(SafeFileHandle handle) {
+        P02Bridge.FileIdentity identity;
+        if(!GetFileInformationByHandle(handle,out identity)||(identity.attributes&0x400)!=0)throw new InvalidOperationException("STORAGE_REPARSE_REJECTED");
+        if((identity.attributes&0x10)==0&&identity.links!=1)throw new InvalidOperationException("STORAGE_HARDLINK_REJECTED");return identity;
+    }
+    static byte[] Descriptor(SafeFileHandle file) {
+        IntPtr owner,group,dacl,sacl,descriptor;
+        if(GetSecurityInfo(file,1,5,out owner,out group,out dacl,out sacl,out descriptor)!=0)throw new InvalidOperationException("STORAGE_DACL_QUERY_FAILED");
+        try {int size=checked((int)GetSecurityDescriptorLength(descriptor));if(size>16384||size<20)throw new InvalidOperationException("STORAGE_DACL_BOUND");var bytes=new byte[size];Marshal.Copy(descriptor,bytes,0,size);return bytes;}
+        finally {LocalFree(descriptor);}
+    }
+    public static P02Bridge.FileIdentity CreateFreshDirectory(string path) {
+        string full=Path.GetFullPath(path),volume=Path.GetPathRoot(full);var drive=new DriveInfo(volume);
+        if(volume.Length!=3||drive.DriveType!=DriveType.Fixed||drive.DriveFormat!="NTFS")throw new InvalidOperationException("STORAGE_VOLUME_UNSUPPORTED");
+        var leases=new List<SafeFileHandle>();string walk=volume;var parts=full.Substring(volume.Length).Split('\\');
+        try {
+            for(int index=-1;index<parts.Length-1;index++){if(index>=0)walk=Path.Combine(walk,parts[index]);var held=Open(walk,0x20080,3);leases.Add(held);Identify(held);}
+            string leaf=parts[parts.Length-1];if(leaf.Length==0||leaf.IndexOfAny(new[]{'\\','/',':','\0'})>=0)throw new InvalidOperationException("STORAGE_LEAF_INVALID");
+            IntPtr text=Marshal.StringToHGlobalUni(leaf),name=Marshal.AllocHGlobal(Marshal.SizeOf<NtName>());
+            try {
+                Marshal.StructureToPtr(new NtName{length=checked((ushort)(leaf.Length*2)),maximum=checked((ushort)((leaf.Length+1)*2)),buffer=text},name,false);
+                var attributes=new NtAttributes{length=(uint)Marshal.SizeOf<NtAttributes>(),root=leases[leases.Count-1].DangerousGetHandle(),name=name,flags=0x40};
+                SafeFileHandle created;IoStatus status;
+                uint code=NtCreateFile(out created,0x160081,ref attributes,out status,IntPtr.Zero,0x10,3,2,0x00200021,IntPtr.Zero,0);
+                using(created){
+                    if(code!=0)throw new InvalidOperationException(code==0xc0000035U?"PREEXISTING_ROOT_NOT_ADOPTED":"NATIVE_ROOT_CREATE_FAILED_"+code.ToString("X8"));
+                    var acl=new DirectorySecurity();acl.SetAccessRuleProtection(true,false);
+                    foreach(var sid in new[]{WindowsIdentity.GetCurrent().User,new SecurityIdentifier("S-1-5-18"),new SecurityIdentifier("S-1-5-32-544")})acl.AddAccessRule(new FileSystemAccessRule(sid,FileSystemRights.FullControl,InheritanceFlags.ContainerInherit|InheritanceFlags.ObjectInherit,PropagationFlags.None,AccessControlType.Allow));
+                    Apply(created,acl.GetSecurityDescriptorBinaryForm());return Identify(created);
+                }
+            } finally {Marshal.FreeHGlobal(name);Marshal.FreeHGlobal(text);}
+        } finally {foreach(var held in leases)held.Dispose();}
+    }
+    static void Apply(SafeFileHandle file,byte[] descriptor) {
+        var pinned=GCHandle.Alloc(descriptor,GCHandleType.Pinned);
+        try {IntPtr owner,dacl;bool present,defaulted;
+            if(!GetSecurityDescriptorOwner(pinned.AddrOfPinnedObject(),out owner,out defaulted)||!GetSecurityDescriptorDacl(pinned.AddrOfPinnedObject(),out present,out dacl,out defaulted)||!present)throw new InvalidOperationException("STORAGE_DACL_INVALID");
+            var original=new RawSecurityDescriptor(descriptor,0);
+            uint protectedFlag=(original.ControlFlags&ControlFlags.DiscretionaryAclProtected)!=0?0x80000000U:0x20000000U;
+            // Preserve ownership. Only the DACL is changed on the already-authorized
+            // object; no restore/take-ownership privilege is enabled or requested.
+            uint status=SetSecurityInfo(file,1,4|protectedFlag,IntPtr.Zero,IntPtr.Zero,dacl,IntPtr.Zero);
+            if(status!=0)throw new InvalidOperationException("STORAGE_DACL_UPDATE_FAILED_"+status);
+        } finally {pinned.Free();}
+    }
+    static byte[] FrozenDescriptor(bool directory) {
+        FileSystemSecurity acl=directory?(FileSystemSecurity)new DirectorySecurity():new FileSecurity();
+        var user=WindowsIdentity.GetCurrent().User;
+        acl.SetOwner(user);acl.SetAccessRuleProtection(true,false);
+        var deny=FileSystemRights.WriteData|FileSystemRights.AppendData|FileSystemRights.WriteExtendedAttributes|FileSystemRights.WriteAttributes|FileSystemRights.ChangePermissions|FileSystemRights.TakeOwnership;
+        var inherit=directory?InheritanceFlags.ContainerInherit|InheritanceFlags.ObjectInherit:InheritanceFlags.None;
+        acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-3-4"),deny,inherit,PropagationFlags.None,AccessControlType.Deny));
+        acl.AddAccessRule(new FileSystemAccessRule(user,deny,inherit,PropagationFlags.None,AccessControlType.Deny));
+        var permitted=FileSystemRights.ReadAndExecute|FileSystemRights.Delete|FileSystemRights.DeleteSubdirectoriesAndFiles|FileSystemRights.Synchronize;
+        acl.AddAccessRule(new FileSystemAccessRule(user,permitted,inherit,PropagationFlags.None,AccessControlType.Allow));
+        foreach(string sid in new[]{"S-1-5-18","S-1-5-32-544"})acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(sid),FileSystemRights.FullControl,inherit,PropagationFlags.None,AccessControlType.Allow));
+        return acl.GetSecurityDescriptorBinaryForm();
+    }
+    public P02StorageSeal(string path,P02Bridge.FileIdentity expected) {
+        root=Path.GetFullPath(path);
+        string volume=Path.GetPathRoot(root);var drive=new DriveInfo(volume);
+        if(drive.DriveType!=DriveType.Fixed||drive.DriveFormat!="NTFS"||volume.Length!=3)throw new InvalidOperationException("STORAGE_VOLUME_UNSUPPORTED");
+        try {
+            string walk=volume;
+            var parts=root.Substring(volume.Length).Split('\\');
+            for(int index=-1;index<parts.Length-1;index++){
+                if(index>=0)walk=Path.Combine(walk,parts[index]);
+                var handle=Open(walk,0x20080U,3);ancestors.Add(handle);Identify(handle);
+            }
+            Capture(root,0);
+            if(!nodes[0].identity.Same(expected))throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
+        } catch {Dispose();throw;}
+    }
+    void Capture(string path,int depth) {
+        if(depth>32||nodes.Count>=513)throw new InvalidOperationException("STORAGE_TREE_BOUND");
+        var node=new Node{path=path};
+        node.security=Open(path,0x60180U,7);nodes.Add(node);node.identity=Identify(node.security);
+        node.directory=(node.identity.attributes&0x10)!=0;
+        node.descriptor=Descriptor(node.security);
+        if(node.directory){node.pin=Open(path,0x20081U,3);if(!Identify(node.pin).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");
+            foreach(string child in Directory.EnumerateFileSystemEntries(path))Capture(child,depth+1);
+        }
+    }
+    public void Freeze() {
+        for(int index=0;index<nodes.Count;index++){
+            var node=nodes[index];
+            if(index==0)Apply(node.security,FrozenDescriptor(true));
+            else {
+                // Child permissions inherit the sealed root. Closing child security
+                // handles then permits the original native deleter to unlink them.
+                // Root-handle restoration restores inheritance after a partial result.
+                var descriptor=new RawSecurityDescriptor(ControlFlags.DiscretionaryAclPresent,null,null,null,new RawAcl(2,0));
+                var bytes=new byte[descriptor.BinaryLength];descriptor.GetBinaryForm(bytes,0);Apply(node.security,bytes);
+            }
+            node.changed=true;
+        }
+        var known=new Dictionary<string,Node>(StringComparer.OrdinalIgnoreCase);foreach(var node in nodes)known.Add(node.path,node);
+        var queue=new Queue<string>();queue.Enqueue(root);int observed=0;
+        while(queue.Count!=0){string path=queue.Dequeue();Node node;
+            if(!known.TryGetValue(path,out node))throw new InvalidOperationException("STORAGE_NEW_ENTRY_REJECTED");
+            using(var current=Open(path,0x80,7)){if(!Identify(current).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");}
+            observed++;if(node.directory)foreach(string entry in Directory.EnumerateFileSystemEntries(path))queue.Enqueue(entry);
+        }
+        if(observed!=nodes.Count)throw new InvalidOperationException("STORAGE_SNAPSHOT_CHANGED");
+        // The original routine normally clears DOS attributes itself. Frozen new
+        // opens deliberately lack WRITE_ATTRIBUTES (also required for reparse
+        // updates), so normalize only these verified objects using retained access.
+        foreach(var node in nodes){
+            Identify(node.security);
+            uint attributes=node.identity.attributes&~7U;
+            if(attributes==0||attributes==0x10)attributes=0x80;
+            var info=new BasicInfo{attributes=attributes};
+            if(!SetFileInformationByHandle(node.security,0,ref info,(uint)Marshal.SizeOf<BasicInfo>()))throw new InvalidOperationException("STORAGE_ATTRIBUTE_PREPARATION_FAILED_"+Marshal.GetLastWin32Error());
+        }
+        // Security handles were authorized before tightening and allow delete sharing;
+        // release nested namespace pins only after every creation/ACL right is sealed.
+        for(int index=1;index<nodes.Count;index++)if(nodes[index].pin!=null){nodes[index].pin.Dispose();nodes[index].pin=null;}
+        frozen=true;
+        for(int index=1;index<nodes.Count;index++){nodes[index].security.Dispose();nodes[index].security=null;}
+    }
+    public Dictionary<string,object> ExerciseDeniedMutation() {
+        if(!frozen)throw new InvalidOperationException("STORAGE_NOT_SEALED");
+        bool denied=false;try{using(var file=new FileStream(Path.Combine(root,"P02_RACE_INSERT.txt"),FileMode.CreateNew,FileAccess.Write)){}}
+        catch(UnauthorizedAccessException){denied=true;}
+        if(!denied)throw new InvalidOperationException("STORAGE_SEAL_CREATION_NOT_DENIED");
+        bool daclDenied=false;
+        using(var attempt=CreateFile(root,0x40000,7,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero))daclDenied=attempt.IsInvalid&&Marshal.GetLastWin32Error()==5;
+        if(!daclDenied)throw new InvalidOperationException("STORAGE_OWNER_RIGHTS_NOT_DENIED");
+        bool reparseDenied=false;string slot=Path.Combine(root,"P02_REPARSE_SEALED");
+        if(Directory.Exists(slot)){
+            string outside=Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(root)),"canaries","cleanup-outside");
+            try {MakeJunction(slot,outside,0x100U);}
+            catch(InvalidOperationException failure){reparseDenied=failure.Message=="JUNCTION_CONTROL_FAILED_5"||failure.Message=="STORAGE_HANDLE_UNAVAILABLE_5";}
+            if(!reparseDenied)throw new InvalidOperationException("STORAGE_REPARSE_MUTATION_NOT_DENIED");
+        }
+        return new Dictionary<string,object>{{"new_entry_denied",true},{"new_write_dac_handle_denied",true},{"owner_rights_ace_enforced",true},{"retained_authorized_security_handles",true},{"attribute_only_reparse_attack_exercised",Directory.Exists(slot)},{"attribute_only_reparse_mutation_denied",reparseDenied}};
+    }
+    public void Dispose() {
+        Exception error=null;
+        if(frozen&&nodes.Count!=0){
+            try {Apply(nodes[0].security,nodes[0].descriptor);nodes[0].changed=false;}
+            catch(Exception failure){error=failure;}
+        }
+        for(int index=nodes.Count-1;index>=0;index--){var node=nodes[index];
+            try {if(node.changed){
+                if(node.security==null){
+                    var reopened=CreateFile(node.path,0x60080,7,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero);
+                    int code=Marshal.GetLastWin32Error();
+                    if(reopened.IsInvalid){reopened.Dispose();if(code==2||code==3)continue;throw new InvalidOperationException("STORAGE_REOPEN_UNRESOLVED_"+code);}
+                    node.security=reopened;
+                    if(!Identify(reopened).Same(node.identity))throw new InvalidOperationException("STORAGE_RESTORE_IDENTITY_CHANGED");
+                }
+                StandardInfo info;
+                bool pending=GetFileInformationByHandleEx(node.security,1,out info,(uint)Marshal.SizeOf<StandardInfo>())&&info.pending;
+                if(!pending)Apply(node.security,node.descriptor);
+            }}catch(Exception failure){error=failure;}
+            finally {if(node.pin!=null)node.pin.Dispose();if(node.security!=null)node.security.Dispose();}
+        }
+        nodes.Clear();foreach(var handle in ancestors)handle.Dispose();ancestors.Clear();
+        if(error!=null)throw new InvalidOperationException("STORAGE_DACL_RECONCILIATION_REQUIRED",error);
     }
 }
 

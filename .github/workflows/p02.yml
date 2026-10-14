@@ -1,13 +1,16 @@
 name: P02 engine feasibility
 on:
   push:
-    branches: [main, p02/engine-feasibility]
+    branches: [main, 'p02/**']
     paths: ['tools/**', 'tests/**', '.github/workflows/p02.yml', 'docs/engine-candidate.json']
   pull_request:
     paths: ['tools/**', 'tests/**', '.github/workflows/p02.yml', 'docs/engine-candidate.json']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: p02-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   engine-lab:
     strategy:

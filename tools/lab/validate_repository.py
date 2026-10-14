@@ -68,8 +68,8 @@ def validate(root: Path) -> None:
     manifest_path = root / 'docs/evidence/p02/manifest.json'
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text())
-        if manifest['phase'] != 'P02' or manifest['result'] != 'BLOCKED':
-            raise ValueError('P02 unresolved gate must stay explicit')
+        if manifest['phase'] != 'P02' or manifest['result'] not in {'DONE', 'BLOCKED'}:
+            raise ValueError('Invalid P02 gate result')
         for name in ('FEASIBILITY_REPORT', 'OPERATION_MAP', 'ENGINE_MATRIX'):
             if not (root / f'docs/{name}.md').is_file():
                 raise ValueError(f'Missing P02 output: {name}')
@@ -86,6 +86,36 @@ def validate(root: Path) -> None:
                 raise ValueError('Evidence needs exact tested commit')
             if run['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{run['id']}":
                 raise ValueError('Invalid evidence run provenance')
+        if manifest['result'] == 'DONE':
+            current = [run for run in manifest['runs'] if run.get('role') == 'current']
+            if len(current) != 1 or current[0]['job_collection_conclusion'] != 'success':
+                raise ValueError('P02 DONE requires one successful current evidence run')
+            targets = current[0]['targets']
+            if {target['runner'] for target in targets} != {'windows-2025', 'windows-11-arm'} or len(targets) != 2:
+                raise ValueError('P02 DONE requires both owner-selected Windows laboratories')
+            required = {'T01', 'T05', 'T08', 'T09', 'T12', 'T33', 'T35', 'T36', 'T55', 'T57', 'T58', 'T60', 'T62'}
+            for target in targets:
+                folder = manifest_path.parent / target['evidence_directory']
+                for name in ('phase-result.json', 'feasibility-cases.json', 'standard-user-result.json'):
+                    if (folder / name).relative_to(manifest_path.parent).as_posix() not in seen:
+                        raise ValueError('Current P02 result must be checksum-bound')
+                phase = json.loads((folder / 'phase-result.json').read_text(encoding='utf-8-sig'))
+                cases = json.loads((folder / 'feasibility-cases.json').read_text(encoding='utf-8-sig'))
+                worker = json.loads((folder / 'standard-user-result.json').read_text(encoding='utf-8-sig'))['worker']
+                if phase['result'] != 'DONE' or phase['gate_blockers'] or any(case['status'] not in {'PASSED', 'NOT_APPLICABLE'} for case in cases):
+                    raise ValueError('P02 DONE contradicts current Windows outcomes')
+                if not required.issubset({case['id'] for case in cases if case['status'] == 'PASSED'}):
+                    raise ValueError('P02 DONE requires every representative scenario')
+                for status, key in (('PASSED', 'passed'), ('FAILED', 'failed'), ('BLOCKED', 'blocked'), ('NOT_APPLICABLE', 'not_applicable'), ('NOT_RUN', 'not_run')):
+                    if sum(case['status'] == status for case in cases) != phase[f'{key}_smoke_cases']:
+                        raise ValueError('P02 outcome counts contradict raw cases')
+                if worker['status'] != 'PASSED' or not worker['standard_user'] or worker['elevated_helper'] or not worker['sessions']['same_owner_verified'] or worker['sessions']['simultaneous_session_count'] < 2:
+                    raise ValueError('P02 DONE requires real standard-user multi-session evidence')
+            for entry in manifest['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe tested source path')
+                verify_file(path, entry['sha256'], entry['size'])
 
 
 if __name__ == '__main__':

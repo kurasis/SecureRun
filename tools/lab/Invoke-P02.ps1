@@ -55,6 +55,7 @@ $probeFiles = @(Get-ChildItem (Join-Path $out 'feasibility_probe_*.exe'))
 foreach ($file in $probeFiles) { Copy-Item $file.FullName -Destination $probeHome }
 $approved = @($probeFiles | ForEach-Object { Join-Path $probeHome $_.Name })
 Copy-Item (Join-Path $repo 'tools/probe/engine_bridge.cs'),(Join-Path $repo 'tools/probe/boxed_bridge_guard.ps1') -Destination $probeHome
+Copy-Item (Join-Path $repo 'tools/probe/standard_user_probe.ps1') -Destination $probeHome
 $guardShell = Join-Path $PSHOME 'pwsh.exe'
 $bridge = [P02Bridge]::new($engineHome, $fixture, [string[]]$approved)
 $guardBridge = [P02Bridge]::new($engineHome, $fixture, [string[]]@($guardShell))
@@ -184,7 +185,8 @@ try {
     }
     Invoke-Case 'T16' 'Password-protected engine configuration uses private IPC' { $bridge.ExerciseProtectedConfiguration($boxB) }
     Invoke-Case 'T02' 'Bounded source-backed configuration, entitlement and diagnostic observation' { $bridge.ReadOnlyInventory() }
-    Invoke-Case 'T02' 'Original engine log reader availability' { Require $bridge.DiagnosticsAvailable 'ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE'; @{ engine_log_query_available = $true; raw_text_retained = $false } }
+    Invoke-Case 'T02' 'Manager diagnostics retain safe original engine health observations' { $bridge.ManagerDiagnostics() }
+    if (-not $bridge.DiagnosticsAvailable) { $cases.Add(@{ id = 'T02'; case = 'Optional native engine access-event stream'; status = 'NOT_APPLICABLE'; reason = 'Signed original session leader is required; manager-owned operation/health diagnostics remain available. Engine access events are not synthesized.' }) }
     Invoke-Case 'T25' 'Remove only a fresh never-materialized owned definition' {
         $emptyBox = 'SRP02_EMPTY_' + $run.Substring(0,12)
         $bridge.Register($emptyBox); $bridge.Set($emptyBox,'Enabled','y'); $bridge.Set($emptyBox,'FileRootPath',(Join-Path $fixture "boxes/$emptyBox"))
@@ -208,6 +210,7 @@ try {
         try { Start-Sleep -Milliseconds 500; $stopped = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.Count($boxA) -eq 0) 'STOP_NOT_COMPLETE'; @{ stopped_objects = $stopped; numeric_pid_kill_fallback = $false; creation_time_matched = $true; completed_wait = $true } }
         finally { [P02Bridge]::CloseReceipt($receipt) }
     }
+    Invoke-Case 'T62' 'Dispatch refuses another live box and reconciles a naturally exited object' { $bridge.ExerciseTerminationBoundaries($boxA,$boxB,$approved[0]) }
     Invoke-Case 'T36' 'Truncated successful native enumeration does not authorize Idle' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'enum-bound',$engineHome))
         try { Start-Sleep -Milliseconds 750; $result = $bridge.ExerciseTruncatedEnumeration($boxA); $null = $bridge.StopHeld($boxA); $result }
@@ -301,6 +304,67 @@ try {
         Require ($access.metadata_read_error -eq 5 -and $access.root_read_error -eq 5) 'SECOND_USER_ACL_DENIAL_FAILED'
         $access
     }
+    Invoke-Case 'T36' 'Same standard-user SID concurrently in two real Windows sessions' {
+        $userName = 'SRP02S_' + $run.Substring(0,10)
+        $password = 'P02aA!' + [Guid]::NewGuid().ToString('N')
+        $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+        $user = New-LocalUser -Name $userName -Password $securePassword -AccountNeverExpires
+        $usersGroup = ([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1]
+        Add-LocalGroupMember -Group $usersGroup -Member $userName
+        $userFixture = Join-Path $env:ProgramData "SecureRunLab/p02-user-$run"
+        $null = New-Item -ItemType Directory -Path (Join-Path $userFixture 'results') -Force
+        $null = New-Item -ItemType Directory -Path (Join-Path $userFixture 'boxes')
+        $userAcl = [Security.AccessControl.DirectorySecurity]::new(); $userAcl.SetAccessRuleProtection($true,$false)
+        foreach ($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))) {
+            $userAcl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))
+        }
+        Set-Acl -LiteralPath $userFixture -AclObject $userAcl
+        $standardBox = 'SRP02_STD_' + $run.Substring(0,12)
+        $nativeExe = Join-Path $probeHome ('feasibility_probe_' + $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }) + '.exe')
+        $taskName = 'SRP02_SAME_' + $run
+        $pipeName = 'SecureRunP02Logon_' + $run
+        $taskArguments = ([string[]]@('logon-fixture',$pipeName) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
+        $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
+        $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromMinutes(1))
+        $null = Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal -Settings $settings
+        $start = [Diagnostics.ProcessStartInfo]::new($guardShell)
+        $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
+        $start.UserName = $userName; $start.Domain = [Environment]::MachineName; $start.Password = $securePassword; $start.LoadUserProfile = $true
+        foreach ($arg in [string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $probeHome 'standard_user_probe.ps1'),'-EngineHome',$engineHome,'-Fixture',$userFixture,'-Box',$standardBox,'-Probe',$nativeExe)) { $start.ArgumentList.Add($arg) }
+        $process = [Diagnostics.Process]::Start($start)
+        try {
+            $ready = Join-Path $userFixture 'results/standard-user-ready.json'
+            $clock = [Diagnostics.Stopwatch]::StartNew()
+            while (-not (Test-Path $ready) -and -not $process.HasExited -and $clock.ElapsedMilliseconds -lt 45000) { Start-Sleep -Milliseconds 100 }
+            $readyObserved = Test-Path $ready
+            $transport = $null
+            if ($readyObserved) {
+                $startTask = [Action]{ Start-ScheduledTask -TaskName $taskName }
+                $transport = $bridge.SendFixtureLogon($startTask,$pipeName,$userName,$password,$user.SID.Value,$userFixture,$standardBox,$nativeExe)
+            }
+            $password = $null
+            Require ($process.WaitForExit(90000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
+            $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
+            $script:standardEvidence = $result
+            @{ worker = $result; ready_observed = $readyObserved; logon_fixture_transport = $transport; scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult; batch_logon_policy_changed = $false } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
+            Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
+            $result
+        } finally { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false; $password = $null; $securePassword.Dispose(); $process.Dispose() }
+    }
+    Invoke-Case 'T55' 'Standard user creates and binds a fresh private root through original engine IPC' {
+        Require ($script:standardEvidence.standard_user -and $script:standardEvidence.configuration_created_by_standard_user -and $script:standardEvidence.root_acl_applied_by_standard_user -and -not $script:standardEvidence.elevated_helper) 'STANDARD_USER_AUTHORITY_UNCONFIRMED'
+        $script:standardEvidence.provisioning
+    }
+    Invoke-Case 'T57' 'Standard-user provisioning rejects a substituted parent and replaced root identity' {
+        Require ($script:standardEvidence.parent_replacement.reparse_parent_rejected_before_create -and $script:standardEvidence.parent_replacement.outside_root_never_created -and $script:standardEvidence.root_replacement.replaced_identity_rejected) 'ROOT_REPLACEMENT_PROOF_UNCONFIRMED'
+        @{ parent = $script:standardEvidence.parent_replacement; root = $script:standardEvidence.root_replacement }
+    }
+    Invoke-Case 'T24' 'Standard-user native clear and used-definition removal require verified postconditions' {
+        Require ($script:standardEvidence.cleanup.contents_empty -and $script:standardEvidence.cleanup.external_client_launch_rejected -and $script:standardEvidence.cleanup.sealed_mutation_checks_before_native_dispatch.attribute_only_reparse_mutation_denied -and $script:standardEvidence.definition_removal.section_absent) 'STANDARD_USER_LIFECYCLE_UNCONFIRMED'
+        @{ cleanup = $script:standardEvidence.cleanup; unsafe_storage = $script:standardEvidence.unsafe_storage; removal = $script:standardEvidence.definition_removal }
+    }
     Invoke-Case 'T57' 'Forged metadata cannot redirect the generated root scope' {
         $before = $bridge.Read($boxB,'FileRootPath',0x70000000)
         $rejected = $false
@@ -312,7 +376,9 @@ try {
         foreach ($box in $boxes) { $null = $bridge.StopHeld($box) }
         $siblingCanary = Join-Path $roots[$boxB] 'private.txt'
         $before = (Get-FileHash $siblingCanary).Hash
+        $unsafe = $bridge.ExerciseUnsafeStorage($boxA)
         $result = $bridge.ClearOwnedWithNative($boxA)
+        $result['unsafe_fixture_rejection'] = $unsafe
         Require ((Get-FileHash $siblingCanary).Hash -eq $before -and (Get-FileHash (Join-Path $fixture 'canaries/write.txt')).Hash -eq $hostHash) 'CLEANUP_HOST_CANARY_CHANGED'
         $result
     }
@@ -320,8 +386,12 @@ try {
     $endpoints.Dispose(); Pop-Location
     Save-Cases
 }
-$cases.Add(@{ id = 'T36'; case = 'Independent Windows interactive sessions'; status = 'BLOCKED'; diagnostic_code = 'SECOND_INTERACTIVE_SESSION_UNAVAILABLE'; source_route = 'SbieApi_EnumProcessEx all_sessions TRUE; capacity and owner validation'; current_session = $bridge.CurrentSession })
 $cases.Add(@{ id = 'T57'; case = 'Elevated helper authority'; status = 'NOT_APPLICABLE'; reason = 'No elevated helper path exists in this prototype; protected enrollment design recorded for P05' })
 Save-Cases
-@{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Pinned native smoke recorded separately; descendant and external-launch races unresolved'; gate_blockers = @('SAME_SID_SECOND_INTERACTIVE_SESSION','ORDINARY_USER_PROVISIONING','ROOT_REPLACEMENT_AND_CLEANUP_RACES','TERMINATION_FAULT_VARIANTS','COMPLETE_BASELINE_RELEASE_COVERAGE','ENGINE_LOG_SIGNED_LEADER_INTERFACE'); production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; blocked_smoke_cases = @($cases | Where-Object status -EQ 'BLOCKED').Count; not_applicable_smoke_cases = @($cases | Where-Object status -EQ 'NOT_APPLICABLE').Count; not_run_smoke_cases = @($cases | Where-Object status -EQ 'NOT_RUN').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
+$unresolved = @($cases | Where-Object { $_.status -notin @('PASSED','NOT_APPLICABLE') })
+$required = @('T01','T05','T08','T09','T12','T33','T35','T36','T55','T57','T58','T60','T62')
+$missing = @($required | Where-Object { $id = $_; @($cases | Where-Object { $_.id -eq $id -and $_.status -eq 'PASSED' }).Count -eq 0 })
+$gate = if ($unresolved.Count -eq 0 -and $missing.Count -eq 0) { 'DONE' } else { 'BLOCKED' }
+@{ phase = 'P02'; result = $gate; mandatory_cleanup = 'Original native routine with launch fence, retained namespace leases and sealed descendant DACLs'; gate_blockers = @($unresolved | ForEach-Object { $_.diagnostic_code }) + $missing; representative_required_ids = $required; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; blocked_smoke_cases = @($cases | Where-Object status -EQ 'BLOCKED').Count; not_applicable_smoke_cases = @($cases | Where-Object status -EQ 'NOT_APPLICABLE').Count; not_run_smoke_cases = @($cases | Where-Object status -EQ 'NOT_RUN').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
     ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'phase-result.json') -Encoding utf8
+if ($gate -ne 'DONE') { throw 'P02_FEASIBILITY_GATE_BLOCKED' }

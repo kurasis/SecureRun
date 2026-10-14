@@ -10,8 +10,9 @@
 #include <string.h>
 #pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib,"advapi32.lib")
-typedef LONG (*query_fn)(HANDLE,ULONG,WCHAR*,WCHAR*,WCHAR*,ULONG*,ULONG64*);
-typedef ULONG (*map_fn)(HANDLE,WCHAR*,BOOLEAN*);
+/* The pinned Win32 build uses /Gz; its .def exports the legacy undecorated aliases. */
+typedef LONG (WINAPI *query_fn)(HANDLE,WCHAR*,WCHAR*,WCHAR*,ULONG*);
+typedef ULONG (WINAPI *map_fn)(HANDLE,WCHAR*,BOOLEAN*);
 
 static BOOL path(WCHAR *out,const WCHAR *base,const WCHAR *suffix) {
     return swprintf_s(out,1024,L"%s\\%s",base,suffix)>=0;
@@ -67,7 +68,7 @@ static BOOL write_report(const WCHAR *base,const WCHAR *tag,const char *data) {
     {BOOL ok=WriteFile(file,data,(DWORD)strlen(data),&written,NULL) && written==strlen(data);FlushFileBuffers(file);CloseHandle(file);return ok;}
 }
 int wmain(int argc,WCHAR **argv) {
-    HMODULE module;query_fn query;map_fn mapping;WCHAR box[40]={0},file[1024],mapped[4096]={0};ULONG session=0;ULONG64 created=0;LONG context;
+    HMODULE module;query_fn query;map_fn mapping;WCHAR box[40]={0},file[1024],mapped[4096]={0};ULONG session=0;LONG context;
     int ports[4]={0},net[4]={0};BOOL host,child;WSADATA wsa;
     if(argc<2)return 64;
     if(wcscmp(argv[1],L"forbidden-host-marker")==0){
@@ -84,12 +85,21 @@ int wmain(int argc,WCHAR **argv) {
     host=wcscmp(argv[1],L"host")==0;child=wcscmp(argv[1],L"child")==0;
     if(argc<6 || !valid_base(argv[2]))return 64;
     module=GetModuleHandleW(L"SbieDll.dll");
-    if(!module && host){WCHAR dll[1024];if(swprintf_s(dll,1024,L"%s\\SbieDll.dll",argv[5])<0)return 64;module=LoadLibraryExW(dll,NULL,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);}
+    if(!module && host){
+        WCHAR dll[1024];const WCHAR *subdir=L"";
+#if defined(_M_IX86)
+        subdir=L"\\32";
+#elif defined(_M_X64)
+        {USHORT processMachine=0,nativeMachine=0;if(!IsWow64Process2(GetCurrentProcess(),&processMachine,&nativeMachine))return 41;if(nativeMachine==IMAGE_FILE_MACHINE_ARM64)subdir=L"\\64";}
+#endif
+        if(swprintf_s(dll,1024,L"%s%s\\SbieDll.dll",argv[5],subdir)<0)return 64;
+        module=LoadLibraryExW(dll,NULL,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);
+    }
     if(!module)return 41;
-    query=(query_fn)(void*)GetProcAddress(module,"SbieApi_QueryProcessEx2");
+    query=(query_fn)(void*)GetProcAddress(module,"SbieApi_QueryProcess");
     mapping=(map_fn)(void*)GetProcAddress(module,"SbieDll_GetHandlePath");
     if(!query || !mapping)return 41;
-    context=query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),0,box,NULL,NULL,&session,&created);
+    context=query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),box,NULL,NULL,&session);
     if(wcscmp(argv[1],L"guard")==0)return context==0 ? 43 : 44; /* boxed control plane refuses all mutation */
     if(host){if((ULONG)context!=0xc000000bUL)return 42;}
     else if(context!=0 || wcscmp(box,argv[3])!=0)return 42; /* check before canary operations */
@@ -120,7 +130,8 @@ int wmain(int argc,WCHAR **argv) {
             writeOk=WriteFile(handle,change,(DWORD)strlen(change),&wrote,NULL);
             SetEndOfFile(handle);SetFilePointer(handle,0,NULL,FILE_BEGIN);
             if(ReadFile(handle,content,31,&wrote,NULL))changed=strncmp(content,change,strlen(change))==0;
-            mapStatus=mapping(handle,mapped,&isBoxed);CloseHandle(handle);
+            if(!host)mapStatus=mapping(handle,mapped,&isBoxed);
+            CloseHandle(handle);
         }
         path(file,argv[2],L"blocked\\secret.txt");blocked=read_error(file);
         path(file,argv[2],L"metadata\\manager.txt");metadata=read_error(file);

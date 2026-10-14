@@ -17,7 +17,7 @@ function Invoke-Case([string]$id, [string]$name, [scriptblock]$body) {
     catch {
         $result.status = 'FAILED'
         $message = $_.Exception.Message
-        $result.diagnostic_code = if ($message -match '\b([A-Z][A-Z0-9_]{3,80})\b') { $Matches[1] } else { 'SPIKE_OPERATION_FAILED' }
+        $result.diagnostic_code = if ($message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b') { $Matches[1] } else { 'SPIKE_OPERATION_FAILED' }
         if ($result.diagnostic_code -match 'POSITIVE_CONTROL_UNAVAILABLE|UNAVAILABLE|UNRESOLVED|OUTCOME_UNKNOWN|INCOMPLETE') { $result.status = 'BLOCKED' }
     }
     Save-Cases
@@ -125,13 +125,15 @@ try {
             $start = [Diagnostics.ProcessStartInfo]::new($exe); $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
             foreach ($arg in (Probe-Args 'host' 'UNBOXED' $label)) { $start.ArgumentList.Add($arg) }
             $process = [Diagnostics.Process]::Start($start)
-            Require ($process.WaitForExit(20000) -and $process.ExitCode -eq 0) 'HOST_CONTROL_FAILED'
+            Require ($process.WaitForExit(20000)) 'HOST_CONTROL_OUTCOME_UNKNOWN'
+            Require ($process.ExitCode -eq 0) "HOST_CONTROL_EXIT_$($process.ExitCode)"
             $report = Get-Content (Join-Path $fixture "results/$label.json") -Raw | ConvertFrom-Json
             Require ((Net-All $report) -and $report.blocked_read_error -eq 0 -and $report.metadata_read_error -eq 0 -and $report.sibling_read_error -eq 0) 'POSITIVE_CONTROL_UNAVAILABLE'
             $reports[$label] = $report
-            'P02_HOST_CANARY' | Set-Content (Join-Path $fixture 'canaries/write.txt') -NoNewline
             $report
         }
+        # Restore the intentionally modified host positive-control canary even if that probe failed.
+        'P02_HOST_CANARY' | Set-Content (Join-Path $fixture 'canaries/write.txt') -NoNewline
         foreach ($mode in @('online','offline')) {
             $box = if ($mode -eq 'online') { $boxOnline } else { $boxA }
             $label = "$arch-$mode"
@@ -145,6 +147,7 @@ try {
                 $child = Read-Report $roots[$box] "$label-child1"
                 $grandchild = Read-Report $roots[$box] "$label-child0"
                 Require ($report.member -and $child.member -and $grandchild.member -and $report.child_spawned -and $child.spawned) 'MEMBERSHIP_UNCONFIRMED'
+                Require ($report.bits -eq $(if ($arch -eq 'x86') { 32 } else { 64 })) 'PROBE_ARCHITECTURE_MISMATCH'
                 $reports[$label] = $report
                 @{ parent = $report; child = $child; grandchild = $grandchild }
             }
@@ -180,6 +183,11 @@ try {
         try { Start-Sleep -Milliseconds 500; $stopped = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.Count($boxA) -eq 0) 'STOP_NOT_COMPLETE'; @{ stopped_objects = $stopped; numeric_pid_kill_fallback = $false; creation_time_matched = $true; completed_wait = $true } }
         finally { [P02Bridge]::CloseReceipt($receipt) }
     }
+    Invoke-Case 'T36' 'Truncated successful native enumeration does not authorize Idle' {
+        $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'enum-bound',$engineHome))
+        try { Start-Sleep -Milliseconds 750; $result = $bridge.ExerciseTruncatedEnumeration($boxA); $null = $bridge.StopHeld($boxA); $result }
+        finally { [P02Bridge]::CloseReceipt($receipt) }
+    }
     Invoke-Case 'T58' 'Boxed native control plane refuses operations' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('guard',$fixture,$boxA,'guard',$engineHome))
         try { Require ([P02Bridge]::Completed($receipt,10000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'BOXED_CONTEXT_NOT_REJECTED'; @{ boxed_context_detected = $true; control_operations_refused = $true; self_escape_attempted = $false } }
@@ -207,7 +215,16 @@ try {
             $futureReport = Read-Report $roots[$boxA] 'future-sibling'
             Require ($futureReport.sibling_read_error -eq 5) 'FUTURE_SIBLING_READ_DENIAL_FAILED'
             $null = $bridge.StopHeld($boxA)
-            @{ running_creation_deferred = $true; private_data_absent_until_stopped_and_policy_applied = $true; newly_materialized_sibling_denied = $true; namespace_wide_parent_deny_assumed = $false }
+            $alias = Join-Path $fixture 'future-sibling-alias'
+            $null = New-Item -ItemType Junction -Path $alias -Target $roots[$futureBox]
+            [IO.File]::WriteAllText((Join-Path $fixture 'sibling-probe.txt'),(Join-Path $alias 'private.txt'),[Text.UnicodeEncoding]::new($false,$false))
+            $aliasReceipt = $bridge.Launch($boxA,$approved[0],(Probe-Args 'exercise' $boxA 'future-sibling-alias'))
+            try { Require ([P02Bridge]::Completed($aliasReceipt,30000) -and [P02Bridge]::ExitCode($aliasReceipt) -eq 0) 'ALIAS_PROBE_FAILED' }
+            finally { [P02Bridge]::CloseReceipt($aliasReceipt) }
+            $aliasReport = Read-Report $roots[$boxA] 'future-sibling-alias'
+            Require ($aliasReport.sibling_read_error -eq 5) 'FUTURE_SIBLING_ALIAS_DENIAL_FAILED'
+            $null = $bridge.StopHeld($boxA)
+            @{ running_creation_deferred = $true; private_data_absent_until_stopped_and_policy_applied = $true; newly_materialized_sibling_denied = $true; junction_alias_denied = $true; namespace_wide_parent_deny_assumed = $false }
         }
         finally { [P02Bridge]::CloseReceipt($receipt) }
     }
@@ -245,7 +262,6 @@ try {
 }
 $cases.Add(@{ id = 'T36'; case = 'Independent Windows interactive sessions'; status = 'BLOCKED'; diagnostic_code = 'SECOND_INTERACTIVE_SESSION_UNAVAILABLE'; source_route = 'SbieApi_EnumProcessEx all_sessions TRUE; capacity and owner validation'; current_session = $bridge.CurrentSession })
 $cases.Add(@{ id = 'T57'; case = 'Elevated helper authority'; status = 'NOT_APPLICABLE'; reason = 'No elevated helper path exists in this prototype; protected enrollment design recorded for P05' })
-$cases.Add(@{ id = 'T60'; case = 'Root alias variants'; status = 'NOT_RUN'; diagnostic_code = 'ALIAS_VARIANTS_PENDING' })
 Save-Cases
 @{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Pinned QSbieAPI native alternative under test; Start.exe broad phase2 not dispatched'; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
     ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'phase-result.json') -Encoding utf8

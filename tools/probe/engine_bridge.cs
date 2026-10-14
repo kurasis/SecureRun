@@ -40,12 +40,12 @@ public sealed class P02Bridge {
     [DllImport("advapi32", CharSet=CharSet.Unicode, SetLastError=true)] static extern bool LogonUser(string user,string domain,string password,int kind,int provider,out SafeAccessTokenHandle token);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int Version(StringBuilder output, out uint abi);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryProcess(IntPtr pid, uint imageChars, StringBuilder box, StringBuilder image, StringBuilder sid, out uint session, out long created);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int EnumProcess(string box, [MarshalAs(UnmanagedType.U1)] bool allSessions, uint session, [Out] uint[] pids, ref uint count);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int EnumProcess(StringBuilder box, [MarshalAs(UnmanagedType.U1)] bool allSessions, uint session, [Out] uint[] pids, ref uint count);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryConf(string section, string key, uint index, StringBuilder value, uint bytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate uint UpdateConf(char operation, string password, string section, string key, string value);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int Reload(uint session, uint flags);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int DriverInfo(uint kind, out uint flags, uint bytes);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryRoot(string box, StringBuilder file, IntPtr key, IntPtr ipc, ref uint fileBytes, IntPtr keyBytes, IntPtr ipcBytes);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryRoot(StringBuilder box, StringBuilder file, IntPtr key, IntPtr ipc, ref uint fileBytes, IntPtr keyBytes, IntPtr ipcBytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] [return: MarshalAs(UnmanagedType.U1)] delegate bool Translate(StringBuilder path);
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct Startup {
         public uint size; public IntPtr reserved, desktop, title;
@@ -224,20 +224,30 @@ public sealed class P02Bridge {
         if(update('s',null,"GlobalSettings","NetworkEnableWFP","y")!=0) throw new InvalidOperationException("LAB_WFP_UPDATE_FAILED");
         if(reload(CurrentSession,1)!=0 || (Flags()&1)==0) throw new InvalidOperationException("LAB_WFP_UNKNOWN");
     }
-    public uint Count(string box) { ScopeRead(box); uint count=0;if(enumerate(box,true,UInt32.MaxValue,null,ref count)!=0) throw new InvalidOperationException("ENUMERATION_UNKNOWN");return count; }
+    static StringBuilder BoxBuffer(string box){if(box.Length>38)throw new InvalidOperationException("BOX_NAME_BOUND");return new StringBuilder(box,40);}
+    public uint Count(string box) { ScopeRead(box); uint count=0;if(enumerate(BoxBuffer(box),true,UInt32.MaxValue,null,ref count)!=0) throw new InvalidOperationException("ENUMERATION_UNKNOWN");return count; }
     void ScopeRead(string box) { RequireUnboxed(); if(!owned.Contains(box))throw new InvalidOperationException("UNOWNED_BOX"); }
     public uint[] Pids(string box) {
         ScopeRead(box);uint total=Count(box);
         if(total>1024)throw new InvalidOperationException("ENUMERATION_BOUND");
         uint[] pids=new uint[1024];uint count=1024;
-        if(enumerate(box,true,UInt32.MaxValue,pids,ref count)!=0 || count>=1024 || Count(box)>count)throw new InvalidOperationException("ENUMERATION_INCOMPLETE");
+        if(enumerate(BoxBuffer(box),true,UInt32.MaxValue,pids,ref count)!=0 || count>=1024 || Count(box)>count)throw new InvalidOperationException("ENUMERATION_INCOMPLETE");
         Array.Resize(ref pids,(int)count);return pids;
+    }
+    public Dictionary<string,object> ExerciseTruncatedEnumeration(string box) {
+        ScopeRead(box);uint before=Count(box);uint[] pids=new uint[1];uint count=1;
+        if(before<2)throw new InvalidOperationException("ENUMERATION_POSITIVE_CONTROL_UNAVAILABLE");
+        int status=enumerate(BoxBuffer(box),true,UInt32.MaxValue,pids,ref count);
+        if(status!=0)throw new InvalidOperationException("ENUMERATION_UNKNOWN");
+        uint after=Count(box);
+        if(after<=count)throw new InvalidOperationException("ENUMERATION_POSITIVE_CONTROL_UNAVAILABLE");
+        return new Dictionary<string,object>{{"upstream_status",status},{"requested_capacity",1},{"returned_count",count},{"authoritative_count_before",before},{"authoritative_count_after",after},{"partial_snapshot_rejected",true},{"idle_or_cleanup_authorized",false}};
     }
     public string Root(string box) {
         ScopeRead(box);uint bytes=0;
-        if(root(box,null,IntPtr.Zero,IntPtr.Zero,ref bytes,IntPtr.Zero,IntPtr.Zero)!=0 || bytes==0 || bytes>8192)throw new InvalidOperationException("ROOT_QUERY_FAILED");
+        if(root(BoxBuffer(box),null,IntPtr.Zero,IntPtr.Zero,ref bytes,IntPtr.Zero,IntPtr.Zero)!=0 || bytes==0 || bytes>8192)throw new InvalidOperationException("ROOT_QUERY_FAILED");
         var path=new StringBuilder(4096);uint capacity=8192;
-        if(root(box,path,IntPtr.Zero,IntPtr.Zero,ref capacity,IntPtr.Zero,IntPtr.Zero)!=0 || !translate(path)) throw new InvalidOperationException("ROOT_TRANSLATION_FAILED");
+        if(root(BoxBuffer(box),path,IntPtr.Zero,IntPtr.Zero,ref capacity,IntPtr.Zero,IntPtr.Zero)!=0 || !translate(path)) throw new InvalidOperationException("ROOT_TRANSLATION_FAILED");
         string resolved=Path.GetFullPath(path.ToString());
         string expected=Path.Combine(Base,"boxes",box);
         if(!String.Equals(resolved.TrimEnd('\\'),expected,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("ROOT_IDENTITY_UNEXPECTED");

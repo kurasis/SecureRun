@@ -313,7 +313,7 @@ try {
     Case 'T35' 'production_provisioning_as_actual_standard_user' {
         $account=New-Standard 'owner';$script:standardAccount=$account
         $p=Start-Standard $account 'p05_standard.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine)
-        try{Require ($p.WaitForExit(180000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'STANDARD_PROVISIONING_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+        try{Require ($p.WaitForExit(180000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');Get-ChildItem (Join-Path $account.fixture 'results') -Filter 'standard-*.json'|Where-Object Length -LE 8192|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)};$code=if($worker.PSObject.Properties['code']){$worker.code}else{'STANDARD_PROVISIONING_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
     Case 'T35' 'second_standard_user_cannot_read_root_or_metadata' {
         Require ($null -ne $standardAccount) 'STANDARD_OWNER_REQUIRED';$request=Get-Content (Join-Path $standardAccount.fixture 'results/acl-request.json') -Raw|ConvertFrom-Json

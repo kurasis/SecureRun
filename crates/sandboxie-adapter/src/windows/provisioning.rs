@@ -1455,6 +1455,7 @@ fn spawn_canary_child(canary: &Canary) -> R<ChildNetwork> {
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW)
         .spawn()
         .map_err(|_| "CANARY_CHILD_DISPATCH_FAILED")?;
     let clock = Instant::now();
@@ -1921,6 +1922,8 @@ impl NativeEngine {
                         let allowed_name = [
                             "SandboxieRpcSs.exe",
                             "SandboxieDcomLaunch.exe",
+                            "SandboxieCrypto.exe",
+                            "SandboxieBITS.exe",
                             "SbieSvc.exe",
                             "WerFault.exe",
                             "conhost.exe",

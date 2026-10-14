@@ -20,5 +20,9 @@ try {
     @{root_canary=$canary;metadata_canary=$metadata}|ConvertTo-Json|Set-Content (Join-Path $Fixture 'results/acl-request.json') -Encoding utf8
     $result.owner_from_os=$true;$result.original_user_profile_preserved=$true;$result.root_identity_bound=$true;$result.verified_without_uac=$true;$result.context='UNBOXED';$result.production_target_launches=0;$result.status='PASSED'
 }catch{$result.status='FAILED';$result.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'STANDARD_PROVISIONING_FAILED'}}
+finally{
+    $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','dns-status-','raw-status-','scope-status-','identity-status-','image-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|Where-Object Length -LE 8192|ForEach-Object {Copy-Item $_.FullName (Join-Path $Fixture ('results/standard-'+$_.Name))}}}
+}
 $result|ConvertTo-Json -Depth 8|Set-Content (Join-Path $Fixture 'results/standard-user.json') -Encoding utf8
 if($result.status -ne 'PASSED'){exit 1}

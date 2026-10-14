@@ -204,3 +204,19 @@ tools/lab/retain_p03_evidence.py after verifying the completed run. The phase
 validator checks checksums, runtime source hashes, both native targets and real
 command outcomes. Sandbox containment and complete product acceptance remain
 separate from these foundation results.
+
+## P04 production observation harness
+
+The P04 workflow runs Invoke-P04.ps1 on windows-2025 and windows-11-arm. It builds
+the normal application without the foundation test feature, verifies missing-engine
+behavior before installation, then uses Initialize-P02.ps1 to install the authenticated
+original native engine. Fixed P02 fixture producers supply synthetic boxes/processes;
+all observations are through the production Rust adapter and normal manager image.
+
+The harness uses original KmdUtil only for the disposable unavailable-driver case
+and restores the installed service/driver. Boxed diagnostics/normal startup, native/x86
+identities and real standard-user same-SID sessions are required. It captures source
+provenance before clearing the host environment, never logs credentials and publishes
+only reviewed structured counts/statuses. Private raw engine observations and binaries
+are excluded. The whole Actions VM is discarded. Retain exact successful source with
+tools/lab/retain_p04_evidence.py and run the repository validator afterward.

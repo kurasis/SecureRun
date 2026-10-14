@@ -26,5 +26,7 @@ npm ci --ignore-scripts
 npm run build
 npm test
 cargo test --locked -p securerun-foundation
+cargo test --locked -p securerun-sandboxie-adapter
 cargo clippy --locked -p securerun-foundation --all-targets -- -D warnings
+cargo clippy --locked -p securerun-sandboxie-adapter --all-targets -- -D warnings
 python tools/lab/validate_repository.py

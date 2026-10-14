@@ -114,3 +114,19 @@ engine target, host shell primitive, import/export or sandbox cleanup is execute
 These close P03's component gate and do not pass the complete production scenarios.
 All 66 acceptance entries remain NOT_STARTED. Seven Python tooling tests, portable
 Rust/UI checks, strict core Clippy, formatting and dependency-lock validation pass.
+
+## P04 production read-only gate
+
+Source 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb,
+[run 38586140093](https://github.com/kurasis/SecureRun/actions/runs/38586140093).
+Windows Server x64 and Windows 11 ARM64 each pass 12 adapter tests and 19 native
+trust/context/observation scenarios, with zero product mutations/target launches.
+Standard-user observations cover the same SID in sessions 0/2; native and genuine
+x86 fixture identities are observed. Boxed normal startup exits 78 before metadata.
+
+The same runtime source passes all P03 regression in
+[run 38586144696](https://github.com/kurasis/SecureRun/actions/runs/38586144696).
+[P04 scope/limitations](phases/P04_REPORT.md) and
+[checksum-bound evidence](evidence/p04/manifest.json) separate read-only observation
+proof from physical VM suspend stress, production dispatch and final T01–T66
+acceptance. All 66 acceptance entries remain NOT_STARTED.

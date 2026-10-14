@@ -3068,6 +3068,7 @@ version = "0.3.0"
 dependencies = [
  "rfd",
  "securerun-foundation",
+ "securerun-sandboxie-adapter",
  "serde",
  "serde_json",
  "tauri",
@@ -3088,6 +3089,16 @@ dependencies = [
  "sha2",
  "tempfile",
  "uuid",
+]
+
+[[package]]
+name = "securerun-sandboxie-adapter"
+version = "0.3.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

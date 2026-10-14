@@ -1,0 +1,47 @@
+name: P04 trusted engine observation
+on:
+  push:
+    branches: [main, 'p04/**']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P04.ps1', 'tools/probe/p04_*', '.github/workflows/p04.yml']
+  pull_request:
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P04.ps1', 'tools/probe/p04_*', '.github/workflows/p04.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: p04-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-observation:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p04-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            p04-${{ matrix.runner }}-rust190-
+            p03-${{ matrix.runner }}-rust190-
+      - name: Validate production observation and trust paths
+        shell: pwsh
+        run: ./tools/lab/Invoke-P04.ps1
+      - name: Retain reviewed structured evidence
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: p04-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p04/*.json
+          if-no-files-found: error
+          retention-days: 14

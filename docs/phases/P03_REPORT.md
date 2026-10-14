@@ -2,7 +2,7 @@
 
 Status: DONE. Requested scope: full P03. P01/P02 remain DONE with their original
 retained evidence. All 26 specification documents remain byte-for-byte unchanged.
-No P04 implementation is included in this request.
+This historical report describes the original P03 scope; P04 observation is documented separately.
 
 ## Outputs
 
@@ -85,3 +85,13 @@ selected portable checks; native execution stays in Windows Actions.
 Markdown and reviewed JSON evidence. Normal merge follows successful checks under
 the owner's standing authorization. Generated executables and credentials are
 excluded. Next eligible phase: P04, not started by this request.
+
+## Current regression after P04
+
+The P04 application/IPC changes supersede the original runtime hashes. Current
+source 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb passed the full P03 suite in
+[run 38586144696](https://github.com/kurasis/SecureRun/actions/runs/38586144696):
+19 foundation, two normal-configuration, three UI and 21 real command cases on
+both native Windows targets. The current manifest retains those exact sources;
+original proof remains historical. P03 does not claim P04 engine evidence, which
+is retained in the [P04 report](P04_REPORT.md).

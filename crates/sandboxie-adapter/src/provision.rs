@@ -634,6 +634,7 @@ mod tests {
         sections: RefCell<std::collections::HashMap<String, Section>>,
         busy: RefCell<bool>,
         probe_fail: bool,
+        probe_version: RefCell<String>,
         roots: RefCell<Vec<Uuid>>,
     }
     impl Fake {
@@ -642,6 +643,7 @@ mod tests {
                 sections: Default::default(),
                 busy: RefCell::new(false),
                 probe_fail: false,
+                probe_version: RefCell::new("TEST_ONLY_VERSION_ONE".into()),
                 roots: Default::default(),
             }
         }
@@ -658,6 +660,9 @@ mod tests {
         }
         fn engine_identity(&self) -> String {
             "pinned".into()
+        }
+        fn enforcement_identity(&self) -> String {
+            fingerprint(&*self.probe_version.borrow())
         }
         fn global(&self) -> PolicyResult<Section> {
             Ok(Section::from([
@@ -906,6 +911,43 @@ mod tests {
         assert_eq!(e.stage, Stage::Conflict);
         assert!(e.fingerprint.is_none());
         assert!(e.enforcement_evidence.is_none());
+    }
+    #[test]
+    fn changed_verifier_invalidates_cached_proof_without_adopting_or_rewriting() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = store(&t);
+        let f = Fake::new();
+        let e = create(
+            &mut j,
+            &f,
+            "test-owner",
+            "A",
+            Default::default(),
+            Uuid::new_v4(),
+        )
+        .unwrap();
+        validate_owned(&f, &e, std::slice::from_ref(&e)).unwrap();
+        let before = f.section(&e.name(), false).unwrap();
+        *f.probe_version.borrow_mut() = "TEST_ONLY_VERSION_TWO".into();
+        assert_eq!(
+            validate_owned(&f, &e, std::slice::from_ref(&e)).unwrap_err(),
+            "ENFORCEMENT_BINDING_CHANGED"
+        );
+        assert!(
+            apply(
+                &mut j,
+                &f,
+                e.id,
+                1,
+                Default::default(),
+                Uuid::new_v4(),
+                false,
+                None
+            )
+            .is_err()
+        );
+        assert_eq!(before, f.section(&e.name(), false).unwrap());
+        assert_eq!(f.roots.borrow().len(), 1);
     }
     #[test]
     fn mutation_revision_drift_and_view_changes_are_explicit() {

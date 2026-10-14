@@ -429,13 +429,13 @@ fn discover() -> R<Trusted> {
     })
 }
 
-type Version = unsafe extern "C" fn(*mut u16, *mut u32) -> i32;
+type Version = unsafe extern "system" fn(*mut u16, *mut u32) -> i32;
 type Query =
-    unsafe extern "C" fn(HANDLE, u32, *mut u16, *mut u16, *mut u16, *mut u32, *mut u64) -> i32;
-type Info = unsafe extern "C" fn(u32, *mut c_void, u32) -> i32;
-type Conf = unsafe extern "C" fn(*const u16, *const u16, u32, *mut u16, u32) -> i32;
-type Enum = unsafe extern "C" fn(*const u16, u8, u32, *mut u32, *mut u32) -> i32;
-type Roots = unsafe extern "C" fn(
+    unsafe extern "system" fn(HANDLE, u32, *mut u16, *mut u16, *mut u16, *mut u32, *mut u64) -> i32;
+type Info = unsafe extern "system" fn(u32, *mut c_void, u32) -> i32;
+type Conf = unsafe extern "system" fn(*const u16, *const u16, u32, *mut u16, u32) -> i32;
+type Enum = unsafe extern "system" fn(*const u16, u8, u32, *mut u32, *mut u32) -> i32;
+type Roots = unsafe extern "system" fn(
     *const u16,
     *mut u16,
     *mut u16,
@@ -444,7 +444,7 @@ type Roots = unsafe extern "C" fn(
     *mut u32,
     *mut u32,
 ) -> i32;
-type Translate = unsafe extern "C" fn(*mut u16) -> u8;
+type Translate = unsafe extern "system" fn(*mut u16) -> u8;
 struct Api {
     module: HMODULE,
     version: Version,

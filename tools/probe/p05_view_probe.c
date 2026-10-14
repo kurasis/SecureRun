@@ -4,7 +4,7 @@
 #include <wchar.h>
 #include <stdlib.h>
 #include <string.h>
-typedef LONG (__cdecl *query_fn)(HANDLE,ULONG,WCHAR*,WCHAR*,WCHAR*,ULONG*,ULONG64*);
+typedef LONG (WINAPI *query_fn)(HANDLE,ULONG,WCHAR*,WCHAR*,WCHAR*,ULONG*,ULONG64*);
 int wmain(int argc,WCHAR **argv) {
     WCHAR box[40]={0},base[1024],prefix[1024],input[1200],output[1200];
     char content[64]={0},json[256];DWORD count=0;ULONG session=0;BOOL written=FALSE;HANDLE file;HMODULE module;query_fn query;

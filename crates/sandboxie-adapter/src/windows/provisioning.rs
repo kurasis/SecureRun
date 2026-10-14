@@ -10,9 +10,9 @@ use windows_sys::Win32::{
     UI::Shell::*,
 };
 
-type Update = unsafe extern "C" fn(u16, *const u16, *const u16, *const u16, *const u16) -> u32;
-type Reload = unsafe extern "C" fn(u32, u32) -> i32;
-type Run = unsafe extern "C" fn(
+type Update = unsafe extern "system" fn(u16, *const u16, *const u16, *const u16, *const u16) -> u32;
+type Reload = unsafe extern "system" fn(u32, u32) -> i32;
+type Run = unsafe extern "system" fn(
     *const u16,
     *const u16,
     *const u16,
@@ -508,6 +508,7 @@ struct NativeEngine {
     owner: String,
     profile: PathBuf,
     image: PathBuf,
+    manager_hash: String,
     probe: PathBuf,
     probe_hash: String,
     additional_probes: Vec<(PathBuf, String)>,
@@ -559,6 +560,26 @@ impl NativeEngine {
             .join("securerun-policy-probe.exe");
         let mut leases = canonical(image.parent().unwrap())?;
         protected(leases.last().ok_or("MANAGER_IMAGE_UNKNOWN")?)?;
+        let mut manager = lease(&image, false)?;
+        protected(&manager)?;
+        let mut digest = Sha256::new();
+        let mut buffer = [0u8; 65536];
+        let mut size = 0usize;
+        loop {
+            let count = manager
+                .read(&mut buffer)
+                .map_err(|_| "MANAGER_IMAGE_UNKNOWN")?;
+            if count == 0 {
+                break;
+            }
+            size += count;
+            if size > 512 * 1024 * 1024 {
+                return Err("MANAGER_IMAGE_BOUND");
+            }
+            digest.update(&buffer[..count]);
+        }
+        let manager_hash = format!("{:x}", digest.finalize());
+        leases.push(manager);
         let mut file = lease(&probe, false)?;
         protected(&file)?;
         let mut bytes = vec![];
@@ -680,6 +701,7 @@ impl NativeEngine {
             owner,
             profile,
             image,
+            manager_hash,
             probe,
             probe_hash,
             additional_probes,
@@ -949,6 +971,7 @@ impl Engine for NativeEngine {
         fingerprint(&(
             FAMILY,
             &self.trusted.identity,
+            &self.manager_hash,
             &self.probe_hash,
             self.additional_probes
                 .iter()
@@ -1343,20 +1366,20 @@ pub fn run_canary(encoded: &str) -> i32 {
         if module.is_null() {
             return Err("PROBE_NOT_BOXED");
         }
-        let address = unsafe { GetProcAddress(module, c"SbieApi_QueryProcessEx2".as_ptr().cast()) }
+        let address = unsafe { GetProcAddress(module, c"SbieApi_QueryProcess".as_ptr().cast()) }
             .ok_or("PROBE_NOT_BOXED")?;
-        let query: Query = unsafe { std::mem::transmute(address) };
+        type LegacyQuery =
+            unsafe extern "system" fn(HANDLE, *mut u16, *mut u16, *mut u16, *mut u32) -> i32;
+        let query: LegacyQuery = unsafe { std::mem::transmute(address) };
         let mut name = [0u16; 40];
         let mut session = 0;
         if unsafe {
             query(
                 GetCurrentProcessId() as usize as _,
-                0,
                 name.as_mut_ptr(),
                 ptr::null_mut(),
                 ptr::null_mut(),
                 &mut session,
-                ptr::null_mut(),
             )
         } != 0
         {
@@ -1648,7 +1671,10 @@ impl NativeEngine {
         self.mutation_context()?;
         self.validate_root(diagnostic)?;
         let section = self.section(&diagnostic.name(), false)?;
-        if section.get("SecureRunOwner") != Some(&vec![diagnostic.marker()])
+        let mut expected = diagnostic.compiled.section.clone();
+        expected.insert("Enabled".into(), vec!["y".into()]);
+        if section != expected
+            || section.get("SecureRunOwner") != Some(&vec![diagnostic.marker()])
             || section.get("FileRootPath") != Some(&vec![self.root_for(diagnostic.id)])
         {
             return Err("DIAGNOSTIC_SCOPE_CHANGED");
@@ -1683,14 +1709,43 @@ impl NativeEngine {
                 }
                 let created = birth(&held)?;
                 let mut critical = 0;
-                if unsafe { IsProcessCritical(held.0, &mut critical) } == 0
-                    || critical != 0
-                    || created != process.creation_time
-                    || process.owner_sid != self.owner
-                    || process_sid(held.0)? != self.owner
-                {
-                    return Err("DIAGNOSTIC_PROCESS_IDENTITY_CHANGED");
+                if unsafe { IsProcessCritical(held.0, &mut critical) } == 0 || critical != 0 {
+                    return Err("DIAGNOSTIC_CRITICAL_PROCESS_REFUSED");
                 }
+                if created != process.creation_time || process.owner_sid != self.owner {
+                    return Err("DIAGNOSTIC_PROCESS_BIRTH_OR_BOX_OWNER_CHANGED");
+                }
+                let token_owner = process_sid(held.0)?;
+                let _system_helper = if token_owner == "S-1-5-18" {
+                    // Original RunSandboxedGetToken deliberately starts RpcSs
+                    // using the service SYSTEM token, while the driver's box SID
+                    // remains the original user's. Accept only its protected,
+                    // signed installed image in this fresh generated box.
+                    let mut path = [0u16; 32768];
+                    let mut length = path.len() as u32;
+                    if unsafe {
+                        QueryFullProcessImageNameW(held.0, 0, path.as_mut_ptr(), &mut length)
+                    } == 0
+                    {
+                        return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
+                    }
+                    let image = PathBuf::from(text(&path)?);
+                    let expected = self.trusted.home.join("SandboxieRpcSs.exe");
+                    if !image
+                        .to_string_lossy()
+                        .eq_ignore_ascii_case(&expected.to_string_lossy())
+                    {
+                        return Err("DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED");
+                    }
+                    let file = lease(&image, false)?;
+                    protected(&file)?;
+                    signature(&image, &file)?;
+                    Some(file)
+                } else if token_owner == self.owner {
+                    None
+                } else {
+                    return Err("DIAGNOSTIC_PROCESS_TOKEN_OWNER_CHANGED");
+                };
                 let mut name = [0u16; 40];
                 let mut sid = [0u16; 96];
                 let mut session = 0;

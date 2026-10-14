@@ -3,6 +3,7 @@ use super::*;
 use crate::{policy::*, provision::*};
 use std::{io::Write, os::windows::io::FromRawHandle};
 use uuid::Uuid;
+mod aliases;
 mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
@@ -1121,6 +1122,10 @@ struct Canary {
     read_only: String,
     metadata: String,
     sibling: Option<String>,
+    metadata_alias: String,
+    sibling_alias: String,
+    metadata_short: Option<String>,
+    sibling_short: Option<String>,
     output: String,
     registry_leaf: String,
     ports: [u16; 6],
@@ -1140,6 +1145,12 @@ struct CanaryReport {
     read_only_write_denied: bool,
     metadata_denied: bool,
     sibling_denied: bool,
+    metadata_case_denied: bool,
+    sibling_case_denied: bool,
+    metadata_short_denied: Option<bool>,
+    sibling_short_denied: Option<bool>,
+    metadata_alias_denied: bool,
+    sibling_alias_denied: bool,
     standard_read_visible: bool,
     registry_virtualized: bool,
     sockets: [bool; 6],
@@ -1389,6 +1400,15 @@ pub fn run_canary(encoded: &str) -> i32 {
             read_only_write_denied,
             metadata_denied: denied(&canary.metadata),
             sibling_denied: canary.sibling.as_ref().is_none_or(|p| denied(p)),
+            metadata_case_denied: denied(&canary.metadata.to_ascii_uppercase()),
+            sibling_case_denied: canary
+                .sibling
+                .as_ref()
+                .is_none_or(|p| denied(&p.to_ascii_uppercase())),
+            metadata_short_denied: canary.metadata_short.as_ref().map(|p| denied(p)),
+            sibling_short_denied: canary.sibling_short.as_ref().map(|p| denied(p)),
+            metadata_alias_denied: denied(&canary.metadata_alias),
+            sibling_alias_denied: denied(&canary.sibling_alias),
             standard_read_visible: original == b"SYNTHETIC_HOST_CANARY",
             registry_virtualized: registry_value(&canary.registry_leaf, Some(2)) == Ok(2),
             sockets: network.sockets,
@@ -1655,6 +1675,26 @@ impl NativeEngine {
         let sibling = PathBuf::from(self.root_for(owned.id)).join(format!("canary-{nonce}.txt"));
         std::fs::write(&sibling, b"SYNTHETIC_SIBLING_CANARY")
             .map_err(|_| "CANARY_CREATE_FAILED")?;
+        let metadata_alias = canary_base.join("metadata-alias");
+        let sibling_alias = canary_base.join("sibling-alias");
+        let _metadata_alias_pin =
+            aliases::junction(&metadata_alias, &self.profile.join("metadata"), &self.owner)?;
+        let _sibling_alias_pin = aliases::junction(
+            &sibling_alias,
+            Path::new(&self.root_for(owned.id)),
+            &self.owner,
+        )?;
+        let metadata_alias_file =
+            metadata_alias.join(metadata.file_name().ok_or("CANARY_SCOPE_INVALID")?);
+        let sibling_alias_file =
+            sibling_alias.join(sibling.file_name().ok_or("CANARY_SCOPE_INVALID")?);
+        if std::fs::read(&metadata_alias_file).map_err(|_| "CANARY_ALIAS_POSITIVE_FAILED")?
+            != b"SYNTHETIC_MANAGER_CANARY"
+            || std::fs::read(&sibling_alias_file).map_err(|_| "CANARY_ALIAS_POSITIVE_FAILED")?
+                != b"SYNTHETIC_SIBLING_CANARY"
+        {
+            return Err("CANARY_ALIAS_POSITIVE_FAILED");
+        }
         let desired = owned.desired.clone();
         let mandatory = Mandatory {
             root: self.root_for(id),
@@ -1736,6 +1776,10 @@ impl NativeEngine {
             read_only: readonly.to_string_lossy().into(),
             metadata: metadata.to_string_lossy().into(),
             sibling: Some(sibling.to_string_lossy().into()),
+            metadata_alias: metadata_alias_file.to_string_lossy().into(),
+            sibling_alias: sibling_alias_file.to_string_lossy().into(),
+            metadata_short: aliases::short(&metadata.to_string_lossy()),
+            sibling_short: aliases::short(&sibling.to_string_lossy()),
             output: output.to_string_lossy().into(),
             registry_leaf: nonce.clone(),
             ports: endpoints.ports,
@@ -1840,6 +1884,19 @@ impl NativeEngine {
             ),
             (report.metadata_denied, "CANARY_METADATA_DENIAL_FAILED"),
             (report.sibling_denied, "CANARY_SIBLING_DENIAL_FAILED"),
+            (
+                report.metadata_case_denied && report.sibling_case_denied,
+                "CANARY_CASE_ALIAS_DENIAL_FAILED",
+            ),
+            (
+                report.metadata_short_denied.unwrap_or(true)
+                    && report.sibling_short_denied.unwrap_or(true),
+                "CANARY_SHORT_ALIAS_DENIAL_FAILED",
+            ),
+            (
+                report.metadata_alias_denied && report.sibling_alias_denied,
+                "CANARY_REPARSE_ALIAS_DENIAL_FAILED",
+            ),
             (report.smb_denied, "CANARY_SMB_DENIAL_FAILED"),
             (
                 report.mapped_share_denied.unwrap_or(!mapped_positive),

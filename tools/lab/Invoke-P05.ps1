@@ -62,6 +62,8 @@ try {
     function Desired([string]$preset='STANDARD_OFFLINE'){@{schema=1;preset=$preset;grants=@()}}
     Case 'T58' 'missing_context_cannot_open_control_plane' {$r=Policy @{action='LIST'};Require ($r.reason -eq 'MANAGER_CONTEXT_UNSAFE' -and -not $r.production_launch_available) 'UNKNOWN_CONTEXT_ACCEPTED';@{reason=$r.reason;production_target_launches=0;elevated_helper=$false}}
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
+    & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
+    Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-view-probe.exe') $managerHome
     $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-$run"
     $null=New-Item -ItemType Directory -Path $fixture -Force
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
@@ -153,6 +155,23 @@ try {
         try{$lab.GlobalTemplate($name,$true);$r=Policy @{action='CREATE';display_name='Must not inherit unknown template';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'GLOBAL_SETTING_UNREVIEWED') 'UNREVIEWED_INHERITANCE_ACCEPTED';@{inherited_global_template_rejected=$true;unmanaged_sections_unchanged=$true;unsafe_automation_not_executed=$true}}
         finally{$lab.GlobalTemplate($name,$false)}
     }
+    Case 'T38' 'populated_readonly_view_change_preserves_overlay_and_restores_it' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$box='SR_'+$environment.id.Replace('-','');$lab.Register($box)
+        $nonce=[Guid]::NewGuid().ToString('N');$input=Join-Path $fixture 'input';$null=New-Item -ItemType Directory -Path $input -Force;$hostFile=Join-Path $input ("view-$nonce.txt");[IO.File]::WriteAllText($hostFile,'SYNTHETIC_HOST_VIEW')
+        function View([string]$mode,[string]$label) {
+            [P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.View($box,$mode,$nonce,$label)
+            try{Require ([P05Lab]::Success($receipt)) 'VIEW_PROBE_FAILED';$root=$environment.compiled.section.FileRootPath[0];$files=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "view-$nonce-$label.json");Require ($files.Count -eq 1 -and $files[0].Length -le 4096) 'VIEW_REPORT_MISSING';return Get-Content $files[0].FullName -Raw|ConvertFrom-Json}
+            finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+        }
+        $initial=View 'write' 'before';Require ($initial.member -and $initial.write_succeeded -and $initial.view -eq 'BOX' -and [IO.File]::ReadAllText($hostFile) -eq 'SYNTHETIC_HOST_VIEW') 'BOXED_OVERLAY_NOT_CREATED'
+        $copies=@(Get-ChildItem -LiteralPath $environment.compiled.section.FileRootPath[0] -Recurse -File -Filter "view-$nonce.txt");Require ($copies.Count -eq 1) 'BOXED_OVERLAY_NOT_LOCATED';$copyHash=(Get-FileHash $copies[0].FullName).Hash
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$input;permission='READ_ONLY'})}};Require ($r.reason -eq 'READ_ONLY_VIEW_CHANGE_ACK_REQUIRED') 'POPULATED_VIEW_CHANGE_NOT_DISCLOSED'
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$input;permission='READ_ONLY'})}};Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
+        $readonly=View 'read' 'readonly';Require ($readonly.member -and $readonly.view -eq 'HOST' -and (Get-FileHash $copies[0].FullName).Hash -eq $copyHash) 'READONLY_VIEW_OR_RETENTION_INCORRECT'
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired)};Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
+        $restored=View 'read' 'restored';Require ($restored.member -and $restored.view -eq 'BOX' -and (Get-FileHash $copies[0].FullName).Hash -eq $copyHash -and [IO.File]::ReadAllText($hostFile) -eq 'SYNTHETIC_HOST_VIEW') 'BOXED_OVERLAY_NOT_RESTORED'
+        @{before=$initial;readonly=$readonly;restored=$restored;boxed_data_bytes_preserved=$true;host_unchanged=$true;explicit_acknowledgement_required=$true;fixture_only_used_box_observation=$true;product_diagnostics_remain_fresh=$true}
+    }
     Case 'T53' 'new_supported_path_grant_keeps_tested_family' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$folder=Join-Path $fixture 'ordinary-input';$null=New-Item -ItemType Directory -Path $folder -Force
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$folder;permission='READ_ONLY'})}}
@@ -167,11 +186,15 @@ try {
         Require ($r.reason -ne 'OBSERVED') 'REPARSE_GRANT_ACCEPTED';@{junction_grant_rejected=$true;mandatory_denial_unchanged=$true}
     }
     Case 'T51' 'polluted_existing_box_does_not_host_diagnostic' {
-        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$shadow=Join-Path $root 'malicious-shadow';$null=New-Item -ItemType Directory -Path $shadow -Force;[IO.File]::WriteAllText((Join-Path $shadow 'securerun-policy-probe.exe'),'UNTRUSTED_SHADOW_MUST_NOT_EXECUTE')
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$box='SR_'+$environment.id.Replace('-','');$lab.Register($box)
+        $nonce=[Guid]::NewGuid().ToString('N');$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'input') -Force;[IO.File]::WriteAllText((Join-Path $fixture "input/view-$nonce.txt"),'SYNTHETIC_HOST_VIEW')
+        $originalHash=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash;[P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.View($box,'shadow',$nonce,'before')
+        try{Require ([P05Lab]::Success($receipt)) 'ACTUAL_VIRTUAL_SHADOW_NOT_CREATED'}finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+        $shadows=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'securerun-policy-probe.exe');Require ($shadows.Count -eq 1 -and (Get-FileHash $shadows[0].FullName).Hash -ne $originalHash -and (Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash -eq $originalHash) 'SHADOW_NOT_ISOLATED'
         $before=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=$environment.desired};Require ($r.reason -eq 'OBSERVED') $r.reason
         $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count;Require ($after -gt $before) 'FRESH_DIAGNOSTIC_NOT_CREATED';$script:environment=$r.environments|Where-Object id -eq $environment.id
-        @{fresh_throwaway_record_created=$true;existing_storage_not_diagnostic_host=$true;shadow_file_retained=$true}
+        @{fresh_throwaway_record_created=$true;existing_storage_not_diagnostic_host=$true;actual_virtualized_executable_shadow=$true;protected_host_probe_unchanged=$true;shadow_file_retained=(Test-Path $shadows[0].FullName)}
     }
     Case 'T60' 'running_sibling_prevents_any_new_storage' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$box='SR_'+$environment.id.Replace('-','');$lab.Register($box);$arch=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'arm64'}else{'x64'}

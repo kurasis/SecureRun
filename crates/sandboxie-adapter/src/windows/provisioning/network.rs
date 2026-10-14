@@ -59,11 +59,11 @@ pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
     let mut servers = DNS_ADDR_ARRAY {
         MaxCount: 1,
         AddrCount: 1,
-        Family: 2,
         ..Default::default()
     };
-    // sockaddr_in: AF_INET, network-order port 53 and loopback address.
-    let address = [2u8, 0, 0, 53, 127, 0, 0, 1];
+    // Microsoft DNSAsyncQuery uses a zeroed DNS_ADDR_ARRAY and an address
+    // parsed without an explicit port: DNS selects its standard port 53.
+    let address = [2u8, 0, 0, 0, 127, 0, 0, 1];
     for (target, value) in servers.AddrArray[0].MaxSa.iter_mut().zip(address) {
         *target = value as i8;
     }
@@ -91,7 +91,8 @@ pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
         Version: DNS_QUERY_RESULTS_VERSION1,
         ..Default::default()
     };
-    let status = unsafe { DnsQueryEx(&request, &mut result, ptr::null_mut()) };
+    let mut cancel = DNS_QUERY_CANCEL::default();
+    let status = unsafe { DnsQueryEx(&request, &mut result, &mut cancel) };
     DNS_STATUS.with(|last| {
         last.set(if status != 0 {
             status
@@ -184,7 +185,7 @@ impl DnsControl {
                 if offset + 5 > n || bytes[offset..offset + 5] != [0, 0, 1, 0, 1] {
                     continue;
                 }
-                let name = labels.join(".");
+                let name = labels.join(".").to_ascii_lowercase();
                 if name != expected && name != allowed {
                     continue;
                 }

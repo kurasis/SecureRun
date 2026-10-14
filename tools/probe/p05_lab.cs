@@ -63,4 +63,11 @@ public sealed class P05Lab {
         return "\""+value+"\"";
     }
     public static void Stop(Receipt receipt) {if(WaitForSingleObject(receipt.process,0)==258){if(!TerminateProcess(receipt.process,99)||WaitForSingleObject(receipt.process,10000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");}CloseHandle(receipt.thread);CloseHandle(receipt.process);}
+    public Receipt View(string box,string mode,string nonce,string label) {
+        if(!boxes.Contains(box)||!Regex.IsMatch(mode,@"\A(write|read|shadow)\z")||!Regex.IsMatch(nonce,@"\A[0-9a-f]{32}\z")||!Regex.IsMatch(label,@"\A(before|readonly|restored)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        Set(box,"Enabled","y");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;
+        string command=Quote(Path.Combine(code,"p05-view-probe.exe"))+" "+mode+" "+Quote(fixture)+" "+box+" "+nonce+" "+label;
+        if(!run(box,command,engine,0,ref startup,out receipt))throw new InvalidOperationException("LAB_VIEW_DISPATCH_REFUSED");return receipt;
+    }
+    public static bool Success(Receipt receipt) {uint exitCode;return WaitForSingleObject(receipt.process,15000)==0&&GetExitCodeProcess(receipt.process,out exitCode)&&exitCode==0;}
 }

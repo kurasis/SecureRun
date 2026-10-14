@@ -26,6 +26,17 @@ public sealed class P02Bridge {
     [DllImport("kernel32")] static extern bool CloseHandle(IntPtr handle);
     [DllImport("kernel32")] static extern bool GetExitCodeProcess(IntPtr handle, out uint code);
     [DllImport("kernel32")] static extern uint GetCurrentProcessId();
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
+    [StructLayout(LayoutKind.Sequential,Pack=4)] public struct FileIdentity {
+        public uint attributes; public long creation,access,write;
+        public uint volume,sizeHigh,sizeLow,links,indexHigh,indexLow;
+        public bool Same(FileIdentity other){return volume==other.volume&&indexHigh==other.indexHigh&&indexLow==other.indexLow;}
+    }
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle file,out FileIdentity identity);
+    [StructLayout(LayoutKind.Sequential)] struct NtName { public ushort length,maximum;public IntPtr buffer; }
+    [StructLayout(LayoutKind.Sequential)] struct NtAttributes { public uint length;public IntPtr root,name;public uint flags;public IntPtr security,quality; }
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] [return:MarshalAs(UnmanagedType.U1)] delegate bool CleanupCallback(IntPtr information,IntPtr state);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int DeleteNative(ref NtAttributes attributes,CleanupCallback callback,IntPtr state);
     [DllImport("advapi32", CharSet=CharSet.Unicode, SetLastError=true)] static extern bool LogonUser(string user,string domain,string password,int kind,int provider,out SafeAccessTokenHandle token);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int Version(StringBuilder output, out uint abi);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryProcess(IntPtr pid, uint imageChars, StringBuilder box, StringBuilder image, StringBuilder sid, out uint session, out long created);
@@ -55,6 +66,7 @@ public sealed class P02Bridge {
     readonly RunSandboxed run;
     readonly HashSet<string> owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly HashSet<string> probes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    readonly Dictionary<string,FileIdentity> rootIdentities=new Dictionary<string,FileIdentity>();
     readonly string sid = WindowsIdentity.GetCurrent().User.Value;
     public readonly string Home;
     public readonly string Base;
@@ -93,13 +105,16 @@ public sealed class P02Bridge {
     public void Register(string box) {
         RequireUnboxed();
         if (!Regex.IsMatch(box,@"\ASRP02_[A-Za-z0-9_]{1,30}\z")) throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        if(owned.Contains(box))return;
+        if(Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_BOX_NOT_ADOPTED");
         owned.Add(box);
     }
     void Scope(string box) { RequireUnboxed(); if(!owned.Contains(box)) throw new InvalidOperationException("UNOWNED_BOX"); }
     public string Read(string box,string key,uint index) {
         RequireUnboxed(); var text=new StringBuilder(2048);
         int status=conf(box,key,index,text,4096);
-        if(status!=0) return null;
+        if(unchecked((uint)status)==0xc000008bU)return null;
+        if(status!=0)throw new InvalidOperationException("CONFIG_QUERY_FAILED_"+unchecked((uint)status).ToString("x8"));
         return text.ToString();
     }
     public void Set(string box,string key,string value) {
@@ -107,6 +122,7 @@ public sealed class P02Bridge {
         if (value!=null && (value.IndexOfAny(new char[]{'\r','\n','\0',','})>=0)) throw new InvalidOperationException("INI_VALUE_REJECTED");
         if(!Regex.IsMatch(key,@"\A(Enabled|FileRootPath|DropAdminRights|BlockNetworkFiles|AllowNetworkAccess|BlockLocalLoop|AutoRecover|AutoDelete|ClosedFilePath|DeleteCommand|OnBoxDelete|OnBoxTerminate|OnFileRecovery|UseFileImage|NeverDelete)\z")) throw new InvalidOperationException("KEY_NOT_ALLOWED");
         if(Count(box)!=0) throw new InvalidOperationException("BOX_BUSY");
+        if(key=="FileRootPath"&&!String.Equals(Path.GetFullPath(value),Path.Combine(Base,"boxes",box),StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("PRIVILEGED_SCOPE_REJECTED");
         uint status=update('s',null,box,key,value);
         if(status!=0) throw new InvalidOperationException("CONFIG_UPDATE_FAILED_"+status.ToString("x8"));
         if(value!=null && Read(box,key,0x70000000U)!=value) throw new InvalidOperationException("CONFIG_READBACK_MISMATCH_"+key.ToUpperInvariant());
@@ -125,6 +141,59 @@ public sealed class P02Bridge {
         foreach(string key in new[]{"DeleteCommand","OnBoxDelete","OnBoxTerminate","OnFileRecovery"})
             for(uint index=0;index<64;index++){string value=Read(box,key,index|0x20000000U);if(value==null)break;if(value.Length!=0)return "UNAPPROVED_AUTOMATION";}
         return "BUILTIN_CLEANUP_SCOPE_UNVERIFIED";
+    }
+    public FileIdentity CaptureRoot(string box) {
+        Scope(box);string path=Root(box);
+        using(var handle=CreateFile(path,0x80,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
+            FileIdentity identity;
+            if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_HANDLE_UNVERIFIED");
+            rootIdentities[box]=identity;return identity;
+        }
+    }
+    public Dictionary<string,object> ClearOwnedWithNative(string box) {
+        Scope(box);
+        string reason=CleanupReason(box);
+        if(reason=="UNAPPROVED_AUTOMATION"||reason=="BOX_BUSY")throw new InvalidOperationException(reason);
+        if(Read(box,"UseFileImage",0)=="y"||Read(box,"NeverDelete",0)=="y")throw new InvalidOperationException("LIFECYCLE_UNSUPPORTED");
+        if(!rootIdentities.ContainsKey(box))throw new InvalidOperationException("ROOT_NOT_ENROLLED");
+        string path=Root(box);
+        using(var handle=CreateFile(path,0x81,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
+            FileIdentity identity;
+            if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||!identity.Same(rootIdentities[box])||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
+            int total=0;
+            var queue=new Queue<string>();queue.Enqueue(path);
+            while(queue.Count!=0){
+                foreach(string entry in Directory.EnumerateFileSystemEntries(queue.Dequeue())){
+                    if(++total>512)throw new InvalidOperationException("CLEANUP_FIXTURE_BOUND");
+                    FileAttributes attrs=File.GetAttributes(entry);
+                    if((attrs&FileAttributes.ReparsePoint)!=0)throw new InvalidOperationException("CLEANUP_REPARSE_REJECTED");
+                    if((attrs&FileAttributes.Directory)!=0)queue.Enqueue(entry);
+                    else using(var file=CreateFile(entry,0x80,3,IntPtr.Zero,3,0x00200000,IntPtr.Zero)){
+                        FileIdentity fileId;if(file.IsInvalid||!GetFileInformationByHandle(file,out fileId)||fileId.links!=1)throw new InvalidOperationException("CLEANUP_LINK_REJECTED");
+                    }
+                }
+            }
+            RequireUnboxed();if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+            IntPtr module=LoadLibraryEx(Path.Combine(Home,"QSbieAPI.dll"),IntPtr.Zero,0x100|0x800);
+            if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
+            // Exact exports observed in both authenticated v1.18.6 distributions.
+            var remove=Bind<DeleteNative>(module,"?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z");
+            IntPtr name=Marshal.StringToHGlobalUni(".");IntPtr descriptor=Marshal.AllocHGlobal(Marshal.SizeOf<NtName>());
+            try {
+                Marshal.StructureToPtr(new NtName{length=2,maximum=4,buffer=name},descriptor,false);
+                var attr=new NtAttributes{length=(uint)Marshal.SizeOf<NtAttributes>(),root=handle.DangerousGetHandle(),name=descriptor,flags=0x40};
+                var clock=Stopwatch.StartNew();CleanupCallback callback=(text,state)=>clock.ElapsedMilliseconds<30000;
+                int status=remove(ref attr,callback,IntPtr.Zero);GC.KeepAlive(callback);
+                FileIdentity after;
+                bool same=GetFileInformationByHandle(handle,out after)&&identity.Same(after);
+                bool empty=Directory.Exists(path)&&Directory.GetFileSystemEntries(path).Length==0;
+                if(!same||!empty)throw new InvalidOperationException("NATIVE_CLEANUP_POSTCONDITION_FAILED_"+unchecked((uint)status).ToString("x8"));
+                // A no-delete-share lease deliberately prevents unlinking the retained root.
+                // Accept only observed empty contents, the original identity, and the exact expected result.
+                if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("x8"));
+                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false}};
+            } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
+        }
     }
     public bool MayMaterializeSibling(string[] affected) {
         foreach(string box in affected){Scope(box);if(Count(box)!=0)return false;}
@@ -179,6 +248,14 @@ public sealed class P02Bridge {
         var b=new StringBuilder("\"");int slash=0;
         foreach(char c in value){if(c=='\\'){slash++;continue;}if(c=='\"'){b.Append('\\',slash*2+1);b.Append(c);}else{b.Append('\\',slash);b.Append(c);}slash=0;}
         b.Append('\\',slash*2);b.Append('"');return b.ToString();
+    }
+    public static void MinimizeProcessEnvironment(string engineHome) {
+        var keep=new HashSet<string>(new[]{"SystemRoot","WINDIR","SystemDrive","ProgramFiles","ProgramFiles(x86)","ProgramW6432","ProgramData","USERPROFILE","APPDATA","LOCALAPPDATA","TEMP","TMP","OS","PROCESSOR_ARCHITECTURE","NUMBER_OF_PROCESSORS","GITHUB_ACTIONS"},StringComparer.OrdinalIgnoreCase);
+        foreach(DictionaryEntry entry in Environment.GetEnvironmentVariables()){
+            string name=(string)entry.Key;
+            if(!keep.Contains(name))Environment.SetEnvironmentVariable(name,null);
+        }
+        Environment.SetEnvironmentVariable("PATH",engineHome+";"+Environment.GetFolderPath(Environment.SpecialFolder.System));
     }
     public Receipt Launch(string box,string exe,string[] arguments) {
         Scope(box);string full=Path.GetFullPath(exe);

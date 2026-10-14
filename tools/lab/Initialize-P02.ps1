@@ -46,6 +46,10 @@ foreach ($name in $componentNames) {
     $components += @{ name = $name; sha256 = $hash; file_version = (Get-Item $installed).VersionInfo.FileVersion; signature = $trust.Status.ToString(); authenticated_payload_match = $matches }
 }
 $os = Get-CimInstance Win32_OperatingSystem
+$security = @{}
+try { $security.secure_boot = Confirm-SecureBootUEFI } catch { $security.secure_boot = 'UNKNOWN' }
+try { $security.device_guard = Get-CimInstance -Namespace root/Microsoft/Windows/DeviceGuard -ClassName Win32_DeviceGuard | Select-Object VirtualizationBasedSecurityStatus, SecurityServicesRunning, CodeIntegrityPolicyEnforcementStatus } catch { $security.device_guard = 'UNKNOWN' }
+try { $security.defender = Get-MpComputerStatus | Select-Object AntivirusEnabled, RealTimeProtectionEnabled } catch { $security.defender = 'UNKNOWN' }
 $services = @()
 foreach ($name in @('SbieSvc', 'SbieDrv')) {
     $service = Get-Service $name -ErrorAction SilentlyContinue
@@ -57,6 +61,7 @@ $inventory = @{
     installer_sha256 = $candidate.sha256; installer_signature = $signature.Status.ToString()
     os = $os | Select-Object Caption, Version, BuildNumber, OSArchitecture, ProductType
     os_update_build_revision = (Get-ItemProperty 'HKLM:/SOFTWARE/Microsoft/Windows NT/CurrentVersion' -Name UBR).UBR
+    security = $security
     components = $components; services = $services; containment_result = 'NOT_RUN'
     teardown = 'DISCARD_ACTIONS_VM'; security_settings_modified = $false
 }

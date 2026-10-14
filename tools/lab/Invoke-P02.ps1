@@ -84,6 +84,7 @@ function New-Root([string]$box) {
         $acl.AddAccessRule($rule)
     }
     Set-Acl -LiteralPath $root -AclObject $acl
+    $null = $bridge.CaptureRoot($box)
     return $root
 }
 $roots = @{}
@@ -110,6 +111,8 @@ try {
         $before = $bridge.Flags(); $bridge.EnableLabWfp(); $after = $bridge.Flags()
         @{ driver_flags_before = $before; driver_flags_after = $after; global_lab_setting = 'NetworkEnableWFP=y'; driver_reconfigure_flag = 1; os_security_settings_changed = $false }
     }
+    # SbieDll_RunSandboxed serializes the caller environment; never forward CI credentials.
+    [P02Bridge]::MinimizeProcessEnvironment($engineHome)
     Invoke-Case 'T01' 'Missing box rejects target before execution' {
         Require ($bridge.RejectMissingBox($approved[0])) 'UNEXPECTED_LAUNCH'
         Require (-not (Test-Path (Join-Path $fixture 'FORBIDDEN-HOST-EXECUTION.txt'))) 'HOST_FALLBACK_DETECTED'
@@ -221,6 +224,21 @@ try {
         Require ($access.metadata_read_error -eq 5 -and $access.root_read_error -eq 5) 'SECOND_USER_ACL_DENIAL_FAILED'
         $access
     }
+    Invoke-Case 'T57' 'Forged metadata cannot redirect the generated root scope' {
+        $before = $bridge.Read($boxB,'FileRootPath',0x70000000)
+        $rejected = $false
+        try { $bridge.Set($boxB,'FileRootPath',$env:SystemRoot) } catch { $rejected = $_.Exception.Message -match 'PRIVILEGED_SCOPE_REJECTED' }
+        Require ($rejected -and $bridge.Read($boxB,'FileRootPath',0x70000000) -eq $before) 'UNTRUSTED_ROOT_AUTHORITY_ACCEPTED'
+        @{ metadata_root_rejected_before_mutation = $true; elevated_helper_present = $false }
+    }
+    Invoke-Case 'T24' 'Pinned native cleanup clears only the selected known root' {
+        foreach ($box in $boxes) { $null = $bridge.StopHeld($box) }
+        $siblingCanary = Join-Path $roots[$boxB] 'private.txt'
+        $before = (Get-FileHash $siblingCanary).Hash
+        $result = $bridge.ClearOwnedWithNative($boxA)
+        Require ((Get-FileHash $siblingCanary).Hash -eq $before -and (Get-FileHash (Join-Path $fixture 'canaries/write.txt')).Hash -eq $hostHash) 'CLEANUP_HOST_CANARY_CHANGED'
+        $result
+    }
 } finally {
     $endpoints.Dispose(); Pop-Location
     Save-Cases
@@ -229,5 +247,5 @@ $cases.Add(@{ id = 'T36'; case = 'Independent Windows interactive sessions'; sta
 $cases.Add(@{ id = 'T57'; case = 'Elevated helper authority'; status = 'NOT_APPLICABLE'; reason = 'No elevated helper path exists in this prototype; protected enrollment design recorded for P05' })
 $cases.Add(@{ id = 'T60'; case = 'Root alias variants'; status = 'NOT_RUN'; diagnostic_code = 'ALIAS_VARIANTS_PENDING' })
 Save-Cases
-@{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Start.exe phase2 enumerates all boxes; no verified owned-only builtin route'; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
+@{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Pinned QSbieAPI native alternative under test; Start.exe broad phase2 not dispatched'; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
     ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'phase-result.json') -Encoding utf8

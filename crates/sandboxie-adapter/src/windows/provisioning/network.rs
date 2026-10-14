@@ -1,0 +1,171 @@
+//! Synthetic loopback DNS and ICMP controls; no resolver or firewall changes.
+use super::*;
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, AtomicUsize, Ordering},
+};
+use windows_sys::Win32::NetworkManagement::{Dns::*, IpHelper::*};
+
+pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
+    let name = wide(name);
+    let mut servers = DNS_ADDR_ARRAY {
+        MaxCount: 1,
+        AddrCount: 1,
+        Family: 2,
+        ..Default::default()
+    };
+    // sockaddr_in: AF_INET, network-order port 53 and loopback address.
+    let address = [2u8, 0, 0, 53, 127, 0, 0, 1];
+    for (target, value) in servers.AddrArray[0].MaxSa.iter_mut().zip(address) {
+        *target = value as i8;
+    }
+    let request = DNS_QUERY_REQUEST {
+        Version: DNS_QUERY_REQUEST_VERSION1,
+        QueryName: name.as_ptr(),
+        QueryType: DNS_TYPE_A,
+        QueryOptions: u64::from(if cache_only {
+            DNS_QUERY_CACHE_ONLY
+        } else {
+            DNS_QUERY_BYPASS_CACHE
+                | DNS_QUERY_WIRE_ONLY
+                | DNS_QUERY_NO_HOSTS_FILE
+                | DNS_QUERY_NO_MULTICAST
+                | DNS_QUERY_TREAT_AS_FQDN
+        }),
+        pDnsServerList: if cache_only {
+            ptr::null_mut()
+        } else {
+            &mut servers
+        },
+        ..Default::default()
+    };
+    let mut result = DNS_QUERY_RESULT {
+        Version: DNS_QUERY_RESULTS_VERSION1,
+        ..Default::default()
+    };
+    let status = unsafe { DnsQueryEx(&request, &mut result, ptr::null_mut()) };
+    let passed = status == 0 && result.QueryStatus == 0 && !result.pQueryRecords.is_null();
+    if !result.pQueryRecords.is_null() {
+        unsafe { DnsFree(result.pQueryRecords.cast(), DnsFreeRecordList) };
+    }
+    passed
+}
+
+pub(super) fn icmp_echo() -> bool {
+    unsafe {
+        let handle = IcmpCreateFile();
+        if handle == INVALID_HANDLE_VALUE {
+            return false;
+        }
+        let mut reply = [0u64; 128];
+        let count = IcmpSendEcho(
+            handle,
+            u32::from_ne_bytes([127, 0, 0, 1]),
+            b"P05".as_ptr().cast(),
+            3,
+            ptr::null(),
+            reply.as_mut_ptr().cast(),
+            1024,
+            750,
+        );
+        let passed = count > 0 && (*(reply.as_ptr() as *const ICMP_ECHO_REPLY)).Status == 0;
+        IcmpCloseHandle(handle);
+        passed
+    }
+}
+pub(super) fn icmp_sent() -> R<u32> {
+    let mut statistics = MIB_ICMP::default();
+    if unsafe { GetIcmpStatistics(&mut statistics) } != 0 {
+        return Err("ICMP_OBSERVER_UNAVAILABLE");
+    }
+    Ok(statistics.stats.icmpOutStats.dwEchos)
+}
+
+pub(super) struct DnsControl {
+    count: Arc<AtomicUsize>,
+    stop: Arc<AtomicBool>,
+    thread: Option<std::thread::JoinHandle<()>>,
+    pub(super) cache_name: String,
+    pub(super) target_name: String,
+}
+impl DnsControl {
+    pub(super) fn new(nonce: &str) -> R<Self> {
+        let socket = std::net::UdpSocket::bind("127.0.0.1:53")
+            .map_err(|_| "DNS_CONTROL_ENDPOINT_UNAVAILABLE")?;
+        socket
+            .set_read_timeout(Some(Duration::from_millis(100)))
+            .map_err(|_| "DNS_CONTROL_ENDPOINT_UNAVAILABLE")?;
+        let count = Arc::new(AtomicUsize::new(0));
+        let stop = Arc::new(AtomicBool::new(false));
+        let target_name = format!("target-{nonce}.test");
+        let cache_name = format!("control-{nonce}.test");
+        let expected = target_name.clone();
+        let allowed = cache_name.clone();
+        let counter = count.clone();
+        let stopped = stop.clone();
+        let thread = std::thread::spawn(move || {
+            let mut bytes = [0u8; 512];
+            while !stopped.load(Ordering::Relaxed) {
+                let Ok((n, peer)) = socket.recv_from(&mut bytes) else {
+                    continue;
+                };
+                if !peer.ip().is_loopback() || n < 17 || bytes[4..6] != [0, 1] {
+                    continue;
+                }
+                let mut offset = 12;
+                let mut labels = Vec::new();
+                while offset < n && bytes[offset] > 0 && bytes[offset] <= 63 {
+                    let length = bytes[offset] as usize;
+                    offset += 1;
+                    if offset + length >= n {
+                        break;
+                    }
+                    labels
+                        .push(String::from_utf8_lossy(&bytes[offset..offset + length]).to_string());
+                    offset += length;
+                }
+                if offset + 5 != n || bytes[offset..n] != [0, 0, 1, 0, 1] {
+                    continue;
+                }
+                let name = labels.join(".");
+                if name != expected && name != allowed {
+                    continue;
+                }
+                let mut response = bytes[..n].to_vec();
+                response[2..4].copy_from_slice(&[0x81, 0x80]);
+                response[6..8].copy_from_slice(&[0, 1]);
+                response[8..12].fill(0);
+                response
+                    .extend_from_slice(&[0xc0, 0x0c, 0, 1, 0, 1, 0, 0, 0, 30, 0, 4, 127, 0, 0, 1]);
+                if socket.send_to(&response, peer).is_ok() && name == expected {
+                    counter.fetch_add(1, Ordering::SeqCst);
+                }
+            }
+        });
+        let control = Self {
+            count,
+            stop,
+            thread: Some(thread),
+            cache_name,
+            target_name,
+        };
+        if !dns_query(&control.cache_name, false) {
+            return Err("DNS_CONTROL_POSITIVE_FAILED");
+        }
+        if !icmp_echo() {
+            return Err("ICMP_CONTROL_POSITIVE_FAILED");
+        }
+        Ok(control)
+    }
+    pub(super) fn observed(&self) -> bool {
+        self.count.load(Ordering::SeqCst) > 0
+    }
+}
+impl Drop for DnsControl {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Relaxed);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
+}

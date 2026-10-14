@@ -704,6 +704,126 @@ mod tests {
         assert!(!a.production_launch_available);
     }
     #[test]
+    fn operation_tombstones_survive_updates_and_reject_cross_request_replay() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = store(&t);
+        let f = Fake::new();
+        let create_op = Uuid::new_v4();
+        let original =
+            create(&mut j, &f, "test-owner", "A", Default::default(), create_op).unwrap();
+        let next = DesiredPolicy {
+            preset: crate::policy::Preset::StandardOnline,
+            ..Default::default()
+        };
+        let apply_op = Uuid::new_v4();
+        let updated = apply(
+            &mut j,
+            &f,
+            original.id,
+            1,
+            next.clone(),
+            apply_op,
+            false,
+            None,
+        )
+        .unwrap();
+        assert_eq!(updated.revision, 2);
+        let retry = create(&mut j, &f, "test-owner", "A", Default::default(), create_op).unwrap();
+        assert_eq!(retry.revision, 2);
+        assert_eq!(f.roots.borrow().len(), 1);
+        assert_eq!(
+            apply(
+                &mut j,
+                &f,
+                original.id,
+                1,
+                next.clone(),
+                apply_op,
+                false,
+                None
+            )
+            .unwrap()
+            .revision,
+            2
+        );
+        assert!(
+            apply(
+                &mut j,
+                &f,
+                original.id,
+                2,
+                next.clone(),
+                create_op,
+                false,
+                None
+            )
+            .is_err()
+        );
+        assert!(apply(&mut j, &f, original.id, 2, next, apply_op, false, None).is_err());
+        drop(j);
+        let mut j = store(&t);
+        assert_eq!(
+            create(&mut j, &f, "test-owner", "A", Default::default(), create_op)
+                .unwrap()
+                .revision,
+            2
+        );
+        assert!(
+            create(
+                &mut j,
+                &f,
+                "test-owner",
+                "Different payload",
+                Default::default(),
+                create_op
+            )
+            .is_err()
+        );
+        assert_eq!(f.roots.borrow().len(), 1);
+    }
+    #[test]
+    fn metadata_cannot_drop_generated_protections_or_adopt_replaced_roots() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = store(&t);
+        let f = Fake::new();
+        let mut e = create(
+            &mut j,
+            &f,
+            "test-owner",
+            "A",
+            Default::default(),
+            Uuid::new_v4(),
+        )
+        .unwrap();
+        e.compiled.section.remove("ClosedFilePath");
+        e.fingerprint = Some("forged".into());
+        j.save(&e).unwrap();
+        assert_eq!(
+            validate_owned(&f, &e, &[e.clone()]).unwrap_err(),
+            "MANDATORY_POLICY_DRIFT"
+        );
+        assert!(
+            apply(
+                &mut j,
+                &f,
+                e.id,
+                1,
+                Default::default(),
+                Uuid::new_v4(),
+                false,
+                None
+            )
+            .is_err()
+        );
+        e.compiled = compile(&e.desired, &mandatory(&f, e.id, &e.owner_sid, &[e.clone()])).unwrap();
+        e.root_identity = Some("different-volume-file-id".into());
+        assert_eq!(
+            validate_owned(&f, &e, &[e.clone()]).unwrap_err(),
+            "ROOT_IDENTITY_CHANGED"
+        );
+        assert_eq!(f.roots.borrow().len(), 1);
+    }
+    #[test]
     fn new_sibling_requires_stopped_rollout_before_materialization() {
         let t = tempfile::tempdir().unwrap();
         let mut j = store(&t);

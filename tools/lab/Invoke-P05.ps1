@@ -29,6 +29,15 @@ try {
     $run=[Guid]::NewGuid().ToString('N');$managerHome=Join-Path $env:ProgramFiles "SecureRun-P05-$run";$null=New-Item -ItemType Directory -Path $managerHome
     $app=Join-Path $managerHome 'securerun.exe';Copy-Item (Join-Path $repo "target/$target/debug/securerun.exe") $app
     Copy-Item (Join-Path $repo "target/$target/debug/securerun-policy-probe.exe") (Join-Path $managerHome 'securerun-policy-probe.exe')
+    $probeTargets=@(@{architecture='x86';target='i686-pc-windows-msvc'})
+    if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){$probeTargets+=@{architecture='x64';target='x86_64-pc-windows-msvc'}}
+    foreach($probeTarget in $probeTargets){
+        rustup target add $probeTarget.target
+        if($LASTEXITCODE -ne 0){throw 'PROBE_TARGET_INSTALL_FAILED'}
+        cargo build --locked -p securerun-sandboxie-adapter --bin securerun-policy-probe --target $probeTarget.target
+        if($LASTEXITCODE -ne 0){throw 'ARCHITECTURE_PROBE_BUILD_FAILED'}
+        Copy-Item (Join-Path $repo ("target/"+$probeTarget.target+"/debug/securerun-policy-probe.exe")) (Join-Path $managerHome ("securerun-policy-probe-"+$probeTarget.architecture+'.exe'))
+    }
     $normalBackup=Join-Path $managerHome 'normal-manager.bin';Copy-Item $app $normalBackup
     npm run tauri -- build --debug --no-bundle --target $target --features policy-ci
     if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
@@ -172,7 +181,7 @@ try {
     Case 'T35' 'production_provisioning_as_actual_standard_user' {
         $account=New-Standard 'owner';$script:standardAccount=$account
         $p=Start-Standard $account 'p05_standard.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine)
-        try{Require ($p.WaitForExit(90000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') 'STANDARD_PROVISIONING_FAILED';Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+        try{Require ($p.WaitForExit(90000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'STANDARD_PROVISIONING_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
     Case 'T35' 'second_standard_user_cannot_read_root_or_metadata' {
         Require ($null -ne $standardAccount) 'STANDARD_OWNER_REQUIRED';$request=Get-Content (Join-Path $standardAccount.fixture 'results/acl-request.json') -Raw|ConvertFrom-Json
@@ -187,7 +196,7 @@ try {
             try {
                 $clock=[Diagnostics.Stopwatch]::StartNew();$ready=Join-Path $account.fixture 'results/fault-ready.json'
                 while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 90000){Start-Sleep -Milliseconds 100}
-                Require (Test-Path $ready) 'FAULT_CHECKPOINT_NOT_REACHED'
+                $resultFile=Join-Path $account.fixture 'results/fault-result.json';if(Test-Path $resultFile){Copy-Item $resultFile (Join-Path $out ("fault-"+$stage.ToLowerInvariant()+'.json'));$early=Get-Content $resultFile -Raw|ConvertFrom-Json;$code=if($early.PSObject.Properties['code']){$early.code}else{'FAULT_CHECKPOINT_NOT_REACHED'}}else{$code='FAULT_CHECKPOINT_NOT_REACHED'};Require (Test-Path $ready) $code
                 Copy-Item $normalBackup $app -Force;Require ((Get-FileHash $app).Hash.ToLowerInvariant() -eq $normalHash) 'NORMAL_BINARY_RESTORE_FAILED'
                 @{normal_binary_restored=$true}|ConvertTo-Json|Set-Content (Join-Path $account.fixture 'results/normal-restored.json') -Encoding utf8
                 Require ($p.WaitForExit(60000)) 'FAULT_RECOVERY_TIMEOUT'
@@ -204,5 +213,7 @@ try {
 }finally{
     $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
     if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    $events=@(Get-WinEvent -FilterHashtable @{LogName=@('Application','System');StartTime=(Get-Date).AddMinutes(-35)} -MaxEvents 2000 -ErrorAction SilentlyContinue | Where-Object ProviderName -Match 'Sandboxie|Sbie' | ForEach-Object {@{event_id=$_.Id;codes=@([regex]::Matches($_.Message,'SBIE[0-9]{4}|\[[0-9A-Fa-f ,/x]+\]|status=[0-9A-Fa-f]{8}')|ForEach-Object Value)}})
+    ConvertTo-Json -InputObject $events -Depth 5|Set-Content (Join-Path $out 'engine-events.json') -Encoding utf8
     Pop-Location
 }

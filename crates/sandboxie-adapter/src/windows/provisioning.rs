@@ -3,14 +3,15 @@ use super::*;
 use crate::{policy::*, provision::*};
 use std::{io::Write, os::windows::io::FromRawHandle};
 use uuid::Uuid;
+mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
     UI::Shell::*,
 };
 
-type Update = unsafe extern "system" fn(u16, *const u16, *const u16, *const u16, *const u16) -> u32;
-type Reload = unsafe extern "system" fn(u32, u32) -> i32;
-type Run = unsafe extern "system" fn(
+type Update = unsafe extern "C" fn(u16, *const u16, *const u16, *const u16, *const u16) -> u32;
+type Reload = unsafe extern "C" fn(u32, u32) -> i32;
+type Run = unsafe extern "C" fn(
     *const u16,
     *const u16,
     *const u16,
@@ -508,6 +509,7 @@ struct NativeEngine {
     image: PathBuf,
     probe: PathBuf,
     probe_hash: String,
+    additional_probes: Vec<(PathBuf, String)>,
     _leases: Vec<File>,
     root_leases: std::cell::RefCell<Vec<File>>,
 }
@@ -568,6 +570,40 @@ impl NativeEngine {
         }
         let probe_hash = format!("{:x}", Sha256::digest(bytes));
         leases.push(file);
+        let mut additional_probes = Vec::new();
+        let required: &[(&str, u16)] = if std::env::consts::ARCH == "aarch64" {
+            &[("x86", 0x014c), ("x64", 0x8664)]
+        } else {
+            &[("x86", 0x014c)]
+        };
+        for (architecture, machine) in required {
+            let path = image
+                .parent()
+                .unwrap()
+                .join(format!("securerun-policy-probe-{architecture}.exe"));
+            let mut file = lease(&path, false)?;
+            protected(&file)?;
+            let mut bytes = Vec::new();
+            Read::by_ref(&mut file)
+                .take(33554433)
+                .read_to_end(&mut bytes)
+                .map_err(|_| "PROBE_IMAGE_UNAVAILABLE")?;
+            let offset = bytes
+                .get(0x3c..0x40)
+                .and_then(|v| v.try_into().ok())
+                .map(u32::from_le_bytes)
+                .ok_or("PROBE_IMAGE_INVALID")? as usize;
+            if bytes.len() > 33554432
+                || bytes.get(..2) != Some(b"MZ")
+                || bytes.get(offset..offset.saturating_add(4)) != Some(b"PE\0\0")
+                || bytes.get(offset.saturating_add(4)..offset.saturating_add(6))
+                    != Some(&machine.to_le_bytes())
+            {
+                return Err("PROBE_ARCHITECTURE_MISMATCH");
+            }
+            additional_probes.push((path, format!("{:x}", Sha256::digest(&bytes))));
+            leases.push(file);
+        }
         leases.push(template_pin(&trusted)?);
         let manifest: serde_json::Value =
             serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
@@ -620,6 +656,14 @@ impl NativeEngine {
         unsafe {
             std::env::set_var("SystemRoot", system.parent().ok_or("SYSTEM_PATH_UNKNOWN")?);
             std::env::set_var("WINDIR", system.parent().unwrap());
+            // Original File_InitUsers expands ProfileList paths containing
+            // %SystemDrive%. Derive it from the OS system directory, not the
+            // inherited environment, while keeping credentials scrubbed.
+            let system_path = system.to_str().ok_or("SYSTEM_PATH_UNKNOWN")?;
+            if system_path.as_bytes().get(1) != Some(&b':') {
+                return Err("SYSTEM_PATH_UNKNOWN");
+            }
+            std::env::set_var("SystemDrive", &system_path[..2]);
             std::env::set_var("PATH", &system);
         }
         leases.extend(ensure_private(&profile, &owner)?);
@@ -637,6 +681,7 @@ impl NativeEngine {
             image,
             probe,
             probe_hash,
+            additional_probes,
             _leases: leases,
             root_leases: Default::default(),
         })
@@ -900,7 +945,11 @@ impl Engine for NativeEngine {
         Ok(())
     }
     fn verify_enforcement(&self, e: &OwnedEnvironment) -> R<String> {
-        self.diagnostic(e)
+        let mut reports = vec![self.diagnostic(e, &self.probe, &self.probe_hash)?];
+        for (probe, hash) in &self.additional_probes {
+            reports.push(self.diagnostic(e, probe, hash)?);
+        }
+        Ok(fingerprint(&reports))
     }
 }
 
@@ -1075,6 +1124,8 @@ struct Canary {
     output: String,
     registry_leaf: String,
     ports: [u16; 4],
+    dns_target: String,
+    dns_cached: String,
 }
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -1089,6 +1140,9 @@ struct CanaryReport {
     standard_read_visible: bool,
     registry_virtualized: bool,
     sockets: [bool; 4],
+    dns_network: bool,
+    dns_cached_answer: bool,
+    icmp_echo: bool,
 }
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
@@ -1254,6 +1308,9 @@ pub fn run_canary(encoded: &str) -> i32 {
             standard_read_visible: original == b"SYNTHETIC_HOST_CANARY",
             registry_virtualized: registry_value(&canary.registry_leaf, Some(2)) == Ok(2),
             sockets,
+            dns_network: network::dns_query(&canary.dns_target, false),
+            dns_cached_answer: network::dns_query(&canary.dns_cached, true),
+            icmp_echo: network::icmp_echo(),
         };
         let data = serde_json::to_vec(&report).map_err(|_| "CANARY_REPORT_INVALID")?;
         let mut file = OpenOptions::new()
@@ -1441,7 +1498,7 @@ fn locate_report(root: &Path, leaf: &str) -> R<PathBuf> {
     visit(root, leaf, 0, &mut 0)?.ok_or("DIAGNOSTIC_REPORT_MISSING")
 }
 impl NativeEngine {
-    fn diagnostic(&self, owned: &OwnedEnvironment) -> R<String> {
+    fn diagnostic(&self, owned: &OwnedEnvironment, probe: &Path, probe_hash: &str) -> R<String> {
         self.mutation_context()?;
         let global = self.global()?;
         if owned.compiled.offline {
@@ -1493,15 +1550,7 @@ impl NativeEngine {
         let sibling = PathBuf::from(self.root_for(owned.id)).join(format!("canary-{nonce}.txt"));
         std::fs::write(&sibling, b"SYNTHETIC_SIBLING_CANARY")
             .map_err(|_| "CANARY_CREATE_FAILED")?;
-        let mut desired = owned.desired.clone();
-        desired.grants.push(Grant {
-            path: blocked.to_string_lossy().into(),
-            permission: Permission::Block,
-        });
-        desired.grants.push(Grant {
-            path: readonly.to_string_lossy().into(),
-            permission: Permission::ReadOnly,
-        });
+        let desired = owned.desired.clone();
         let mandatory = Mandatory {
             root: self.root_for(id),
             metadata: self.metadata(),
@@ -1509,7 +1558,18 @@ impl NativeEngine {
             siblings: vec![self.root_for(owned.id)],
             marker: format!("v1:{}:{nonce}", self.owner),
         };
-        let compiled = compile(&desired, &mandatory)?;
+        let mut compiled = compile(&desired, &mandatory)?;
+        // Generated synthetic checks do not consume the user's grant quota.
+        // They can only narrow this fresh diagnostic, never an owned policy.
+        for (key, path) in [("ClosedFilePath", &blocked), ("ReadFilePath", &readonly)] {
+            let path = literal_path(&path.to_string_lossy())?;
+            let values = compiled.section.entry(key.into()).or_default();
+            values.extend([path.clone(), format!("{path}\\*")]);
+            if values.len() >= 64 {
+                return Err("POLICY_RULE_BOUND");
+            }
+        }
+        compiled.desired_fingerprint = fingerprint(&compiled.section);
         let mut diagnostic = OwnedEnvironment {
             id,
             display_name: "Fresh synthetic diagnostic".into(),
@@ -1559,6 +1619,8 @@ impl NativeEngine {
             .borrow_mut()
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
         let endpoints = Endpoints::new()?;
+        let dns = network::DnsControl::new(&nonce)?;
+        let icmp_before = network::icmp_sent()?;
         let output = canary_base.join(format!("report-{nonce}.json"));
         let canary = Canary {
             box_name: diagnostic.name(),
@@ -1570,9 +1632,11 @@ impl NativeEngine {
             output: output.to_string_lossy().into(),
             registry_leaf: nonce.clone(),
             ports: endpoints.ports,
+            dns_target: dns.target_name.clone(),
+            dns_cached: dns.cache_name.clone(),
         };
         let encoded = hex(&serde_json::to_vec(&canary).map_err(|_| "PROBE_REQUEST_INVALID")?);
-        let command = wide(&format!("\"{}\" {encoded}", self.probe.to_string_lossy()));
+        let command = wide(&format!("\"{}\" {encoded}", probe.to_string_lossy()));
         let run: Run = unsafe { bind(&self.api, b"SbieDll_RunSandboxed\0")? };
         self.set(&diagnostic.name(), "Enabled", &["y".into()])?;
         let result = (|| -> R<CanaryReport> {
@@ -1596,6 +1660,12 @@ impl NativeEngine {
             let process = Handle(receipt.hProcess);
             let _thread = Handle(receipt.hThread);
             if unsafe { WaitForSingleObject(process.0, 15000) } != WAIT_OBJECT_0 {
+                // Only the fixed benign process held from this dispatch may be
+                // terminated. A timeout never authorizes a PID-based box stop.
+                unsafe {
+                    TerminateProcess(process.0, 79);
+                    WaitForSingleObject(process.0, 5000);
+                }
                 return Err("DIAGNOSTIC_OUTCOME_UNKNOWN");
             }
             let mut code = 0;
@@ -1681,10 +1751,16 @@ impl NativeEngine {
             return Err("CANARY_HOST_STATE_CHANGED");
         }
         let expected = [!owned.compiled.offline; 4];
-        if report.sockets != expected || observed != expected {
+        if report.dns_network == owned.compiled.offline
+            || dns.observed() == owned.compiled.offline
+            || report.icmp_echo == owned.compiled.offline
+            || (owned.compiled.offline && network::icmp_sent()? != icmp_before)
+            || report.sockets != expected
+            || observed != expected
+        {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":self.probe_hash,"report":report,"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")
@@ -1692,6 +1768,6 @@ impl NativeEngine {
             serde_json::to_vec(&evidence).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-        Ok(fingerprint(&(FAMILY, &self.probe_hash, &report, observed)))
+        Ok(fingerprint(&(FAMILY, probe_hash, &report, observed)))
     }
 }

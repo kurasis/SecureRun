@@ -1,0 +1,530 @@
+[
+  {
+    "id": "T01",
+    "scenario": "Engine missing, service stopped, driver unhealthy",
+    "expected": "Target never launches on host",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T02",
+    "scenario": "Fake Start.exe in PATH/current directory or changed engine binary",
+    "expected": "Rejected without executing impostor",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T03",
+    "scenario": "Valid engine, invalid EXE and unusual arguments",
+    "expected": "Clear failure; no shell or injected command executes",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T04",
+    "scenario": "Unicode, spaces, quotes, trailing backslashes, option-like arguments",
+    "expected": "Exact intended target arguments; no extra upstream flags",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T05",
+    "scenario": "Normal target and child/grandchild processes",
+    "expected": "Confirmed engine membership in the intended box",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T06",
+    "scenario": "Target spawns background child and exits",
+    "expected": "Environment remains Running; no early cleanup",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T07",
+    "scenario": "PID exits and is reused",
+    "expected": "Unrelated process never terminated or attributed to box",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T08",
+    "scenario": "Write/modify/delete synthetic host file under isolated-change policy",
+    "expected": "Host canary unchanged; intended boxed state observable",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T09",
+    "scenario": "Read selected blocked host files and enumerate protected folder",
+    "expected": "Expected access denied; verify aliases and descendants",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T10",
+    "scenario": "Read-only path write attempt",
+    "expected": "Reads work; forbidden writes fail with documented semantics",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T11",
+    "scenario": "Registry canary reads/writes under each preset",
+    "expected": "Effective policy matches expected host visibility; host values unchanged",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T12",
+    "scenario": "Network blocked",
+    "expected": "No target-caused egress on controlled socket/DNS/loopback/LAN paths; cached DNS answers handled separately",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T13",
+    "scenario": "Network allowed",
+    "expected": "Positive controls succeed without silently widening file policy",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T14",
+    "scenario": "Required certificate missing/expired or feature unknown",
+    "expected": "Dependent launch blocked; Standard remains honestly labeled",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T15",
+    "scenario": "Config write accepted but enforcement absent",
+    "expected": "Verification fails; no protected/active status",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T16",
+    "scenario": "Policy changed while processes run",
+    "expected": "New policy not falsely reported active; restart required",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T17",
+    "scenario": "External INI/template edits, duplicate rules and stale revisions",
+    "expected": "Drift detected; no unrelated settings overwritten",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T18",
+    "scenario": "Crash after each configuration mutation phase",
+    "expected": "Reconciliation yields correct or blocked state",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T19",
+    "scenario": "Stop selected/all managed environments",
+    "expected": "Unmanaged box remains running",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T20",
+    "scenario": "Import collision, cancellation, disk full and missing root",
+    "expected": "No partial file presented as complete; no host grant",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T21",
+    "scenario": "Export normal file",
+    "expected": "Correct bytes, explicit destination, no auto-open",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T22",
+    "scenario": "Export reparse traversal, hard-link escape, alternate stream, path swap",
+    "expected": "Rejected or safely contained; no secret host file copied",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T23",
+    "scenario": "Export malicious HTML/SVG/shortcut/executable filename/content",
+    "expected": "Host UI executes no payload or preview handler",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T24",
+    "scenario": "Cleanup with junctions, locked files and stale engine state",
+    "expected": "Host canaries survive; incomplete deletion visible",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T25",
+    "scenario": "Manager crashes with persistent/disposable boxes active",
+    "expected": "Persistent workload survives; disposable leftovers recoverable",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T26",
+    "scenario": "Repeated rapid launch/stop/export/reset and two manager instances",
+    "expected": "Serialization and single-instance control prevent conflicting actions",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T27",
+    "scenario": "UAC denied, spoofed helper request or sandboxed IPC caller",
+    "expected": "No unauthorized privileged operation",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T28",
+    "scenario": "Database migration failure, corrupted record, metadata missing",
+    "expected": "No accidental adoption/deletion of unrelated box",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T29",
+    "scenario": "Manager upgrade/uninstall",
+    "expected": "Retention decisions honored; engine independently preserved",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T30",
+    "scenario": "Supported browser/editor/archive utility",
+    "expected": "Documented usability with engine and application protections retained",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T31",
+    "scenario": "Standard mode reads a non-blocked canary",
+    "expected": "UI limitation accurately reflects remaining visibility",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T32",
+    "scenario": "Clipboard/device controls advertised by adapter",
+    "expected": "Each advertised restriction verified; unavailable controls disabled",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T33",
+    "scenario": "Custom/inherited DeleteCommand and SandMan event triggers",
+    "expected": "Managed operations blocked; no host marker command executes",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T34",
+    "scenario": "Root moved, replaced, overlapped or same-name box recreated",
+    "expected": "No automatic adoption, launch or deletion of new/old unrelated roots",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T35",
+    "scenario": "Second standard Windows user and another managed box probe storage",
+    "expected": "No unauthorized root or metadata access; legitimate engine access retained",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T36",
+    "scenario": "Same user in another Windows session; incomplete enumeration",
+    "expected": "No premature Idle state, cleanup or broad termination",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T37",
+    "scenario": "Configuration contains literal percent/comma/CRLF or protected password",
+    "expected": "No directive injection or secret command-line exposure; unsupported case blocked",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T38",
+    "scenario": "Existing boxed copy then ReadFilePath policy change",
+    "expected": "Correct host view, explicit disclosure, retained boxed data after reversal",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T39",
+    "scenario": "WFP disabled/fails after a previously valid setup",
+    "expected": "Offline launch blocked; no hooks-only fallback",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T40",
+    "scenario": "DNS broker, SMB/mapped drive and unprivileged raw/ICMP tests",
+    "expected": "Offline egress checked at controlled endpoints; no share access in managed presets",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T41",
+    "scenario": "Browser already running on host; protocol/COM/helper request",
+    "expected": "No URL/document handoff to unboxed instance in supported workflow",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T42",
+    "scenario": "SandMan open with lifecycle events; external launch during export",
+    "expected": "No upstream auto-recovery/deletion; transfer stays stable or aborts safely",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T43",
+    "scenario": "Boxed EXE import, launch, reset",
+    "expected": "Correct logical boxed executable; reset invalidates it without host fallback",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T44",
+    "scenario": "Export collision, no-replace race, provenance stream failure",
+    "expected": "Existing destination preserved; no complete unlabeled output",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T45",
+    "scenario": "Files larger than 4 GiB, sparse growth, disk full, noisy diagnostics",
+    "expected": "Bounded memory/queues; cancellable transfer and explicit partial-operation recovery",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T46",
+    "scenario": "Service restart, sleep/resume, outdated observations",
+    "expected": "Reconciliation; Running/Unknown activity remains distinct from Blocked eligibility",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T47",
+    "scenario": "Same-SID boxed helper client and forged caller identity",
+    "expected": "Peer identity obtained from OS; no privileged command or metadata tampering",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T48",
+    "scenario": "Archive/unarchive, uninstall with retained data and failed migration rollback",
+    "expected": "Definition/data recoverable; no orphaning or silent deletion",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T49",
+    "scenario": "Unauthorized WebView/origin, forged IDs and frontend path/confirmation payload",
+    "expected": "Custom-command ACL and Rust authorization reject request; no arbitrary host operation",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T50",
+    "scenario": "Host utility launched with hostile target CWD/PATH/DLL fixtures",
+    "expected": "Only trusted host dependencies execute; target CWD transmitted safely or rejected",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T51",
+    "scenario": "Diagnostic requested for box containing malicious shadow files/registry entries",
+    "expected": "Diagnostic runs in fresh test box; no untrusted probe dependency or false per-box proof",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T52",
+    "scenario": "UAC completed using a different administrator account",
+    "expected": "Original owner/session preserved; no target launch or accidental admin-profile storage",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T53",
+    "scenario": "New user path grant inside supported policy family",
+    "expected": "Validated applied fingerprint without requiring a new release; unsafe interactions rejected",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T54",
+    "scenario": "Optional certificate expires while workload is running",
+    "expected": "Safe scoped Stop remains available when its own prerequisites hold; no host fallback",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T55",
+    "scenario": "Fresh box without root and root substituted during provisioning",
+    "expected": "PendingRoot cannot launch target; only journaled verified creation binds identity",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T56",
+    "scenario": "Delayed events/operation results from old engine generation",
+    "expected": "New runtime and eligibility state cannot be overwritten by stale results",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T57",
+    "scenario": "Forged user database/ownership marker, helper enrollment replay and privileged path swap",
+    "expected": "No privileged write, ACL change or deletion outside independently authorized resources; helper absence explicitly recorded",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T58",
+    "scenario": "Manager, bridge or helper starts boxed; self-context query fails",
+    "expected": "Control operations and elevation refused; no self-relaunch or host escape; minimal diagnostics only",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T59",
+    "scenario": "User grant or inherited rule overlaps mandatory manager/sibling exclusions; alias changes",
+    "expected": "Required isolation cannot be removed through editable policy; unsupported paths rejected",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T60",
+    "scenario": "Create a new sibling while an existing managed box runs",
+    "expected": "Existing box cannot read/write the new storage; unsafe rollout waits before materializing private data",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T61",
+    "scenario": "Launch accepted but receipt lost; duplicate request; restart after dispatch reservation",
+    "expected": "Same operation is never automatically dispatched twice; uncertainty retained even when no target PID remains",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T62",
+    "scenario": "Target exits or scope changes between observation and termination dispatch",
+    "expected": "Stop remains bound to authorized environment/process objects; no numeric-PID fallback or premature completion",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T63",
+    "scenario": "Reserved/ambiguous output names, case/short aliases, deceptive suffix and bidi controls",
+    "expected": "Safe Rename/Skip; no namespace escape, overwrite or concealed extension; normal Unicode names still work",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T64",
+    "scenario": "Export crash before provenance, mid-copy, before rename and after rename/before journal commit",
+    "expected": "No payload copied before marker; partial files remain incomplete; final output reconciled without replacement",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T65",
+    "scenario": "Temporary artifact replaced; stale import/export/cleanup journal after reset/recreation",
+    "expected": "No path-only rollback deletion or old-generation mutation; identity mismatch stays unresolved",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  },
+  {
+    "id": "T66",
+    "scenario": "Secret canaries in argv/environment/errors and control characters in diagnostics",
+    "expected": "Canary secrets absent from local logs and shared bundles; untrusted text cannot forge structured events",
+    "status": "NOT_STARTED",
+    "actual": "No product implementation or Windows containment execution in P01",
+    "evidence": null
+  }
+]

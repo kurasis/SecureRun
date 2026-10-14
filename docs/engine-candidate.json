@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "repository": "sandboxie-plus/Sandboxie",
+  "tag": "v1.18.6",
+  "source_commit": "cdba7096240b93d79c5373aa81a75a1c5c71b883",
+  "release_url": "https://github.com/sandboxie-plus/Sandboxie/releases/tag/v1.18.6",
+  "published_at": "2026-10-11T17:44:23Z",
+  "installer": {
+    "name": "Sandboxie-Plus-x64-v1.18.6.exe",
+    "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.18.6/Sandboxie-Plus-x64-v1.18.6.exe",
+    "sha256": "3ad29e1ec18618ee9aa4ef4e21ab0548cf2188b94c05c41cb7a07b5d2d0270e2",
+    "size": 24914432
+  },
+  "declared_versions": {
+    "plus": "1.18.6",
+    "core": "5.73.6",
+    "installed_components": "NOT_OBSERVED"
+  },
+  "licenses": [
+    {
+      "path": "LICENSE.Classic",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "url": "https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/LICENSE.Classic"
+    },
+    {
+      "path": "LICENSE.Plus",
+      "sha256": "5f5ccf2ad6f5953f4b739c5de754b27998446311ca375e4bc3957d9030aed45d",
+      "url": "https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/LICENSE.Plus"
+    }
+  ],
+  "support_status": "UNTESTED_CANDIDATE"
+}

@@ -354,18 +354,20 @@ fn t49_selection_tokens_are_one_use_and_bound_to_operation_purpose_and_caller() 
     let (op, _) = store.reserve(&request(&e), 2).unwrap();
     let mut selections = Selections::default();
     let id = Uuid::new_v4();
-    selections.insert(BoundSelection {
-        id,
-        operation_id: op.id,
-        environment_id: e.id,
-        generation: 1,
-        revision: 0,
-        purpose: SelectionPurpose::Import,
-        caller_label: "main".into(),
-        expires_at: 60,
-        path: "PRIVATE_BACKEND_ONLY".into(),
-        identity: identity("selected"),
-    });
+    selections
+        .insert(BoundSelection {
+            id,
+            operation_id: op.id,
+            environment_id: e.id,
+            generation: 1,
+            revision: 0,
+            purpose: SelectionPurpose::Import,
+            caller_label: "main".into(),
+            expires_at: 60,
+            path: "PRIVATE_BACKEND_ONLY".into(),
+            identity: identity("selected"),
+        })
+        .unwrap();
     assert_eq!(
         selections
             .consume(id, &op, SelectionPurpose::Export, "main", 1)
@@ -400,18 +402,20 @@ fn t49_expired_or_invalidated_selections_cannot_be_consumed() {
     let (op, _) = store.reserve(&request(&e), 2).unwrap();
     let mut selections = Selections::default();
     let id = Uuid::new_v4();
-    selections.insert(BoundSelection {
-        id,
-        operation_id: op.id,
-        environment_id: e.id,
-        generation: 1,
-        revision: 0,
-        purpose: SelectionPurpose::Import,
-        caller_label: "main".into(),
-        expires_at: 60,
-        path: "PRIVATE_BACKEND_ONLY".into(),
-        identity: identity("selected"),
-    });
+    selections
+        .insert(BoundSelection {
+            id,
+            operation_id: op.id,
+            environment_id: e.id,
+            generation: 1,
+            revision: 0,
+            purpose: SelectionPurpose::Import,
+            caller_label: "main".into(),
+            expires_at: 60,
+            path: "PRIVATE_BACKEND_ONLY".into(),
+            identity: identity("selected"),
+        })
+        .unwrap();
     assert_eq!(
         selections
             .consume(id, &op, SelectionPurpose::Import, "main", 60)

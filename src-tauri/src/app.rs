@@ -2,7 +2,7 @@ use crate::native;
 use securerun_foundation::{binding::*, *};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs::File, sync::Mutex, time::Instant};
-use tauri::{Manager, State, WebviewWindow};
+use tauri::{Emitter, Manager, State, WebviewWindow};
 use uuid::Uuid;
 
 #[derive(Serialize)]
@@ -37,6 +37,7 @@ impl From<Environment> for EnvironmentView {
 #[derive(Serialize)]
 pub struct Snapshot {
     pub engine_generation: u64,
+    pub sequence: u64,
     pub environments: Vec<EnvironmentView>,
     pub mode: &'static str,
     pub mutations_available: bool,
@@ -65,6 +66,7 @@ impl Backend {
     fn snapshot(&self) -> Result<Snapshot> {
         Ok(Snapshot {
             engine_generation: self.store.engine_generation()?,
+            sequence: self.store.sequence()?,
             environments: self
                 .store
                 .environments()?
@@ -80,6 +82,11 @@ impl Backend {
             engine_operations_available: false,
             reason: ErrorCode::CapabilityUnavailable,
         })
+    }
+    fn prune_selections(&mut self) {
+        for id in self.selections.prune(self.started.elapsed().as_secs()) {
+            self.handles.remove(&id);
+        }
     }
     fn flush_diagnostics(&self) -> Result<()> {
         if let Some(profile) = &self.profile {
@@ -156,6 +163,19 @@ fn create_draft(
     let mut backend = locked(&window, &state)?;
     backend.allow_metadata()?;
     let env = backend.store.create_draft(&request.display_name)?;
+    let event = backend
+        .store
+        .next_event(env.id, env.generation, env.desired_revision)?;
+    let env = backend
+        .store
+        .environment(env.id, env.generation, env.desired_revision)?;
+    window
+        .emit_to(
+            tauri::EventTarget::webview_window("main"),
+            "manager-state",
+            event,
+        )
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
     backend.flush_diagnostics()?;
     Ok(env.into())
 }
@@ -229,6 +249,7 @@ async fn select_file(
     }
     let id = Uuid::new_v4();
     let now = backend.started.elapsed().as_secs();
+    backend.prune_selections();
     backend.selections.insert(BoundSelection {
         id,
         operation_id: op.id,
@@ -240,7 +261,7 @@ async fn select_file(
         expires_at: now + 60,
         path,
         identity: lease.identity.clone(),
-    });
+    })?;
     backend.handles.insert(id, lease);
     backend.store.audit(AuditCode::SelectionBound)?;
     backend.flush_diagnostics()?;
@@ -260,6 +281,7 @@ fn prepare_transfer(
     backend.allow_metadata()?;
     let op = backend.store.operation(request.operation_id)?;
     let now = backend.started.elapsed().as_secs();
+    backend.prune_selections();
     let item = backend.selections.consume(
         request.selection_id,
         &op,
@@ -344,6 +366,7 @@ async fn ci_report(
 }
 
 pub fn run() {
+    std::panic::set_hook(Box::new(|_| eprintln!("MANAGER_INTERNAL_ERROR")));
     // Missing engine context never opens/migrates the persistent production profile.
     let owner = match native::current_sid() {
         Ok(v) => v,
@@ -418,7 +441,13 @@ pub fn run() {
             }
             Ok(())
         })
-        .build(tauri::generate_context!())
-        .expect("Application initialization failed");
+        .build(tauri::generate_context!());
+    let app = match app {
+        Ok(value) => value,
+        Err(_) => {
+            eprintln!("APPLICATION_INITIALIZATION_FAILED");
+            return;
+        }
+    };
     app.run(|_, _| {});
 }

@@ -22,6 +22,16 @@ fn encode<T: serde::Serialize>(value: &T) -> Result<String> {
 fn decode<T: serde::de::DeserializeOwned>(text: String) -> Result<T> {
     serde_json::from_str(&text).map_err(|_| AppError::new(ErrorCode::CorruptRecord))
 }
+fn run_migration(db: &mut Connection, sql: &str) -> Result<()> {
+    let tx = db
+        .transaction_with_behavior(TransactionBehavior::Immediate)
+        .map_err(|_| AppError::new(ErrorCode::MigrationFailed))?;
+    tx.execute_batch(sql)
+        .map_err(|_| AppError::new(ErrorCode::MigrationFailed))?;
+    tx.commit()
+        .map_err(|_| AppError::new(ErrorCode::MigrationFailed))?;
+    Ok(())
+}
 
 impl Store {
     pub fn open(path: &Path, owner: &str) -> Result<Self> {
@@ -58,13 +68,7 @@ impl Store {
             if count != 0 {
                 return err(ErrorCode::MigrationFailed);
             }
-            let tx = db
-                .transaction_with_behavior(TransactionBehavior::Immediate)
-                .map_err(db_error)?;
-            tx.execute_batch(include_str!("../migrations/001_initial.sql"))
-                .map_err(|_| AppError::new(ErrorCode::MigrationFailed))?;
-            tx.commit()
-                .map_err(|_| AppError::new(ErrorCode::MigrationFailed))?;
+            run_migration(&mut db, include_str!("../migrations/001_initial.sql"))?;
         }
         let integrity: String = db
             .query_row("PRAGMA quick_check(1)", [], |row| row.get(0))
@@ -381,14 +385,64 @@ impl Store {
             )
             .map_err(db_error)
     }
+    pub fn sequence(&self) -> Result<u64> {
+        self.db
+            .query_row(
+                "SELECT sequence FROM manager_meta WHERE singleton=1",
+                [],
+                |row| row.get(0),
+            )
+            .map_err(db_error)
+    }
+    pub fn next_event(&mut self, id: Uuid, generation: u64, revision: u64) -> Result<StateEvent> {
+        let mut env = self.environment(id, generation, revision)?;
+        let engine_generation = self.engine_generation()?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)
+            .map_err(db_error)?;
+        let updated=tx.execute("UPDATE manager_meta SET sequence=sequence+1 WHERE singleton=1 AND sequence<9223372036854775807",[]).map_err(db_error)?;
+        if updated != 1 {
+            return err(ErrorCode::CorruptRecord);
+        }
+        let seq: u64 = tx
+            .query_row(
+                "SELECT sequence FROM manager_meta WHERE singleton=1",
+                [],
+                |row| row.get(0),
+            )
+            .map_err(db_error)?;
+        env.last_sequence = seq;
+        Self::save_environment(&tx, &env)?;
+        tx.commit().map_err(db_error)?;
+        Ok(StateEvent {
+            environment_id: id,
+            environment_generation: generation,
+            engine_generation,
+            sequence: seq,
+            activity: env.activity,
+            eligibility: env.eligibility,
+            expected_revision: revision,
+            operation_id: env.current_operation,
+        })
+    }
     pub fn reconnect(&mut self) -> Result<u64> {
-        self.db.execute("UPDATE manager_meta SET engine_generation=engine_generation+1 WHERE singleton=1 AND engine_generation<9223372036854775807",[]).map_err(db_error)?;
-        for mut env in self.environments()? {
+        let environments = self.environments()?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)
+            .map_err(db_error)?;
+        let updated=tx.execute("UPDATE manager_meta SET engine_generation=engine_generation+1 WHERE singleton=1 AND engine_generation<9223372036854775807",[]).map_err(db_error)?;
+        if updated != 1 {
+            return err(ErrorCode::CorruptRecord);
+        }
+        for mut env in environments {
             env.activity = Activity::Unknown;
             env.eligibility = Eligibility::Unverified;
             env.verified_revision = None;
-            Self::save_environment(&self.db, &env)?;
+            Self::save_environment(&tx, &env)?;
         }
+        tx.commit().map_err(db_error)?;
         self.engine_generation()
     }
     pub fn apply_event(&mut self, event: &StateEvent) -> Result<bool> {
@@ -516,5 +570,33 @@ impl Store {
             .collect::<std::result::Result<Vec<_>, _>>()
             .map_err(db_error)?;
         rows.into_iter().map(decode).collect()
+    }
+}
+
+#[cfg(test)]
+mod migration_tests {
+    use super::*;
+    #[test]
+    fn t28_partial_migration_failure_rolls_back_schema_and_version() {
+        let mut db = Connection::open_in_memory().unwrap();
+        let error=run_migration(&mut db,"CREATE TABLE partial_fixture(value TEXT); PRAGMA user_version=1; THIS_IS_A_NAMED_FAILURE;").unwrap_err();
+        assert_eq!(error.code, ErrorCode::MigrationFailed);
+        let count: u32 = db
+            .query_row(
+                "SELECT count(*) FROM sqlite_master WHERE name='partial_fixture'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        let version: u32 = db
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!((count, version), (0, 0));
+        run_migration(&mut db, include_str!("../migrations/001_initial.sql")).unwrap();
+        assert_eq!(
+            db.query_row("PRAGMA user_version", [], |r| r.get::<_, u32>(0))
+                .unwrap(),
+            1
+        );
     }
 }

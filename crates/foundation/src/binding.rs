@@ -19,10 +19,13 @@ pub struct Selections {
     entries: HashMap<Uuid, BoundSelection>,
 }
 impl Selections {
-    pub fn insert(&mut self, selection: BoundSelection) -> Uuid {
+    pub fn insert(&mut self, selection: BoundSelection) -> Result<Uuid> {
+        if self.entries.len() >= 32 {
+            return err(ErrorCode::CapabilityUnavailable);
+        }
         let id = selection.id;
         self.entries.insert(id, selection);
-        id
+        Ok(id)
     }
     pub fn consume(
         &mut self,
@@ -54,5 +57,17 @@ impl Selections {
     pub fn invalidate_environment(&mut self, environment_id: Uuid) {
         self.entries
             .retain(|_, item| item.environment_id != environment_id);
+    }
+    pub fn prune(&mut self, now: u64) -> Vec<Uuid> {
+        let expired = self
+            .entries
+            .iter()
+            .filter(|(_, item)| now >= item.expires_at)
+            .map(|(id, _)| *id)
+            .collect::<Vec<_>>();
+        for id in &expired {
+            self.entries.remove(id);
+        }
+        expired
     }
 }

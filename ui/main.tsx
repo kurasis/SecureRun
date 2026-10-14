@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type { Snapshot, StateEvent, AppError } from './contracts';
-import { applyEvent } from './state';
+import { applyEvent, acceptSnapshot } from './state';
 import { strings, type Language } from './strings';
 import './style.css';
 
@@ -14,7 +14,7 @@ function App() {
   const [error, setError] = useState<AppError | null>(null);
   const [search, setSearch] = useState(''); const [name, setName] = useState('');
   const [theme, setTheme] = useState('system'); const t = strings[language];
-  const refresh = async () => { try { setSnapshot(await invoke<Snapshot>('get_snapshot')); setError(null); } catch (error) { const value = error as AppError; setError({ code: value?.code ?? 'BACKEND_UNAVAILABLE', diagnostic_id: value?.diagnostic_id ?? '' }); } };
+  const refresh = async () => { try { const incoming = await invoke<Snapshot>('get_snapshot'); setSnapshot(current => acceptSnapshot(current, incoming)); setError(null); } catch (error) { const value = error as AppError; setError({ code: value?.code ?? 'BACKEND_UNAVAILABLE', diagnostic_id: value?.diagnostic_id ?? '' }); } };
   useEffect(() => { void refresh(); let disposed = false; let unlisten: (() => void) | undefined;
     void listen<StateEvent>('manager-state', event => setSnapshot(current => current ? applyEvent(current, event.payload) : current)).then(value => { if (disposed) value(); else unlisten = value; }).catch(() => {});
     return () => { disposed = true; unlisten?.(); }; }, []);

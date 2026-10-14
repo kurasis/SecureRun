@@ -72,6 +72,32 @@ kill/restart checkpoints already pass in failed runs; the Fenced checkpoint stil
 depends on successful initial provisioning. These partial results do not close
 the native gate.
 
+Run [38636480391](https://github.com/kurasis/SecureRun/actions/runs/38636480391),
+source `d77664d37b9edf2160c6c3a100a62c2a17c45118`, passes all 28 Server adapter
+tests and the diagnostic file/registry/alias checks, then fails the independent
+network gate. Fifteen Server scenarios pass, 27 fail or lack provisioning, and
+the one different-administrator route is explicitly not applicable. The next
+source records the complete typed network results even when verification fails.
+No failed result is relabeled Verified. Fresh diagnostics retain the entire
+compiled sibling layer. New lab fixtures test actual old-box access to a new
+root and invoke production mutation with a same-owner process in real session 0
+while the standard manager runs in the interactive session. Their native results
+remain pending.
+
+Run [38637643678](https://github.com/kurasis/SecureRun/actions/runs/38637643678),
+source `4dcf2295ce0bd18adb619dbbf942e3ef02c17965`, passes 28 adapter tests on each
+platform. Each platform passes 15 scenarios, fails 28 and records one applicable
+helper-absence exclusion. Reviewed typed results show denied files/aliases/shares,
+blocked parent/child sockets and DNS/ICMP, zero target DNS observations and zero
+ICMP echo-counter change. The verifier incorrectly rejected raw socket creation
+without attempting traffic. Both failed reports are retained in the manifest.
+The correction sends a valid checksummed, uniquely tagged raw ICMP request,
+observes its reply and checks the independent host echo counter; creation alone
+is neither egress evidence nor a containment failure. Unboxed raw positive
+controls distinguish an available channel from ordinary-user denial. New fresh
+diagnostic listeners also cover unsolicited incoming TCP/UDP on IPv4/IPv6, with
+explicit online positive controls. These corrected native checks remain pending.
+
 The lab now builds actual x86 probes alongside the native binary, plus emulated
 x64 probes on ARM. Each architecture gets a fresh diagnostic box. Controlled
 checks include IPv4/IPv6 TCP/UDP, DNS API/broker requests with distinct cached

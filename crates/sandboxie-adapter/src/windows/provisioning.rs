@@ -1241,6 +1241,7 @@ struct Canary {
     metadata_short: Option<String>,
     sibling_short: Option<String>,
     output: String,
+    incoming_output: String,
     registry_leaf: String,
     ports: [u16; 6],
     dns_target: String,
@@ -1269,12 +1270,13 @@ struct CanaryReport {
     standard_read_visible: bool,
     registry_virtualized: bool,
     sockets: [bool; 6],
+    incoming: [bool; 4],
     dns_network: bool,
     dns_cached_answer: bool,
     icmp_echo: bool,
     smb_denied: bool,
     mapped_share_denied: Option<bool>,
-    raw_socket_created: bool,
+    raw: network::RawReport,
     child_network: ChildNetwork,
 }
 fn hex(bytes: &[u8]) -> String {
@@ -1475,6 +1477,7 @@ pub fn run_canary(encoded: &str) -> i32 {
             &canary.read_only,
             &canary.metadata,
             &canary.output,
+            &canary.incoming_output,
         ] {
             literal_path(p)?;
         }
@@ -1507,6 +1510,7 @@ pub fn run_canary(encoded: &str) -> i32 {
             .err()
             .is_some_and(|e| e.raw_os_error() == Some(5));
         let child_network = spawn_canary_child(&canary)?;
+        let incoming = network::incoming_probe(&canary.incoming_output)?;
         let network = exercise_network(&canary);
         let report = CanaryReport {
             member: true,
@@ -1532,10 +1536,11 @@ pub fn run_canary(encoded: &str) -> i32 {
             standard_read_visible: original == b"SYNTHETIC_HOST_CANARY",
             registry_virtualized: registry_value(&canary.registry_leaf, Some(2)) == Ok(2),
             sockets: network.sockets,
+            incoming,
             dns_network: network.dns_network,
             dns_cached_answer: network::dns_query(&canary.dns_cached, true),
             icmp_echo: network.icmp_echo,
-            raw_socket_created: network::raw_socket_created(),
+            raw: network::raw_echo(&canary.registry_leaf),
             child_network,
             smb_denied: denied(network::SHARE_CANARY),
             mapped_share_denied: canary.mapped_share.then(|| denied(network::MAPPED_CANARY)),
@@ -2100,10 +2105,23 @@ impl NativeEngine {
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
         let endpoints = Endpoints::new()?;
         let dns = network::DnsControl::new(&nonce, &self.profile.join("metadata"))?;
+        let raw_host = network::raw_echo(&format!("control-{nonce}"));
+        if raw_host.created && !raw_host.echo_received {
+            return Err("RAW_CONTROL_POSITIVE_FAILED");
+        }
         let icmp_before = network::icmp_sent()?;
         let smb_positive = network::share_positive(network::SHARE_CANARY);
         let mapped_positive = network::share_positive(network::MAPPED_CANARY);
         let output = canary_base.join(format!("report-{nonce}.json"));
+        let incoming_output = canary_base.join(format!("incoming-{nonce}.json"));
+        let incoming = network::IncomingControl::new(
+            PathBuf::from(self.root_for(id)),
+            incoming_output
+                .file_name()
+                .and_then(|v| v.to_str())
+                .ok_or("CANARY_SCOPE_INVALID")?
+                .to_owned(),
+        );
         let canary = Canary {
             box_name: diagnostic.name(),
             write: write.to_string_lossy().into(),
@@ -2117,6 +2135,7 @@ impl NativeEngine {
             metadata_short: aliases::short(&metadata.to_string_lossy()),
             sibling_short: aliases::short(&sibling.to_string_lossy()),
             output: output.to_string_lossy().into(),
+            incoming_output: incoming_output.to_string_lossy().into(),
             registry_leaf: nonce.clone(),
             ports: endpoints.ports,
             dns_target: dns.target_name.clone(),
@@ -2208,6 +2227,7 @@ impl NativeEngine {
         let observed = endpoints.observed();
         fenced?;
         let report = result?;
+        let incoming_observed = incoming.observed()?;
         // Preserve the typed, minimized result even when a mandatory check
         // below refuses verification. These booleans contain no target data
         // and never constitute an enforcement receipt on their own.
@@ -2215,7 +2235,7 @@ impl NativeEngine {
             self.profile
                 .join("metadata")
                 .join(format!("probe-result-{nonce}.json")),
-            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"server_observed":observed,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
+            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"server_observed":observed,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
                 .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
@@ -2280,17 +2300,20 @@ impl NativeEngine {
         if report.child_network.sockets != expected
             || report.child_network.dns_network == owned.compiled.offline
             || report.child_network.icmp_echo == owned.compiled.offline
-            || report.raw_socket_created
+            || (owned.compiled.offline && report.raw.echo_received)
+            || (!owned.compiled.offline && report.raw.created && !report.raw.echo_received)
             || report.dns_network == owned.compiled.offline
             || dns.observed() == owned.compiled.offline
             || report.icmp_echo == owned.compiled.offline
             || (owned.compiled.offline && network::icmp_sent()? != icmp_before)
             || report.sockets != expected
             || observed != expected
+            || report.incoming != [!owned.compiled.offline; 4]
+            || incoming_observed != [!owned.compiled.offline; 4]
         {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")
@@ -2298,6 +2321,12 @@ impl NativeEngine {
             serde_json::to_vec(&evidence).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-        Ok(fingerprint(&(FAMILY, probe_hash, &report, observed)))
+        Ok(fingerprint(&(
+            FAMILY,
+            probe_hash,
+            &report,
+            observed,
+            incoming_observed,
+        )))
     }
 }

@@ -1,0 +1,408 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_target_launches": 0,
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "elevated_helper": false
+    },
+    "name": "missing_context_cannot_open_control_plane",
+    "id": "T58"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "global_setting": "NetworkEnableWFP=y",
+      "os_security_settings_modified": false,
+      "product_global_writes": 0,
+      "driver_flag_verified": true,
+      "lab_installation_reviewed": true
+    },
+    "name": "explicit_lab_wfp_prerequisite",
+    "id": "T39"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reason": "PAID_PRESET_UNVERIFIED",
+      "paid_features_enabled": 0
+    },
+    "name": "paid_presets_rejected_without_entitlement",
+    "id": "T14"
+  },
+  {
+    "status": "FAILED",
+    "code": "NETWORK_ENFORCEMENT_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "native_pending_root_and_verified_policy",
+    "id": "T55"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "baseline_effective_file_registry_network_evidence",
+    "id": "T08"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t09",
+    "id": "T09"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t10",
+    "id": "T10"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t11",
+    "id": "T11"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t12",
+    "id": "T12"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t31",
+    "id": "T31"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_baseline_report_t40",
+    "id": "T40"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_target_launches": 0,
+      "status": "PASSED",
+      "actual_boxed_worker_executed": true,
+      "worker_reason": "MANAGER_CONTEXT_UNSAFE",
+      "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+      "claimed_unboxed_parent_accepted": false,
+      "privileged_helper": false,
+      "actual_boxed_manager_executed": true,
+      "control_dispatched": false
+    },
+    "name": "boxed_production_manager_and_worker_refuse_forged_parent",
+    "id": "T58"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_target_launches": 0,
+      "status": "PASSED",
+      "actual_boxed_worker_executed": true,
+      "worker_reason": "MANAGER_CONTEXT_UNSAFE",
+      "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+      "claimed_unboxed_parent_accepted": false,
+      "privileged_helper": false,
+      "actual_boxed_manager_executed": true,
+      "control_dispatched": false
+    },
+    "name": "boxed_same_sid_client_cannot_claim_unboxed_authority",
+    "id": "T47"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "privileged_helper": false,
+      "uac_denial_subcase": "NOT_APPLICABLE_NO_ELEVATION_ROUTE",
+      "actual_boxed_control_refused": true
+    },
+    "name": "boxed_ipc_client_has_no_privileged_route",
+    "id": "T27"
+  },
+  {
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "production_target_launches": 0,
+      "reason": "NO_PRODUCT_ELEVATION_OR_HELPER_ROUTE",
+      "original_profile_authority": "OS_CURRENT_USER"
+    },
+    "name": "different_admin_uac_route_is_absent",
+    "id": "T52"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "literal_grammar_and_root_grants_rejected",
+    "id": "T37"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "idempotent_create_does_not_dispatch_and_payload_replay_is_refused",
+    "id": "T17"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "stale_revision_cannot_modify_policy",
+    "id": "T17"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "online_policy_keeps_file_and_sibling_protection",
+    "id": "T13"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "wfp_loss_invalidates_offline_policy",
+    "id": "T39"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "external_owned_setting_requires_reviewed_repair",
+    "id": "T17"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "product_password_prompt": false,
+      "protected_control_refused": true,
+      "reason": "PASSWORD_PROTECTED_CONFIGURATION",
+      "password_value_read_into_product": false,
+      "secret_command_line_values": 0
+    },
+    "name": "configuration_password_refused_without_secret_transport",
+    "id": "T37"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "unsafe_automation_not_executed": true,
+      "inherited_global_template_rejected": true,
+      "unmanaged_sections_unchanged": true
+    },
+    "name": "global_template_changes_block_without_overwrite",
+    "id": "T17"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "populated_readonly_view_change_preserves_overlay_and_restores_it",
+    "id": "T38"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "new_supported_path_grant_keeps_tested_family",
+    "id": "T53"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "same_path_root_replacement_is_not_adopted",
+    "id": "T55"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "reparse_and_dos_alias_grants_rejected",
+    "id": "T59"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_subst_namespace_is_rejected_before_mutation",
+    "id": "T59"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "polluted_existing_box_does_not_host_diagnostic",
+    "id": "T51"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "running_sibling_prevents_any_new_storage",
+    "id": "T60"
+  },
+  {
+    "status": "FAILED",
+    "code": "RUNNING_POLICY_GATE_NOT_OBSERVED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "running_policy_mutation_is_deferred",
+    "id": "T16"
+  },
+  {
+    "status": "FAILED",
+    "code": "SESSION_PROVISIONING_NOT_READY",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_other_session_prevents_policy_and_sibling_mutation",
+    "id": "T16"
+  },
+  {
+    "status": "FAILED",
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "future_sibling_denials_verified_before_root_creation",
+    "id": "T60"
+  },
+  {
+    "status": "FAILED",
+    "code": "NETWORK_ENFORCEMENT_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "production_provisioning_as_actual_standard_user",
+    "id": "T35"
+  },
+  {
+    "status": "FAILED",
+    "code": "POLICY_CASE_FAILED",
+    "exception_type": "System.Management.Automation.ItemNotFoundException",
+    "name": "second_standard_user_cannot_read_root_or_metadata",
+    "id": "T35"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "protected_status": false,
+      "conflict_after_failed_probe": true,
+      "status": "PASSED",
+      "production_target_launches": 0,
+      "standard_user": true,
+      "root_binding_present": true,
+      "reason": "DIAGNOSTIC_EXECUTION_FAILED",
+      "accepted_config_without_enforcement": true
+    },
+    "name": "accepted_writes_without_independent_enforcement_remain_conflicted",
+    "id": "T15"
+  },
+  {
+    "status": "FAILED",
+    "code": "METADATA_BASELINE_NOT_VERIFIED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules",
+    "id": "T57"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "conflict_after_restart": true,
+      "launch_blocked": true,
+      "actions_marker_present": true,
+      "real_process_interruption": true,
+      "standard_user": true,
+      "status": "PASSED",
+      "stage": "Intent",
+      "automatic_replay": false
+    },
+    "name": "actual_worker_interruption_intent",
+    "id": "T18"
+  },
+  {
+    "status": "FAILED",
+    "code": "FAULT_BASELINE_NOT_VERIFIED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "actual_worker_interruption_fenced",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actions_marker_present": true,
+      "conflict_after_restart": true,
+      "launch_blocked": true,
+      "real_process_interruption": true,
+      "stage": "Writing",
+      "status": "PASSED",
+      "automatic_replay": false,
+      "standard_user": true
+    },
+    "name": "actual_worker_interruption_writing",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "stage": "Readback",
+      "status": "PASSED",
+      "conflict_after_restart": true,
+      "standard_user": true,
+      "automatic_replay": false,
+      "real_process_interruption": true,
+      "actions_marker_present": true,
+      "launch_blocked": true
+    },
+    "name": "actual_worker_interruption_readback",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "stage": "PendingRoot",
+      "conflict_after_restart": true,
+      "automatic_replay": false,
+      "real_process_interruption": true,
+      "standard_user": true,
+      "launch_blocked": true,
+      "status": "PASSED",
+      "actions_marker_present": true
+    },
+    "name": "actual_worker_interruption_pendingroot",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_user": true,
+      "real_process_interruption": true,
+      "launch_blocked": true,
+      "conflict_after_restart": true,
+      "automatic_replay": false,
+      "actions_marker_present": true,
+      "status": "PASSED",
+      "stage": "RootBound"
+    },
+    "name": "actual_worker_interruption_rootbound",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actions_marker_present": true,
+      "launch_blocked": true,
+      "conflict_after_restart": true,
+      "status": "PASSED",
+      "stage": "Verifying",
+      "standard_user": true,
+      "real_process_interruption": true,
+      "automatic_replay": false
+    },
+    "name": "actual_worker_interruption_verifying",
+    "id": "T18"
+  }
+]

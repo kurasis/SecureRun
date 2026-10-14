@@ -1,9 +1,9 @@
 {
   "phase": "P05",
   "result": "BLOCKED",
-  "run_id": 38615378604,
-  "tested_commit": "dbf3206e3dec25e56fc4e30b4fc0bb21b5f422b9",
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38615378604",
+  "run_id": 38637643678,
+  "tested_commit": "4dcf2295ce0bd18adb619dbbf942e3ef02c17965",
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38637643678",
   "files": [
     {
       "path": "investigation-dbf3206/windows-2025/run-summary.json",
@@ -24,8 +24,168 @@
       "path": "investigation-dbf3206/windows-2025/engine-events.json",
       "sha256": "dc8e7f36b36e5d90483bda4ec32fb495b6f5ea399fa0f7e0a79ac99296cf58a4",
       "size": 155
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/boxed-policy.json",
+      "sha256": "8ab9ec2e34088d82c81c89c635ab2025982c787294f35ad1908038404aff46a9",
+      "size": 348
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/engine-events.json",
+      "sha256": "dc8e7f36b36e5d90483bda4ec32fb495b6f5ea399fa0f7e0a79ac99296cf58a4",
+      "size": 155
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-fenced.json",
+      "sha256": "e97fba338ab5812201c31f7e4a0bec65c1c677a87c4aa932a5047ade519596bc",
+      "size": 237
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-intent.json",
+      "sha256": "139a32f83debbb4323f91bc73304a07d1ec068aa808523a4269d8cfc7e650b53",
+      "size": 241
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-pendingroot.json",
+      "sha256": "169967930089229302a1b97e28ab53fc815f8520104cc4b6ca2ce98d6c9544c1",
+      "size": 246
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-readback.json",
+      "sha256": "97831e57590676390ecdf9c147a7e52226fb2b4dd906d194b59e7879cce4b494",
+      "size": 243
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-rootbound.json",
+      "sha256": "e63431420115b80b8c5f4633b5c51c3e7a3915396e59ced6a135f44eb23ded2f",
+      "size": 244
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-verifying.json",
+      "sha256": "b378c27b70c2136d11d83c910e6b2048712fe266c5fe178f8c8a5f8c9c32afcd",
+      "size": 244
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/fault-writing.json",
+      "sha256": "6e4a36aae3a913154c1669b6e62e3eecc7e17b945d4b072ad5d9d717063ea3bc",
+      "size": 242
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/metadata-authority.json",
+      "sha256": "2a6cd3aaac37312949c9e6d0e9d6dff4179d57af8a01e65223aba05a709f50c6",
+      "size": 163
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/no-enforcement.json",
+      "sha256": "1443db6653d58dcb6b4512b6d7818507db252dbd0e461d9390bef72025530e87",
+      "size": 285
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/policy-cases.json",
+      "sha256": "32a53ad364ec80e6900b6f533246cda96aa5ef961bba0dde57e0ff81fa922b08",
+      "size": 12248
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/probe-result-9e697ee09505409eafe09ff33ded2dc5.json",
+      "sha256": "7d7e39816783c53f90f4efa35cd13411608fa5c29497aab88142819cc49c8eec",
+      "size": 886
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/run-summary.json",
+      "sha256": "8b851480a7f00b1b9ff5f6df111053813a17dbfb13bdc9a48c4346edc3e85c08",
+      "size": 703
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/stage.json",
+      "sha256": "6502e84b089f0574f6837659d06f8a5156ef4cc7606830e712c8a93dc65abfc4",
+      "size": 152
+    },
+    {
+      "path": "investigation-4dcf229/windows-11-arm/standard-user.json",
+      "sha256": "7ee65c27cb4f38ec0c913aca9562dae6c3c4025f873e14c92660bc1ca079053e",
+      "size": 124
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/boxed-policy.json",
+      "sha256": "6fa71aad5b4692168858e0d5551a91c4ee7964464aa90b94d64201cfe2427058",
+      "size": 348
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/engine-events.json",
+      "sha256": "dc8e7f36b36e5d90483bda4ec32fb495b6f5ea399fa0f7e0a79ac99296cf58a4",
+      "size": 155
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-fenced.json",
+      "sha256": "ad9e96becc44e395266caeb3c21d8d137c4f481468e5be17e1ef946dbbd8b956",
+      "size": 237
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-intent.json",
+      "sha256": "287def3829ba91cc67e4007ac5cd185126ea6eb2f94838cfdf6c5efaf2583587",
+      "size": 241
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-pendingroot.json",
+      "sha256": "32b81fae00f7af9a728461865b8bf9dc87fe790b4b1f967c6e9e7555ca6eae12",
+      "size": 246
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-readback.json",
+      "sha256": "79315962124fa0784703e0243035ca97291da484904f314569afe91ad4d610b8",
+      "size": 243
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-rootbound.json",
+      "sha256": "b6c9add9393e62c957eff1360e921d4e3b079e864f887eabed93d3a6361d52e0",
+      "size": 244
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-verifying.json",
+      "sha256": "21f09dd990cda4119b509ac35a740cee7a494338548b03f7c10ad9bb1c8678c7",
+      "size": 244
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/fault-writing.json",
+      "sha256": "dc95c7a6e51ae881a66c7f30ec98dc61b5b183ed414e7936774b68d999ab626b",
+      "size": 242
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/metadata-authority.json",
+      "sha256": "7a6273d2fdba0325dde971cc6ca7c99c15bb613ae1aaff872d3a7e4e2c771563",
+      "size": 163
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/no-enforcement.json",
+      "sha256": "baed7ff738abe0663440ced7e2d4ac851d77f88d4b26769765a5bcaf8c033c7c",
+      "size": 285
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/policy-cases.json",
+      "sha256": "0bda8f89ab202833da54c74b6d472348843660b6fc243cb86458647efd4ead2a",
+      "size": 12248
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/probe-result-2b81f87958334895b9658c83697e4dd4.json",
+      "sha256": "7d7e39816783c53f90f4efa35cd13411608fa5c29497aab88142819cc49c8eec",
+      "size": 886
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/run-summary.json",
+      "sha256": "f3abe878cd7be1d9c5654ce258b65498d2accfb680dc4cb4cd9cce10785129ff",
+      "size": 703
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/stage.json",
+      "sha256": "ff6bd066e32c6d23cc84c090b270a4108a2baf1cd4fc15b6cb916a92f1c43917",
+      "size": 152
+    },
+    {
+      "path": "investigation-4dcf229/windows-2025/standard-user.json",
+      "sha256": "f5f273cc149c88293f4bb9f30cc3a8c032cef909a5c941e557d3b4ef1121e384",
+      "size": 124
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Failed structured investigation preserved. DNS positive control failed before target dispatch; full native phase and P03/P04 regressions remain pending."
+  "note": "Failed native investigation preserved on both platforms. Socket creation was incorrectly treated as egress; typed results show blocked socket/DNS/ICMP flows and zero observed echo traffic. Full P05 and final P03/P04 gates remain pending."
 }

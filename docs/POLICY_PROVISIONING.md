@@ -89,8 +89,11 @@ Original RPC support can outlive the fixed probe. The private diagnostic stop
 validates this worker's generated box, exact current section, marker and held
 root identity, then checks held process birth, driver box SID/membership, actual
 token owner and critical state before termination. The original service chooses
-SYSTEM or a WTS session token for its signed protected RpcSs image; that support
-identity is separate from the manager's original user and storage authority.
+SYSTEM or a WTS session token, and the driver's token restriction can substitute
+Anonymous Logon in the primary token. These support identities are separate from
+the manager's original user and storage authority. Only the exact signed protected
+original RpcSs and DcomLaunch images are accepted for such diagnostic companions;
+driver box SID, held process birth and current membership must still match.
 There is no caller-selected process stop or product Stop command in P05.
 Stored verification binds the current manager/probe binaries and original engine;
 updating code invalidates cached proof rather than retaining a Verified label.
@@ -98,7 +101,12 @@ updating code invalidates cached proof rather than retaining a Verified label.
 Current probes check actual file and registry virtualization, explicit read/write
 denials, metadata/sibling denials, ordinary host visibility and controlled IPv4/
 IPv6 TCP/UDP handshakes with independent host server positive controls. Minimized
-probe reports and numeric failed exit statuses contain no paths, arguments, SIDs,
+fresh listener tests also check unsolicited incoming TCP/UDP on both address
+families. Raw ICMP uses a valid checksummed unique synthetic request and reply,
+with independent host echo observations; a socket handle alone is not egress.
+Unboxed raw controls explicitly distinguish ordinary-user denial from an
+available transport. Minimized
+probe results, verified receipts and numeric failed exit statuses contain no paths, arguments, SIDs,
 environment variables or configuration passwords. The phase report must identify
 remaining DNS/broker, SMB/mapped-drive, ICMP, alias and interruption coverage until
 their actual production-path tests pass. User targets remain unavailable until

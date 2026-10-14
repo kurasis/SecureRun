@@ -107,9 +107,14 @@ try {
     foreach($id in @('T09','T10','T11','T12','T31','T40')) {
         Case $id ('actual_baseline_report_'+$id.ToLowerInvariant()) {
             Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'ACTUAL_ENFORCEMENT_REPORTS_REQUIRED'
-            foreach($p in $reports){Require ($p.report.member -and $p.report.blocked_read -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied -and $p.report.read_only_read -and $p.report.read_only_write_denied -and $p.report.registry_virtualized -and $p.report.standard_read_visible -and $p.report.smb_denied -and $p.smb_host_positive -and $p.mapped_share_host_positive -and $p.report.mapped_share_denied -and -not $p.report.dns_network -and -not $p.report.child_network.dns_network -and -not $p.report.icmp_echo -and -not $p.report.raw_socket_created -and @($p.report.sockets|Where-Object {$_}).Count -eq 0 -and @($p.report.child_network.sockets|Where-Object {$_}).Count -eq 0) 'ACTUAL_BASELINE_REPORT_FAILED'}
+            foreach($p in $reports){Require ($p.report.member -and $p.report.blocked_read -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied -and $p.report.read_only_read -and $p.report.read_only_write_denied -and $p.report.registry_virtualized -and $p.report.standard_read_visible -and $p.report.smb_denied -and $p.smb_host_positive -and $p.mapped_share_host_positive -and $p.report.mapped_share_denied -and -not $p.report.dns_network -and -not $p.report.child_network.dns_network -and -not $p.report.icmp_echo -and -not $p.report.raw.echo_received -and $p.icmp_host_echo_delta -eq 0 -and @($p.report.sockets|Where-Object {$_}).Count -eq 0 -and @($p.report.child_network.sockets|Where-Object {$_}).Count -eq 0) 'ACTUAL_BASELINE_REPORT_FAILED'}
             @{reports=$reports;actual_native_path=$true;scoped_scenario=$id}
         }
+    }
+    Case 'T12' 'unsolicited_incoming_ipv4_ipv6_tcp_udp_denied' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'ACTUAL_INCOMING_REPORTS_REQUIRED'
+        foreach($p in $reports){Require ($p.report.incoming.Count -eq 4 -and @($p.report.incoming|Where-Object {$_}).Count -eq 0 -and $p.incoming_host_observed.Count -eq 4 -and @($p.incoming_host_observed|Where-Object {$_}).Count -eq 0) 'UNSOLICITED_INCOMING_TRAFFIC_ALLOWED'}
+        @{actual_reports=$reports;channels=@('TCP_IPV4','TCP_IPV6','UDP_IPV4','UDP_IPV6');inferred_mock_enforcement=$false}
     }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
     foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1','p05_metadata.ps1','p05_boxed.ps1','p05_noenforcement.ps1','p05_sessions.ps1','p05_lab.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
@@ -175,7 +180,9 @@ try {
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired 'STANDARD_ONLINE')}
         Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
         Require ($environment.stage -eq 'VERIFIED' -and $environment.compiled.section.BlockNetworkFiles[0] -eq 'y') 'ONLINE_BASELINE_LOST'
-        @{controlled_tcp_udp_ipv4_ipv6_positive=$true;host_files_unchanged=$true;mandatory_denials_retained=$true;network_shares_not_granted=$true}
+        $reports=@(Probe-Reports|Where-Object {@($_.report.sockets|Where-Object {$_}).Count -eq 6});Require ($reports.Count -ge 2) 'ONLINE_POSITIVE_REPORTS_MISSING'
+        foreach($p in $reports){Require (@($p.report.incoming|Where-Object {$_}).Count -eq 4 -and @($p.incoming_host_observed|Where-Object {$_}).Count -eq 4) 'ONLINE_INCOMING_POSITIVE_FAILED'}
+        @{controlled_tcp_udp_ipv4_ipv6_positive=$true;host_files_unchanged=$true;mandatory_denials_retained=$true;network_shares_not_granted=$true;actual_online_reports=$reports}
     }
     Case 'T39' 'wfp_loss_invalidates_offline_policy' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED'

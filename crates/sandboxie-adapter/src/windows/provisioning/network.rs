@@ -8,6 +8,177 @@ use windows_sys::Win32::NetworkManagement::{Dns::*, IpHelper::*};
 
 pub(super) const SHARE_CANARY: &str = "\\\\127.0.0.1\\SecureRunP05Synthetic\\canary.txt";
 pub(super) const MAPPED_CANARY: &str = "Q:\\canary.txt";
+
+// Fresh boxed listeners test unsolicited incoming traffic as well as replies
+// on established outbound flows. Four OS-assigned ports are the entire private
+// rendezvous; neither peer supplies a remote address or executable.
+pub(super) fn incoming_probe(output: &str) -> R<[bool; 4]> {
+    let mut tcp = Vec::new();
+    let mut udp = Vec::new();
+    let mut ports = [0u16; 4];
+    for (i, address) in ["127.0.0.1:0", "[::1]:0"].iter().enumerate() {
+        let listener = std::net::TcpListener::bind(address).ok();
+        if let Some(listener) = &listener {
+            listener
+                .set_nonblocking(true)
+                .map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?;
+            ports[i] = listener
+                .local_addr()
+                .map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?
+                .port();
+        }
+        tcp.push(listener);
+        let socket = std::net::UdpSocket::bind(address).ok();
+        if let Some(socket) = &socket {
+            socket
+                .set_read_timeout(Some(Duration::from_millis(900)))
+                .map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?;
+            ports[i + 2] = socket
+                .local_addr()
+                .map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?
+                .port();
+        }
+        udp.push(socket);
+    }
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(output)
+        .map_err(|_| "INCOMING_PROBE_REPORT_UNAVAILABLE")?;
+    file.write_all(&serde_json::to_vec(&ports).map_err(|_| "INCOMING_PROBE_REPORT_INVALID")?)
+        .map_err(|_| "INCOMING_PROBE_REPORT_UNAVAILABLE")?;
+    file.sync_all()
+        .map_err(|_| "INCOMING_PROBE_REPORT_UNAVAILABLE")?;
+    drop(file);
+    let mut result = [false; 4];
+    for (i, listener) in tcp.into_iter().enumerate() {
+        let Some(listener) = listener else { continue };
+        let clock = Instant::now();
+        while clock.elapsed() < Duration::from_millis(1800) {
+            if let Ok((mut socket, peer)) = listener.accept() {
+                if peer.ip().is_loopback() {
+                    let _ = socket.set_read_timeout(Some(Duration::from_millis(900)));
+                    let mut bytes = [0u8; 1];
+                    result[i] = socket.read_exact(&mut bytes).is_ok()
+                        && bytes == *b"P"
+                        && socket.write_all(b"R").is_ok();
+                }
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+    for (i, socket) in udp.into_iter().enumerate() {
+        if let Some(socket) = socket {
+            let mut bytes = [0u8; 1];
+            if let Ok((1, peer)) = socket.recv_from(&mut bytes) {
+                result[i + 2] = peer.ip().is_loopback()
+                    && bytes == *b"P"
+                    && socket.send_to(b"R", peer).is_ok_and(|n| n == 1);
+            }
+        }
+    }
+    Ok(result)
+}
+
+pub(super) struct IncomingControl {
+    stop: Arc<AtomicBool>,
+    thread: Option<std::thread::JoinHandle<R<[bool; 4]>>>,
+}
+impl IncomingControl {
+    pub(super) fn new(root: PathBuf, leaf: String) -> Self {
+        let stop = Arc::new(AtomicBool::new(false));
+        let stopped = stop.clone();
+        let thread = std::thread::spawn(move || {
+            let clock = Instant::now();
+            let ports: [u16; 4] = loop {
+                if clock.elapsed() > Duration::from_secs(20) || stopped.load(Ordering::SeqCst) {
+                    return Err("INCOMING_PROBE_REPORT_MISSING");
+                }
+                if let Ok(path) = locate_report(&root, &leaf)
+                    && let Ok(mut file) = lease(&path, false)
+                {
+                    let mut bytes = Vec::new();
+                    if Read::by_ref(&mut file)
+                        .take(129)
+                        .read_to_end(&mut bytes)
+                        .is_ok()
+                        && bytes.len() <= 128
+                        && let Ok(ports) = serde_json::from_slice::<[u16; 4]>(&bytes)
+                        && ports.iter().all(|port| *port == 0 || *port >= 1024)
+                    {
+                        break ports;
+                    }
+                }
+                std::thread::sleep(Duration::from_millis(20));
+            };
+            // Exercise channels concurrently: a blocked IPv4 connect must not
+            // consume the IPv6 listener's or UDP receiver's observation window.
+            let jobs = ports
+                .into_iter()
+                .enumerate()
+                .map(|(i, port)| {
+                    std::thread::spawn(move || {
+                        if port == 0 {
+                            return false;
+                        }
+                        let address = if i % 2 == 0 {
+                            std::net::SocketAddr::from(([127, 0, 0, 1], port))
+                        } else {
+                            std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], port))
+                        };
+                        let mut bytes = [0u8; 1];
+                        if i < 2 {
+                            let Ok(mut socket) = std::net::TcpStream::connect_timeout(
+                                &address,
+                                Duration::from_millis(900),
+                            ) else {
+                                return false;
+                            };
+                            let _ = socket.set_read_timeout(Some(Duration::from_millis(900)));
+                            socket.write_all(b"P").is_ok()
+                                && socket.read_exact(&mut bytes).is_ok()
+                                && bytes == *b"R"
+                        } else {
+                            let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+                            let Ok(socket) = std::net::UdpSocket::bind(bind) else {
+                                return false;
+                            };
+                            let _ = socket.set_read_timeout(Some(Duration::from_millis(1800)));
+                            socket.send_to(b"P", address).is_ok()
+                                && socket.recv(&mut bytes).is_ok_and(|n| n == 1)
+                                && bytes == *b"R"
+                        }
+                    })
+                })
+                .collect::<Vec<_>>();
+            let mut observed = [false; 4];
+            for (i, job) in jobs.into_iter().enumerate() {
+                observed[i] = job.join().map_err(|_| "INCOMING_OBSERVER_FAILED")?;
+            }
+            Ok(observed)
+        });
+        Self {
+            stop,
+            thread: Some(thread),
+        }
+    }
+    pub(super) fn observed(mut self) -> R<[bool; 4]> {
+        self.thread
+            .take()
+            .ok_or("INCOMING_OBSERVER_FAILED")?
+            .join()
+            .map_err(|_| "INCOMING_OBSERVER_FAILED")?
+    }
+}
+impl Drop for IncomingControl {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::SeqCst);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
+}
 pub(super) fn share_positive(path: &str) -> bool {
     std::fs::read(path).is_ok_and(|v| v == b"SYNTHETIC_NETWORK_CANARY")
 }
@@ -41,15 +212,90 @@ pub(super) fn lan_address() -> R<[u8; 4]> {
     }
     Err("LAN_CONTROL_ADDRESS_UNAVAILABLE")
 }
-pub(super) fn raw_socket_created() -> bool {
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RawReport {
+    pub(super) created: bool,
+    pub(super) send_accepted: bool,
+    pub(super) echo_received: bool,
+}
+pub(super) fn raw_echo(nonce: &str) -> RawReport {
     use windows_sys::Win32::Networking::WinSock::*;
+    let mut report = RawReport {
+        created: false,
+        send_accepted: false,
+        echo_received: false,
+    };
+    // Valid ICMP echo request with a unique synthetic payload. Creation of a
+    // socket alone does not prove target-caused network traffic.
+    let payload = format!("SecureRunP05Raw-{nonce}");
+    let mut packet = vec![8u8, 0, 0, 0, 0x50, 0x05, 0, 1];
+    packet.extend_from_slice(payload.as_bytes());
+    let mut sum = 0u32;
+    for pair in packet.chunks(2) {
+        sum += u16::from_be_bytes([pair[0], *pair.get(1).unwrap_or(&0)]) as u32;
+    }
+    while sum > 0xffff {
+        sum = (sum & 0xffff) + (sum >> 16);
+    }
+    packet[2..4].copy_from_slice(&(!(sum as u16)).to_be_bytes());
     unsafe {
         let socket = socket(AF_INET as i32, SOCK_RAW, IPPROTO_ICMP);
         if socket == INVALID_SOCKET {
-            return false;
+            return report;
+        }
+        report.created = true;
+        let timeout = 900u32;
+        setsockopt(
+            socket,
+            SOL_SOCKET,
+            SO_RCVTIMEO,
+            (&timeout as *const u32).cast(),
+            4,
+        );
+        let address = SOCKADDR_IN {
+            sin_family: AF_INET,
+            sin_addr: IN_ADDR {
+                S_un: IN_ADDR_0 {
+                    S_addr: u32::from_ne_bytes([127, 0, 0, 1]),
+                },
+            },
+            ..Default::default()
+        };
+        report.send_accepted = sendto(
+            socket,
+            packet.as_ptr(),
+            packet.len() as i32,
+            0,
+            (&address as *const SOCKADDR_IN).cast(),
+            std::mem::size_of::<SOCKADDR_IN>() as i32,
+        ) == packet.len() as i32;
+        if report.send_accepted {
+            let clock = Instant::now();
+            let mut bytes = [0u8; 512];
+            while clock.elapsed() < Duration::from_millis(950) {
+                let n = recv(socket, bytes.as_mut_ptr(), bytes.len() as i32, 0);
+                if n <= 0 {
+                    break;
+                }
+                let n = n as usize;
+                if n < 20 || bytes[0] >> 4 != 4 {
+                    continue;
+                }
+                let header = (bytes[0] as usize & 15) * 4;
+                if header >= 20
+                    && n == header + packet.len()
+                    && bytes[header..header + 2] == [0, 0]
+                    && bytes[header + 4..header + 8] == packet[4..8]
+                    && bytes[header + 8..n] == packet[8..]
+                {
+                    report.echo_received = true;
+                    break;
+                }
+            }
         }
         closesocket(socket);
-        true
+        report
     }
 }
 

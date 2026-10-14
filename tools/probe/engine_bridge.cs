@@ -395,7 +395,13 @@ public sealed class P02Bridge {
                     bool critical;if(!IsProcessCritical(handle,out critical) || critical)throw new InvalidOperationException("CRITICAL_PROCESS_REJECTED");
                     if(WaitForSingleObject(handle,0)==0)continue;
                     int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
-                    if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn)throw new InvalidOperationException("PROCESS_SCOPE_REJECTED");
+                    if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn){
+                        // A scope observation may race an exit. Never terminate on a
+                        // mismatch; only the retained object's completed wait permits
+                        // a fresh membership sweep, without acting on a reused PID.
+                        if(WaitForSingleObject(handle,1000)==0)continue;
+                        throw new InvalidOperationException("PROCESS_SCOPE_REJECTED_"+unchecked((uint)status).ToString("X8"));
+                    }
                     // An object may naturally exit after authorization. Even if terminate
                     // reports failure, only a signalled retained handle proves completion.
                     TerminateProcess(handle,99);

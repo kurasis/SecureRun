@@ -17,14 +17,8 @@ try {
     $bridge.Set($Box,'AutoRecover','n'); $bridge.Set($Box,'AutoDelete','n')
     $root = $bridge.Root($Box)
     if (Test-Path -LiteralPath $root) { throw 'PREEXISTING_ROOT_NOT_ADOPTED' }
-    $null = New-Item -ItemType Directory -Path $root
-    $acl = [Security.AccessControl.DirectorySecurity]::new()
-    $acl.SetAccessRuleProtection($true,$false)
-    foreach ($sid in @([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))) {
-        $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))
-    }
-    Set-Acl -LiteralPath $root -AclObject $acl
-    $null = $bridge.CaptureRoot($Box)
+    $result.provisioning = $bridge.ProvisionFreshRoot($Box)
+    $result.root_replacement = $bridge.ExerciseRootReplacement($Box)
     $result.standard_user = $true
     $result.configuration_created_by_standard_user = $true
     $result.root_acl_applied_by_standard_user = $true

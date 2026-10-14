@@ -1099,7 +1099,7 @@ pub fn bounded_request(request: &Request) -> Reply {
         // The request is bounded before dispatch; the same job/output/timeout
         // machinery as observation kills the narrow worker on failure.
         let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-        let bytes = capture_child(child, Duration::from_secs(45), Some(data))?;
+        let bytes = capture_child(child, Duration::from_secs(120), Some(data))?;
         let reply: Reply = serde_json::from_slice(&bytes).map_err(|_| "POLICY_RESPONSE_INVALID")?;
         if reply.protocol != 1
             || reply.production_launch_available

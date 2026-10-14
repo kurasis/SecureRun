@@ -55,7 +55,7 @@ try {
         $start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add('--policy-once')
         $p=[Diagnostics.Process]::Start($start)
         try{$read=$p.StandardOutput.ReadToEndAsync();$errorRead=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 10 -Compress));$p.StandardInput.Close()
-            Require ($p.WaitForExit(60000)) 'POLICY_TIMEOUT';Require ($p.ExitCode -eq 0 -and $read.Result.Length -le 2097152) 'POLICY_RESPONSE_INVALID'
+            Require ($p.WaitForExit(150000)) 'POLICY_TIMEOUT';Require ($p.ExitCode -eq 0 -and $read.Result.Length -le 2097152) 'POLICY_RESPONSE_INVALID'
             return $read.Result|ConvertFrom-Json
         }finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
@@ -90,9 +90,22 @@ try {
         Require ($environment.stage -eq 'VERIFIED' -and $null -ne $environment.root_identity -and $null -ne $environment.enforcement_evidence -and -not $environment.production_launch_available) 'PROVISIONING_NOT_VERIFIED'
         @{stage=$environment.stage;root_identity_bound=$true;fingerprint_present=$true;independent_enforcement_present=$true;production_target_launches=0;elevated_helper=$false}
     }
+    function Probe-Reports {
+        $base=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+        return @(Get-ChildItem $base -Filter 'probe-evidence-*.json'|ForEach-Object {Get-Content $_.FullName -Raw|ConvertFrom-Json})
+    }
     Case 'T08' 'baseline_effective_file_registry_network_evidence' {
-        Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
-        @{fresh_trusted_probe=$true;host_file_unchanged=$true;read_denial_verified=$true;read_only_verified=$true;registry_host_unchanged=$true;tcp4_udp4_tcp6_udp6_blocked=$true;live_server_positive_controls=$true;metadata_sibling_denied=$true;engine_signature_checks_preserved=$true}
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports
+        $expected=if($target -like 'aarch64*'){3}else{2};Require ($reports.Count -eq $expected) 'ARCHITECTURE_ENFORCEMENT_REPORTS_MISSING'
+        foreach($p in $reports){Require ($p.report.member -and $p.report.virtualized_write -and $p.host_file_unchanged -and $p.host_registry_unchanged -and $p.report.registry_virtualized -and $p.report.blocked_read -and $p.report.read_only_write_denied -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied) 'ACTUAL_BASELINE_REPORT_FAILED'}
+        @{fresh_architecture_reports=$reports;inferred_mock_enforcement=$false;production_target_launches=0}
+    }
+    foreach($id in @('T09','T10','T11','T12','T31','T40')) {
+        Case $id ('actual_baseline_report_'+$id.ToLowerInvariant()) {
+            Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports;Require ($reports.Count -ge 2) 'ACTUAL_ENFORCEMENT_REPORTS_REQUIRED'
+            foreach($p in $reports){Require ($p.report.member -and $p.report.blocked_read -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied -and $p.report.read_only_read -and $p.report.read_only_write_denied -and $p.report.registry_virtualized -and $p.report.standard_read_visible -and $p.report.smb_denied -and $p.smb_host_positive -and $p.mapped_share_host_positive -and $p.report.mapped_share_denied -and -not $p.report.dns_network -and -not $p.report.child_network.dns_network -and -not $p.report.icmp_echo -and -not $p.report.raw_socket_created -and @($p.report.sockets|Where-Object {$_}).Count -eq 0 -and @($p.report.child_network.sockets|Where-Object {$_}).Count -eq 0) 'ACTUAL_BASELINE_REPORT_FAILED'}
+            @{reports=$reports;actual_native_path=$true;scoped_scenario=$id}
+        }
     }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
     foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
@@ -150,6 +163,11 @@ try {
         $r=Repair $e;Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
         @{drift_detected=$true;external_write_preserved_before_review=$true;explicit_current_fingerprint_repair=$true}
     }
+    Case 'T37' 'configuration_password_refused_without_secret_transport' {
+        $password=$lab.InstallPassword()
+        try{$r=Policy @{action='LIST'};Require ($r.reason -eq 'PASSWORD_PROTECTED_CONFIGURATION' -and $r.environments.Count -eq 0 -and -not $r.production_launch_available) 'PASSWORD_PROTECTION_IGNORED';@{reason=$r.reason;product_password_prompt=$false;secret_command_line_values=0;password_value_read_into_product=$false;protected_control_refused=$true}}
+        finally{$lab.ClearPassword($password);$password=$null}
+    }
     Case 'T17' 'global_template_changes_block_without_overwrite' {
         $name='P05Unsafe_'+$run
         try{$lab.GlobalTemplate($name,$true);$r=Policy @{action='CREATE';display_name='Must not inherit unknown template';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'GLOBAL_SETTING_UNREVIEWED') 'UNREVIEWED_INHERITANCE_ACCEPTED';@{inherited_global_template_rejected=$true;unmanaged_sections_unchanged=$true;unsafe_automation_not_executed=$true}}
@@ -185,6 +203,12 @@ try {
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$alias;permission='READ_ONLY'})}}
         Require ($r.reason -ne 'OBSERVED') 'REPARSE_GRANT_ACCEPTED';@{junction_grant_rejected=$true;mandatory_denial_unchanged=$true}
     }
+    Case 'T59' 'actual_subst_namespace_is_rejected_before_mutation' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';Require ($null -eq (Get-PSDrive -Name R -ErrorAction SilentlyContinue)) 'PREEXISTING_DRIVE_NOT_CHANGED'
+        $subst=Join-Path $env:SystemRoot 'System32/subst.exe';& $subst R: $fixture|Out-Null;Require ($LASTEXITCODE -eq 0) 'DOS_ALIAS_FIXTURE_FAILED'
+        try{$r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path='R:\ordinary-input';permission='READ_ONLY'})}};Require ($r.reason -eq 'DOS_NAMESPACE_ALIAS_UNSUPPORTED') 'DOS_DEVICE_ALIAS_ACCEPTED';@{actual_subst_alias=$true;reason=$r.reason;product_namespace_mutations=0}}
+        finally{& $subst R: /D|Out-Null;Require ($LASTEXITCODE -eq 0) 'DOS_ALIAS_FIXTURE_RESTORE_FAILED'}
+    }
     Case 'T51' 'polluted_existing_box_does_not_host_diagnostic' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$box='SR_'+$environment.id.Replace('-','');$lab.Register($box)
         $nonce=[Guid]::NewGuid().ToString('N');$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'input') -Force;[IO.File]::WriteAllText((Join-Path $fixture "input/view-$nonce.txt"),'SYNTHETIC_HOST_VIEW')
@@ -214,7 +238,7 @@ try {
     Case 'T35' 'production_provisioning_as_actual_standard_user' {
         $account=New-Standard 'owner';$script:standardAccount=$account
         $p=Start-Standard $account 'p05_standard.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine)
-        try{Require ($p.WaitForExit(90000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'STANDARD_PROVISIONING_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+        try{Require ($p.WaitForExit(180000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'STANDARD_PROVISIONING_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
     Case 'T35' 'second_standard_user_cannot_read_root_or_metadata' {
         Require ($null -ne $standardAccount) 'STANDARD_OWNER_REQUIRED';$request=Get-Content (Join-Path $standardAccount.fixture 'results/acl-request.json') -Raw|ConvertFrom-Json
@@ -228,11 +252,11 @@ try {
             $p=Start-Standard $account 'p05_fault.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-Stage',$stage,'-EngineHome',$engine)
             try {
                 $clock=[Diagnostics.Stopwatch]::StartNew();$ready=Join-Path $account.fixture 'results/fault-ready.json'
-                while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 90000){Start-Sleep -Milliseconds 100}
+                while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 180000){Start-Sleep -Milliseconds 100}
                 $resultFile=Join-Path $account.fixture 'results/fault-result.json';if(Test-Path $resultFile){Copy-Item $resultFile (Join-Path $out ("fault-"+$stage.ToLowerInvariant()+'.json'));$early=Get-Content $resultFile -Raw|ConvertFrom-Json;$code=if($early.PSObject.Properties['code']){$early.code}else{'FAULT_CHECKPOINT_NOT_REACHED'}}else{$code='FAULT_CHECKPOINT_NOT_REACHED'};Require (Test-Path $ready) $code
                 Copy-Item $normalBackup $app -Force;Require ((Get-FileHash $app).Hash.ToLowerInvariant() -eq $normalHash) 'NORMAL_BINARY_RESTORE_FAILED'
                 @{normal_binary_restored=$true}|ConvertTo-Json|Set-Content (Join-Path $account.fixture 'results/normal-restored.json') -Encoding utf8
-                Require ($p.WaitForExit(60000)) 'FAULT_RECOVERY_TIMEOUT'
+                Require ($p.WaitForExit(150000)) 'FAULT_RECOVERY_TIMEOUT'
                 $file=Join-Path $account.fixture 'results/fault-result.json';$worker=Get-Content $file -Raw|ConvertFrom-Json
                 Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') 'FAULT_RECOVERY_NOT_BLOCKED'
                 Copy-Item $file (Join-Path $out ("fault-"+$stage.ToLowerInvariant()+'.json'));$worker

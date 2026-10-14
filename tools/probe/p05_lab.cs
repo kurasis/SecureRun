@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -52,6 +53,16 @@ public sealed class P05Lab {
         if(enabled){if(Read("GlobalSettings","Template",0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_GLOBAL_TEMPLATE_NOT_CHANGED");if(update('s',null,"Template_"+name,"OpenFilePath",fixture+"\\*")!=0)throw new InvalidOperationException("LAB_TEMPLATE_FIXTURE_FAILED");}
         if(update('s',null,"GlobalSettings","Template",enabled?name:null)!=0)throw new InvalidOperationException("LAB_TEMPLATE_FIXTURE_FAILED");
     }
+    public string InstallPassword() {
+        if(Read("GlobalSettings","EditPassword",0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_PASSWORD_NOT_CHANGED");
+        string password="P05!"+Guid.NewGuid().ToString("N");byte[] salt=RandomNumberGenerator.GetBytes(16),plain=Encoding.Unicode.GetBytes(password);
+        byte[] input=new byte[salt.Length+plain.Length];salt.CopyTo(input,0);plain.CopyTo(input,16);
+        byte[] hash=SHA256.HashData(input),combined=new byte[48];salt.CopyTo(combined,0);hash.CopyTo(combined,16);
+        uint status=update('s',null,"GlobalSettings","EditPassword",Convert.ToBase64String(combined));
+        Array.Clear(plain,0,plain.Length);Array.Clear(input,0,input.Length);Array.Clear(hash,0,hash.Length);Array.Clear(combined,0,combined.Length);
+        if(status!=0)throw new InvalidOperationException("PASSWORD_FIXTURE_SETUP_FAILED");return password;
+    }
+    public void ClearPassword(string password) {if(update('s',password,"GlobalSettings","EditPassword",null)!=0)throw new InvalidOperationException("PASSWORD_FIXTURE_RESTORE_FAILED");}
     public Receipt Hold(string box,string probe) {
         if(!boxes.Contains(box)||Path.GetDirectoryName(Path.GetFullPath(probe))!=code||!Regex.IsMatch(Path.GetFileName(probe),@"\Afeasibility_probe_(x86|x64|arm64)\.exe\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         Set(box,"Enabled","y");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;

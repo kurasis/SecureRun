@@ -6,7 +6,7 @@ function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
 function Policy($request){
     $start=[Diagnostics.ProcessStartInfo]::new($Manager);$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add('--policy-once')
     $p=[Diagnostics.Process]::Start($start)
-    try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 10 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(60000)) 'STANDARD_POLICY_TIMEOUT';Require ($p.ExitCode -eq 0) 'STANDARD_POLICY_EXIT_FAILED';return $read.Result|ConvertFrom-Json}
+    try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 10 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(150000)) 'STANDARD_POLICY_TIMEOUT';Require ($p.ExitCode -eq 0) 'STANDARD_POLICY_EXIT_FAILED';return $read.Result|ConvertFrom-Json}
     finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
 try {

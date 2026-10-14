@@ -35,8 +35,10 @@ requires the documented runtime dependency/license assessment before distributio
 
 P03 adds the native application shell, typed domain/SQLite foundation and explicitly
 scoped IPC. P04 adds trusted read-only observation while the ordinary shell remains
-observation-only. No production engine mutation, helper, user-target launcher or
-installer is implemented.
+observation-only. At the completed P04 gate no production engine mutation, helper, user-target
+launcher or installer was implemented. P05 now adds constrained user-owned
+provisioning; its native gate remains in progress. Target launch and installation
+remain unavailable.
 No SandMan implementation or engine binary is copied or bundled. All project
 source, Markdown and reviewed JSON evidence are published as authorized by the
 owner. Historical BLOCKED evidence is preserved separately in the [manifest](evidence/p02/manifest.json).

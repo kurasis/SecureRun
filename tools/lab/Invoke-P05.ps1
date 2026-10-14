@@ -29,6 +29,11 @@ try {
     $run=[Guid]::NewGuid().ToString('N');$managerHome=Join-Path $env:ProgramFiles "SecureRun-P05-$run";$null=New-Item -ItemType Directory -Path $managerHome
     $app=Join-Path $managerHome 'securerun.exe';Copy-Item (Join-Path $repo "target/$target/debug/securerun.exe") $app
     Copy-Item (Join-Path $repo "target/$target/debug/securerun-policy-probe.exe") (Join-Path $managerHome 'securerun-policy-probe.exe')
+    $normalBackup=Join-Path $managerHome 'normal-manager.bin';Copy-Item $app $normalBackup
+    npm run tauri -- build --debug --no-bundle --target $target --features policy-ci
+    if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
+    $faultBackup=Join-Path $managerHome 'fault-manager.bin';Copy-Item (Join-Path $repo "target/$target/debug/securerun.exe") $faultBackup
+    $normalHash=(Get-FileHash $normalBackup).Hash.ToLowerInvariant();$faultHash=(Get-FileHash $faultBackup).Hash.ToLowerInvariant()
     $cases=[System.Collections.Generic.List[object]]::new()
     function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'policy-cases.json') -Encoding utf8}
     function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
@@ -84,9 +89,10 @@ try {
         foreach($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))){$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))};Set-Acl $base $acl
         return @{name=$name;secure=$secure;fixture=$base}
     }
+    $labShell=(Get-Command pwsh -CommandType Application).Source
+    Require ($labShell.StartsWith($env:ProgramFiles,[StringComparison]::OrdinalIgnoreCase)) 'PROTECTED_LAB_POWERSHELL_REQUIRED'
     function Start-Standard($account,[string]$script,[string[]]$arguments) {
-        $shell=(Get-Command pwsh -CommandType Application).Source
-        Require ($shell.StartsWith($env:ProgramFiles,[StringComparison]::OrdinalIgnoreCase)) 'PROTECTED_LAB_POWERSHELL_REQUIRED'
+        $shell=$labShell
         $start=[Diagnostics.ProcessStartInfo]::new($shell);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.UserName=$account.name;$start.Domain=[Environment]::MachineName;$start.Password=$account.secure;$start.LoadUserProfile=$true
         foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome $script))+$arguments){$start.ArgumentList.Add($arg)}
         return [Diagnostics.Process]::Start($start)
@@ -173,10 +179,30 @@ try {
         $account=New-Standard 'other';$result=Join-Path $account.fixture 'results/acl.json';$p=Start-Standard $account 'p05_acl.ps1' @('-RootCanary',$request.root_canary,'-MetadataCanary',$request.metadata_canary,'-ResultFile',$result)
         try{Require ($p.WaitForExit(30000)) 'SECOND_USER_ACL_TIMEOUT';$worker=Get-Content $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.root_denied -and $worker.metadata_denied -and $worker.standard_user) 'SECOND_USER_ACL_BYPASS';$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
-    $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
-    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    foreach($stage in @('Intent','Fenced','Writing','Readback','PendingRoot','RootBound','Verifying')) {
+        Case 'T18' ("actual_worker_interruption_"+$stage.ToLowerInvariant()) {
+            $account=New-Standard ('f'+$stage.Substring(0,3).ToLowerInvariant())
+            Copy-Item $faultBackup $app -Force
+            $p=Start-Standard $account 'p05_fault.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-Stage',$stage,'-EngineHome',$engine)
+            try {
+                $clock=[Diagnostics.Stopwatch]::StartNew();$ready=Join-Path $account.fixture 'results/fault-ready.json'
+                while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 90000){Start-Sleep -Milliseconds 100}
+                Require (Test-Path $ready) 'FAULT_CHECKPOINT_NOT_REACHED'
+                Copy-Item $normalBackup $app -Force;Require ((Get-FileHash $app).Hash.ToLowerInvariant() -eq $normalHash) 'NORMAL_BINARY_RESTORE_FAILED'
+                @{normal_binary_restored=$true}|ConvertTo-Json|Set-Content (Join-Path $account.fixture 'results/normal-restored.json') -Encoding utf8
+                Require ($p.WaitForExit(60000)) 'FAULT_RECOVERY_TIMEOUT'
+                $file=Join-Path $account.fixture 'results/fault-result.json';$worker=Get-Content $file -Raw|ConvertFrom-Json
+                Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') 'FAULT_RECOVERY_NOT_BLOCKED'
+                Copy-Item $file (Join-Path $out ("fault-"+$stage.ToLowerInvariant()+'.json'));$worker
+            }finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();Copy-Item $normalBackup $app -Force}
+        }
+    }
     $failed=@($cases|Where-Object status -eq 'FAILED').Count
     $data=[IO.File]::ReadAllBytes($app);$pe=[BitConverter]::ToInt32($data,0x3c);$machine=[BitConverter]::ToUInt16($data,$pe+4).ToString('x4')
-    @{phase='P05';result=$(if($failed -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;manager_binary_sha256=(Get-FileHash $app).Hash.ToLowerInvariant();probe_binary_sha256=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash.ToLowerInvariant();pe_machine=$machine;os_build=[Environment]::OSVersion.Version.Build;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;production_target_launches=0;elevated_helper=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
+    @{phase='P05';result=$(if($failed -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;manager_binary_sha256=(Get-FileHash $app).Hash.ToLowerInvariant();probe_binary_sha256=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash.ToLowerInvariant();pe_machine=$machine;os_build=[Environment]::OSVersion.Version.Build;fault_binary_sha256=$faultHash;fault_feature_release_enabled=$false;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;production_target_launches=0;elevated_helper=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
     if($failed -ne 0){throw 'P05_NATIVE_VALIDATION_FAILED'}
-}finally{Pop-Location}
+}finally{
+    $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    Pop-Location
+}

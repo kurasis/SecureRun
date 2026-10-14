@@ -6,8 +6,15 @@ function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
 try {
     $identity=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($identity)
     Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_TOKEN_REQUIRED';$result.standard_user=$true
+    $previous=$null
+    if($Stage -eq 'Fenced') {
+        $initial=[Diagnostics.ProcessStartInfo]::new($Manager);$initial.UseShellExecute=$false;$initial.WorkingDirectory=$EngineHome;$initial.RedirectStandardInput=$true;$initial.RedirectStandardOutput=$true;$initial.RedirectStandardError=$true;$initial.ArgumentList.Add('--policy-once')
+        $first=[Diagnostics.Process]::Start($initial)
+        try{$read=$first.StandardOutput.ReadToEndAsync();$err=$first.StandardError.ReadToEndAsync();$first.StandardInput.Write((ConvertTo-Json -InputObject @{action='CREATE';display_name='Fault apply baseline';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} -Depth 8 -Compress));$first.StandardInput.Close();Require ($first.WaitForExit(60000)) 'FAULT_BASELINE_TIMEOUT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OBSERVED' -and $r.environments.Count -eq 1) 'FAULT_BASELINE_NOT_VERIFIED';$previous=$r.environments[0]}finally{if(-not $first.HasExited){$first.Kill($true)};$first.Dispose()}
+    }
     $env:SECURERUN_P05_PAUSE_STAGE=$Stage
     $request=@{action='CREATE';display_name='Interrupted synthetic provision';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}}
+    if($null -ne $previous){$request=@{action='APPLY';environment_id=$previous.id;expected_revision=$previous.revision;operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_ONLINE';grants=@()};acknowledge_view_change=$false}}
     $start=[Diagnostics.ProcessStartInfo]::new($Manager);$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
     $start.ArgumentList.Add('--policy-worker');$start.ArgumentList.Add([string]$PID);$start.ArgumentList.Add([string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))
     $process=[Diagnostics.Process]::Start($start)

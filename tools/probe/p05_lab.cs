@@ -55,8 +55,12 @@ public sealed class P05Lab {
     public Receipt Hold(string box,string probe) {
         if(!boxes.Contains(box)||Path.GetDirectoryName(Path.GetFullPath(probe))!=code||!Regex.IsMatch(Path.GetFileName(probe),@"\Afeasibility_probe_(x86|x64|arm64)\.exe\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         Set(box,"Enabled","y");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;
-        string command=P02Bridge.Quote(probe)+" hold-session "+P02Bridge.Quote(fixture)+" "+box+" p05-hold "+P02Bridge.Quote(engine);
+        string command=Quote(probe)+" hold-session "+Quote(fixture)+" "+box+" p05-hold "+Quote(engine);
         if(!run(box,command,engine,0,ref startup,out receipt))throw new InvalidOperationException("LAB_HOLD_REFUSED");return receipt;
+    }
+    static string Quote(string value) {
+        if(value.IndexOfAny(new[]{'\0','\r','\n','"'})>=0||value.EndsWith("\\",StringComparison.Ordinal))throw new InvalidOperationException("LAB_ARGUMENT_REJECTED");
+        return "\""+value+"\"";
     }
     public static void Stop(Receipt receipt) {if(WaitForSingleObject(receipt.process,0)==258){if(!TerminateProcess(receipt.process,99)||WaitForSingleObject(receipt.process,10000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");}CloseHandle(receipt.thread);CloseHandle(receipt.process);}
 }

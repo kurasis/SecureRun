@@ -34,6 +34,7 @@ pub struct OwnedEnvironment {
     pub enforcement_evidence: Option<String>,
     pub reason: String,
     pub operation_id: Uuid,
+    pub operation_signature: String,
     pub baseline: Option<Section>,
     pub observed: Option<Section>,
     pub production_launch_available: bool,
@@ -131,7 +132,7 @@ impl Journal {
             if count != 0 {
                 return Err("POLICY_JOURNAL_FOREIGN_DATABASE");
             }
-            db.execute_batch("BEGIN IMMEDIATE; CREATE TABLE owned(id TEXT PRIMARY KEY, owner TEXT NOT NULL, operation TEXT UNIQUE NOT NULL, document TEXT NOT NULL); CREATE TABLE operations(id TEXT PRIMARY KEY, environment TEXT NOT NULL); CREATE TABLE events(sequence INTEGER PRIMARY KEY, id TEXT NOT NULL, stage TEXT NOT NULL); PRAGMA user_version=1; COMMIT;").map_err(sql_error)?;
+            db.execute_batch("BEGIN IMMEDIATE; CREATE TABLE owned(id TEXT PRIMARY KEY, owner TEXT NOT NULL, operation TEXT UNIQUE NOT NULL, document TEXT NOT NULL); CREATE TABLE operations(id TEXT PRIMARY KEY, environment TEXT NOT NULL, signature TEXT NOT NULL); CREATE TABLE events(sequence INTEGER PRIMARY KEY, id TEXT NOT NULL, stage TEXT NOT NULL); PRAGMA user_version=1; COMMIT;").map_err(sql_error)?;
         }
         let check: String = db
             .query_row("PRAGMA quick_check(1)", [], |r| r.get(0))
@@ -185,19 +186,25 @@ impl Journal {
             .find(|e| e.id == id)
             .ok_or("OWNERSHIP_NOT_FOUND")
     }
-    pub fn operation(&self, id: Uuid) -> PolicyResult<Option<OwnedEnvironment>> {
-        let environment: Option<String> = self
+    pub fn operation(&self, id: Uuid, signature: &str) -> PolicyResult<Option<OwnedEnvironment>> {
+        let record: Option<(String, String)> = self
             .db
             .query_row(
-                "SELECT environment FROM operations WHERE id=?1",
+                "SELECT environment,signature FROM operations WHERE id=?1",
                 [id.to_string()],
-                |r| r.get(0),
+                |r| Ok((r.get(0)?, r.get(1)?)),
             )
             .optional()
             .map_err(sql_error)?;
-        environment
-            .map(|v| self.get(Uuid::parse_str(&v).map_err(|_| "POLICY_JOURNAL_CORRUPT")?))
-            .transpose()
+        if let Some((environment, recorded)) = record {
+            if signature != recorded {
+                return Err("OPERATION_CONFLICT");
+            }
+            return self
+                .get(Uuid::parse_str(&environment).map_err(|_| "POLICY_JOURNAL_CORRUPT")?)
+                .map(Some);
+        }
+        Ok(None)
     }
     pub fn save(&mut self, e: &OwnedEnvironment) -> PolicyResult<()> {
         if e.owner_sid != self.owner || e.production_launch_available {
@@ -207,11 +214,29 @@ impl Journal {
         if document.len() > 262144 {
             return Err("POLICY_JOURNAL_BOUND");
         }
+        let recorded: Option<(String, String)> = self
+            .db
+            .query_row(
+                "SELECT environment,signature FROM operations WHERE id=?1",
+                [e.operation_id.to_string()],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .optional()
+            .map_err(sql_error)?;
+        if recorded.is_some_and(|(id, signature)| {
+            id != e.id.to_string() || signature != e.operation_signature
+        }) {
+            return Err("OPERATION_CONFLICT");
+        }
         let tx = self.db.transaction().map_err(sql_error)?;
         tx.execute("INSERT INTO owned VALUES(?1,?2,?3,?4) ON CONFLICT(id) DO UPDATE SET operation=excluded.operation,document=excluded.document",params![e.id.to_string(),self.owner,e.operation_id.to_string(),document]).map_err(sql_error)?;
         tx.execute(
-            "INSERT OR IGNORE INTO operations VALUES(?1,?2)",
-            params![e.operation_id.to_string(), e.id.to_string()],
+            "INSERT OR IGNORE INTO operations VALUES(?1,?2,?3)",
+            params![
+                e.operation_id.to_string(),
+                e.id.to_string(),
+                e.operation_signature
+            ],
         )
         .map_err(sql_error)?;
         tx.execute(
@@ -274,11 +299,9 @@ pub fn create(
     policy: DesiredPolicy,
     operation_id: Uuid,
 ) -> PolicyResult<OwnedEnvironment> {
-    if let Some(e) = journal.operation(operation_id)? {
-        if e.owner_sid != owner || e.display_name != display_name || e.desired != policy {
-            return Err("OPERATION_CONFLICT");
-        }
-        return Ok(e); // Never dispatch an ambiguous or duplicate creation.
+    let operation_signature = fingerprint(&("CREATE", owner, display_name, &policy));
+    if let Some(e) = journal.operation(operation_id, &operation_signature)? {
+        return Ok(e);
     }
     if display_name.trim().is_empty()
         || display_name.chars().count() > 80
@@ -298,7 +321,7 @@ pub fn create(
         if existing.stage != Stage::Verified {
             return Err("SIBLING_RECONCILIATION_REQUIRED");
         }
-        validate_owned(engine, existing)?;
+        validate_owned(engine, existing, &all)?;
         engine.idle(&existing.name())?;
     }
     let id = Uuid::new_v4();
@@ -321,6 +344,7 @@ pub fn create(
         enforcement_evidence: None,
         reason: "PENDING_ROOT".into(),
         operation_id,
+        operation_signature,
         baseline: Some(Section::new()),
         observed: None,
         production_launch_available: false,
@@ -341,6 +365,13 @@ pub fn create(
             let baseline = engine.section(&sibling.name(), false)?;
             sibling.compiled = desired;
             sibling.operation_id = Uuid::new_v4();
+            sibling.operation_signature = fingerprint(&(
+                "ROLLOUT",
+                sibling.id,
+                e.id,
+                sibling.revision,
+                &sibling.compiled,
+            ));
             sibling.baseline = Some(minimize_section(&baseline));
             sibling.stage = Stage::Fenced;
             sibling.reason = "FUTURE_SIBLING_ROLLOUT".into();
@@ -403,12 +434,23 @@ pub fn create(
     }
     Ok(e)
 }
-pub fn validate_owned(engine: &impl Engine, e: &OwnedEnvironment) -> PolicyResult<()> {
+pub fn validate_owned(
+    engine: &impl Engine,
+    e: &OwnedEnvironment,
+    all: &[OwnedEnvironment],
+) -> PolicyResult<()> {
     if e.engine_identity != engine.engine_identity()
         || e.compiled.section.get("FileRootPath") != Some(&vec![engine.root_for(e.id)])
         || e.compiled.section.get("SecureRunOwner") != Some(&vec![e.marker()])
     {
         return Err("OWNERSHIP_BINDING_CHANGED");
+    }
+    let expected = compile(&e.desired, &mandatory(engine, e.id, &e.owner_sid, all))?;
+    if expected.section != e.compiled.section
+        || expected.offline != e.compiled.offline
+        || e.compiled.family != FAMILY
+    {
+        return Err("MANDATORY_POLICY_DRIFT");
     }
     engine.validate_root(e)?;
     let raw = engine.section(&e.name(), false)?;
@@ -437,18 +479,30 @@ pub fn apply(
     view_ack: bool,
     repair_fingerprint: Option<&str>,
 ) -> PolicyResult<OwnedEnvironment> {
-    let mut e = journal.get(id)?;
-    if e.operation_id == operation_id {
-        if e.desired != policy {
-            return Err("OPERATION_CONFLICT");
-        }
+    let operation_signature = fingerprint(&(
+        if repair_fingerprint.is_some() {
+            "REPAIR"
+        } else {
+            "APPLY"
+        },
+        id,
+        revision,
+        &policy,
+        view_ack,
+        repair_fingerprint,
+    ));
+    if let Some(e) = journal.operation(operation_id, &operation_signature)? {
         return Ok(e);
     }
+    let mut e = journal.get(id)?;
     if e.revision != revision {
         return Err("REVISION_CONFLICT");
     }
     engine.idle(&e.name())?;
-    engine.validate_root(&e)?;
+    let creating = e.root_identity.is_none();
+    if !creating {
+        engine.validate_root(&e)?;
+    }
     let all = journal.list()?;
     let global = engine.global()?;
     validate_inheritance(&global, &[])?;
@@ -457,8 +511,11 @@ pub fn apply(
         if expected != fingerprint(&baseline) {
             return Err("REPAIR_BASELINE_CHANGED");
         }
-        if baseline.get("SecureRunOwner") != Some(&vec![e.marker()])
-            || baseline.get("FileRootPath") != Some(&vec![engine.root_for(e.id)])
+        let root_acceptable = baseline
+            .get("FileRootPath")
+            .map_or(creating, |v| v == &vec![engine.root_for(e.id)]);
+        if !(creating && baseline.is_empty())
+            && (baseline.get("SecureRunOwner") != Some(&vec![e.marker()]) || !root_acceptable)
         {
             return Err("OWNERSHIP_BINDING_CHANGED");
         }
@@ -466,7 +523,13 @@ pub fn apply(
         if e.stage != Stage::Verified {
             return Err("RECONCILIATION_REQUIRED");
         }
-        validate_owned(engine, &e)?;
+        validate_owned(engine, &e, &all)?;
+    }
+    if creating {
+        for sibling in all.iter().filter(|s| s.id != e.id) {
+            validate_owned(engine, sibling, &all)?;
+            engine.idle(&sibling.name())?;
+        }
     }
     let compiled = compile(&policy, &mandatory(engine, id, &e.owner_sid, &all))?;
     if compiled.read_only_view_change && policy != e.desired && !view_ack {
@@ -476,6 +539,7 @@ pub fn apply(
     e.desired = policy;
     e.baseline = Some(minimize_section(&baseline));
     e.operation_id = operation_id;
+    e.operation_signature = operation_signature;
     e.stage = Stage::Fenced;
     e.fingerprint = None;
     e.enforcement_evidence = None;
@@ -495,6 +559,13 @@ pub fn apply(
             &engine.section(&e.name(), true)?,
             &engine.global()?,
         )?;
+        if creating {
+            e.stage = Stage::PendingRoot;
+            journal.save(&e)?;
+            e.root_identity = Some(engine.create_root(&e)?);
+            e.stage = Stage::RootBound;
+            journal.save(&e)?;
+        }
         engine.validate_root(&e)?;
         e.stage = Stage::Verifying;
         journal.save(&e)?;
@@ -551,10 +622,10 @@ mod tests {
             "pinned".into()
         }
         fn global(&self) -> PolicyResult<Section> {
-            Ok(Section::from([(
-                "NetworkEnableWFP".into(),
-                vec!["y".into()],
-            )]))
+            Ok(Section::from([
+                ("NetworkEnableWFP".into(), vec!["y".into()]),
+                ("SecureRunWfpState".into(), vec!["READY".into()]),
+            ]))
         }
         fn section(&self, n: &str, _: bool) -> PolicyResult<Section> {
             Ok(self.sections.borrow().get(n).cloned().unwrap_or_default())

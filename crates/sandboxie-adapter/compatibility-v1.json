@@ -108,5 +108,22 @@
         }
       ]
     }
-  ]
+  ],
+  "policy_inheritance": {
+    "template_source": "Sandboxie/install/Templates.ini",
+    "normalized_utf8_sha256": "bc3b83df4d5cfd8ed4346ea2f880bd9f41940493de42d9096ac271912d8c2a91",
+    "default_templates": [
+      "RpcPortBindings",
+      "SpecialImages",
+      "COM",
+      "WindowsExplorer",
+      "ThirdPartyIsolation",
+      "BlockSoftwareUpdaters",
+      "BlockWinRM",
+      "OpenWinInetCache",
+      "CredentialUIBroker",
+      "MSI_Lite"
+    ],
+    "unexpanded_default_settings_sha256": "8594a269c52d455cc2ba3f5fb66a9f1134b86ce5221e9ad404f8ab4d0ca8496c"
+  }
 }

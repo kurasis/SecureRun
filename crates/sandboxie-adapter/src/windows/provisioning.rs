@@ -26,10 +26,10 @@ unsafe fn bind<T: Copy>(api: &Api, name: &'static [u8]) -> R<T> {
     }
     Ok(unsafe { std::mem::transmute_copy(&address) })
 }
-fn current_sid() -> R<String> {
+fn process_sid(process: HANDLE) -> R<String> {
     unsafe {
         let mut raw = ptr::null_mut();
-        if OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw) == 0 {
+        if OpenProcessToken(process, TOKEN_QUERY, &mut raw) == 0 {
             return Err("OWNER_IDENTITY_UNKNOWN");
         }
         let token = Handle(raw);
@@ -385,8 +385,86 @@ fn read_section(api: &Api, name: &str, effective: bool) -> R<Section> {
     }
     Ok(section)
 }
+fn unexpanded_inheritance(api: &Api, name: &str) -> R<Section> {
+    let mut result = Section::new();
+    for i in 0..128 {
+        let Some(key) = api.conf(Some(name), None, i | 0x60000000)? else {
+            return Ok(result);
+        };
+        if key.eq_ignore_ascii_case("EditPassword") {
+            return Err("PASSWORD_PROTECTED_CONFIGURATION");
+        }
+        result.insert(key.clone(), api.values(name, &key, 0x60000000)?);
+    }
+    Err("CONFIGURATION_KEY_BOUND")
+}
+fn template_pin(trusted: &Trusted) -> R<File> {
+    let mut file = lease(&trusted.home.join("Templates.ini"), false)?;
+    protected(&file)?;
+    let mut bytes = vec![];
+    Read::by_ref(&mut file)
+        .take(524289)
+        .read_to_end(&mut bytes)
+        .map_err(|_| "TEMPLATE_FILE_UNAVAILABLE")?;
+    if bytes.len() > 524288 {
+        return Err("TEMPLATE_FILE_BOUND");
+    }
+    let text = if bytes.starts_with(&[0xff, 0xfe]) {
+        if !bytes.len().is_multiple_of(2) {
+            return Err("TEMPLATE_FILE_ENCODING");
+        }
+        let units = bytes[2..]
+            .chunks_exact(2)
+            .map(|c| u16::from_le_bytes([c[0], c[1]]))
+            .collect::<Vec<_>>();
+        String::from_utf16(&units).map_err(|_| "TEMPLATE_FILE_ENCODING")?
+    } else {
+        String::from_utf8(bytes)
+            .map_err(|_| "TEMPLATE_FILE_ENCODING")?
+            .trim_start_matches('\u{feff}')
+            .to_owned()
+    };
+    let digest = format!(
+        "{:x}",
+        Sha256::digest(text.replace("\r\n", "\n").as_bytes())
+    );
+    let pin: serde_json::Value =
+        serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
+    if pin["policy_inheritance"]["normalized_utf8_sha256"] != digest {
+        return Err("TEMPLATE_FILE_UNTESTED_OR_CHANGED");
+    }
+    Ok(file)
+}
+fn bfe_ready() -> bool {
+    unsafe {
+        let scm = OpenSCManagerW(ptr::null(), ptr::null(), SC_MANAGER_CONNECT);
+        if scm.is_null() {
+            return false;
+        }
+        let svc = OpenServiceW(scm, wide("BFE").as_ptr(), SERVICE_QUERY_STATUS);
+        CloseServiceHandle(scm);
+        if svc.is_null() {
+            return false;
+        }
+        let mut status = std::mem::zeroed::<SERVICE_STATUS_PROCESS>();
+        let mut count = 0;
+        let ok = QueryServiceStatusEx(
+            svc,
+            SC_STATUS_PROCESS_INFO,
+            &mut status as *mut _ as _,
+            std::mem::size_of_val(&status) as u32,
+            &mut count,
+        ) != 0
+            && status.dwCurrentState == SERVICE_RUNNING;
+        CloseServiceHandle(svc);
+        ok
+    }
+}
 struct NativeEngine {
     api: Api,
+    parent: Handle,
+    parent_pid: u32,
+    parent_birth: u64,
     trusted: Trusted,
     owner: String,
     profile: PathBuf,
@@ -415,7 +493,24 @@ impl NativeEngine {
         {
             return Err("MANAGER_CONTEXT_UNSAFE");
         }
-        let owner = current_sid()?;
+        let owner = process_sid(unsafe { GetCurrentProcess() })?;
+        let parent = unsafe {
+            OpenProcess(
+                PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE,
+                0,
+                manager_pid,
+            )
+        };
+        if parent.is_null() {
+            return Err("MANAGER_IDENTITY_UNKNOWN");
+        }
+        let parent = Handle(parent);
+        if process_sid(parent.0)? != owner
+            || birth(&parent)? != manager_birth
+            || unsafe { WaitForSingleObject(parent.0, 0) } != WAIT_TIMEOUT
+        {
+            return Err("MANAGER_IDENTITY_CHANGED");
+        }
         let profile = profile_path()?;
         let image = std::env::current_exe().map_err(|_| "MANAGER_IMAGE_UNKNOWN")?;
         let probe = image
@@ -436,12 +531,16 @@ impl NativeEngine {
         }
         let probe_hash = format!("{:x}", Sha256::digest(bytes));
         leases.push(file);
+        leases.push(template_pin(&trusted)?);
         leases.extend(ensure_private(&profile, &owner)?);
         for leaf in ["metadata", "boxes", "canaries"] {
             leases.extend(ensure_private(&profile.join(leaf), &owner)?);
         }
         Ok(Self {
             api,
+            parent,
+            parent_pid: manager_pid,
+            parent_birth: manager_birth,
             trusted,
             owner,
             profile,
@@ -453,7 +552,14 @@ impl NativeEngine {
         })
     }
     fn mutation_context(&self) -> R<()> {
-        if self.api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed {
+        if unsafe { WaitForSingleObject(self.parent.0, 0) } != WAIT_TIMEOUT
+            || birth(&self.parent)? != self.parent_birth
+        {
+            return Err("MANAGER_NOT_RUNNING");
+        }
+        if self.api.context(self.parent_pid) != Context::Unboxed
+            || self.api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed
+        {
             return Err("MANAGER_CONTEXT_UNSAFE");
         }
         if !service("SbieSvc")?.running || !service("SbieDrv")?.running {
@@ -539,8 +645,58 @@ impl Engine for NativeEngine {
         self.trusted.identity.clone()
     }
     fn global(&self) -> R<Section> {
-        let s = read_section(&self.api, "GlobalSettings", false)?;
+        let mut s = read_section(&self.api, "GlobalSettings", false)?;
+        if s.keys().any(|key| key.starts_with("SecureRun")) {
+            return Err("GLOBAL_SETTING_UNREVIEWED");
+        }
         validate_inheritance(&s, &[])?;
+        let pin: serde_json::Value =
+            serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
+        let expected: Vec<String> =
+            serde_json::from_value(pin["policy_inheritance"]["default_templates"].clone())
+                .map_err(|_| "MANIFEST_INVALID")?;
+        if self
+            .api
+            .values("DefaultTemplates", "Template", 0x60000000)?
+            != expected
+        {
+            return Err("DEFAULT_TEMPLATE_LIST_CHANGED");
+        }
+        if !read_section(&self.api, "DefaultTemplates", false)?.is_empty() {
+            return Err("DEFAULT_TEMPLATE_OVERRIDE_UNAPPROVED");
+        }
+        for name in &expected {
+            if !read_section(&self.api, &format!("Template_{name}"), false)?.is_empty() {
+                return Err("DEFAULT_TEMPLATE_OVERRIDE_UNAPPROVED");
+            }
+        }
+        let mut inherited = unexpanded_inheritance(&self.api, "GlobalSettings")?;
+        for key in s.keys() {
+            inherited.remove(key);
+        }
+        let inherited_fingerprint = fingerprint(&inherited);
+        if pin["policy_inheritance"]["unexpanded_default_settings_sha256"] != inherited_fingerprint
+        {
+            return Err("DEFAULT_INHERITANCE_CHANGED");
+        }
+        s.insert(
+            "SecureRunDefaultInheritance".into(),
+            vec![inherited_fingerprint],
+        );
+        let expanded = read_section(&self.api, "GlobalSettings", true)?;
+        for key in ["ClosedFilePath", "ClosedIpcPath", "ReadFilePath"] {
+            if let Some(values) = expanded.get(key) {
+                s.insert(format!("SecureRunInherited{key}"), values.clone());
+            }
+        }
+        let mut flags = 0u32;
+        let ready = bfe_ready()
+            && unsafe { (self.api.info)(0, &mut flags as *mut _ as _, 4) } == 0
+            && flags & 1 != 0;
+        s.insert(
+            "SecureRunWfpState".into(),
+            vec![if ready { "READY" } else { "UNAVAILABLE" }.into()],
+        );
         Ok(s)
     }
     fn section(&self, name: &str, effective: bool) -> R<Section> {
@@ -556,9 +712,15 @@ impl Engine for NativeEngine {
         self.mutation_context()?;
         self.idle(&e.name())?;
         let raw = self.section(&e.name(), false)?;
-        if raw.get("SecureRunOwner") != Some(&vec![e.marker()])
-            || raw.get("FileRootPath") != Some(&vec![self.root_for(e.id)])
-        {
+        if raw.is_empty() && e.root_identity.is_none() {
+            return Ok(());
+        }
+        let root_acceptable = raw
+            .get("FileRootPath")
+            .map_or(e.root_identity.is_none(), |v| {
+                v == &vec![self.root_for(e.id)]
+            });
+        if raw.get("SecureRunOwner") != Some(&vec![e.marker()]) || !root_acceptable {
             return Err("OWNERSHIP_BINDING_CHANGED");
         }
         self.set(&e.name(), "Enabled", &["n".into()])?;
@@ -579,13 +741,17 @@ impl Engine for NativeEngine {
         // Every write checks the complete prior section; no optimistic overwrite.
         self.set(&e.name(), "Enabled", &["n".into()])?;
         expected.insert("Enabled".into(), vec!["n".into()]);
+        if baseline.is_empty() {
+            self.set(&e.name(), "SecureRunOwner", &[e.marker()])?;
+            expected.insert("SecureRunOwner".into(), vec![e.marker()]);
+        }
         let keys = baseline
             .keys()
             .chain(e.compiled.section.keys())
             .cloned()
             .collect::<std::collections::BTreeSet<_>>();
         for key in keys {
-            if key == "Enabled" {
+            if key == "Enabled" || (baseline.is_empty() && key == "SecureRunOwner") {
                 continue;
             }
             if self.section(&e.name(), false)? != expected {
@@ -662,9 +828,10 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
         journal.recover()?;
         match request {
             Request::List => {
-                for mut e in journal.list()? {
+                let all = journal.list()?;
+                for mut e in all.clone() {
                     if e.stage == Stage::Verified
-                        && let Err(reason) = validate_owned(&engine, &e)
+                        && let Err(reason) = validate_owned(&engine, &e, &all)
                     {
                         e.stage = Stage::Conflict;
                         e.reason = reason.into();
@@ -1177,6 +1344,20 @@ impl NativeEngine {
                 return Err("WFP_ENFORCEMENT_UNAVAILABLE");
             }
         }
+        let count = std::fs::read_dir(self.profile.join("metadata"))
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?
+            .filter_map(Result::ok)
+            .filter(|entry| {
+                entry
+                    .file_name()
+                    .to_string_lossy()
+                    .starts_with("diagnostic-")
+            })
+            .take(65)
+            .count();
+        if count >= 64 {
+            return Err("DIAGNOSTIC_RETENTION_QUOTA");
+        }
         let id = Uuid::new_v4();
         let nonce = id.simple().to_string();
         let canary_base = self.profile.join("canaries").join(&nonce);
@@ -1234,6 +1415,7 @@ impl NativeEngine {
             enforcement_evidence: None,
             reason: "DIAGNOSTIC_ONLY".into(),
             operation_id: id,
+            operation_signature: fingerprint(&("DIAGNOSTIC", id)),
             baseline: None,
             observed: None,
             production_launch_available: false,

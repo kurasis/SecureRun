@@ -124,6 +124,11 @@ pub fn compile(desired: &DesiredPolicy, mandatory: &Mandatory) -> PolicyResult<C
         ("AutoDelete", "n"),
         ("NeverDelete", "y"),
         ("UseFileImage", "n"),
+        ("DropAppContainerToken", "n"),
+        (
+            "CustomChromiumFlags",
+            "--enable-features=PrintCompositorLPAC",
+        ),
     ] {
         section.insert(key.into(), vec![value.into()]);
     }
@@ -170,6 +175,9 @@ pub fn compile(desired: &DesiredPolicy, mandatory: &Mandatory) -> PolicyResult<C
             Permission::IsolatedChanges => {}
         }
     }
+    if closed.len() >= 64 || reads.len() >= 64 {
+        return Err("POLICY_RULE_BOUND");
+    }
     section.insert("ClosedFilePath".into(), closed);
     if !reads.is_empty() {
         section.insert("ReadFilePath".into(), reads);
@@ -199,7 +207,7 @@ pub fn compile(desired: &DesiredPolicy, mandatory: &Mandatory) -> PolicyResult<C
 }
 
 /// Inspect all keys, including global/template input. Unknown inheritance is an error.
-/// No imported or implicit template belongs to this constrained family.
+/// Only the independently verified pinned default inheritance is admitted.
 pub fn validate_inheritance(global: &Section, templates: &[String]) -> PolicyResult<()> {
     if !templates.is_empty() {
         return Err("INHERITED_TEMPLATE_UNAPPROVED");
@@ -208,6 +216,11 @@ pub fn validate_inheritance(global: &Section, templates: &[String]) -> PolicyRes
         match key.to_ascii_lowercase().as_str() {
             "networkenablewfp" | "editadminonly" | "filerootpath" | "keyrootpath"
             | "ipcrootpath" | "boxgroup" | "configlevel" | "msg1321" => {}
+            "securerundefaultinheritance"
+            | "secureruninheritedclosedfilepath"
+            | "secureruninheritedclosedipcpath"
+            | "secureruninheritedreadfilepath"
+            | "securerunwfpstate" => {}
             "editpassword" => return Err("PASSWORD_PROTECTED_CONFIGURATION"),
             _ if values.is_empty() => {}
             _ => return Err("GLOBAL_SETTING_UNREVIEWED"),
@@ -230,7 +243,13 @@ pub fn verify_readback(
             key.as_str(),
             "ClosedFilePath" | "ReadFilePath" | "ClosedIpcPath"
         ) {
-            observed == Some(wanted)
+            let inherited_key = format!("SecureRunInherited{key}");
+            let expected = wanted
+                .iter()
+                .chain(global.get(&inherited_key).into_iter().flatten())
+                .cloned()
+                .collect::<Vec<_>>();
+            observed == Some(&expected)
         } else {
             observed.and_then(|v| v.first()) == wanted.first()
         };
@@ -246,7 +265,10 @@ pub fn verify_readback(
             });
         }
     }
-    if compiled.offline && global.get("NetworkEnableWFP") != Some(&vec!["y".into()]) {
+    if compiled.offline
+        && (global.get("NetworkEnableWFP") != Some(&vec!["y".into()])
+            || global.get("SecureRunWfpState") != Some(&vec!["READY".into()]))
+    {
         return Err("WFP_PREREQUISITE_MISSING");
     }
     Ok(fingerprint(&(FAMILY, raw, effective, global)))
@@ -268,6 +290,8 @@ pub fn minimize_section(section: &Section) -> Section {
         "AutoDelete",
         "NeverDelete",
         "UseFileImage",
+        "DropAppContainerToken",
+        "CustomChromiumFlags",
         "ClosedFilePath",
         "ReadFilePath",
         "ClosedIpcPath",
@@ -416,7 +440,10 @@ mod tests {
     #[test]
     fn readback_is_not_an_enforcement_oracle_or_ignore_duplicate_order() {
         let p = compile(&DesiredPolicy::default(), &mandatory()).unwrap();
-        let global = Section::from([("NetworkEnableWFP".into(), vec!["y".into()])]);
+        let global = Section::from([
+            ("NetworkEnableWFP".into(), vec!["y".into()]),
+            ("SecureRunWfpState".into(), vec!["READY".into()]),
+        ]);
         verify_readback(&p, &p.section, &p.section, &global).unwrap();
         let mut changed = p.section.clone();
         changed.get_mut("ClosedFilePath").unwrap().reverse();

@@ -5,7 +5,7 @@ export async function run(unauthorized: boolean) {
   if (window.__foundationTestsStarted) return; window.__foundationTestsStarted = true;
   if (unauthorized) {
     let denied = true;
-    for (const command of ['get_snapshot', 'create_draft', 'reserve_operation', 'diagnostic_summary', 'ci_report']) {
+    for (const command of ['get_snapshot', 'create_draft', 'reserve_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path']) {
       try { await invoke(command, { request: { display_name: 'UNAUTHORIZED' }, cases: [] }); denied = false; } catch (error) { denied &&= typeof error === 'string' && /not allowed|permission|capability|scope/i.test(error); }
     }
     window.__foundationAclDenied = denied; return;
@@ -27,6 +27,8 @@ export async function run(unauthorized: boolean) {
     check('T56', 'backend_event_has_independent_generations_and_sequence', observedEvent?.environment_id === environment.id && observedEvent.environment_generation === environment.generation && observedEvent.engine_generation === snapshot.engine_generation && observedEvent.sequence > snapshot.sequence);
     check('T49', 'renderer_cannot_emit_authoritative_state', await denied('plugin:event|emit', { event: 'manager-state', payload: {} }));
     check('T28', 'typed_metadata_draft_never_claims_ready', environment.lifecycle === 'UNCONFIGURED' && environment.activity === 'UNKNOWN' && environment.eligibility === 'UNVERIFIED');
+    check('T59','policy_renderer_paths_cannot_bypass_picker',await denied('policy_request',{request:{action:'CREATE',display_name:'P05 boundary',preset:'STANDARD_OFFLINE',grants:[],operation_id:crypto.randomUUID(),path:'C:\\UNAUTHORIZED',confirmed:true}}));
+    check('T53','policy_selection_token_required',await deniedCode('policy_request',{request:{action:'CREATE',display_name:'P05 boundary',preset:'STANDARD_OFFLINE',grants:[{selection_id:crypto.randomUUID(),permission:'READ_ONLY'}],operation_id:crypto.randomUUID()}},'SELECTION_EXPIRED'));
     check('T49', 'forged_path_and_confirmation_rejected', await denied('create_draft', { request: { display_name: 'P03_SYNTHETIC_SECRET', path: 'P03_SYNTHETIC_SECRET_PATH', confirmed: true } }));
     check('T66', 'control_character_label_rejected', await deniedCode('create_draft', { request: { display_name: 'P03_SYNTHETIC_SECRET\r\nFORGED_EVENT' } }, 'INVALID_INPUT'));
     const request = { environment_id: environment.id, expected_generation: environment.generation, expected_revision: environment.desired_revision, idempotency_key: crypto.randomUUID(), kind: 'IMPORT' };

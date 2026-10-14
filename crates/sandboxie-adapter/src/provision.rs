@@ -341,7 +341,7 @@ pub fn create(
             let baseline = engine.section(&sibling.name(), false)?;
             sibling.compiled = desired;
             sibling.operation_id = Uuid::new_v4();
-            sibling.baseline = Some(baseline.clone());
+            sibling.baseline = Some(minimize_section(&baseline));
             sibling.stage = Stage::Fenced;
             sibling.reason = "FUTURE_SIBLING_ROLLOUT".into();
             sibling.fingerprint = None;
@@ -474,7 +474,7 @@ pub fn apply(
     }
     e.compiled = compiled;
     e.desired = policy;
-    e.baseline = Some(baseline.clone());
+    e.baseline = Some(minimize_section(&baseline));
     e.operation_id = operation_id;
     e.stage = Stage::Fenced;
     e.fingerprint = None;

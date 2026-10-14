@@ -347,7 +347,31 @@ fn read_section(api: &Api, name: &str, effective: bool) -> R<Section> {
         if key.eq_ignore_ascii_case("EditPassword") {
             return Err("PASSWORD_PROTECTED_CONFIGURATION");
         }
-        let values = api.values(name, &key, if effective { 0 } else { RAW_FLAGS })?;
+        let mut values = api.values(name, &key, if effective { 0 } else { RAW_FLAGS })?;
+        // Pinned Conf_Expand_Helper translates DOS paths to NT device paths.
+        // Compare filesystem rules only after the original inverse translator;
+        // preserve ordering, wildcards and complete inherited values.
+        if effective
+            && matches!(
+                key.as_str(),
+                "FileRootPath" | "ClosedFilePath" | "ReadFilePath"
+            )
+        {
+            for value in &mut values {
+                if value.starts_with("\\Device\\") || value.starts_with("\\??\\") {
+                    let encoded = wide(value);
+                    if encoded.len() > 2048 {
+                        return Err("EFFECTIVE_PATH_BOUND");
+                    }
+                    let mut buffer = [0u16; 4096];
+                    buffer[..encoded.len()].copy_from_slice(&encoded);
+                    if unsafe { (api.translate)(buffer.as_mut_ptr()) } == 0 {
+                        return Err("EFFECTIVE_PATH_TRANSLATION_UNKNOWN");
+                    }
+                    *value = text(&buffer)?;
+                }
+            }
+        }
         if !values.is_empty() {
             section.insert(key, values);
         }
@@ -399,6 +423,7 @@ impl NativeEngine {
             .ok_or("MANAGER_IMAGE_UNKNOWN")?
             .join("securerun-policy-probe.exe");
         let mut leases = canonical(image.parent().unwrap())?;
+        protected(leases.last().ok_or("MANAGER_IMAGE_UNKNOWN")?)?;
         let mut file = lease(&probe, false)?;
         protected(&file)?;
         let mut bytes = vec![];
@@ -687,7 +712,7 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
                 let mut e = journal.get(environment_id)?;
                 let raw = engine.section(&e.name(), false)?;
                 e.reason = format!("INSPECTED_BASELINE:{}", fingerprint(&raw));
-                e.observed = Some(raw);
+                e.observed = Some(minimize_section(&raw));
                 if e.stage != Stage::Verified {
                     e.stage = Stage::Conflict;
                 }
@@ -756,14 +781,8 @@ pub fn bounded_request(request: &Request) -> Reply {
             .creation_flags(CREATE_NO_WINDOW);
         // The request is bounded before dispatch; the same job/output/timeout
         // machinery as observation kills the narrow worker on failure.
-        let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-        child
-            .stdin
-            .take()
-            .ok_or("BRIDGE_PIPE_FAILED")?
-            .write_all(&data)
-            .map_err(|_| "BRIDGE_PIPE_FAILED")?;
-        let bytes = capture_child(child, Duration::from_secs(45))?;
+        let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+        let bytes = capture_child(child, Duration::from_secs(45), Some(data))?;
         let reply: Reply = serde_json::from_slice(&bytes).map_err(|_| "POLICY_RESPONSE_INVALID")?;
         if reply.protocol != 1
             || reply.production_launch_available

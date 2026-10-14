@@ -970,9 +970,13 @@ pub fn bounded_observe() -> Observation {
 }
 fn bounded_capture(command: &mut Command, timeout: Duration) -> R<Vec<u8>> {
     let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-    capture_child(child, timeout)
+    capture_child(child, timeout, None)
 }
-fn capture_child(mut child: std::process::Child, timeout: Duration) -> R<Vec<u8>> {
+fn capture_child(
+    mut child: std::process::Child,
+    timeout: Duration,
+    request: Option<Vec<u8>>,
+) -> R<Vec<u8>> {
     let job = unsafe { Handle(CreateJobObjectW(ptr::null(), ptr::null())) };
     let mut limits = unsafe { std::mem::zeroed::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() };
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
@@ -993,6 +997,14 @@ fn capture_child(mut child: std::process::Child, timeout: Duration) -> R<Vec<u8>
     {
         let _ = child.kill();
         return Err("BRIDGE_JOB_FAILED");
+    }
+    if let Some(data) = request {
+        let mut stdin = child.stdin.take().ok_or("BRIDGE_PIPE_FAILED")?;
+        // No mutation request is released until job containment is established.
+        std::thread::spawn(move || {
+            use std::io::Write;
+            let _ = stdin.write_all(&data);
+        });
     }
     let mut stdout = child.stdout.take().ok_or("BRIDGE_PIPE_FAILED")?;
     let (sender, receiver) = std::sync::mpsc::channel();

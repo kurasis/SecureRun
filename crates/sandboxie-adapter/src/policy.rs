@@ -252,6 +252,41 @@ pub fn verify_readback(
     Ok(fingerprint(&(FAMILY, raw, effective, global)))
 }
 
+/// Unknown executable automation/configuration never enters a persisted report.
+/// Its exact in-memory section hash remains the repair conflict binding.
+pub fn minimize_section(section: &Section) -> Section {
+    const SAFE: &[&str] = &[
+        "Enabled",
+        "FileRootPath",
+        "SecureRunOwner",
+        "DropAdminRights",
+        "BlockNetworkFiles",
+        "AllowNetworkAccess",
+        "BlockLocalLoop",
+        "PromptForInternetAccess",
+        "AutoRecover",
+        "AutoDelete",
+        "NeverDelete",
+        "UseFileImage",
+        "ClosedFilePath",
+        "ReadFilePath",
+        "ClosedIpcPath",
+    ];
+    section
+        .iter()
+        .map(|(key, values)| {
+            (
+                key.clone(),
+                if SAFE.contains(&key.as_str()) {
+                    values.clone()
+                } else {
+                    vec!["UNREVIEWED_VALUE_WITHHELD".into()]
+                },
+            )
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

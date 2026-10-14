@@ -35,6 +35,7 @@ pub struct OwnedEnvironment {
     pub reason: String,
     pub operation_id: Uuid,
     pub baseline: Option<Section>,
+    pub observed: Option<Section>,
     pub production_launch_available: bool,
 }
 impl OwnedEnvironment {
@@ -281,7 +282,9 @@ pub fn create(
     }
     if display_name.trim().is_empty()
         || display_name.chars().count() > 80
-        || display_name.chars().any(char::is_control)
+        || display_name
+            .chars()
+            .any(|c| c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'))
     {
         return Err("DISPLAY_NAME_INVALID");
     }
@@ -319,6 +322,7 @@ pub fn create(
         reason: "PENDING_ROOT".into(),
         operation_id,
         baseline: Some(Section::new()),
+        observed: None,
         production_launch_available: false,
     };
     journal.save(&e)?;

@@ -225,8 +225,25 @@ pub fn verify_readback(
         return Err("CONFIGURATION_CONFLICT");
     }
     for (key, wanted) in &compiled.section {
-        if effective.get(key) != Some(wanted) {
-            return Err("EFFECTIVE_POLICY_MISMATCH");
+        let observed = effective.get(key);
+        let matches = if matches!(
+            key.as_str(),
+            "ClosedFilePath" | "ReadFilePath" | "ClosedIpcPath"
+        ) {
+            observed == Some(wanted)
+        } else {
+            observed.and_then(|v| v.first()) == wanted.first()
+        };
+        if !matches {
+            return Err(match key.as_str() {
+                "FileRootPath" => "EFFECTIVE_ROOT_MISMATCH",
+                "ClosedFilePath" => "EFFECTIVE_FILE_DENIAL_MISMATCH",
+                "ClosedIpcPath" => "EFFECTIVE_IPC_DENIAL_MISMATCH",
+                "DropAdminRights" => "EFFECTIVE_TOKEN_MISMATCH",
+                "AllowNetworkAccess" => "EFFECTIVE_NETWORK_MISMATCH",
+                "Enabled" => "EFFECTIVE_FENCE_MISMATCH",
+                _ => "EFFECTIVE_POLICY_MISMATCH",
+            });
         }
     }
     if compiled.offline && global.get("NetworkEnableWFP") != Some(&vec!["y".into()]) {

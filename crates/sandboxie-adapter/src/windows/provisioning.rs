@@ -88,7 +88,21 @@ fn fixed_ntfs(path: &Path) -> R<()> {
 }
 fn canonical(path: &Path) -> R<Vec<File>> {
     fixed_ntfs(path)?;
-    let held = ancestry(path)?;
+    let mut paths = path.ancestors().collect::<Vec<_>>();
+    paths.reverse();
+    let held = paths
+        .into_iter()
+        .map(|p| {
+            let f = OpenOptions::new()
+                .access_mode(FILE_READ_ATTRIBUTES | READ_CONTROL)
+                .share_mode(FILE_SHARE_READ)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+                .open(p)
+                .map_err(|_| "PATH_LEASE_UNAVAILABLE")?;
+            identity(&f)?;
+            Ok(f)
+        })
+        .collect::<R<Vec<File>>>()?;
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     let mut long = [0u16; 1024];
     let n = unsafe { GetLongPathNameW(wide(value).as_ptr(), long.as_mut_ptr(), 1024) };
@@ -356,6 +370,7 @@ struct NativeEngine {
     probe: PathBuf,
     probe_hash: String,
     _leases: Vec<File>,
+    root_leases: std::cell::RefCell<Vec<File>>,
 }
 impl NativeEngine {
     fn new(manager_pid: u32, manager_birth: u64) -> R<Self> {
@@ -409,6 +424,7 @@ impl NativeEngine {
             probe,
             probe_hash,
             _leases: leases,
+            root_leases: Default::default(),
         })
     }
     fn mutation_context(&self) -> R<()> {
@@ -574,9 +590,12 @@ impl Engine for NativeEngine {
             return Err("PENDING_ROOT_BINDING_CHANGED");
         }
         let f = fresh_directory(Path::new(observed.path.as_ref().unwrap()), &self.owner)?;
-        identity(&f)
+        let id = identity(&f)?;
+        self.root_leases.borrow_mut().push(f);
+        Ok(id)
     }
     fn validate_root(&self, e: &OwnedEnvironment) -> R<()> {
+        let _grants = self.validate_grants(&e.desired)?;
         let root = self.api.root(&e.name());
         if root.path.as_ref() != Some(&self.root_for(e.id))
             || root.identity != e.root_identity
@@ -586,6 +605,7 @@ impl Engine for NativeEngine {
         }
         let leases = canonical(Path::new(root.path.as_ref().unwrap()))?;
         private(leases.last().ok_or("ROOT_IDENTITY_UNKNOWN")?, &self.owner)?;
+        self.root_leases.borrow_mut().extend(leases);
         Ok(())
     }
     fn verify_enforcement(&self, e: &OwnedEnvironment) -> R<String> {
@@ -667,6 +687,7 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
                 let mut e = journal.get(environment_id)?;
                 let raw = engine.section(&e.name(), false)?;
                 e.reason = format!("INSPECTED_BASELINE:{}", fingerprint(&raw));
+                e.observed = Some(raw);
                 if e.stage != Stage::Verified {
                     e.stage = Stage::Conflict;
                 }
@@ -1195,6 +1216,7 @@ impl NativeEngine {
             reason: "DIAGNOSTIC_ONLY".into(),
             operation_id: id,
             baseline: None,
+            observed: None,
             production_launch_available: false,
         };
         // Persist the exact generated scope before engine effects. Failed diagnostics
@@ -1223,6 +1245,9 @@ impl NativeEngine {
         diagnostic.root_identity = Some(self.create_root(&diagnostic)?);
         self.validate_root(&diagnostic)?;
         registry_value(&nonce, Some(1))?;
+        self.root_leases
+            .borrow_mut()
+            .retain(|file| identity(file).ok() != diagnostic.root_identity);
         let endpoints = Endpoints::new()?;
         let output = canary_base.join(format!("report-{nonce}.json"));
         let canary = Canary {
@@ -1287,21 +1312,39 @@ impl NativeEngine {
         let observed = endpoints.observed();
         fenced?;
         let report = result?;
-        if !report.member
-            || !report.virtualized_write
-            || !report.blocked_read
-            || !report.read_only_read
-            || !report.read_only_write_denied
-            || !report.metadata_denied
-            || !report.sibling_denied
-            || !report.standard_read_visible
-            || !report.registry_virtualized
-            || std::fs::read(&write).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
+        for (passed, code) in [
+            (report.member, "CANARY_MEMBERSHIP_FAILED"),
+            (
+                report.virtualized_write,
+                "CANARY_WRITE_VIRTUALIZATION_FAILED",
+            ),
+            (report.blocked_read, "CANARY_BLOCKED_READ_FAILED"),
+            (report.read_only_read, "CANARY_READ_ONLY_READ_FAILED"),
+            (
+                report.read_only_write_denied,
+                "CANARY_READ_ONLY_WRITE_FAILED",
+            ),
+            (report.metadata_denied, "CANARY_METADATA_DENIAL_FAILED"),
+            (report.sibling_denied, "CANARY_SIBLING_DENIAL_FAILED"),
+            (
+                report.standard_read_visible,
+                "CANARY_STANDARD_VISIBILITY_FAILED",
+            ),
+            (
+                report.registry_virtualized,
+                "CANARY_REGISTRY_VIRTUALIZATION_FAILED",
+            ),
+        ] {
+            if !passed {
+                return Err(code);
+            }
+        }
+        if std::fs::read(&write).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
             || std::fs::read(&readonly).map_err(|_| "CANARY_READ_FAILED")?
                 != b"SYNTHETIC_HOST_CANARY"
             || registry_value(&nonce, None) != Ok(1)
         {
-            return Err("POLICY_ENFORCEMENT_FAILED");
+            return Err("CANARY_HOST_STATE_CHANGED");
         }
         let expected = [!owned.compiled.offline; 4];
         if report.sockets != expected || observed != expected {

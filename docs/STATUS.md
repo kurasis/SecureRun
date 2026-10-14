@@ -24,7 +24,8 @@ failed/blocked cases are retained in [Windows evidence](evidence/p02/manifest.js
 
 P02 remains BLOCKED on same-SID second interactive session, ordinary-user
 provisioning, parent/descendant replacement and concurrent external-launch safety,
-termination fault variants and complete baseline release coverage. Cleanup smoke
+termination fault variants, signed engine-log reader integration and complete
+baseline release coverage. Cleanup smoke
 success does not prove hostile race containment. No broad Start.exe phase2,
 arbitrary DeleteCommand, generic root deleter, permanent privileged manager or
 security-setting bypass is used. Concrete resolutions are recorded in the report.

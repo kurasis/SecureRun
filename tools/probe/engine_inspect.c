@@ -13,6 +13,7 @@ int wmain(int argc, wchar_t **argv) {
     WCHAR dll[MAX_PATH], version[16] = {0}, box[40] = {0};
     ULONG abi = 0, flags = 0, session = 0;
     LONG health, context, info;
+    BOOL matches;
     HMODULE module;
     get_version_fn get_version;
     query_process_fn query_process;
@@ -33,13 +34,14 @@ int wmain(int argc, wchar_t **argv) {
     health = get_version(version, &abi);
     context = query_process((HANDLE)(ULONG_PTR)GetCurrentProcessId(), 0, box, NULL, NULL, &session, NULL);
     info = driver_info(0, &flags, sizeof(flags));
+    matches = wcscmp(version, L"5.73.6") == 0 && abi == 0x57230UL;
     printf("{\"stage\":\"driver_query\",\"version_status\":\"%08lx\",\"abi\":%lu,"
            "\"context_status\":\"%08lx\",\"driver_info_status\":\"%08lx\","
            "\"driver_flags\":%lu,\"context\":\"%s\",\"version_matches_pin\":%s,\"result\":\"%s\"}\n",
            (ULONG)health, abi, (ULONG)context, (ULONG)info, flags,
            context == 0 ? "BOXED" : ((ULONG)context == 0xc000000bUL && health == 0 ? "UNBOXED" : "UNKNOWN"),
-           wcscmp(version, L"5.73.6") == 0 ? "true" : "false",
-           health == 0 && (ULONG)context == 0xc000000bUL && info == 0 ? "PASS" : "BLOCKED");
+           matches ? "true" : "false",
+           health == 0 && (ULONG)context == 0xc000000bUL && info == 0 && matches ? "PASS" : "BLOCKED");
     FreeLibrary(module);
-    return health == 0 && (ULONG)context == 0xc000000bUL && info == 0 ? 0 : 2;
+    return health == 0 && (ULONG)context == 0xc000000bUL && info == 0 && matches ? 0 : 2;
 }

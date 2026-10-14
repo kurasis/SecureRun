@@ -62,7 +62,7 @@ was refreshed, not bypassed. No credential values were exposed.
 P02 is not DONE. Concrete blockers and proposed resolutions are in the feasibility
 report: same-SID interactive sessions; protected ordinary-user provisioning;
 root/descendant replacement and external launch exclusion; hostile cleanup and
-termination fault variants; complete baseline release coverage and runtime-library
+termination fault variants; complete baseline release coverage, engine-signed log-reader integration and runtime-library
 licensing decision. Happy-path native cleanup cannot waive those boundaries.
 
 Next eligible work is to resolve the remaining P02 lab/protocol gates. A standard

@@ -138,6 +138,16 @@ manager. T57 helper-specific portions stay NOT_APPLICABLE while absent; the actu
 root-scope rejection is tested. Introducing a helper requires the full spoofing,
 enrollment, path-swap and same-SID boxed-caller tests before availability.
 
+Engine message reading is an additional concrete blocker. GetMessage returns
+C0000022 because only the registered session leader or original service can read
+the stream. Source Session_Api_Leader requires MyIsCallerSigned for enrollment and
+refuses replacing another leader. A third-party unsigned bridge cannot claim this
+route. The prototype records statuses and discards buffer text, performs no leader
+replacement and does not disable signature enforcement. A future adapter can supply
+its own redacted diagnostics while requesting a supported read-only upstream log
+interface or an appropriate verified signing/integration route. Internal engine
+logs remain unavailable until that interface is proven.
+
 ## Licensing assessment
 
 No SandMan or upstream implementation was copied; the original installed engine
@@ -153,7 +163,7 @@ Before production distribution, select the manager license, review linking and
 user replacement/relinking requirements, preserve notices and satisfy source/offer
 requirements for every component actually distributed. A commercial permission is
 not inferred from installed-engine use. Bundling and license selection remain
-unapproved product decisions, with no binary redistribution in this phase.
+future product decisions, with no binary redistribution in this phase.
 
 ## Blockers and proposed resolutions
 
@@ -165,6 +175,7 @@ unapproved product decisions, with no binary redistribution in this phase.
 | Provisioning authority | Lab is elevated; ordinary-user root/config authority is not proven | Run a standard-user fixture on owner-private NTFS roots; keep admin-only config unavailable or implement the protected enrollment design with full helper tests |
 | Root identity | PendingRoot happy path tested; ancestor/root replacement at initialization not tested | Retain safe parent/root handles and inject replacement before/after identity binding; reject unexpected identity changes |
 | Complete baseline | Representative sockets/read/write pass, broader network/broker and policy inheritance permutations untested | Add controlled DNS/LAN/SMB/raw/inbound endpoints and inheritance/trigger consumers; retain independent positive controls and release tuples |
+| Engine message diagnostics | Unsigned bridge is not the engine-authorized signed session leader; GetMessage returns C0000022 | Obtain a supported narrow read-only upstream interface/signing route, test authorization and redaction, or explicitly limit diagnostics to manager-owned status evidence. Never change signature enforcement |
 | Distribution boundary | Runtime QSbieAPI/Qt dependency and manager license need production assessment | Decide a compatible license/notice/source/replacement strategy before shipping, or obtain a narrow core upstream cleanup export |
 
 Every mandatory operation has a proposed source-backed route; unproven portions

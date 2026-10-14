@@ -102,7 +102,7 @@ public sealed class P02Bridge {
     }
     public void RequireUnboxed() {
         var v=new StringBuilder(16); uint abi;
-        if (version(v,out abi)!=0 || v.ToString()!="5.73.6") throw new InvalidOperationException("ENGINE_UNVERIFIED");
+        if (version(v,out abi)!=0 || v.ToString()!="5.73.6" || abi!=0x57230U) throw new InvalidOperationException("ENGINE_UNVERIFIED");
         uint session; long created;
         int status=query((IntPtr)GetCurrentProcessId(),0,new StringBuilder(40),null,null,out session,out created);
         if (unchecked((uint)status)!=0xc000000bU) throw new InvalidOperationException("MANAGER_CONTEXT_UNSAFE");

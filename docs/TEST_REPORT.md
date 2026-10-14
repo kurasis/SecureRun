@@ -85,3 +85,32 @@ Its two blockers and limited cleanup proof are superseded by the current run, no
 relabeled. Source hashes prevent stale prototype evidence being used for changed
 runtime code. [Security observations and native Windows 11 x64 gap](ENGINE_MATRIX.md)
 remain explicit; no Windows security setting was changed.
+
+## P03 foundation and actual IPC
+
+Exact source 742c2ab3ac39a7146005ca1f540a93ec592ddc0a,
+[run 38568549251](https://github.com/kurasis/SecureRun/actions/runs/38568549251).
+[Original Windows JSON, generated ACL/capability manifests and source hashes](evidence/p03/manifest.json).
+
+Both Windows Server x64 and Windows 11 ARM64 pass 19 foundation tests, 2 tests of
+the normal configuration without its test feature, 3 UI tests and 21 real
+WebView2/native-picker command cases. Zero required failures/blocks/skips remain.
+Actual PE machines are 8664/aa64; both native apps run under a standard token.
+
+T28: migration rollback after named partial SQL failure; foreign/future/corrupt
+metadata preserved; missing metadata never adopts engine boxes. T49: actual
+custom-command ACL denial for ungranted local/remote windows, main-window positive
+controls, Rust ID/revision/owner checks and native one-use selections. T56: backend
+event generation/revision/sequence tags, denied renderer emission and stale
+event/snapshot refusal in Rust/UI. T61: persistent duplicate/restart reservations
+and no automatic dispatch replay (logical counter; no actual engine launch).
+T65: actual Windows file replacement refused by identity, canary retained and
+old-generation recovery blocked. T66: minimized local/shared records and rejected
+control-character input; no secret canary or forged event in diagnostics.
+
+The normal shell remains read-only while P04 self-context observation is absent.
+Only the explicit foundation fixture enables synthetic metadata operations; no
+engine target, host shell primitive, import/export or sandbox cleanup is executed.
+These close P03's component gate and do not pass the complete production scenarios.
+All 66 acceptance entries remain NOT_STARTED. Seven Python tooling tests, portable
+Rust/UI checks, strict core Clippy, formatting and dependency-lock validation pass.

@@ -1,167 +1,162 @@
 # P05 — policy and safe provisioning report
 
-Status: IN_PROGRESS. Dependencies: historical P04 observation gate and P02 routes.
-Current P03/P04 runtime evidence is explicitly stale during implementation.
+Status: DONE. All required P05 outputs and applicable native exit gates passed.
+Dependencies: current P03 and P04 regressions on the same runtime source.
+Implementation source: `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636`.
 
-The constrained Standard policy compiler, durable SQLite intent journal, user-level
-NT-relative root creation and native diagnostic path are under validation. No
-production user-target launcher, elevation helper, global mutation or raw INI
-editor is exposed. Every native outcome remains provisional until both Windows
-laboratories finish, reviewed structured evidence is retained, and current
-P03/P04 regression succeeds on the same runtime source.
+P05 implements constrained Standard offline/online policies, user-owned storage,
+journaled provisioning and stopped revision-aware mutation, independent fresh
+containment probes, and explicit conflict inspection/repair. The ordinary desktop
+includes an English/Russian native-picker editor. Production user-target launch,
+installation, general Stop and cleanup remain unavailable until their owning
+phases. No privileged product helper is required or implemented.
 
-The implemented English/Russian editor uses native path-picker tokens, displays
-desired/current configurations and revision conflicts, expires old observations,
-and requires explicit acknowledgement before a Read only repair. The compiler
-supports schema 1 Standard offline/online and a bounded path-rule family. The
-native service derives owner/profile/root authority from Windows, creates roots
-with their protected DACL supplied at creation, checks file/volume identity and
-pins original SDK/template/injected-library bytes. All old siblings must be
-stopped and reconciled before a new root is materialized.
+## Outputs and behavior
 
-SQLite records immutable operation signatures and partial mutation stages.
-Duplicate requests do not redispatch, stale revisions fail, and restart recovery
-leaves incomplete work in an inspect-only conflict. A CI-only checkpoint feature
-parks after durable commits; the lab kills the actual held worker and restores
-the exact normal binary before testing recovery. It is absent from normal builds.
-The production route uses the original user's token and no UAC/helper route.
+The schema 1 compiler supports Block, Read only and Isolated changes on a bounded
+literal local path family. Native canonicalization and held objects reject
+unsupported aliases, reparse ancestry, streams, selectors, namespace indirection,
+wildcards and overlapping grants. Renderer grants use one-use native-picker tokens
+bound to operation, environment, revision and expiry. Mandatory metadata, manager
+code and sibling protections cannot be edited as user grants. Standard reads
+ordinary nonexcluded host data; online permits network access and local resources
+while retaining network-share denial. Paid presets remain disabled without
+verified entitlement; no substitute certificate or bypass exists.
 
-See the [policy contract](../POLICY_PROVISIONING.md) and
-[helper decision](../HELPER_DECISION.md). No target launcher is introduced in P05.
+Names/root locations derive from backend UUIDs and the original Windows user.
+Fresh relative NTFS creation supplies a protected owner/SYSTEM/Administrators DACL
+at creation, rejects existing-directory adoption and records volume/file identity.
+All affected siblings must be stopped across every accessible Windows session and
+have their future-root denials applied/read back/verified before a new root is
+materialized. Actual old-box access to a new sibling is independently denied.
 
-## Investigation and actual checks
+SQLite WAL/FULL commits immutable operation signatures and Intent, Fenced,
+Writing, Readback, PendingRoot, RootBound and Verifying stages. Duplicate delivery
+never redispatches. Stale revision, changed configuration/root/inheritance or
+unknown health blocks mutation/verification. Actual worker interruption and restart
+leave inspect-only conflicts with no automatic replay, valid fingerprint or
+launch permission. Repair requires the current raw fingerprint, actual ownership
+marker/root identity and explicit view-change acknowledgement. Read only bypasses
+the boxed overlay; the editor discloses that change and the native test proves the
+original overlay survives and returns after policy reversal. File export belongs
+to P07; no production target data is created by this phase.
 
-The first six native iterations exposed incorrect effective-path handling,
-reviewed default-template inheritance, raw template-metadata enumeration, and
-diagnostic initialization failure. These were treated as failures, not passing
-configuration readback. SDK behavior is reviewed against the pinned upstream
-commit. Original NT-to-DOS translation and the complete pinned inheritance
-fingerprint now distinguish driver observations from unexpanded INI data.
+The original SDK is signature/hash/ABI checked and loaded from protected absolute
+paths. Original default template bytes/list/inheritance are pinned. ConfigLevel 10
+precedes Enabled to prevent the original GUI's migration from adding unwanted
+recovery/templates. The supported configuration API is not a whole-section atomic
+transaction: the journal fences definitions and detects external writes before/
+after each step. External editors must remain closed during mutation; no isolation
+against a concurrent trusted administrator is claimed.
 
-Run [38613754577](https://github.com/kurasis/SecureRun/actions/runs/38613754577),
-source `6cfbe442e7a6cca217d88d19077c32b4d221c012`, retained the numeric diagnostic
-exit status `ffffffff`. Original `File_InitUsers` expands ProfileList paths using
-`%SystemDrive%`; the minimized worker environment omitted that OS-derived value.
-The correction derives SystemDrive from `GetSystemDirectoryW` and keeps inherited
-credentials removed. The next run reached a different prerequisite failure.
+Every architecture uses a different fresh diagnostic box/root with synthetic
+canaries and the protected paired probe. Used target storage never hosts product
+probes or dependencies. Original RpcSs/DcomLaunch companions are stopped only
+through held objects after exact scope, owner, birth, critical-state and protected
+signed-image checks. Anonymous Logon restrictions remain enabled. Child probes are
+windowless. A bounded worker job/input/output and a 64-diagnostic retention quota
+limit failures without introducing generic recursive deletion.
 
-Run [38615378604](https://github.com/kurasis/SecureRun/actions/runs/38615378604),
-source `dbf3206e3dec25e56fc4e30b4fc0bb21b5f422b9`, passed 27 native adapter/unit
-checks on Server. Its controlled host DNS positive control failed before target
-dispatch. Consequently provisioning, standard-user verification and interruption
-coverage did not pass. The [failed structured reports](../evidence/p05/manifest.json)
-preserve that result and source instead of implying a completed phase. Subsequent
-work accepts Windows EDNS OPT records, adds exact DNS status diagnostics, and
-records native reasons when a journal checkpoint is not reached.
+Offline requires the explicitly reviewed original-engine WFP prerequisite, BFE and
+the driver feature flag. Product code never enables WFP globally, relaxes Windows
+security or substitutes hooks-only enforcement. Controlled outgoing/incoming
+IPv4/IPv6 TCP/UDP, interface-address traffic, DNS cache/egress, parent/child ICMP,
+raw ICMP and SMB/mapped-drive probes have actual positive controls. ICMP uses exact
+unique payload observations; machine-wide statistics are explicitly unattributed
+and cannot decide containment. Ordinary users require broker refusal before ICMP
+sending and a refused raw send without elevation. The pinned BITS COM class is
+actually refused with E_ACCESSDENIED; host COM activation occurs only in the clean
+lab positive control. Online TCP availability retries only the fixed controlled
+endpoint within a bounded window; offline keeps one attempt and independent
+observations reject any target-caused traffic.
 
-Current local checks pass 25 portable adapter tests, strict portable and Windows
-MSVC metadata Clippy, the TypeScript/UI build, 3 UI state tests, the repository
-validator and 8 tooling tests. Linux Windows metadata checks use host SQLite
-declarations for type/lint checking only; they are not Windows executable proof.
-The real Actions jobs build bundled SQLite and run actual native binaries.
+Cached verification binds actual Windows kernel/product/architecture, original
+engine, manager and every probe binary. Updates invalidate it. Every returned
+Verified record is reconciled against current native state. No configuration
+readback, synthetic fixture result or stale frontend response is treated as an
+independent containment oracle.
 
-Run [38635235915](https://github.com/kurasis/SecureRun/actions/runs/38635235915),
-source `7050529a2a41ed7c723fd8d6a0ba9ee11c9c27cd`, identifies the remaining
-diagnostic companion as SandboxieDcomLaunch.exe in the installed engine directory.
-The pinned original `apps/com/DcomLaunch/dcomlaunch.c` and `apps/com/common.h`
-implement this service alongside RpcSs. Private diagnostic shutdown now accepts
-only these two exact installed paths, with protected ACLs and Authenticode checks,
-held process birth, driver-owned box SID and immediate membership revalidation.
-The original restricted anonymous primary token remains enabled. Six actual
-kill/restart checkpoints already pass in failed runs; the Fenced checkpoint still
-depends on successful initial provisioning. These partial results do not close
-the native gate.
+See [policy contract](../POLICY_PROVISIONING.md), [helper decision](../HELPER_DECISION.md)
+and [IPC contract](../IPC_CONTRACT.md). Main implementation files are
+`crates/sandboxie-adapter/src/policy.rs`, `provision.rs`, `windows/provisioning.rs`
+and its bounded network/alias modules; `src-tauri/src/policies.rs` and
+`ui/policies.tsx`. Lab probes, interruption/metadata/boxed/session fixtures and
+strict evidence retention are under `tools/`; they are not installed product
+helpers or a general user-target launcher.
 
-Run [38636480391](https://github.com/kurasis/SecureRun/actions/runs/38636480391),
-source `d77664d37b9edf2160c6c3a100a62c2a17c45118`, passes all 28 Server adapter
-tests and the diagnostic file/registry/alias checks, then fails the independent
-network gate. Fifteen Server scenarios pass, 27 fail or lack provisioning, and
-the one different-administrator route is explicitly not applicable. The next
-source records the complete typed network results even when verification fails.
-No failed result is relabeled Verified. Fresh diagnostics retain the entire
-compiled sibling layer. New lab fixtures test actual old-box access to a new
-root and invoke production mutation with a same-owner process in real session 0
-while the standard manager runs in the interactive session. Their native results
-remain pending.
+## Native verification
 
-Run [38637643678](https://github.com/kurasis/SecureRun/actions/runs/38637643678),
-source `4dcf2295ce0bd18adb619dbbf942e3ef02c17965`, passes 28 adapter tests on each
-platform. Each platform passes 15 scenarios, fails 28 and records one applicable
-helper-absence exclusion. Reviewed typed results show denied files/aliases/shares,
-blocked parent/child sockets and DNS/ICMP, zero target DNS observations and zero
-ICMP echo-counter change. The verifier incorrectly rejected raw socket creation
-without attempting traffic. Both failed reports are retained in the manifest.
-The correction sends a valid checksummed, uniquely tagged raw ICMP request,
-observes its reply and checks the independent host echo counter; creation alone
-is neither egress evidence nor a containment failure. Unboxed raw positive
-controls distinguish an available channel from ordinary-user denial. New fresh
-diagnostic listeners also cover unsolicited incoming TCP/UDP on IPv4/IPv6, with
-explicit online positive controls. These corrected native checks remain pending.
+P05 [run 38648135812](https://github.com/kurasis/SecureRun/actions/runs/38648135812),
+P03 [run 38649287239](https://github.com/kurasis/SecureRun/actions/runs/38649287239),
+and P04 [run 38649290153](https://github.com/kurasis/SecureRun/actions/runs/38649290153)
+execute the same source commit above.
 
-Run [38639328513](https://github.com/kurasis/SecureRun/actions/runs/38639328513),
-source `dbf8af8bddf6ee603d9a79c60733c011ec2d4447`, passes 28 adapter tests on each
-platform. Server passes 42 scenarios with two fixture failures and one explicit
-helper exclusion. It verifies every architecture, online/offline incoming and
-outgoing traffic, actual ordinary-user provisioning/second-user ACL denial,
-populated read-only reversal, actual future-sibling denial and all seven real
-interruption stages. ARM passes 18 scenarios with 26 failures: a change of two
-packets in the machine-wide ICMP counter fails initial provisioning, while the
-probe reports denied ICMP requests and raw sends. That counter cannot attribute
-the changed packets to the target. Ordinary-user provisioning and all
-seven interruption stages still pass on ARM. The counter is now explicitly
-unattributed and cannot decide containment. A bounded raw observer instead matches
-only the diagnostic's unique synthetic ICMP payloads and verifies its own positive
-control; ordinary tokens require explicit broker refusal before sending.
+| Check | Server 2025 x64 | Windows 11 ARM64 |
+|---|---:|---:|
+| P05 adapter tests | 28 passed | 28 passed |
+| P05 applicable native scenarios | 45 passed | 45 passed |
+| Required failed / blocked / skipped | 0 | 0 |
+| Different-administrator UAC route | 1 Not applicable | 1 Not applicable |
+| Fresh probe architectures | x64, genuine x86 | ARM64, emulated x86/x64 |
+| Actual ordinary-user architecture receipts | 2 | 3 |
+| Real interruption checkpoints | 7 passed | 7 passed |
+| P03 foundation / normal / UI / command cases | 19 / 2 / 3 / 23 passed | 19 / 2 / 3 / 23 passed |
+| P04 adapter / observation cases | 28 / 19 passed | 28 / 19 passed |
+| Production user-target launches / helpers | 0 / 0 | 0 / 0 |
 
-The two remaining fixture failures use implicit PowerShell native invocation and
-exit state. These scripts now start bounded processes with explicit output/exit
-capture and retain minimized exception type and source-line diagnostics. A fresh
-boxed BITS activation test checks the pinned Template_COM class denial without
-activating user-overridable COM registration in the unboxed product. Cached
-verification now also binds the actual Windows kernel/product/architecture tuple.
-The corrected complete native gate and final regressions remain pending.
+Original Plus 1.18.6/core 5.73.6/ABI 0x57230, pinned source
+`cdba7096240b93d79c5373aa81a75a1c5c71b883`; OS builds 26100/26200; manager PE
+8664/aa64. Rust 1.90.0, Node 24.19.0 and frozen locks are retained. No boot,
+Defender, firewall, certificate, TLS, signing or logon policy is relaxed.
+Binary hashes, actual architecture reports, minimized outcomes and raw byte
+checksums are retained in the [P05 manifest](../evidence/p05/manifest.json) and
+current P03/P04 manifests. Every original specification document is unchanged.
 
-Run [38643173339](https://github.com/kurasis/SecureRun/actions/runs/38643173339),
-source `9b844cd72bc351a8e814107d87d0f993ba67be2e`, passes all 45 applicable Server
-cases and 43 ARM cases, with one accurate helper exclusion on each platform.
-Both platforms pass the independent offline/socket/DNS/tagged ICMP/raw/BITS,
-ordinary-user/second-user ACL, forged-metadata, real cross-session mutation,
-future-sibling, populated-overlay and seven interruption gates. The ARM online
-child misses one 750 ms IPv4 TCP exchange; the subsequent WFP case lacks a
-reconciled baseline. The failed exchange is retained, not changed to a passing
-result. Online controlled TCP availability now has a bounded retry window;
-offline uses one attempt and independent observations still reject any traffic.
-Both-platform final proof remains pending after that runtime correction.
-
-The lab now builds actual x86 probes alongside the native binary, plus emulated
-x64 probes on ARM. Each architecture gets a fresh diagnostic box. Controlled
-checks include IPv4/IPv6 TCP/UDP, DNS API/broker requests with distinct cached
-answers, ICMP with an independent host counter, a synthetic SMB share and mapped
-drive, a local network-interface address and a genuine child process. The share
-and drive are disposable host fixtures; the product never creates shares or
-changes resolver/firewall settings. This implementation still requires successful
-native evidence before any containment claim is made.
-
-## Required scenario scope
-
-| Scenarios | Implemented coverage / outstanding native work |
+| Required scope | Actual production-path phase checks |
 |---|---|
-| T08–T11, T31 | Fixed benign file/registry canaries and host visibility; native pass and reviewed reports pending |
-| T09, T35, T59 | Mandatory metadata/root denials, second standard-user ACL checks and rejected grant aliases; full mandatory alias/descendant proof pending |
-| T12–T13, T39–T40 | Controlled sockets/DNS/ICMP/share/interface/child checks and WFP-loss invalidation; positive controls and both-platform proof pending |
-| T14–T15 | Paid profiles rejected; accepted writes without enforcement remain unverified; native failure case and complete labels pending |
-| T16–T17, T53 | Stopped mutation, revision/current-fingerprint drift, unknown inheritance and reusable path family; native pass pending |
-| T18 | Portable recovery across seven stages passes; six actual Windows checkpoints pass, Fenced baseline and complete both-platform gate pending |
-| T27, T47, T58 | No helper exists; applicable boxed manager/worker and OS caller-identity production tests remain required |
-| T37 | Literal grammar, password/global/template rejection and minimized records; native password and injection cases pending |
-| T38 | Read only acknowledgement implemented; populated-overlay host view and reversal proof pending |
-| T51 | Fresh throwaway diagnostics implemented; malicious-shadow and dependency proof pending |
-| T52 | Different-administrator UAC route is Not applicable because the product has no elevation/helper route |
-| T55, T57 | PendingRoot/OS-derived authority and forged-metadata portable refusal; real substitution/interruption proof pending |
-| T60 | Stop-before-rollout and explicit future-root rules implemented; native running/all-session and future-sibling access proof pending |
+| T08–T11, T31 | File write/delete and registry virtualization; Block/Read only; ordinary host reads; host unchanged |
+| T09, T35, T59 | Metadata/root denials; case/short/junction aliases; actual second-user ACL denial; unsafe grants refused |
+| T12–T13, T39–T40 | Offline and online sockets/incoming/DNS/raw/ICMP/child/interface; share denial; BITS refusal; WFP-loss invalidation |
+| T14–T15 | Paid profiles refused; accepted engine writes without independent proof stay conflicted |
+| T16–T17, T53 | Running/current-other-session mutation refusal; immutable idempotency; stale revisions/drift; supported path family |
+| T18 | Seven actual standard-user worker kill/restart checkpoints; no automatic replay |
+| T27, T47, T58 | Real boxed manager/worker and forged-parent refusal; no privileged dispatch/host escape |
+| T37 | Grammar/password/unknown-template refusal; no password transport or unreviewed values in diagnostics |
+| T38 | Populated overlay, explicit acknowledgement, host view and preserved overlay reversal |
+| T51 | Actual executable shadow remains in used storage; product diagnostics use fresh independent roots |
+| T52 | Not applicable: no product elevation or different-administrator UAC route exists |
+| T55, T57 | PendingRoot/identity/ACL binding; same-path replacement and forged foreign-root/mandatory metadata refusal |
+| T60 | Running/all-session rollout deferred without new storage; old-box access to a newly created sibling denied |
 
-P03/P04 evidence remains historical and checksum-preserved. Both complete native
-regressions must be rerun on the final P05 runtime source and rebound before P05
-can be DONE. Full phase scenarios, policy/effective reports and reviewed evidence
-retention are still being completed. P06 is not eligible. All final T01–T66
-acceptance entries remain NOT_STARTED; these phase checks are not release acceptance.
+Portable checks: 19 foundation tests, 25 adapter tests, 8 tooling tests, 3 UI tests,
+frontend build, formatting, repository validator and strict portable/Windows MSVC
+metadata Clippy pass. Linux Windows metadata checks use host SQLite declarations
+only for type/lint validation; actual Actions builds use bundled SQLite and real
+Windows executables. Commands include `cargo test --locked`, strict Clippy,
+`npm test`, `npm run build`, repository/tooling validation and
+`tools/lab/Invoke-P03.ps1`, `Invoke-P04.ps1`, `Invoke-P05.ps1` on both native hosts.
+
+## Investigation, limits and handoff
+
+Earlier failed/partial reports remain immutable in the manifest. Source review
+and actual failures corrected NT/DOS effective paths, ordered default inheritance,
+SystemDrive scrubbing, DNS EDNS/API address layout, interface UDP binding, Win32
+stdcall/basic exports, ConfigLevel migration, restricted service tokens, private
+held-object cleanup, ICMP attribution and bounded online availability. Standard
+profile receipts exposed cleanup uncertainty; child probes now avoid console
+creation instead of expanding termination authority. Those failed runs are not
+passing phase or production acceptance evidence.
+
+No elevated product helper is needed; boxed-caller, spoofing, metadata authority
+and ordinary-user ACL tests remain applicable and passed. Only the absent
+administrative UAC route is excluded. The Server/ARM laboratories do not declare a
+Windows 11 x64 production tuple or certify the final release. Full application,
+transfer/lifecycle, stress and release matrices remain in P06–P12. Retained fresh
+diagnostics stay disabled and quota-bound until lifecycle work defines cleanup.
+All T01–T66 final acceptance entries remain NOT_STARTED. Next eligible phase: P06;
+it is not implemented by this request.
+
+All project source, Markdown and reviewed JSON are published by
+[PR #6](https://github.com/kurasis/SecureRun/pull/6) under the owner's standing
+push/normal-merge authorization; credentials, private paths, raw target arguments
+and generated binaries remain excluded.

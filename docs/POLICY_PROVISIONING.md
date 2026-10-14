@@ -1,7 +1,7 @@
 # Policy and provisioning contract
 
-P05 implementation; native verification is in progress. This document describes
-the implemented contract, not a claim of completed containment acceptance.
+P05 implementation and native phase gate are complete on the owner-selected
+Server/ARM laboratories. This contract does not claim final release acceptance.
 
 The engine remains authoritative. The manager accepts schema 1 Standard offline
 and Standard online policies with at most 24 literal local path grants: Block,

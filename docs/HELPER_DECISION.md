@@ -1,8 +1,8 @@
 # P05 helper decision
 
 No privileged product helper is implemented or required for baseline user-owned
-provisioning. This is an implementation decision undergoing production-path
-verification, distinct from the completed P02 feasibility route.
+provisioning. This decision is verified through the completed P05 production paths,
+distinct from the earlier P02 feasibility route.
 
 The current Windows user owns the manager's private profile and derived roots.
 The original protected engine service performs its own configuration IPC. The

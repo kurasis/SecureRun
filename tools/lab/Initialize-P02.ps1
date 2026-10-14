@@ -35,6 +35,8 @@ if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { $componentNames += '64/SbieDll.dl
 foreach ($optional in @('QSbieAPI.dll','Qt6Core.dll','Qt6Concurrent.dll','MiscHelpers.dll')) {
     if (Test-Path (Join-Path $engineHome $optional)) { $componentNames += $optional }
 }
+$componentNames += @(Get-ChildItem -LiteralPath $engineHome -Recurse -File -Filter '*.dll' | ForEach-Object { [IO.Path]::GetRelativePath($engineHome,$_.FullName).Replace('\','/') })
+$componentNames = @($componentNames | Select-Object -Unique)
 foreach ($name in $componentNames) {
     $installed = Join-Path $engineHome $name
     $original = Join-Path $reference $name

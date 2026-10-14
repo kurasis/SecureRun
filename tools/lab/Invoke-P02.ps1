@@ -198,7 +198,7 @@ try {
         Require ($mapping.Count -eq 1 -and $mapping[0].Length -le 8184) 'MAPPING_DESCRIPTOR_UNVERIFIED'
         $physical = $bridge.ResolveSyntheticMapping($boxA,[IO.File]::ReadAllText($mapping[0].FullName,[Text.Encoding]::Unicode))
         $boxedReceipt = $bridge.LaunchSyntheticBoxExecutable($boxA,$physical,[string[]]@('hold',$fixture,$boxA,'imported-exe',$engineHome))
-        try { Start-Sleep -Milliseconds 500; Require ($bridge.Count($boxA) -gt 0) 'BOX_EXECUTABLE_MEMBERSHIP_UNCONFIRMED'; $null = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($boxedReceipt,5000)) 'STOP_INCOMPLETE' }
+        try { Start-Sleep -Milliseconds 750; Require ($bridge.ObserveLogicalExecutable($boxA)) 'BOX_EXECUTABLE_MEMBERSHIP_UNCONFIRMED'; $null = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($boxedReceipt,5000)) 'STOP_INCOMPLETE' }
         finally { [P02Bridge]::CloseReceipt($boxedReceipt) }
         @{ mapping_source = 'SbieDll_GetHandlePath + SbieDll_TranslateNtToDosPath'; physical_hash_matched_original_probe = $true; host_logical_copy_absent = $true; launched_logical_boxed_path = $true; physical_storage_executed_as_host = $false; safe_production_transfer_primitive = 'P09_REQUIRED' }
     }

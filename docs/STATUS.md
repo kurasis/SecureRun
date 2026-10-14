@@ -1,12 +1,13 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P02.
+Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P03.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03–P12 | NOT_STARTED | P03 is eligible; no later phase is implemented by this request |
+| P03 | DONE — native foundation and IPC gate | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
+| P04–P12 | NOT_STARTED | P04 is eligible; no later phase is implemented here |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected
@@ -30,7 +31,17 @@ recovery, stress and release security matrices belong to later phases. Paid
 features remain disabled without verified entitlement. Original QSbieAPI cleanup
 requires the documented runtime dependency/license assessment before distribution.
 
-No production app, helper, user-target launcher or installer is implemented.
+P03 adds a native application shell, typed domain/SQLite foundation and explicitly
+scoped IPC. Its normal mode is read-only setup until trusted self-context
+observation exists in P04. No production engine-control adapter, helper, user-target
+launcher or installer is implemented.
 No SandMan implementation or engine binary is copied or bundled. All project
 source, Markdown and reviewed JSON evidence are published as authorized by the
 owner. Historical BLOCKED evidence is preserved separately in the [manifest](evidence/p02/manifest.json).
+
+P03 final source 333e59cb6641fbcb3577c50f651fb9568df82140,
+[run 38571221105](https://github.com/kurasis/SecureRun/actions/runs/38571221105):
+both native Windows targets pass 19 foundation, 2 normal-configuration, 3 UI and
+21 real command-boundary cases. [Raw reports/generated ACLs](evidence/p03/manifest.json)
+are checksum-bound to the tested runtime sources. No required P03 gate remains
+blocked; full production acceptance still belongs to later phases.

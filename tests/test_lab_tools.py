@@ -54,7 +54,7 @@ class IntegrityTests(unittest.TestCase):
     def test_done_gate_cannot_relabel_historical_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             copy = Path(tmp) / 'repo'
-            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__'))
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
             path = copy / 'docs/evidence/p02/manifest.json'
             manifest = json.loads(path.read_text())
             manifest['result'] = 'DONE'

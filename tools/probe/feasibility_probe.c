@@ -114,6 +114,18 @@ int wmain(int argc,WCHAR **argv) {
     if(wcscmp(argv[1],L"guard")==0)return context==0 ? 43 : 44; /* boxed control plane refuses all mutation */
     if(host){if((ULONG)context!=0xc000000bUL)return 42;}
     else if(context!=0 || wcscmp(box,argv[3])!=0)return 42; /* check before canary operations */
+    if(wcscmp(argv[1],L"workspace")==0){
+        WCHAR exe[1024],descriptor[1024];HANDLE handle,out;DWORD size=0;BOOLEAN boxed=FALSE;ULONG status;
+        if(argc!=6||!GetModuleFileNameW(NULL,exe,1024))return 64;
+        path(file,argv[2],L"workspace");if(!CreateDirectoryW(file,NULL)&&GetLastError()!=ERROR_ALREADY_EXISTS)return 49;
+        path(file,argv[2],L"workspace\\boxed-probe.exe");if(!CopyFileW(exe,file,TRUE))return 49;
+        handle=CreateFileW(file,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,0,NULL);if(handle==INVALID_HANDLE_VALUE)return 49;
+        status=mapping(handle,mapped,&boxed);CloseHandle(handle);
+        if(status!=0||!boxed||wcslen(mapped)>4092)return 49;
+        path(descriptor,argv[2],L"results\\workspace.mapping");
+        out=CreateFileW(descriptor,GENERIC_WRITE,0,NULL,CREATE_NEW,0,NULL);if(out==INVALID_HANDLE_VALUE)return 49;
+        {BOOL ok=WriteFile(out,mapped,(DWORD)(wcslen(mapped)*sizeof(WCHAR)),&size,NULL);CloseHandle(out);return ok?0:49;}
+    }
     if(wcscmp(argv[1],L"hold")==0){Sleep(20000);return 0;}
     if(child){if(argc!=11)return 64;for(int i=0;i<4;i++)ports[i]=_wtoi(argv[7+i]);}
     else {if(argc!=15)return 64;for(int i=0;i<4;i++)ports[i]=_wtoi(argv[6+i]);}

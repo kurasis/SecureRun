@@ -180,6 +180,25 @@ try {
         @{ dispatch_permitted = $false; hooks_checked = $observed; hook_never_executed = $true; builtin_cleanup_scope = 'BLOCKED_SOURCE_REVIEW' }
     }
     Invoke-Case 'T16' 'Password-protected engine configuration uses private IPC' { $bridge.ExerciseProtectedConfiguration($boxB) }
+    Invoke-Case 'T02' 'Bounded source-backed configuration, entitlement and diagnostic observation' { $bridge.ReadOnlyInventory() }
+    Invoke-Case 'T25' 'Remove only a fresh never-materialized owned definition' {
+        $emptyBox = 'SRP02_EMPTY_' + $run.Substring(0,12)
+        $bridge.Register($emptyBox); $bridge.Set($emptyBox,'Enabled','y'); $bridge.Set($emptyBox,'FileRootPath',(Join-Path $fixture "boxes/$emptyBox"))
+        $bridge.RemoveFreshEmptyDefinition($emptyBox)
+    }
+    Invoke-Case 'T19' 'Private workspace mapping and boxed executable logical launch' {
+        $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('workspace',$fixture,$boxA,'workspace',$engineHome))
+        try { Require ([P02Bridge]::Completed($receipt,15000) -and [P02Bridge]::ExitCode($receipt) -eq 0) 'WORKSPACE_MAPPING_FAILED' }
+        finally { [P02Bridge]::CloseReceipt($receipt) }
+        $null = $bridge.StopHeld($boxA)
+        $mapping = @(Get-ChildItem -LiteralPath $roots[$boxA] -Recurse -File -Filter workspace.mapping)
+        Require ($mapping.Count -eq 1 -and $mapping[0].Length -le 8184) 'MAPPING_DESCRIPTOR_UNVERIFIED'
+        $physical = $bridge.ResolveSyntheticMapping($boxA,[IO.File]::ReadAllText($mapping[0].FullName,[Text.Encoding]::Unicode))
+        $boxedReceipt = $bridge.LaunchSyntheticBoxExecutable($boxA,$physical,[string[]]@('hold',$fixture,$boxA,'imported-exe',$engineHome))
+        try { Start-Sleep -Milliseconds 500; Require ($bridge.Count($boxA) -gt 0) 'BOX_EXECUTABLE_MEMBERSHIP_UNCONFIRMED'; $null = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($boxedReceipt,5000)) 'STOP_INCOMPLETE' }
+        finally { [P02Bridge]::CloseReceipt($boxedReceipt) }
+        @{ mapping_source = 'SbieDll_GetHandlePath + SbieDll_TranslateNtToDosPath'; physical_hash_matched_original_probe = $true; host_logical_copy_absent = $true; launched_logical_boxed_path = $true; physical_storage_executed_as_host = $false; safe_production_transfer_primitive = 'P09_REQUIRED' }
+    }
     Invoke-Case 'T62' 'Retained process handle termination and completed wait' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'hold',$engineHome))
         try { Start-Sleep -Milliseconds 500; $stopped = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.Count($boxA) -eq 0) 'STOP_NOT_COMPLETE'; @{ stopped_objects = $stopped; numeric_pid_kill_fallback = $false; creation_time_matched = $true; completed_wait = $true } }

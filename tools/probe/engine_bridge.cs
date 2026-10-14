@@ -46,6 +46,7 @@ public sealed class P02Bridge {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate uint UpdateConf(char operation, string password, string section, string key, string value);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int Reload(uint session, uint flags);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int DriverInfo(uint kind, out uint flags, uint bytes);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate uint Message(ref uint sequence,uint session,out uint message,out uint pid,StringBuilder buffer,uint bytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryRoot(StringBuilder box, StringBuilder file, IntPtr key, IntPtr ipc, ref uint fileBytes, IntPtr keyBytes, IntPtr ipcBytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] [return: MarshalAs(UnmanagedType.U1)] delegate bool Translate(StringBuilder path);
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct Startup {
@@ -62,6 +63,7 @@ public sealed class P02Bridge {
     readonly UpdateConf update;
     readonly Reload reload;
     readonly DriverInfo info;
+    readonly Message message;
     readonly QueryRoot root;
     readonly Translate translate;
     readonly RunSandboxed run;
@@ -91,6 +93,7 @@ public sealed class P02Bridge {
         enumerate=Bind<EnumProcess>(module,"SbieApi_EnumProcessEx"); conf=Bind<QueryConf>(module,"SbieApi_QueryConf");
         update=Bind<UpdateConf>(module,"SbieDll_UpdateConf"); reload=Bind<Reload>(module,"SbieApi_ReloadConf");
         info=Bind<DriverInfo>(module,"SbieApi_QueryDrvInfo"); root=Bind<QueryRoot>(module,"SbieApi_QueryBoxPath");
+        message=Bind<Message>(module,"SbieApi_GetMessage");
         translate=Bind<Translate>(module,"SbieDll_TranslateNtToDosPath"); run=Bind<RunSandboxed>(module,"SbieDll_RunSandboxed");
         RequireUnboxed();
         CurrentSession=(uint)Process.GetCurrentProcess().SessionId;
@@ -117,6 +120,23 @@ public sealed class P02Bridge {
         if(unchecked((uint)status)==0xc000008bU)return null;
         if(status!=0)throw new InvalidOperationException("CONFIG_QUERY_FAILED_"+unchecked((uint)status).ToString("x8"));
         return text.ToString();
+    }
+    public Dictionary<string,object> ReadOnlyInventory() {
+        RequireUnboxed();var sections=new List<string>();bool ended=false;
+        for(uint index=0;index<1024;index++){string section=Read(null,null,index|0x30000000U);if(section==null){ended=true;break;}sections.Add(section);}
+        if(!ended)throw new InvalidOperationException("SECTION_ENUMERATION_INCOMPLETE");
+        foreach(string box in owned)if(!sections.Contains(box))throw new InvalidOperationException("OWNED_SECTION_NOT_ENUMERATED");
+        uint cert;int status=info(UInt32.MaxValue,out cert,4);
+        if(status!=0)throw new InvalidOperationException("ENTITLEMENT_QUERY_UNKNOWN");
+        uint sequence=0;var identifiers=new List<uint>();uint last=0;
+        for(int index=0;index<8;index++){uint id,pid;var text=new StringBuilder(4096);last=message(ref sequence,CurrentSession,out id,out pid,text,8192);if(last!=0||id==0)break;identifiers.Add(id);text.Clear();}
+        return new Dictionary<string,object>{{"configuration_sections",sections.Count},{"fresh_owned_sections_observed",owned.Count},{"driver_flags",Flags()},{"certificate_state_low32",cert},{"certificate_query_status",status},{"optional_paid_profiles_enabled",false},{"diagnostic_status",last.ToString("x8")},{"diagnostic_message_ids",identifiers.ToArray()},{"diagnostic_text_retained",false}};
+    }
+    public Dictionary<string,object> RemoveFreshEmptyDefinition(string box) {
+        Scope(box);if(Count(box)!=0||Directory.Exists(Root(box)))throw new InvalidOperationException("DEFINITION_HAS_STORAGE_OR_PROCESSES");
+        uint status=update('s',null,box,"*",null);
+        if(status!=0||Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DEFINITION_REMOVAL_UNCONFIRMED");
+        owned.Remove(box);return new Dictionary<string,object>{{"upstream_status",status},{"section_absent",true},{"root_was_never_materialized",true},{"used_definition_requires_verified_cleanup",true}};
     }
     public Dictionary<string,object> ExerciseProtectedConfiguration(string box) {
         Scope(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
@@ -204,9 +224,10 @@ public sealed class P02Bridge {
             if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
             // Exact exports observed in both authenticated v1.18.6 distributions.
             var remove=Bind<DeleteNative>(module,"?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z");
-            IntPtr name=Marshal.StringToHGlobalUni(".");IntPtr descriptor=Marshal.AllocHGlobal(Marshal.SizeOf<NtName>());
+            // NT relative opens use an empty name to reopen RootDirectory; "." is invalid.
+            IntPtr name=Marshal.StringToHGlobalUni("");IntPtr descriptor=Marshal.AllocHGlobal(Marshal.SizeOf<NtName>());
             try {
-                Marshal.StructureToPtr(new NtName{length=2,maximum=4,buffer=name},descriptor,false);
+                Marshal.StructureToPtr(new NtName{length=0,maximum=2,buffer=name},descriptor,false);
                 var attr=new NtAttributes{length=(uint)Marshal.SizeOf<NtAttributes>(),root=handle.DangerousGetHandle(),name=descriptor,flags=0x40};
                 var clock=Stopwatch.StartNew();CleanupCallback callback=(text,state)=>clock.ElapsedMilliseconds<30000;
                 int status=remove(ref attr,callback,IntPtr.Zero);GC.KeepAlive(callback);
@@ -224,6 +245,28 @@ public sealed class P02Bridge {
     public bool MayMaterializeSibling(string[] affected) {
         foreach(string box in affected){Scope(box);if(Count(box)!=0)return false;}
         return true;
+    }
+    public string ResolveSyntheticMapping(string box,string mapped) {
+        Scope(box);if(Count(box)!=0||mapped.Length==0||mapped.Length>4092||mapped.IndexOfAny(new[]{'\0','\r','\n'})>=0)throw new InvalidOperationException("MAPPING_UNVERIFIED");
+        var path=new StringBuilder(mapped,4096);if(!translate(path))throw new InvalidOperationException("MAPPING_TRANSLATION_FAILED");
+        string full=Path.GetFullPath(path.ToString());string rootPath=Root(box);
+        if(!full.StartsWith(rootPath+"\\",StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("MAPPING_OUTSIDE_ROOT");
+        // Prototype only: reject every reparse component and multiple hard links.
+        string walk=full;while(!String.Equals(walk,rootPath,StringComparison.OrdinalIgnoreCase)){
+            if((File.GetAttributes(walk)&FileAttributes.ReparsePoint)!=0)throw new InvalidOperationException("MAPPING_REPARSE_REJECTED");walk=Path.GetDirectoryName(walk);
+        }
+        using(var file=CreateFile(full,0x80,1,IntPtr.Zero,3,0x00200000,IntPtr.Zero)){FileIdentity identity;if(file.IsInvalid||!GetFileInformationByHandle(file,out identity)||identity.links!=1)throw new InvalidOperationException("MAPPING_IDENTITY_UNVERIFIED");}
+        return full;
+    }
+    public Receipt LaunchSyntheticBoxExecutable(string box,string physical,string[] arguments) {
+        Scope(box);string full=Path.GetFullPath(physical);string logical=Path.Combine(Base,"workspace","boxed-probe.exe");
+        if(!full.StartsWith(Root(box)+"\\",StringComparison.OrdinalIgnoreCase)||!File.Exists(full)||File.Exists(logical))throw new InvalidOperationException("BOX_EXECUTABLE_UNVERIFIED");
+        byte[] content=File.ReadAllBytes(full);bool matched=false;
+        foreach(string probe in probes){if(!probe.EndsWith(".exe",StringComparison.OrdinalIgnoreCase))continue;byte[] expected=File.ReadAllBytes(probe);if(content.Length==expected.Length&&CryptographicOperations.FixedTimeEquals(SHA256.HashData(content),SHA256.HashData(expected)))matched=true;}
+        if(!matched)throw new InvalidOperationException("BOX_EXECUTABLE_HASH_UNVERIFIED");
+        string command=Quote(logical);foreach(string arg in arguments)command+=" "+Quote(arg);
+        var startup=new Startup();startup.size=(uint)Marshal.SizeOf<Startup>();Receipt receipt;
+        if(!run(box,command,Base,0,ref startup,out receipt))throw new InvalidOperationException("BOX_LOGICAL_LAUNCH_FAILED");return receipt;
     }
     public Dictionary<string,object> OtherUserAccess(string user,string password,string box) {
         Scope(box);string rootPath=Root(box);SafeAccessTokenHandle token;
@@ -339,7 +382,7 @@ public sealed class P02Bridge {
                     if(WaitForSingleObject(handle,0)==0)continue;
                     int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
                     if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn)throw new InvalidOperationException("PROCESS_SCOPE_REJECTED");
-                    if(!TerminateProcess(handle,99) || WaitForSingleObject(handle,5000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
+                    if(!TerminateProcess(handle,99) || WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
                     stopped++;
                 } finally { CloseHandle(handle); }
             }

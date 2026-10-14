@@ -42,7 +42,8 @@ int wmain(int argc,WCHAR **argv) {
     }
     if(argc==3&&wcscmp(argv[1],L"logon-fixture")==0){
         WCHAR pipePath[256],user[64]={0},password[128]={0},claimed[184]={0},base[1024]={0},selected[40]={0},exe[1024],command[2200],prefix[1024];HANDLE current=NULL,token=NULL,pipe;BYTE data[256];DWORD got=0,size=SECURITY_MAX_SID_SIZE;BYTE systemSid[SECURITY_MAX_SID_SIZE];BOOL ok;LPWSTR actual=NULL;STARTUPINFOW startup={0};PROCESS_INFORMATION child={0};
-        if(wcsncmp(argv[2],L"SecureRunP02Logon_",17)||!uuid(argv[2]+17)||(ULONG)query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),box,NULL,NULL,&session)!=0xc000000bUL||!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&current))return 66;
+        const size_t pipePrefix=wcslen(L"SecureRunP02Logon_");
+        if(wcsncmp(argv[2],L"SecureRunP02Logon_",pipePrefix)||!uuid(argv[2]+pipePrefix)||(ULONG)query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),box,NULL,NULL,&session)!=0xc000000bUL||!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&current))return 66;
         ok=GetTokenInformation(current,TokenUser,data,sizeof(data),&got)&&CreateWellKnownSid(WinLocalSystemSid,NULL,systemSid,&size)&&EqualSid(((TOKEN_USER*)data)->User.Sid,systemSid);CloseHandle(current);if(!ok)return 66;
         if(swprintf_s(pipePath,256,L"\\\\.\\pipe\\%s",argv[2])<0)return 64;pipe=CreateFileW(pipePath,GENERIC_READ,0,NULL,OPEN_EXISTING,0,NULL);if(pipe==INVALID_HANDLE_VALUE)return 67;
         ok=text(pipe,user,64)&&text(pipe,password,128)&&text(pipe,claimed,184)&&text(pipe,base,1024)&&text(pipe,selected,40);CloseHandle(pipe);

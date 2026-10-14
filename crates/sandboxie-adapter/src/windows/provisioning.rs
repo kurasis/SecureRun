@@ -569,6 +569,38 @@ impl NativeEngine {
         let probe_hash = format!("{:x}", Sha256::digest(bytes));
         leases.push(file);
         leases.push(template_pin(&trusted)?);
+        let manifest: serde_json::Value =
+            serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
+        let target = manifest["targets"]
+            .as_array()
+            .ok_or("MANIFEST_INVALID")?
+            .iter()
+            .find(|t| t["architecture"] == std::env::consts::ARCH)
+            .ok_or("ARCHITECTURE_UNTESTED")?;
+        for entry in target["injected_libraries"]
+            .as_array()
+            .ok_or("MANIFEST_INVALID")?
+        {
+            let path = trusted
+                .home
+                .join(entry["name"].as_str().ok_or("MANIFEST_INVALID")?);
+            leases.extend(ancestry(path.parent().ok_or("MANIFEST_INVALID")?)?);
+            let mut file = lease(&path, false)?;
+            protected(&file)?;
+            signature(&path, &file)?;
+            let mut bytes = vec![];
+            Read::by_ref(&mut file)
+                .take(33554433)
+                .read_to_end(&mut bytes)
+                .map_err(|_| "INJECTED_LIBRARY_UNAVAILABLE")?;
+            if bytes.len() > 33554432
+                || format!("{:x}", Sha256::digest(bytes))
+                    != entry["sha256"].as_str().ok_or("MANIFEST_INVALID")?
+            {
+                return Err("INJECTED_LIBRARY_UNTESTED_OR_CHANGED");
+            }
+            leases.push(file);
+        }
         // Windows environment mutation is thread-safe; this worker has not yet
         // started diagnostic threads. Never serialize inherited credentials into
         // the original engine's child environment, including direct CLI workers.
@@ -1571,6 +1603,17 @@ impl NativeEngine {
                 return Err("DIAGNOSTIC_EXIT_UNKNOWN");
             }
             if code != 0 {
+                // A numeric OS exit status contains no target data. Retain it in
+                // private metadata so a failed diagnostic can be distinguished
+                // from a missing report without publishing paths or arguments.
+                let status = serde_json::json!({"schema":1,"exit_code_hex":format!("{code:08x}")});
+                std::fs::write(
+                    self.profile
+                        .join("metadata")
+                        .join(format!("probe-status-{nonce}.json")),
+                    serde_json::to_vec(&status).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                )
+                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                 return Err(match code {
                     71 => "DIAGNOSTIC_CONTEXT_NOT_BOXED",
                     72 => "DIAGNOSTIC_BOX_ID_MISMATCH",
@@ -1641,6 +1684,14 @@ impl NativeEngine {
         if report.sockets != expected || observed != expected {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":self.probe_hash,"report":report,"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        std::fs::write(
+            self.profile
+                .join("metadata")
+                .join(format!("probe-evidence-{nonce}.json")),
+            serde_json::to_vec(&evidence).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+        )
+        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
         Ok(fingerprint(&(FAMILY, &self.probe_hash, &report, observed)))
     }
 }

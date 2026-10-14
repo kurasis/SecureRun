@@ -2,9 +2,9 @@ name: P05 policy and safe provisioning
 on:
   push:
     branches: [main, 'p05/**']
-    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P05.ps1', '.github/workflows/p05.yml']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P05.ps1', 'tools/probe/p05*', '.github/workflows/p05.yml']
   pull_request:
-    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P05.ps1', '.github/workflows/p05.yml']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P05.ps1', 'tools/probe/p05*', '.github/workflows/p05.yml']
   workflow_dispatch:
 permissions:
   contents: read

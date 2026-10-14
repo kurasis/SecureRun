@@ -13,14 +13,16 @@ const copy = {
 export function Policies({language}: {language: Language}) {
   const t=copy[language];const [reply,setReply]=useState<Reply|null>(null);const [busy,setBusy]=useState(false);const [error,setError]=useState('');
   const [name,setName]=useState('');const [preset,setPreset]=useState<Preset>('STANDARD_OFFLINE');const [permission,setPermission]=useState<Permission>('BLOCK');
+  const [observedAt,setObservedAt]=useState(0);const [now,setNow]=useState(Date.now());const [repairAck,setRepairAck]=useState<Record<string,boolean>>({});
   const [operation,setOperation]=useState(()=>crypto.randomUUID());const [editing,setEditing]=useState<Owned|null>(null);const [ack,setAck]=useState(false);
   const [grants,setGrants]=useState<{selection_id:string;display_name:string;permission:Permission}[]>([]);
   const request=async (body:unknown) => {
-    setBusy(true);setError('');try {const result=await invoke<Reply>('policy_request',{request:body});setReply(result);if(result.reason!=='OBSERVED')setError(result.reason);return result;}
+    setBusy(true);setError('');try {const result=await invoke<Reply>('policy_request',{request:body});setReply(result);setObservedAt(Date.now());setRepairAck({});if(result.reason!=='OBSERVED')setError(result.reason);return result;}
     catch {setError('POLICY_REQUEST_UNAVAILABLE');return null;}finally{setBusy(false);}
   };
   const refresh=()=>request({action:'LIST'});
-  useEffect(()=>{void refresh();},[]);
+  useEffect(()=>{void refresh();const timer=setInterval(()=>setNow(Date.now()),1000);const resumed=()=>{if(document.visibilityState==='visible'){setObservedAt(0);void refresh();}};document.addEventListener('visibilitychange',resumed);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',resumed);};},[]);
+  const fresh=observedAt>0&&now-observedAt<30000;
   const reset=()=>{setEditing(null);setName('');setPreset('STANDARD_OFFLINE');setGrants([]);setAck(false);setOperation(crypto.randomUUID());};
   const pick=async(directory:boolean)=>{
     setBusy(true);try {const selection=await invoke<{selection_id:string;display_name:string}>('select_policy_path',{request:{operation_id:operation,environment_id:editing?.id??null,expected_revision:editing?.revision??0,directory}});setGrants(old=>[...old,{...selection,permission}]);}
@@ -33,18 +35,18 @@ export function Policies({language}: {language: Language}) {
   };
   return <section className="policies" aria-labelledby="policies-title"><h2 id="policies-title">{t.title}</h2><p>{t.limitation}</p><p>{t.prerequisite}</p><p>{t.deferred}</p><p>{t.launch} {t.noHelper}</p>
     <button disabled={busy} onClick={()=>void refresh()}>{t.refresh}</button>{busy&&<p role="status">{t.busy}</p>}{error&&<p role="alert">{t.error} <code>{error}</code></p>}
-    {reply?.reason==='OBSERVED'&&<form onSubmit={submit}><fieldset disabled={busy}><legend>{editing?t.apply:t.create}</legend>{!editing&&<label>{t.name}<input value={name} onChange={e=>setName(e.target.value)} maxLength={80} required/></label>}
+    {reply?.reason==='OBSERVED'&&fresh&&<form onSubmit={submit}><fieldset disabled={busy}><legend>{editing?t.apply:t.create}</legend>{!editing&&<label>{t.name}<input value={name} onChange={e=>setName(e.target.value)} maxLength={80} required/></label>}
       <label>{t.preset}<select value={preset} onChange={e=>setPreset(e.target.value as Preset)}><option value="STANDARD_OFFLINE">{t.offline}</option><option value="STANDARD_ONLINE">{t.online}</option></select></label>
       <label>{t.rule}<select value={permission} onChange={e=>setPermission(e.target.value as Permission)}><option value="BLOCK">{t.block}</option><option value="READ_ONLY">{t.read}</option><option value="ISOLATED_CHANGES">{t.isolated}</option></select></label>
       <button type="button" onClick={()=>void pick(true)}>{t.addFolder}</button><button type="button" onClick={()=>void pick(false)}>{t.addFile}</button>
       <ul>{grants.map(g=><li key={g.selection_id}>{g.display_name} · {g.permission} <button type="button" onClick={()=>setGrants(old=>old.filter(v=>v.selection_id!==g.selection_id))}>{t.remove}</button></li>)}</ul>
       {editing&&<p>{t.replacement}</p>}{grants.some(g=>g.permission==='READ_ONLY')&&<label><input type="checkbox" checked={ack} onChange={e=>setAck(e.target.checked)} required/>{t.acknowledgement}</label>}
       <button type="submit">{editing?t.apply:t.create}</button>{editing&&<button type="button" onClick={reset}>{t.cancel}</button>}</fieldset></form>}
-    {reply?.environments.map(env=><article key={env.id}><h3>{env.display_name}</h3><p>{env.stage} · {t.revision} {env.revision}</p><p>{t.reason}: <code>{env.reason}</code></p><p>{t.fingerprint}: <code>{env.fingerprint??'UNVERIFIED'}</code></p><p>{t.probes}: {env.enforcement_evidence?'VERIFIED':'UNVERIFIED'}</p>
-      {env.stage==='VERIFIED'?<button disabled={busy} onClick={()=>{reset();setEditing(env);setPreset(env.desired.preset);}}>{t.edit}</button>:<button disabled={busy} onClick={()=>void request({action:'INSPECT',environment_id:env.id})}>{t.inspect}</button>}
+    {reply?.environments.map(env=><article key={env.id}><h3>{env.display_name}</h3><p>{fresh?env.stage:'OBSERVATION_EXPIRED'} · {t.revision} {env.revision}</p><p>{t.reason}: <code>{env.reason}</code></p><p>{t.fingerprint}: <code>{fresh?(env.fingerprint??'UNVERIFIED'):'UNVERIFIED'}</code></p><p>{t.probes}: {fresh&&env.enforcement_evidence?'VERIFIED':'UNVERIFIED'}</p>
+      {env.stage==='VERIFIED'?<button disabled={busy||!fresh} onClick={()=>{reset();setEditing(env);setPreset(env.desired.preset);}}>{t.edit}</button>:<button disabled={busy} onClick={()=>void request({action:'INSPECT',environment_id:env.id})}>{t.inspect}</button>}
       <details><summary>{t.desired}</summary><table><tbody>{Object.entries(env.compiled.section).map(([key,values])=><tr key={key}><th>{key}</th><td>{values.join(' · ')}</td></tr>)}</tbody></table></details>
       {env.observed&&<details open><summary>{t.current}</summary><table><tbody>{Object.entries(env.observed).map(([key,values])=><tr key={key}><th>{key}</th><td>{values.join(' · ')}</td></tr>)}</tbody></table></details>}
-      {env.stage==='CONFLICT'&&env.reason.startsWith('INSPECTED_BASELINE:')&&<button disabled={busy} onClick={()=>void request({action:'REPAIR',environment_id:env.id,expected_revision:env.revision,observed_fingerprint:env.reason.slice('INSPECTED_BASELINE:'.length),operation_id:crypto.randomUUID(),acknowledge_view_change:true})}>{t.repair}</button>}
+      {env.stage==='CONFLICT'&&env.reason.startsWith('INSPECTED_BASELINE:')&&<><label><input type="checkbox" checked={repairAck[env.id]??false} onChange={e=>setRepairAck(old=>({...old,[env.id]:e.target.checked}))}/>{t.acknowledgement}</label><button disabled={busy||!fresh||!repairAck[env.id]} onClick={()=>void request({action:'REPAIR',environment_id:env.id,expected_revision:env.revision,observed_fingerprint:env.reason.slice('INSPECTED_BASELINE:'.length),operation_id:crypto.randomUUID(),acknowledge_view_change:repairAck[env.id]??false})}>{t.repair}</button></>}
     </article>)}
   </section>;
 }

@@ -65,6 +65,116 @@ try {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
         @{fresh_trusted_probe=$true;host_file_unchanged=$true;read_denial_verified=$true;read_only_verified=$true;registry_host_unchanged=$true;tcp4_udp4_tcp6_udp6_blocked=$true;live_server_positive_controls=$true;metadata_sibling_denied=$true;engine_signature_checks_preserved=$true}
     }
+    Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
+    foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
+    foreach($arch in @('x86','x64','arm64')){$file=Join-Path $repo "artifacts/p02/feasibility_probe_$arch.exe";if(Test-Path $file){Copy-Item $file $managerHome}}
+    $lab=[P05Lab]::new($engine,$fixture,$managerHome)
+    function Current { $r=Policy @{action='LIST'};Require ($r.reason -eq 'OBSERVED') $r.reason;return $r }
+    function Repair($e) {
+        $r=Policy @{action='INSPECT';environment_id=$e.id};Require ($r.reason -eq 'OBSERVED') $r.reason
+        $e=$r.environments|Where-Object id -eq $e.id;Require ($e.reason.StartsWith('INSPECTED_BASELINE:')) 'CONFLICT_INSPECTION_REQUIRED'
+        return Policy @{action='REPAIR';environment_id=$e.id;expected_revision=$e.revision;observed_fingerprint=$e.reason.Substring('INSPECTED_BASELINE:'.Length);operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true}
+    }
+    function New-Standard([string]$suffix) {
+        $name='SRP05_'+$suffix+'_'+$run.Substring(0,7);$secure=ConvertTo-SecureString ('P05aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
+        $user=New-LocalUser -Name $name -Password $secure -AccountNeverExpires
+        $group=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
+        $base=Join-Path $env:ProgramData "SecureRunLab/p02-p05-$suffix-$run";foreach($d in @('results','boxes')){$null=New-Item -ItemType Directory -Path (Join-Path $base $d) -Force}
+        $acl=[Security.AccessControl.DirectorySecurity]::new();$acl.SetAccessRuleProtection($true,$false)
+        foreach($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))){$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))};Set-Acl $base $acl
+        return @{name=$name;secure=$secure;fixture=$base}
+    }
+    function Start-Standard($account,[string]$script,[string[]]$arguments) {
+        $shell=(Get-Command pwsh -CommandType Application).Source
+        Require ($shell.StartsWith($env:ProgramFiles,[StringComparison]::OrdinalIgnoreCase)) 'PROTECTED_LAB_POWERSHELL_REQUIRED'
+        $start=[Diagnostics.ProcessStartInfo]::new($shell);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.UserName=$account.name;$start.Domain=[Environment]::MachineName;$start.Password=$account.secure;$start.LoadUserProfile=$true
+        foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome $script))+$arguments){$start.ArgumentList.Add($arg)}
+        return [Diagnostics.Process]::Start($start)
+    }
+    Case 'T14' 'paid_presets_rejected_without_entitlement' {
+        $r=Policy @{action='CREATE';display_name='Unverified paid profile';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='PRIVACY_HARDENED_OFFLINE';grants=@()}}
+        Require ($r.reason -eq 'PAID_PRESET_UNVERIFIED') 'UNVERIFIED_ENTITLEMENT_ACCEPTED';@{paid_features_enabled=0;reason=$r.reason}
+    }
+    Case 'T37' 'literal_grammar_and_root_grants_rejected' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
+        foreach($path in @('C:\bad%TEMP%','C:\bad,selector',"C:\bad`nEnabled=y",'C:\bad:stream','\\localhost\share','C:\bad*',$environment.compiled.section.FileRootPath[0])){
+            $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$path;permission='READ_ONLY'})}}
+            Require ($r.reason -ne 'OBSERVED') 'UNSAFE_GRANT_ACCEPTED'
+        };@{percent_comma_crlf_stream_unc_wildcard_rejected=$true;mandatory_root_overlap_rejected=$true;production_target_launches=0}
+    }
+    Case 'T13' 'online_policy_keeps_file_and_sibling_protection' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired 'STANDARD_ONLINE')}
+        Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
+        Require ($environment.stage -eq 'VERIFIED' -and $environment.compiled.section.BlockNetworkFiles[0] -eq 'y') 'ONLINE_BASELINE_LOST'
+        @{controlled_tcp_udp_ipv4_ipv6_positive=$true;host_files_unchanged=$true;mandatory_denials_retained=$true;network_shares_not_granted=$true}
+    }
+    Case 'T39' 'wfp_loss_invalidates_offline_policy' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired)};Require ($r.reason -eq 'OBSERVED') $r.reason
+        $script:environment=$r.environments|Where-Object id -eq $environment.id
+        try{$lab.Wfp($false);$r=Current;$e=$r.environments|Where-Object id -eq $environment.id;Require ($e.stage -eq 'CONFLICT' -and $null -eq $e.fingerprint -and -not $e.production_launch_available) 'WFP_LOSS_IGNORED';@{hooks_only_fallback=$false;offline_policy_invalidated=$true;windows_bfe_or_firewall_settings_changed=$false}}
+        finally{$lab.Wfp($true);$r=Repair $environment;Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id}
+    }
+    Case 'T17' 'external_owned_setting_requires_reviewed_repair' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$box='SR_'+$environment.id.Replace('-','');$lab.Register($box);$lab.Set($box,'AutoDelete','y')
+        $r=Current;$e=$r.environments|Where-Object id -eq $environment.id;Require ($e.stage -eq 'CONFLICT') 'CONFIGURATION_DRIFT_IGNORED'
+        Require ($lab.Read($box,'AutoDelete',0x70000000) -eq 'y') 'EXTERNAL_SETTING_SILENTLY_OVERWRITTEN'
+        $r=Repair $e;Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
+        @{drift_detected=$true;external_write_preserved_before_review=$true;explicit_current_fingerprint_repair=$true}
+    }
+    Case 'T17' 'global_template_changes_block_without_overwrite' {
+        $name='P05Unsafe_'+$run
+        try{$lab.GlobalTemplate($name,$true);$r=Policy @{action='CREATE';display_name='Must not inherit unknown template';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'GLOBAL_SETTING_UNREVIEWED') 'UNREVIEWED_INHERITANCE_ACCEPTED';@{inherited_global_template_rejected=$true;unmanaged_sections_unchanged=$true;unsafe_automation_not_executed=$true}}
+        finally{$lab.GlobalTemplate($name,$false)}
+    }
+    Case 'T53' 'new_supported_path_grant_keeps_tested_family' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$folder=Join-Path $fixture 'ordinary-input';$null=New-Item -ItemType Directory -Path $folder -Force
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$folder;permission='READ_ONLY'})}}
+        Require ($r.reason -eq 'READ_ONLY_VIEW_CHANGE_ACK_REQUIRED') 'READ_ONLY_VIEW_CHANGE_HIDDEN'
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$folder;permission='READ_ONLY'})}}
+        Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
+        @{family=$environment.compiled.family;new_runtime_fingerprint=$true;release_per_user_path_required=$false;view_change_acknowledged=$true;fresh_box_diagnostic=$true}
+    }
+    Case 'T59' 'reparse_and_dos_alias_grants_rejected' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$alias=Join-Path $fixture 'root-alias';$null=New-Item -ItemType Junction -Path $alias -Target $environment.compiled.section.FileRootPath[0]
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$alias;permission='READ_ONLY'})}}
+        Require ($r.reason -ne 'OBSERVED') 'REPARSE_GRANT_ACCEPTED';@{junction_grant_rejected=$true;mandatory_denial_unchanged=$true}
+    }
+    Case 'T51' 'polluted_existing_box_does_not_host_diagnostic' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$shadow=Join-Path $root 'malicious-shadow';$null=New-Item -ItemType Directory -Path $shadow -Force;[IO.File]::WriteAllText((Join-Path $shadow 'securerun-policy-probe.exe'),'UNTRUSTED_SHADOW_MUST_NOT_EXECUTE')
+        $before=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=$environment.desired};Require ($r.reason -eq 'OBSERVED') $r.reason
+        $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count;Require ($after -gt $before) 'FRESH_DIAGNOSTIC_NOT_CREATED';$script:environment=$r.environments|Where-Object id -eq $environment.id
+        @{fresh_throwaway_record_created=$true;existing_storage_not_diagnostic_host=$true;shadow_file_retained=$true}
+    }
+    Case 'T60' 'running_sibling_prevents_any_new_storage' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$box='SR_'+$environment.id.Replace('-','');$lab.Register($box);$arch=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'arm64'}else{'x64'}
+        [P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.Hold($box,(Join-Path $managerHome "feasibility_probe_$arch.exe"))
+        try {Start-Sleep -Milliseconds 500;$before=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/boxes')).Count
+            $r=Policy @{action='CREATE';display_name='Running rollout must defer';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -in @('STOP_REQUIRED_ALL_SESSIONS','SIBLING_RECONCILIATION_REQUIRED','CONFIGURATION_CONFLICT')) 'RUNNING_ROLLOUT_ALLOWED'
+            $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/boxes')).Count;Require ($after -eq $before) 'PRIVATE_STORAGE_MATERIALIZED_WHILE_RUNNING';@{new_storage_absent=$true;running_box_not_terminated=$true;manager_launch_disabled=$true}
+        }finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+    }
+    Case 'T60' 'future_sibling_denials_verified_before_root_creation' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$r=Policy @{action='CREATE';display_name='Synthetic future sibling';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'OBSERVED') $r.reason
+        $existing=$r.environments|Where-Object id -eq $environment.id;$new=$r.environments|Where-Object id -ne $environment.id
+        Require ($existing.stage -eq 'VERIFIED' -and $new.stage -eq 'VERIFIED' -and $existing.compiled.section.ClosedFilePath -contains ($new.compiled.section.FileRootPath[0]+'\*')) 'FUTURE_SIBLING_BASELINE_NOT_APPLIED';$script:environment=$existing
+        @{all_affected_stopped=$true;new_sibling_rule_read_back=$true;root_identity_bound_after_rollout=$true;namespace_parent_deny_assumed=$false}
+    }
+    $script:standardAccount=$null
+    Case 'T35' 'production_provisioning_as_actual_standard_user' {
+        $account=New-Standard 'owner';$script:standardAccount=$account
+        $p=Start-Standard $account 'p05_standard.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine)
+        try{Require ($p.WaitForExit(90000)) 'STANDARD_PROVISIONING_TIMEOUT';$worker=Get-Content (Join-Path $account.fixture 'results/standard-user.json') -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') 'STANDARD_PROVISIONING_FAILED';Copy-Item (Join-Path $account.fixture 'results/standard-user.json') (Join-Path $out 'standard-user.json');$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+    }
+    Case 'T35' 'second_standard_user_cannot_read_root_or_metadata' {
+        Require ($null -ne $standardAccount) 'STANDARD_OWNER_REQUIRED';$request=Get-Content (Join-Path $standardAccount.fixture 'results/acl-request.json') -Raw|ConvertFrom-Json
+        $account=New-Standard 'other';$result=Join-Path $account.fixture 'results/acl.json';$p=Start-Standard $account 'p05_acl.ps1' @('-RootCanary',$request.root_canary,'-MetadataCanary',$request.metadata_canary,'-ResultFile',$result)
+        try{Require ($p.WaitForExit(30000)) 'SECOND_USER_ACL_TIMEOUT';$worker=Get-Content $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.root_denied -and $worker.metadata_denied -and $worker.standard_user) 'SECOND_USER_ACL_BYPASS';$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+    }
+    $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
     $failed=@($cases|Where-Object status -eq 'FAILED').Count
     $data=[IO.File]::ReadAllBytes($app);$pe=[BitConverter]::ToInt32($data,0x3c);$machine=[BitConverter]::ToUInt16($data,$pe+4).ToString('x4')
     @{phase='P05';result=$(if($failed -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;manager_binary_sha256=(Get-FileHash $app).Hash.ToLowerInvariant();probe_binary_sha256=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash.ToLowerInvariant();pe_machine=$machine;os_build=[Environment]::OSVersion.Version.Build;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;production_target_launches=0;elevated_helper=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8

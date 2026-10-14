@@ -57,6 +57,13 @@
           "name": "SbieMsg.dll",
           "authenticated_payload_match": true
         }
+      ],
+      "injected_libraries": [
+        {
+          "name": "32/SbieDll.dll",
+          "sha256": "889ab370db334e16aa68b23f984f164935774a751af16a5249f6a96abceaa630",
+          "machine": "014c"
+        }
       ]
     },
     {
@@ -105,6 +112,18 @@
           "signature": "Valid",
           "authenticated_payload_match": true,
           "file_version": "5.73.6"
+        }
+      ],
+      "injected_libraries": [
+        {
+          "name": "32/SbieDll.dll",
+          "sha256": "6f4e095f558391523fddcc590462a505a7a90a8c02f794bfc8410386edb4dca6",
+          "machine": "014c"
+        },
+        {
+          "name": "64/SbieDll.dll",
+          "sha256": "339bf8881215ed9d3902aba2b1e24fbf3db167a5071e37eb50327d1d3c65526c",
+          "machine": "8664"
         }
       ]
     }

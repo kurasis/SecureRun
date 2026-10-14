@@ -548,7 +548,10 @@ pub fn apply(
         }
     }
     let compiled = compile(&policy, &mandatory(engine, id, &e.owner_sid, &all))?;
-    if compiled.read_only_view_change && policy != e.desired && !view_ack {
+    if compiled.read_only_view_change
+        && (policy != e.desired || repair_fingerprint.is_some())
+        && !view_ack
+    {
         return Err("READ_ONLY_VIEW_CHANGE_ACK_REQUIRED");
     }
     e.compiled = compiled;

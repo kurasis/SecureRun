@@ -19,9 +19,11 @@ export async function run(unauthorized: boolean) {
     const snapshot = await invoke<Snapshot>('get_snapshot');
     check('T49', 'trusted_main_scoped_boundary', snapshot.mode === 'FOUNDATION_TEST_FIXTURE' && !snapshot.engine_operations_available);
     let observedEvent: StateEvent | undefined;
-    const unlisten = await listen<StateEvent>('manager-state', event => { observedEvent = event.payload; });
+    let eventArrived: (() => void) | undefined;
+    const arrival = new Promise<void>(resolve => { eventArrived = resolve; });
+    const unlisten = await listen<StateEvent>('manager-state', event => { observedEvent = event.payload; eventArrived?.(); });
     const environment = await invoke<Environment>('create_draft', { request: { display_name: 'P03 native IPC fixture' } });
-    await new Promise(resolve => setTimeout(resolve, 200)); unlisten();
+    await Promise.race([arrival, new Promise(resolve => setTimeout(resolve, 5000))]); unlisten();
     check('T56', 'backend_event_has_independent_generations_and_sequence', observedEvent?.environment_id === environment.id && observedEvent.environment_generation === environment.generation && observedEvent.engine_generation === snapshot.engine_generation && observedEvent.sequence > snapshot.sequence);
     check('T49', 'renderer_cannot_emit_authoritative_state', await denied('plugin:event|emit', { event: 'manager-state', payload: {} }));
     check('T28', 'typed_metadata_draft_never_claims_ready', environment.lifecycle === 'UNCONFIGURED' && environment.activity === 'UNKNOWN' && environment.eligibility === 'UNVERIFIED');

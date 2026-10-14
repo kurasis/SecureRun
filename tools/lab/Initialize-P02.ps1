@@ -6,6 +6,7 @@ if ($env:GITHUB_ACTIONS -ne 'true') { throw 'This installer spike is restricted 
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $out = Join-Path $repo 'artifacts/p02'
 New-Item -ItemType Directory -Force -Path $out | Out-Null
+@{ phase = 'P02'; stage = 'BOOTSTRAP_STARTED'; timestamp_utc = [DateTime]::UtcNow.ToString('o'); security_settings_modified = $false } | ConvertTo-Json | Set-Content (Join-Path $out 'bootstrap-stage.json') -Encoding utf8
 if ((Get-Service SbieSvc -ErrorAction SilentlyContinue) -or (Test-Path 'HKLM:/SYSTEM/CurrentControlSet/Services/SbieDrv')) { throw 'Pre-existing engine detected; it will not be modified.' }
 $pin = Get-Content (Join-Path $repo 'docs/engine-candidate.json') -Raw | ConvertFrom-Json
 $candidate = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { $pin.lab_installer } else { $pin.installer }
@@ -15,13 +16,13 @@ if ((Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant() -ne $can
 $signature = Get-AuthenticodeSignature -LiteralPath $installer
 if ($signature.Status -ne 'Valid') { throw 'Installer signature is not valid.' }
 $reference = Join-Path $out 'authenticated-payload'
-$home = Join-Path $env:ProgramFiles 'Sandboxie-Plus'
-if (Test-Path $home) { throw 'Existing installation directory will not be overwritten.' }
+$engineHome = Join-Path $env:ProgramFiles 'Sandboxie-Plus'
+if (Test-Path $engineHome) { throw 'Existing installation directory will not be overwritten.' }
 # Inno switches and portable mode are backed by the pinned installer source.
 # No RefreshBuild, ImDisk, UI, reboot or security-setting modification.
 foreach ($step in @(
     @{ destination = $reference; options = '/PORTABLE=1 /CURRENTUSER'; name = 'extract' },
-    @{ destination = $home; options = '/ALLUSERS'; name = 'install' }
+    @{ destination = $engineHome; options = '/ALLUSERS'; name = 'install' }
 )) {
     $arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /TASKS= `"/DIR=$($step.destination)`" $($step.options)"
     $process = Start-Process -FilePath $installer -ArgumentList $arguments -PassThru
@@ -30,7 +31,7 @@ foreach ($step in @(
 }
 $components = @()
 foreach ($name in @('SbieDrv.sys', 'SbieSvc.exe', 'SbieDll.dll', 'SbieIni.exe', 'Start.exe', 'SbieMsg.dll', 'KmdUtil.exe')) {
-    $installed = Join-Path $home $name
+    $installed = Join-Path $engineHome $name
     $original = Join-Path $reference $name
     if (-not (Test-Path $installed) -or -not (Test-Path $original)) { throw 'Required distribution component missing.' }
     $hash = (Get-FileHash $installed -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -56,7 +57,7 @@ $inventory = @{
 }
 $inventory | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'installation.json') -Encoding utf8
 & (Join-Path $PSScriptRoot 'Build-P02.ps1')
-$inspection = & (Join-Path $out 'engine_inspect.exe') $home
+$inspection = & (Join-Path $out 'engine_inspect.exe') $engineHome
 $inspectorExit = $LASTEXITCODE
 $inspection | Set-Content (Join-Path $out 'engine-inspection.json') -Encoding utf8
 @{ phase = 'P02'; inspector_exit = $inspectorExit; result = $(if ($inspectorExit -eq 0) { 'ENGINE_QUERY_AVAILABLE' } else { 'BLOCKED' }); containment_result = 'NOT_RUN' } |

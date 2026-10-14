@@ -184,6 +184,7 @@ try {
     }
     Invoke-Case 'T16' 'Password-protected engine configuration uses private IPC' { $bridge.ExerciseProtectedConfiguration($boxB) }
     Invoke-Case 'T02' 'Bounded source-backed configuration, entitlement and diagnostic observation' { $bridge.ReadOnlyInventory() }
+    Invoke-Case 'T02' 'Original engine log reader availability' { Require $bridge.DiagnosticsAvailable 'ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE'; @{ engine_log_query_available = $true; raw_text_retained = $false } }
     Invoke-Case 'T25' 'Remove only a fresh never-materialized owned definition' {
         $emptyBox = 'SRP02_EMPTY_' + $run.Substring(0,12)
         $bridge.Register($emptyBox); $bridge.Set($emptyBox,'Enabled','y'); $bridge.Set($emptyBox,'FileRootPath',(Join-Path $fixture "boxes/$emptyBox"))
@@ -200,7 +201,7 @@ try {
         $boxedReceipt = $bridge.LaunchSyntheticBoxExecutable($boxA,$physical,[string[]]@('hold',$fixture,$boxA,'imported-exe',$engineHome))
         try { Start-Sleep -Milliseconds 750; Require ($bridge.ObserveLogicalExecutable($boxA)) 'BOX_EXECUTABLE_MEMBERSHIP_UNCONFIRMED'; $null = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($boxedReceipt,5000)) 'STOP_INCOMPLETE' }
         finally { [P02Bridge]::CloseReceipt($boxedReceipt) }
-        @{ mapping_source = 'SbieDll_GetHandlePath + SbieDll_TranslateNtToDosPath'; physical_hash_matched_original_probe = $true; host_logical_copy_absent = $true; launched_logical_boxed_path = $true; physical_storage_executed_as_host = $false; safe_production_transfer_primitive = 'P09_REQUIRED' }
+        @{ mapping_source = 'SbieDll_GetHandlePath + SbieDll_TranslateNtToDosPath'; physical_hash_matched_original_probe = $true; host_logical_copy_absent = $true; launched_logical_boxed_path = $true; physical_storage_executed_as_host = $false; safe_production_transfer_primitive = 'P07_AND_P09_REQUIRED' }
     }
     Invoke-Case 'T62' 'Retained process handle termination and completed wait' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'hold',$engineHome))
@@ -322,5 +323,5 @@ try {
 $cases.Add(@{ id = 'T36'; case = 'Independent Windows interactive sessions'; status = 'BLOCKED'; diagnostic_code = 'SECOND_INTERACTIVE_SESSION_UNAVAILABLE'; source_route = 'SbieApi_EnumProcessEx all_sessions TRUE; capacity and owner validation'; current_session = $bridge.CurrentSession })
 $cases.Add(@{ id = 'T57'; case = 'Elevated helper authority'; status = 'NOT_APPLICABLE'; reason = 'No elevated helper path exists in this prototype; protected enrollment design recorded for P05' })
 Save-Cases
-@{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Pinned QSbieAPI native alternative under test; Start.exe broad phase2 not dispatched'; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
+@{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Pinned native smoke recorded separately; descendant and external-launch races unresolved'; gate_blockers = @('SAME_SID_SECOND_INTERACTIVE_SESSION','ORDINARY_USER_PROVISIONING','ROOT_REPLACEMENT_AND_CLEANUP_RACES','TERMINATION_FAULT_VARIANTS','COMPLETE_BASELINE_RELEASE_COVERAGE'); production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; blocked_smoke_cases = @($cases | Where-Object status -EQ 'BLOCKED').Count; not_applicable_smoke_cases = @($cases | Where-Object status -EQ 'NOT_APPLICABLE').Count; not_run_smoke_cases = @($cases | Where-Object status -EQ 'NOT_RUN').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
     ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'phase-result.json') -Encoding utf8

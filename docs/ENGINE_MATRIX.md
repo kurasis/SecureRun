@@ -1,47 +1,52 @@
 # Engine candidate matrix
 
-No supported tuple exists. P01 provenance does not establish enforcement.
+No supported production tuple exists. These are P02 feasibility candidates only.
+Pinned official Plus 1.18.6 / core 5.73.6 source:
+`cdba7096240b93d79c5373aa81a75a1c5c71b883`; observed core ABI `0x57230`.
+[Machine-readable provenance pin](engine-candidate.json).
 
-| Platform | Engine candidate | State | Evidence |
+| Laboratory | Native engine/bridge | Actual target binaries | State |
 |---|---|---|---|
-| Current Linux cloud | Not installed | Source/checksum checks only | [provenance](evidence/p01/linux-provenance.json) |
-| GitHub Windows 11 ARM64 | Plus ARM64 and x64 1.18.6 installers, not installed | P01 smoke/provenance/fixtures PASSED; containment NOT_RUN | [lab](LAB_SETUP.md) |
-| Serviced Windows 11 x64 | Plus 1.18.6 / core 5.73.6 | NOT_TESTED: requires a native x64 compatibility runner | P02 required |
+| Linux cloud | No Windows driver | Repository Python stdlib tooling | Integrity/tests verified; no containment claims |
+| Actions Windows Server 2025 x64 | x64 original installation | x64 and genuine x86 PE | Representative disposable smoke; gate BLOCKED |
+| Actions Windows 11 Enterprise ARM64 | Native ARM64 original installation | ARM64, emulated x64 and genuine x86 PE | Representative disposable smoke; gate BLOCKED |
+| Serviced Windows 11 x64 | x64 candidate | Native x64/x86 | NOT_TESTED: Server kernel and ARM emulation do not supply this tuple |
 
-Pinned source: `cdba7096240b93d79c5373aa81a75a1c5c71b883` at official
-[tag v1.18.6](https://github.com/sandboxie-plus/Sandboxie/releases/tag/v1.18.6),
-published 2026-10-11. [Machine-readable pin](engine-candidate.json).
+Exact OS build/UBR, security observations, installed PE versions, individual
+signature states, component hashes, services, target PE machines and actual smoke
+counts are in [the evidence manifest](evidence/p02/manifest.json). Inventory's
+containment_result=NOT_RUN describes its bootstrap stage, not later smoke cases.
+The full phase outcome is BLOCKED. Original P01 provenance is retained separately.
 
-Source-declared core versions for Start.exe, SbieIni.exe, SbieSvc.exe, SbieDll.dll
-and SbieDrv.sys use
-[my_version.h](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/common/my_version.h)
-(5.73.6); Plus uses
-[version.h](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/SandboxiePlus/version.h)
-(1.18.6). These are declarations, not observed installed PE versions.
-
-Installer size: 24,914,432 bytes. SHA256:
-`3ad29e1ec18618ee9aa4ef4e21ab0548cf2188b94c05c41cb7a07b5d2d0270e2`.
-HTTPS download matched official GitHub release asset digest on Linux.
-The corrected Windows run verified both installer signatures as Valid; signer
-CN=NOVASYNC LABS PTE. LTD. ARM64 candidate SHA256:
+The x64 installer is 24,914,432 bytes, SHA256
+`3ad29e1ec18618ee9aa4ef4e21ab0548cf2188b94c05c41cb7a07b5d2d0270e2`;
+ARM64 is 22,452,544 bytes, SHA256
 `7d2e4ca2ed7943beacad3e1df14d3159ad7d700f12a4ca11d4a4eaa20ffd527a`.
-Installed component/cat signatures, architecture,
-service/driver health, enforcement and entitlement must be recorded on Windows.
-A digest served with a binary is not independent authenticity evidence.
+Both official installers have Valid Windows Authenticode. Installed files are
+compared to independently extracted authenticated payloads; distribution libraries
+may be NotSigned and are recorded as such. This is provenance, not independent
+security certification or a uniform online revocation guarantee.
 
-All presets/capabilities are UNKNOWN/unavailable for product use, including
-Standard offline/online. Optional paid presets are disabled; no certificates
-are requested. No P01 production adapter version exists. A helper decision is
-UNRESOLVED, not absent-by-design; helper tests are not waived prematurely.
+| Capability | Candidate result | Product availability |
+|---|---|---|
+| Native engine health/self-context | Original driver/service query observed | UNKNOWN until complete release tuple/current preconditions |
+| Standard virtual writes/selected reads | Native/emulated fixed probes, host canaries and controls | UNKNOWN; representative smoke does not complete policy baseline |
+| Kernel offline/online sockets | WFP mechanism/flag plus actual loopback TCP/UDP v4/v6 controls | UNKNOWN; DNS/LAN/SMB/broker/raw/inbound still untested |
+| Process membership/descendants | Parent/child/grandchild native and emulated probes | UNKNOWN until full production dispatch/journal checks |
+| All-session enumeration | Current session plus real SYSTEM session zero; truncation rejected | UNKNOWN for same-SID multiple interactive sessions |
+| Root ACL/sibling separation | Second-account and same-user boxed denial with future-root alias variants | UNKNOWN for substitution/creation-race production variants |
+| Cleanup | Original narrow QSbieAPI smoke, retained root and sibling/host canaries | UNAVAILABLE until hostile race gate passes |
+| Private workspace/boxed EXE | Original mapping API and explicit logical launch spike | UNKNOWN until file-phase safe transfer and identity protocol |
+| Optional paid security/privacy/encryption/proxy profiles | Original certificate-state observation; no entitlement installed | UNAVAILABLE; no certificate or INI acceptance treated as enforcement |
 
-## Licensing and provenance
+The hosted images' boot/VBS/code-integrity/Defender observations are preserved;
+no Windows security setting is changed. P01 ARM image reported Secure Boot false,
+VBS/code integrity/Defender active and no nested virtualization. P02 records each
+fresh image's actual state rather than inheriting that observation as an assumption.
+A hardened Secure-Boot-enabled product tuple needs separate evidence.
 
-Pinned LICENSE.Classic is GPLv3; LICENSE.Plus describes core GPLv3, SandMan custom
-terms, QSbieAPI/MiscHelpers/Qt LGPL and other component-specific notices.
-Full commit-addressed URLs and license hashes are in the candidate pin.
-This repository copies no upstream implementation, links no upstream library
-and redistributes no engine binary. Reassess obligations before native linking,
-commercial distribution or bundling. The new manager's license is unselected.
-
-Observed tooling OS: Windows 11 Enterprise ARM64 26200.9457.
-[Evidence](evidence/p01/windows-arm64/run-summary.json). No tested engine tuple.
+Core/Classic GPLv3, Plus/SandMan custom terms and QSbieAPI/MiscHelpers/Qt LGPL
+notices are source-pinned. No upstream implementation is copied and no engine is
+redistributed. The original QSbieAPI runtime cleanup dependency is a concrete
+exception under review, not a claim that dynamic loading removes obligations.
+Manager license/distribution terms remain unselected; see [licensing assessment](FEASIBILITY_REPORT.md).

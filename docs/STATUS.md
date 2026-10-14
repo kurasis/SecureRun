@@ -1,32 +1,37 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: P01 only.
+Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P02.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
-| P01 | DONE (owner-selected Windows 11 ARM64 lab) | [phase report](phases/P01_REPORT.md), [verified run](evidence/p01/windows-arm64/run-summary.json) |
-| P02 | NOT_STARTED | Next phase; native ARM64 engine feasibility and original x64 coverage unresolved |
-| P03–P12 | NOT_STARTED | Follow the canonical phase dependency table |
+| P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
+| P02 | BLOCKED (spike and research implemented) | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
+| P03–P12 | NOT_STARTED | P02 exit gate has unresolved mandatory variants |
 
-P01's original x64 lab default was replaced by the owner's explicit Windows 11
-ARM64 Actions request. This is a documented platform adjustment, not a security
-waiver. Completed: repository assessment/ADR, unchanged 26-document specification,
-pinned official x64 and native ARM64 engine candidates, isolated synthetic fixture
-contract and NTFS canary, initial matrices, native smoke tools and CI.
+The full 26-document specification remains unchanged. P02 adds disposable Actions
+labs on Windows Server 2025 x64 (genuine x86/x64 target probes) and Windows 11 ARM64
+(native ARM64 plus emulated x86/x64 targets), as the owner requested. No supported
+production tuple or production acceptance scenario is declared. All T01–T66 remain
+NOT_STARTED; smoke evidence is separate and must be repeated in owning phases.
 
-Verified: repository integrity, 6/6 tooling tests, real x64 EXE execution on Windows
-11 Enterprise ARM64 26200.9457, both installer SHA256/size and Valid Authenticode.
-[Windows evidence](evidence/p01/windows-arm64/run-summary.json),
-[Linux provenance](evidence/p01/linux-provenance.json),
-[test report](TEST_REPORT.md). All T01–T66 remain NOT_STARTED.
+Implemented: source-pinned original DLL adapter, authenticated engine install and
+component inventory, explicit PE targets, fresh-box native configuration/readback,
+representative kernel WFP controls, virtual write/read exclusion tests, ACL tests
+with a second standard account, bounded all-session enumeration, held-object stop,
+boxed-context refusal, future-sibling direct/junction denial, private workspace
+mapping and narrow original-library cleanup research. Exact current outcomes and
+failed/blocked cases are retained in [Windows evidence](evidence/p02/manifest.json).
 
-No engine is installed, no policy is enforced and no product requirement is
-accepted as complete. There is no production app, helper, launcher or installer.
-P01 establishes the selected lab; P02 must prove a native ARM64 adapter route,
-x64-emulated target semantics and normal-security parity before its gate passes.
-The hosted image reports Secure Boot false (unchanged), VBS/code integrity active,
-Defender active and no exposed nested virtualization. Native Windows 11 x64
-product compatibility needs a separate x64 run; emulator results cannot supply it.
+P02 remains BLOCKED on same-SID second interactive session, ordinary-user
+provisioning, parent/descendant replacement and concurrent external-launch safety,
+termination fault variants and complete baseline release coverage. Cleanup smoke
+success does not prove hostile race containment. No broad Start.exe phase2,
+arbitrary DeleteCommand, generic root deleter, permanent privileged manager or
+security-setting bypass is used. Concrete resolutions are recorded in the report.
 
-Next eligible task: P02 source-backed feasibility on the explicitly selected lab,
-with these platform/security limitations retained. P02 has not been started.
+No production app/helper/launcher/installer is implemented. No SandMan code or
+engine binary is copied/bundled. Original installed QSbieAPI native cleanup adds
+an explicit runtime licensing/dependency decision before production distribution.
+The hosted security observations and Windows 11 x64 compatibility gap remain
+visible in [the candidate matrix](ENGINE_MATRIX.md). Next eligible work: remaining
+P02 gates; P03 is not automatically started after a green artifact-collection job.

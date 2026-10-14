@@ -47,7 +47,6 @@ public sealed class P02Bridge {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int Reload(uint session, uint flags);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int DriverInfo(uint kind, out uint flags, uint bytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate uint Message(ref uint sequence,uint session,out uint message,out uint pid,StringBuilder buffer,uint bytes);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int SessionLeader(uint session,IntPtr process);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryRoot(StringBuilder box, StringBuilder file, IntPtr key, IntPtr ipc, ref uint fileBytes, IntPtr keyBytes, IntPtr ipcBytes);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] [return: MarshalAs(UnmanagedType.U1)] delegate bool Translate(StringBuilder path);
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct Startup {
@@ -65,7 +64,6 @@ public sealed class P02Bridge {
     readonly Reload reload;
     readonly DriverInfo info;
     readonly Message message;
-    readonly SessionLeader leader;
     readonly QueryRoot root;
     readonly Translate translate;
     readonly RunSandboxed run;
@@ -76,6 +74,7 @@ public sealed class P02Bridge {
     public readonly string Home;
     public readonly string Base;
     public int LastLaunchError { get; private set; }
+    public bool DiagnosticsAvailable { get; private set; }
     public uint CurrentSession { get; private set; }
     T Bind<T>(IntPtr module, string name) where T : Delegate {
         IntPtr address = GetProcAddress(module, name);
@@ -96,7 +95,6 @@ public sealed class P02Bridge {
         update=Bind<UpdateConf>(module,"SbieDll_UpdateConf"); reload=Bind<Reload>(module,"SbieApi_ReloadConf");
         info=Bind<DriverInfo>(module,"SbieApi_QueryDrvInfo"); root=Bind<QueryRoot>(module,"SbieApi_QueryBoxPath");
         message=Bind<Message>(module,"SbieApi_GetMessage");
-        leader=Bind<SessionLeader>(module,"SbieApi_SessionLeader");
         translate=Bind<Translate>(module,"SbieDll_TranslateNtToDosPath"); run=Bind<RunSandboxed>(module,"SbieDll_RunSandboxed");
         RequireUnboxed();
         CurrentSession=(uint)Process.GetCurrentProcess().SessionId;
@@ -131,17 +129,10 @@ public sealed class P02Bridge {
         foreach(string box in owned)if(!sections.Contains(box))throw new InvalidOperationException("OWNED_SECTION_NOT_ENUMERATED");
         uint cert;int status=info(UInt32.MaxValue,out cert,4);
         if(status!=0)throw new InvalidOperationException("ENTITLEMENT_QUERY_UNKNOWN");
-        IntPtr observed=Marshal.AllocHGlobal(IntPtr.Size);
-        try {
-            if(leader(CurrentSession,observed)!=0)throw new InvalidOperationException("SESSION_LEADER_QUERY_UNKNOWN");
-            IntPtr existing=Marshal.ReadIntPtr(observed);
-            if(existing!=IntPtr.Zero&&existing!=(IntPtr)GetCurrentProcessId())throw new InvalidOperationException("PREEXISTING_SESSION_LEADER_NOT_REPLACED");
-            if(existing==IntPtr.Zero&&leader(CurrentSession,IntPtr.Zero)!=0)throw new InvalidOperationException("SESSION_LEADER_REGISTRATION_FAILED");
-        } finally {Marshal.FreeHGlobal(observed);}
         uint sequence=0;var identifiers=new List<uint>();uint last=0;
         for(int index=0;index<8;index++){uint id,pid;var text=new StringBuilder(4096);last=message(ref sequence,CurrentSession,out id,out pid,text,8192);if(last!=0||id==0)break;identifiers.Add(id);text.Clear();}
-        if(last!=0&&last!=0x8000001aU)throw new InvalidOperationException("DIAGNOSTIC_QUERY_FAILED_"+last.ToString("X8"));
-        return new Dictionary<string,object>{{"configuration_sections",sections.Count},{"fresh_owned_sections_observed",owned.Count},{"driver_flags",Flags()},{"certificate_state_low32",cert},{"certificate_query_status",status},{"optional_paid_profiles_enabled",false},{"session_leader_registered_for_disposable_process",true},{"diagnostic_status",last.ToString("x8")},{"diagnostic_message_ids",identifiers.ToArray()},{"diagnostic_text_retained",false}};
+        DiagnosticsAvailable=last==0||last==0x8000001aU;
+        return new Dictionary<string,object>{{"configuration_sections",sections.Count},{"fresh_owned_sections_observed",owned.Count},{"driver_flags",Flags()},{"certificate_state_low32",cert},{"certificate_query_status",status},{"optional_paid_profiles_enabled",false},{"diagnostic_status",last.ToString("x8")},{"diagnostics_available",DiagnosticsAvailable},{"diagnostic_message_ids",identifiers.ToArray()},{"diagnostic_text_retained",false},{"signed_session_leader_registration_attempted",false}};
     }
     public Dictionary<string,object> RemoveFreshEmptyDefinition(string box) {
         Scope(box);if(Count(box)!=0||Directory.Exists(Root(box)))throw new InvalidOperationException("DEFINITION_HAS_STORAGE_OR_PROCESSES");

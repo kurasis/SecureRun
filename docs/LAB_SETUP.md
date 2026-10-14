@@ -112,3 +112,45 @@ run, then restore the known clean VM snapshot. Revert is the default teardown,
 not recursive deletion of an arbitrary root. Interrupted runs remain incomplete;
 never infer safe cleanup from a prefix or an empty process query. Dedicated-PC
 teardown must wait for P02's identity-bound cleanup or restore its backup.
+
+## P02 disposable engine laboratory
+
+The owner selected both Actions images: `windows-2025` (x64 OS, genuine x86 and
+x64 target probes) and `windows-11-arm` (native ARM64 driver/bridge, ARM64 and
+emulated x86/x64 target probes). Modern hosted Server images are x64, not x86 OSes.
+Workflow: [p02.yml](../.github/workflows/p02.yml). Manually dispatch with
+`gh workflow run p02.yml --ref p02/engine-feasibility` while developing, or `main`
+after publication. Never run these mutating lab scripts on an existing engine or
+on a workstation containing real box data. GITHUB_ACTIONS is an accident guard,
+not a security boundary or proof of disposable ownership.
+
+On the fresh VM, Initialize-P02 rejects preexisting services/installations, verifies
+the pinned native installer, separately extracts its authenticated payload, installs
+without reboot/security changes, verifies installed components/dependencies, builds
+explicit MSVC targets with /WX and inspects the original driver. Invoke-P02 creates
+unique synthetic boxes, owner-protected NTFS roots, inert canaries, local v4/v6 TCP/
+UDP echo endpoints, a synthetic standard account and a temporary SYSTEM scheduled
+task for real session-zero enumeration. No external target payload is downloaded.
+Only original engine service IPC, observed native exports and fixed benign probe
+executables are used. CI credentials are removed from the dispatching worker's
+environment before any boxed target. Synthetic passwords never appear in artifacts.
+
+The WFP engine global setting is changed only in this newly installed disposable
+engine. Do not transfer that mutation into production startup or cloud install
+scripts. OS boot/security/Defender settings are observed and preserved. The VM is
+discarded after the job; no generic recursive cleanup or engine uninstall is run.
+
+Structured artifacts are collected even when smoke cases fail; a green collection
+job is not a P02 gate pass. Download with `gh run download RUN_ID`; compare
+installation.manager_commit and probe PE machines before using evidence. Artifacts
+have 14-day retention, so phase evidence is also retained under docs/evidence/p02.
+The phase result keeps failures, blocked portions and absent-helper NA distinct.
+Same-SID second interactive session is not supplied by the hosted-runner setup;
+SYSTEM session zero is explicitly different-owner partial evidence.
+
+The Linux cloud needs only Python stdlib/Git/GitHub CLI for repository validation
+and Actions orchestration; no Windows services or app server run locally. No generic
+install_script/start_skill is needed for this phase. Windows VM lifecycle and tool
+activation are reproduced by the pinned workflow and lab scripts. A temporarily
+expired GitHub connection was refreshed through environment settings; no credentials
+were copied into scripts, repository files or a second secret binding.

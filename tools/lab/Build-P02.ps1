@@ -16,3 +16,11 @@ try {
     & cl.exe /nologo /W4 /WX /wd4055 /wd4054 /O2 /DUNICODE /D_UNICODE (Join-Path $repo 'tools/probe/engine_inspect.c') /Fe:engine_inspect.exe
     if ($LASTEXITCODE -ne 0) { throw 'Native inspector compilation failed.' }
 } finally { Pop-Location }
+foreach ($arch in @($native, 'x64', 'x86') | Select-Object -Unique) {
+    Enter-VsDevShell -VsInstallPath $vs -SkipAutomaticLocation -DevCmdArguments "-arch=$arch -host_arch=$native" | Out-Null
+    Push-Location $out
+    try {
+        & cl.exe /nologo /W4 /WX /wd4055 /wd4054 /O2 /DUNICODE /D_UNICODE (Join-Path $repo 'tools/probe/feasibility_probe.c') "/Fe:feasibility_probe_$arch.exe"
+        if ($LASTEXITCODE -ne 0) { throw "Fixed probe compilation failed: $arch" }
+    } finally { Pop-Location }
+}

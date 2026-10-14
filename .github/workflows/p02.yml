@@ -24,6 +24,10 @@ jobs:
       - name: Install authenticated native engine and inspect driver
         shell: pwsh
         run: ./tools/lab/Initialize-P02.ps1
+      - name: Run source-backed benign feasibility probes
+        shell: pwsh
+        timeout-minutes: 10
+        run: ./tools/lab/Invoke-P02.ps1
       - name: Retain structured evidence
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4

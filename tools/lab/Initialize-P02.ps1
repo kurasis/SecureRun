@@ -30,7 +30,9 @@ foreach ($step in @(
     if ($process.ExitCode -ne 0) { throw "Installer stage failed with code $($process.ExitCode)." }
 }
 $components = @()
-foreach ($name in @('SbieDrv.sys', 'SbieSvc.exe', 'SbieDll.dll', 'SbieIni.exe', 'Start.exe', 'SbieMsg.dll', 'KmdUtil.exe')) {
+$componentNames = @('SbieDrv.sys', 'SbieSvc.exe', 'SbieDll.dll', 'SbieIni.exe', 'Start.exe', 'SbieMsg.dll', 'KmdUtil.exe', '32/SbieDll.dll')
+if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { $componentNames += '64/SbieDll.dll' }
+foreach ($name in $componentNames) {
     $installed = Join-Path $engineHome $name
     $original = Join-Path $reference $name
     if (-not (Test-Path $installed) -or -not (Test-Path $original)) { throw 'Required distribution component missing.' }

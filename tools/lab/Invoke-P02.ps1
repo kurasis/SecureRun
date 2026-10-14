@@ -54,7 +54,10 @@ $hostHash = (Get-FileHash (Join-Path $fixture 'canaries/write.txt')).Hash
 $probeFiles = @(Get-ChildItem (Join-Path $out 'feasibility_probe_*.exe'))
 foreach ($file in $probeFiles) { Copy-Item $file.FullName -Destination $probeHome }
 $approved = @($probeFiles | ForEach-Object { Join-Path $probeHome $_.Name })
+Copy-Item (Join-Path $repo 'tools/probe/engine_bridge.cs'),(Join-Path $repo 'tools/probe/boxed_bridge_guard.ps1') -Destination $probeHome
+$guardShell = Join-Path $PSHOME 'pwsh.exe'
 $bridge = [P02Bridge]::new($engineHome, $fixture, [string[]]$approved)
+$guardBridge = [P02Bridge]::new($engineHome, $fixture, [string[]]@($guardShell))
 $boxA = 'SRP02_A_' + $run.Substring(0,12)
 $boxB = 'SRP02_B_' + $run.Substring(0,12)
 $boxOnline = 'SRP02_ON_' + $run.Substring(0,12)
@@ -231,6 +234,24 @@ try {
         try { Require ([P02Bridge]::Completed($receipt,10000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'BOXED_CONTEXT_NOT_REJECTED'; @{ boxed_context_detected = $true; control_operations_refused = $true; self_escape_attempted = $false } }
         finally { [P02Bridge]::CloseReceipt($receipt) }
         $null = $bridge.StopHeld($boxA)
+    }
+    Invoke-Case 'T58' 'Actual managed bridge refuses control operations when boxed' {
+        # Separate fresh registration is forbidden; use a fresh guard definition.
+        $guardBox = 'SRP02_GUARD_' + $run.Substring(0,12)
+        $guardBridge.Register($guardBox); $guardBridge.Set($guardBox,'Enabled','y')
+        $guardBridge.Set($guardBox,'FileRootPath',(Join-Path $fixture "boxes/$guardBox")); $guardBridge.Set($guardBox,'DropAdminRights','y')
+        $guardRoot = $guardBridge.Root($guardBox)
+        foreach ($box in $boxes) { $bridge.AppendClosed($box,($guardRoot+'\*')) }
+        $null = New-Item -ItemType Directory -Path $guardRoot
+        Set-Acl -LiteralPath $guardRoot -AclObject $metadataAcl
+        $null = $guardBridge.CaptureRoot($guardBox)
+        $receipt = $guardBridge.Launch($guardBox,$guardShell,[string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $probeHome 'boxed_bridge_guard.ps1'),'-EngineHome',$engineHome,'-Fixture',$fixture))
+        try { Require ([P02Bridge]::Completed($receipt,30000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'MANAGED_BOXED_CONTEXT_NOT_REJECTED' }
+        finally { [P02Bridge]::CloseReceipt($receipt) }
+        $report = Read-Report $guardRoot 'managed-guard'
+        Require $report.boxed_context_rejected 'MANAGED_BOXED_CONTEXT_NOT_REJECTED'
+        $null = $guardBridge.StopHeld($guardBox)
+        $report
     }
     Invoke-Case 'T60' 'Stop affected box before future sibling rollout' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'rollout',$engineHome))

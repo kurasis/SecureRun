@@ -1,0 +1,694 @@
+[
+  {
+    "id": "T55",
+    "timestamp_utc": "2026-10-14T10:38:43.5359282Z",
+    "status": "PASSED",
+    "evidence": {
+      "ntfs": "NTFS",
+      "roots_source": "SbieApi_QueryBoxPath",
+      "pending_before_initializer": true,
+      "explicit_initializer": "HOST_FIXED_SYNTHETIC_FIXTURE"
+    },
+    "case": "Pending root and fixed trusted initializer"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:38:46.4882729Z",
+    "status": "PASSED",
+    "evidence": {
+      "global_lab_setting": "NetworkEnableWFP=y",
+      "os_security_settings_changed": false,
+      "driver_flags_before": 268435506,
+      "driver_flags_after": 268435507,
+      "driver_reconfigure_flag": 1
+    },
+    "case": "Enable WFP only in the newly installed disposable lab"
+  },
+  {
+    "id": "T01",
+    "timestamp_utc": "2026-10-14T10:38:46.5144543Z",
+    "status": "PASSED",
+    "evidence": {
+      "launch_rejected": true,
+      "no_automatic_replay": true,
+      "synthetic_host_marker_absent": true
+    },
+    "case": "Missing box rejects target before execution"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:38:46.5284397Z",
+    "status": "PASSED",
+    "evidence": {
+      "member": false,
+      "bits": 64,
+      "context_status": "c000000b",
+      "write_ok": true,
+      "boxed_view_changed": true,
+      "blocked_read_error": 0,
+      "metadata_read_error": 0,
+      "sibling_read_error": 0,
+      "argument_round_trip": true,
+      "handle_map_status": "ffffffff",
+      "mapped_is_boxed": false,
+      "child_spawned": false,
+      "tcp4": true,
+      "tcp6": true,
+      "udp4": true,
+      "udp6": true
+    },
+    "case": "Unboxed positive controls x64"
+  },
+  {
+    "id": "T05",
+    "timestamp_utc": "2026-10-14T10:38:46.5799776Z",
+    "status": "PASSED",
+    "evidence": {
+      "grandchild": {
+        "member": true,
+        "depth": 0,
+        "bits": 64,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true,
+        "spawned": false
+      },
+      "child": {
+        "member": true,
+        "depth": 1,
+        "bits": 64,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true,
+        "spawned": true
+      },
+      "parent": {
+        "member": true,
+        "bits": 64,
+        "context_status": "00000000",
+        "write_ok": true,
+        "boxed_view_changed": true,
+        "blocked_read_error": 5,
+        "metadata_read_error": 5,
+        "sibling_read_error": 5,
+        "argument_round_trip": true,
+        "handle_map_status": "00000000",
+        "mapped_is_boxed": true,
+        "child_spawned": true,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true
+      }
+    },
+    "case": "Boxed parent child grandchild x64-online"
+  },
+  {
+    "id": "T04",
+    "timestamp_utc": "2026-10-14T10:38:51.1134724Z",
+    "status": "PASSED",
+    "evidence": {
+      "raw_arguments_logged": false,
+      "exact_fixed_test_arguments": true
+    },
+    "case": "Exact structured argument round trip x64-online"
+  },
+  {
+    "id": "T08",
+    "timestamp_utc": "2026-10-14T10:38:51.1179815Z",
+    "status": "PASSED",
+    "evidence": {
+      "host_hash_unchanged": true,
+      "engine_handle_mapping_boxed": true
+    },
+    "case": "Write virtualization x64-online"
+  },
+  {
+    "id": "T09",
+    "timestamp_utc": "2026-10-14T10:38:51.1232838Z",
+    "status": "PASSED",
+    "evidence": {
+      "manager_metadata_denied": true,
+      "synthetic_read_denied": true
+    },
+    "case": "Read and manager metadata exclusions x64-online"
+  },
+  {
+    "id": "T35",
+    "timestamp_utc": "2026-10-14T10:38:51.1255507Z",
+    "status": "PASSED",
+    "evidence": {
+      "sibling_storage_denied": true
+    },
+    "case": "Sibling physical storage denial x64-online"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:38:51.1276912Z",
+    "status": "PASSED",
+    "evidence": {
+      "tcp4": true,
+      "udp4": true,
+      "udp6": true,
+      "tcp6": true,
+      "scope": "Loopback representative smoke only; LAN/DNS/brokers not tested",
+      "kernel_wfp_observed": true
+    },
+    "case": "Controlled sockets x64-online"
+  },
+  {
+    "id": "T05",
+    "timestamp_utc": "2026-10-14T10:38:51.1405474Z",
+    "status": "PASSED",
+    "evidence": {
+      "grandchild": {
+        "member": true,
+        "depth": 0,
+        "bits": 64,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false,
+        "spawned": false
+      },
+      "child": {
+        "member": true,
+        "depth": 1,
+        "bits": 64,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false,
+        "spawned": true
+      },
+      "parent": {
+        "member": true,
+        "bits": 64,
+        "context_status": "00000000",
+        "write_ok": true,
+        "boxed_view_changed": true,
+        "blocked_read_error": 5,
+        "metadata_read_error": 5,
+        "sibling_read_error": 5,
+        "argument_round_trip": true,
+        "handle_map_status": "00000000",
+        "mapped_is_boxed": true,
+        "child_spawned": true,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false
+      }
+    },
+    "case": "Boxed parent child grandchild x64-offline"
+  },
+  {
+    "id": "T04",
+    "timestamp_utc": "2026-10-14T10:38:55.6711202Z",
+    "status": "PASSED",
+    "evidence": {
+      "raw_arguments_logged": false,
+      "exact_fixed_test_arguments": true
+    },
+    "case": "Exact structured argument round trip x64-offline"
+  },
+  {
+    "id": "T08",
+    "timestamp_utc": "2026-10-14T10:38:55.6725594Z",
+    "status": "PASSED",
+    "evidence": {
+      "host_hash_unchanged": true,
+      "engine_handle_mapping_boxed": true
+    },
+    "case": "Write virtualization x64-offline"
+  },
+  {
+    "id": "T09",
+    "timestamp_utc": "2026-10-14T10:38:55.6742035Z",
+    "status": "PASSED",
+    "evidence": {
+      "manager_metadata_denied": true,
+      "synthetic_read_denied": true
+    },
+    "case": "Read and manager metadata exclusions x64-offline"
+  },
+  {
+    "id": "T35",
+    "timestamp_utc": "2026-10-14T10:38:55.6758450Z",
+    "status": "PASSED",
+    "evidence": {
+      "sibling_storage_denied": true
+    },
+    "case": "Sibling physical storage denial x64-offline"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:38:55.6774538Z",
+    "status": "PASSED",
+    "evidence": {
+      "tcp4": false,
+      "udp4": false,
+      "udp6": false,
+      "tcp6": false,
+      "scope": "Loopback representative smoke only; LAN/DNS/brokers not tested",
+      "kernel_wfp_observed": true
+    },
+    "case": "Controlled sockets x64-offline"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:38:55.6853464Z",
+    "status": "PASSED",
+    "evidence": {
+      "member": false,
+      "bits": 32,
+      "context_status": "c000000b",
+      "write_ok": true,
+      "boxed_view_changed": true,
+      "blocked_read_error": 0,
+      "metadata_read_error": 0,
+      "sibling_read_error": 0,
+      "argument_round_trip": true,
+      "handle_map_status": "ffffffff",
+      "mapped_is_boxed": false,
+      "child_spawned": false,
+      "tcp4": true,
+      "tcp6": true,
+      "udp4": true,
+      "udp6": true
+    },
+    "case": "Unboxed positive controls x86"
+  },
+  {
+    "id": "T05",
+    "timestamp_utc": "2026-10-14T10:38:55.7750188Z",
+    "status": "PASSED",
+    "evidence": {
+      "grandchild": {
+        "member": true,
+        "depth": 0,
+        "bits": 32,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true,
+        "spawned": false
+      },
+      "child": {
+        "member": true,
+        "depth": 1,
+        "bits": 32,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true,
+        "spawned": true
+      },
+      "parent": {
+        "member": true,
+        "bits": 32,
+        "context_status": "00000000",
+        "write_ok": true,
+        "boxed_view_changed": true,
+        "blocked_read_error": 5,
+        "metadata_read_error": 5,
+        "sibling_read_error": 5,
+        "argument_round_trip": true,
+        "handle_map_status": "00000000",
+        "mapped_is_boxed": true,
+        "child_spawned": true,
+        "tcp4": true,
+        "tcp6": true,
+        "udp4": true,
+        "udp6": true
+      }
+    },
+    "case": "Boxed parent child grandchild x86-online"
+  },
+  {
+    "id": "T04",
+    "timestamp_utc": "2026-10-14T10:39:00.1694189Z",
+    "status": "PASSED",
+    "evidence": {
+      "raw_arguments_logged": false,
+      "exact_fixed_test_arguments": true
+    },
+    "case": "Exact structured argument round trip x86-online"
+  },
+  {
+    "id": "T08",
+    "timestamp_utc": "2026-10-14T10:39:00.1707564Z",
+    "status": "PASSED",
+    "evidence": {
+      "host_hash_unchanged": true,
+      "engine_handle_mapping_boxed": true
+    },
+    "case": "Write virtualization x86-online"
+  },
+  {
+    "id": "T09",
+    "timestamp_utc": "2026-10-14T10:39:00.1738417Z",
+    "status": "PASSED",
+    "evidence": {
+      "manager_metadata_denied": true,
+      "synthetic_read_denied": true
+    },
+    "case": "Read and manager metadata exclusions x86-online"
+  },
+  {
+    "id": "T35",
+    "timestamp_utc": "2026-10-14T10:39:00.1761237Z",
+    "status": "PASSED",
+    "evidence": {
+      "sibling_storage_denied": true
+    },
+    "case": "Sibling physical storage denial x86-online"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:39:00.1774954Z",
+    "status": "PASSED",
+    "evidence": {
+      "tcp4": true,
+      "udp4": true,
+      "udp6": true,
+      "tcp6": true,
+      "scope": "Loopback representative smoke only; LAN/DNS/brokers not tested",
+      "kernel_wfp_observed": true
+    },
+    "case": "Controlled sockets x86-online"
+  },
+  {
+    "id": "T05",
+    "timestamp_utc": "2026-10-14T10:39:00.1847181Z",
+    "status": "PASSED",
+    "evidence": {
+      "grandchild": {
+        "member": true,
+        "depth": 0,
+        "bits": 32,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false,
+        "spawned": false
+      },
+      "child": {
+        "member": true,
+        "depth": 1,
+        "bits": 32,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false,
+        "spawned": true
+      },
+      "parent": {
+        "member": true,
+        "bits": 32,
+        "context_status": "00000000",
+        "write_ok": true,
+        "boxed_view_changed": true,
+        "blocked_read_error": 5,
+        "metadata_read_error": 5,
+        "sibling_read_error": 5,
+        "argument_round_trip": true,
+        "handle_map_status": "00000000",
+        "mapped_is_boxed": true,
+        "child_spawned": true,
+        "tcp4": false,
+        "tcp6": false,
+        "udp4": false,
+        "udp6": false
+      }
+    },
+    "case": "Boxed parent child grandchild x86-offline"
+  },
+  {
+    "id": "T04",
+    "timestamp_utc": "2026-10-14T10:39:04.6549990Z",
+    "status": "PASSED",
+    "evidence": {
+      "raw_arguments_logged": false,
+      "exact_fixed_test_arguments": true
+    },
+    "case": "Exact structured argument round trip x86-offline"
+  },
+  {
+    "id": "T08",
+    "timestamp_utc": "2026-10-14T10:39:04.6566601Z",
+    "status": "PASSED",
+    "evidence": {
+      "host_hash_unchanged": true,
+      "engine_handle_mapping_boxed": true
+    },
+    "case": "Write virtualization x86-offline"
+  },
+  {
+    "id": "T09",
+    "timestamp_utc": "2026-10-14T10:39:04.6585673Z",
+    "status": "PASSED",
+    "evidence": {
+      "manager_metadata_denied": true,
+      "synthetic_read_denied": true
+    },
+    "case": "Read and manager metadata exclusions x86-offline"
+  },
+  {
+    "id": "T35",
+    "timestamp_utc": "2026-10-14T10:39:04.6601847Z",
+    "status": "PASSED",
+    "evidence": {
+      "sibling_storage_denied": true
+    },
+    "case": "Sibling physical storage denial x86-offline"
+  },
+  {
+    "id": "T12",
+    "timestamp_utc": "2026-10-14T10:39:04.6617370Z",
+    "status": "PASSED",
+    "evidence": {
+      "tcp4": false,
+      "udp4": false,
+      "udp6": false,
+      "tcp6": false,
+      "scope": "Loopback representative smoke only; LAN/DNS/brokers not tested",
+      "kernel_wfp_observed": true
+    },
+    "case": "Controlled sockets x86-offline"
+  },
+  {
+    "id": "T33",
+    "timestamp_utc": "2026-10-14T10:39:04.6739458Z",
+    "status": "PASSED",
+    "evidence": {
+      "builtin_cleanup_scope": "BLOCKED_SOURCE_REVIEW",
+      "dispatch_permitted": false,
+      "hooks_checked": [
+        "DeleteCommand",
+        "OnBoxDelete",
+        "OnBoxTerminate",
+        "OnFileRecovery"
+      ],
+      "hook_never_executed": true
+    },
+    "case": "Unapproved automation blocks cleanup dispatch"
+  },
+  {
+    "id": "T16",
+    "timestamp_utc": "2026-10-14T10:39:04.8224611Z",
+    "status": "PASSED",
+    "evidence": {
+      "missing_password_status": "c000006a",
+      "wrong_password_status": "c000006a",
+      "correct_password_status": 0,
+      "rejected_writes_unchanged": true,
+      "transport": "Original SbieDll_UpdateConf service IPC; no argv, environment or logs",
+      "synthetic_password_recorded": false
+    },
+    "case": "Password-protected engine configuration uses private IPC"
+  },
+  {
+    "id": "T02",
+    "timestamp_utc": "2026-10-14T10:39:04.8588643Z",
+    "status": "PASSED",
+    "evidence": {
+      "configuration_sections": 4,
+      "fresh_owned_sections_observed": 3,
+      "driver_flags": 268435507,
+      "certificate_state_low32": 0,
+      "certificate_query_status": 0,
+      "optional_paid_profiles_enabled": false,
+      "diagnostic_status": "c0000022",
+      "diagnostics_available": false,
+      "diagnostic_message_ids": [],
+      "diagnostic_text_retained": false,
+      "signed_session_leader_registration_attempted": false
+    },
+    "case": "Bounded source-backed configuration, entitlement and diagnostic observation"
+  },
+  {
+    "id": "T02",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "timestamp_utc": "2026-10-14T10:39:04.8626861Z",
+    "status": "BLOCKED",
+    "case": "Original engine log reader availability",
+    "diagnostic_code": "ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE"
+  },
+  {
+    "id": "T25",
+    "timestamp_utc": "2026-10-14T10:39:04.8820716Z",
+    "status": "PASSED",
+    "evidence": {
+      "upstream_status": 0,
+      "section_absent": true,
+      "root_was_never_materialized": true,
+      "used_definition_requires_verified_cleanup": true
+    },
+    "case": "Remove only a fresh never-materialized owned definition"
+  },
+  {
+    "id": "T19",
+    "timestamp_utc": "2026-10-14T10:39:04.9074083Z",
+    "status": "PASSED",
+    "evidence": {
+      "safe_production_transfer_primitive": "P07_AND_P09_REQUIRED",
+      "physical_storage_executed_as_host": false,
+      "launched_logical_boxed_path": true,
+      "mapping_source": "SbieDll_GetHandlePath + SbieDll_TranslateNtToDosPath",
+      "host_logical_copy_absent": true,
+      "physical_hash_matched_original_probe": true
+    },
+    "case": "Private workspace mapping and boxed executable logical launch"
+  },
+  {
+    "id": "T62",
+    "timestamp_utc": "2026-10-14T10:39:05.9080986Z",
+    "status": "PASSED",
+    "evidence": {
+      "completed_wait": true,
+      "creation_time_matched": true,
+      "stopped_objects": 0,
+      "numeric_pid_kill_fallback": false
+    },
+    "case": "Retained process handle termination and completed wait"
+  },
+  {
+    "id": "T36",
+    "timestamp_utc": "2026-10-14T10:39:06.4168401Z",
+    "status": "PASSED",
+    "evidence": {
+      "upstream_status": 0,
+      "requested_capacity": 1,
+      "returned_count": 1,
+      "authoritative_count_before": 3,
+      "authoritative_count_after": 3,
+      "partial_snapshot_rejected": true,
+      "idle_or_cleanup_authorized": false
+    },
+    "case": "Truncated successful native enumeration does not authorize Idle"
+  },
+  {
+    "id": "T36",
+    "timestamp_utc": "2026-10-14T10:39:07.1946283Z",
+    "status": "PASSED",
+    "evidence": {
+      "all_session_count": 1,
+      "current_session_count": 0,
+      "other_session_count": 1,
+      "different_owner_observed": true,
+      "all_sessions_coverage": true,
+      "interactive_logon_sessions_tested": false,
+      "scope": "Real session-zero SYSTEM task and current runner session"
+    },
+    "case": "All-session enumeration includes a real independent session and owner"
+  },
+  {
+    "id": "T58",
+    "timestamp_utc": "2026-10-14T10:39:28.5205445Z",
+    "status": "PASSED",
+    "evidence": {
+      "boxed_context_detected": true,
+      "self_escape_attempted": false,
+      "control_operations_refused": true
+    },
+    "case": "Boxed native control plane refuses operations"
+  },
+  {
+    "id": "T58",
+    "timestamp_utc": "2026-10-14T10:39:28.7563421Z",
+    "status": "PASSED",
+    "evidence": {
+      "mutation_or_elevation_dispatched": false,
+      "boxed_context_rejected": true,
+      "actual_managed_bridge": true
+    },
+    "case": "Actual managed bridge refuses control operations when boxed"
+  },
+  {
+    "id": "T60",
+    "timestamp_utc": "2026-10-14T10:39:30.6883815Z",
+    "status": "PASSED",
+    "evidence": {
+      "junction_alias_denied": true,
+      "newly_materialized_sibling_denied": true,
+      "running_creation_deferred": true,
+      "namespace_wide_parent_deny_assumed": false,
+      "private_data_absent_until_stopped_and_policy_applied": true
+    },
+    "case": "Stop affected box before future sibling rollout"
+  },
+  {
+    "id": "T35",
+    "timestamp_utc": "2026-10-14T10:39:40.2450138Z",
+    "status": "PASSED",
+    "evidence": {
+      "different_identity": true,
+      "administrator": false,
+      "positive_read_error": 0,
+      "metadata_read_error": 5,
+      "root_read_error": 5
+    },
+    "case": "Second standard Windows account root and metadata ACLs"
+  },
+  {
+    "id": "T57",
+    "timestamp_utc": "2026-10-14T10:39:40.4536614Z",
+    "status": "PASSED",
+    "evidence": {
+      "elevated_helper_present": false,
+      "metadata_root_rejected_before_mutation": true
+    },
+    "case": "Forged metadata cannot redirect the generated root scope"
+  },
+  {
+    "id": "T24",
+    "timestamp_utc": "2026-10-14T10:39:40.4613340Z",
+    "status": "PASSED",
+    "evidence": {
+      "status": "c0000043",
+      "contents_empty": true,
+      "root_identity_retained": true,
+      "root_unlink_deliberately_blocked": true,
+      "builtin": "QSbieAPI.NtIo_DeleteFolderRecursively",
+      "legacy_delete_command_dispatched": false
+    },
+    "case": "Pinned native cleanup clears only the selected known root"
+  },
+  {
+    "id": "T36",
+    "case": "Independent Windows interactive sessions",
+    "current_session": 2,
+    "source_route": "SbieApi_EnumProcessEx all_sessions TRUE; capacity and owner validation",
+    "diagnostic_code": "SECOND_INTERACTIVE_SESSION_UNAVAILABLE",
+    "status": "BLOCKED"
+  },
+  {
+    "id": "T57",
+    "case": "Elevated helper authority",
+    "reason": "No elevated helper path exists in this prototype; protected enrollment design recorded for P05",
+    "status": "NOT_APPLICABLE"
+  }
+]

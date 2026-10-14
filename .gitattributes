@@ -1,3 +1,5 @@
 * text=auto eol=lf
 # Preserve the uploaded specification byte-for-byte on Windows checkouts.
 docs/specification/** -text
+# Preserve downloaded raw evidence bytes for manifest verification on every OS.
+docs/evidence/p02/windows-*/** -text

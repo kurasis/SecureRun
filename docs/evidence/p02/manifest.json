@@ -1,0 +1,168 @@
+{
+  "phase": "P02",
+  "result": "BLOCKED",
+  "runs": [
+    {
+      "id": 38550922299,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38550922299",
+      "tested_commit": "2eb5fd0bb6e93921fd3ffdd415990633a79aabc0",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "2eb5fd0bb6e93921fd3ffdd415990633a79aabc0",
+          "smoke_counts": {
+            "PASSED": 56,
+            "BLOCKED": 2,
+            "NOT_APPLICABLE": 1
+          },
+          "gate_result": "BLOCKED",
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457,
+          "blocked_cases": [
+            {
+              "id": "T02",
+              "case": "Original engine log reader availability",
+              "reason": "ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE"
+            },
+            {
+              "id": "T36",
+              "case": "Independent Windows interactive sessions",
+              "reason": "SECOND_INTERACTIVE_SESSION_UNAVAILABLE"
+            },
+            {
+              "id": "T57",
+              "case": "Elevated helper authority",
+              "reason": "No elevated helper path exists in this prototype; protected enrollment design recorded for P05"
+            }
+          ]
+        },
+        {
+          "runner": "windows-2025",
+          "tested_commit": "2eb5fd0bb6e93921fd3ffdd415990633a79aabc0",
+          "smoke_counts": {
+            "PASSED": 43,
+            "BLOCKED": 2,
+            "NOT_APPLICABLE": 1
+          },
+          "gate_result": "BLOCKED",
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438,
+          "blocked_cases": [
+            {
+              "id": "T02",
+              "case": "Original engine log reader availability",
+              "reason": "ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE"
+            },
+            {
+              "id": "T36",
+              "case": "Independent Windows interactive sessions",
+              "reason": "SECOND_INTERACTIVE_SESSION_UNAVAILABLE"
+            },
+            {
+              "id": "T57",
+              "case": "Elevated helper authority",
+              "reason": "No elevated helper path exists in this prototype; protected enrollment design recorded for P05"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "windows-11-arm/bootstrap-result.json",
+      "sha256": "40b67245a4281c03273a5723a87bcb37d8b67397d70ba26ea6d74b7aa13b6d0d",
+      "size": 123
+    },
+    {
+      "path": "windows-11-arm/bootstrap-stage.json",
+      "sha256": "9840fdb9d94c4b9b41ad1f6a9fe7935623f8eb3d75f2fc43f4536650adade05f",
+      "size": 149
+    },
+    {
+      "path": "windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "windows-11-arm/feasibility-cases.json",
+      "sha256": "54b354982bfaac137b2ef9fb69d782ee2263c982fd55c12e72ba14fec046d977",
+      "size": 25452
+    },
+    {
+      "path": "windows-11-arm/installation.json",
+      "sha256": "62bcb9a9f879e9c0f0ee5d1f4b5dd5f75d30e3b76e378c89fe0cd4ca75e8922b",
+      "size": 11146
+    },
+    {
+      "path": "windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "7b78531a049a990bdfb060a0fa8f6eafcb3e30e11284c89b72bda29247651b89",
+      "size": 277
+    },
+    {
+      "path": "windows-11-arm/phase-result.json",
+      "sha256": "43f057143f78814cba52e1fd71de0e4012b71454818424c9d44724884735479d",
+      "size": 746
+    },
+    {
+      "path": "windows-11-arm/probe-builds.json",
+      "sha256": "3003f3eb0a8b7cd02b61c592265e7f70cca5795a99e95d5e811046267157d254",
+      "size": 980
+    },
+    {
+      "path": "windows-2025/bootstrap-result.json",
+      "sha256": "8915adb5615baaab2730c8288a4cf6e5234fd3c3db0bf2614aa50892c5cc269d",
+      "size": 123
+    },
+    {
+      "path": "windows-2025/bootstrap-stage.json",
+      "sha256": "679eeca49b4473382b0107e6474601b129daa787bf0c2e48656e382c880af320",
+      "size": 149
+    },
+    {
+      "path": "windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "windows-2025/feasibility-cases.json",
+      "sha256": "cc1414f2bb50d67ce3f38111d73f50741d3157dd0ad3bb42b17296cc51792a4e",
+      "size": 19633
+    },
+    {
+      "path": "windows-2025/installation.json",
+      "sha256": "2ee8c302875a6666adaeaaf7384602daead84d8ac14276ddff6e69fbd9fd42bd",
+      "size": 10893
+    },
+    {
+      "path": "windows-2025/native-cleanup-discovery.json",
+      "sha256": "3e3c1adadd2bc59d5fc3a962228a25ed28de4a5467162fb2b7a331fc879b70a3",
+      "size": 277
+    },
+    {
+      "path": "windows-2025/phase-result.json",
+      "sha256": "ad53305bdb11be01cb1fd7656cf3aa13581e3c1469f2912426d36f4d8d00ea9b",
+      "size": 746
+    },
+    {
+      "path": "windows-2025/probe-builds.json",
+      "sha256": "0815be695e879c4a039af1c3884923e9b6f919891470610f8198f50bc7be1b24",
+      "size": 730
+    }
+  ],
+  "production_acceptance_scenarios_passed": 0,
+  "note": "Final source-backed smoke. No supported product tuple; explicit phase gates remain unresolved."
+}

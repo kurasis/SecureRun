@@ -156,14 +156,21 @@ try {
         }finally{[P02Bridge]::CloseReceipt($receipt)}
     }
     Case 'T36' 'native_and_x86_process_identities_observed' {
-        $native=$bridge.Launch($box,$probe,[string[]]@('hold',$fixture,$box,'p04-native',$engine))
-        $x86=$bridge.Launch($box,$x86Probe,[string[]]@('hold',$fixture,$box,'p04-x86',$engine))
+        # Fresh, fixed diagnostic box; manager/COM diagnostic leftovers must not
+        # contaminate the independent native/x86 identity positive control.
+        $mixedBox='SRP02_MIX_'+$run.Substring(0,12);$bridge.Register($mixedBox)
+        $bridge.Set($mixedBox,'Enabled','y');$bridge.Set($mixedBox,'FileRootPath',(Join-Path $fixture "boxes/$mixedBox"));$bridge.Set($mixedBox,'DropAdminRights','y');$bridge.Set($mixedBox,'AutoRecover','n');$bridge.Set($mixedBox,'AutoDelete','n');$bridge.Set($mixedBox,'UseFileImage','n')
+        $mixedRoot=$bridge.Root($mixedBox);$null=New-Item -ItemType Directory -Path $mixedRoot;Set-Acl $mixedRoot $rootAcl;$null=$bridge.CaptureRoot($mixedBox)
+        $native=$bridge.Launch($mixedBox,$probe,[string[]]@('hold-session',$fixture,$mixedBox,'p04-native',$engine))
+        $x86=$bridge.Launch($mixedBox,$x86Probe,[string[]]@('hold-session',$fixture,$mixedBox,'p04-x86',$engine))
         try{
-            $o=Observe;$b=@($o.boxes|Where-Object name -eq $box)
+            $o=Observe;$b=@($o.boxes|Where-Object name -eq $mixedBox)
+            $c.observed=@{reason=$o.reason;matching_box_count=$b.Count}
+            if($b.Count -eq 1){$c.observed.box_complete=$b[0].complete;$c.observed.box_reason=$b[0].reason;$c.observed.process_count=$b[0].processes.Count;$c.observed.native_pid_present=($b[0].processes.pid -contains $native.pid);$c.observed.x86_pid_present=($b[0].processes.pid -contains $x86.pid)}
             Require ($b.Count -eq 1 -and $b[0].complete -and $b[0].activity -eq 'RUNNING' -and $b[0].processes.pid -contains $native.pid -and $b[0].processes.pid -contains $x86.pid) 'NATIVE_X86_OBSERVATION_MISSING'
             $bytes=[IO.File]::ReadAllBytes($x86Probe);$offset=[BitConverter]::ToInt32($bytes,0x3c);Require ([BitConverter]::ToUInt16($bytes,$offset+4) -eq 0x014c) 'X86_FIXTURE_PE_INVALID'
             @{native_and_genuine_x86_pids_present=$true;all_session_complete=$true;creation_times_verified=$true;fixture_pe_machine='014c';production_target_launches=0}
-        }finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($native);[P02Bridge]::CloseReceipt($x86)}
+        }finally{$null=$bridge.StopHeld($mixedBox);[P02Bridge]::CloseReceipt($native);[P02Bridge]::CloseReceipt($x86)}
     }
     Case 'T58' 'boxed_normal_desktop_startup_exits_before_metadata' {
         $receipt=$bridge.Launch($box,$app,[string[]]@())

@@ -1,0 +1,11 @@
+CREATE TABLE manager_meta (singleton INTEGER PRIMARY KEY CHECK(singleton=1), engine_generation INTEGER NOT NULL CHECK(engine_generation>0), sequence INTEGER NOT NULL CHECK(sequence>=0));
+INSERT INTO manager_meta VALUES(1,1,0);
+CREATE TABLE environments (id TEXT PRIMARY KEY, owner_sid TEXT NOT NULL, generation INTEGER NOT NULL CHECK(generation>0), revision INTEGER NOT NULL CHECK(revision>=0), document TEXT NOT NULL);
+CREATE TABLE operations (id TEXT PRIMARY KEY, environment_id TEXT NOT NULL REFERENCES environments(id), generation INTEGER NOT NULL CHECK(generation>0), idempotency_key TEXT NOT NULL, state TEXT NOT NULL, document TEXT NOT NULL, UNIQUE(environment_id,generation,idempotency_key));
+CREATE TABLE artifacts (id TEXT PRIMARY KEY, operation_id TEXT NOT NULL REFERENCES operations(id), document TEXT NOT NULL);
+CREATE TABLE policies (id TEXT PRIMARY KEY, schema_version INTEGER NOT NULL, document TEXT NOT NULL);
+CREATE TABLE applications (id TEXT PRIMARY KEY, environment_id TEXT NOT NULL REFERENCES environments(id), document TEXT NOT NULL);
+CREATE TABLE engine_observations (generation INTEGER PRIMARY KEY, document TEXT NOT NULL);
+CREATE TABLE exports (operation_id TEXT PRIMARY KEY REFERENCES operations(id), document TEXT NOT NULL);
+CREATE TABLE audit (sequence INTEGER PRIMARY KEY, timestamp INTEGER NOT NULL, document TEXT NOT NULL);
+PRAGMA user_version=1;

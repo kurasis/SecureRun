@@ -38,7 +38,7 @@ def validate(root: Path) -> None:
     if actual != recorded or len(recorded) != 26:
         raise ValueError('Specification must contain the original 26 documents')
     for page in root.rglob('*.md'):
-        if any(part in {'.git', 'artifacts'} for part in page.parts):
+        if any(part in {'.git', 'artifacts', 'node_modules', 'target', 'dist', 'gen'} for part in page.parts):
             continue
         for target in re.findall(r'\[[^\]]*\]\(([^\s)]+)\)', page.read_text(encoding='utf-8')):
             if '://' in target or target.startswith('#'):

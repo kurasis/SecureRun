@@ -1,12 +1,13 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P02.
+Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P03.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03–P12 | NOT_STARTED | P03 is eligible; no later phase is implemented by this request |
+| P03 | IN_PROGRESS | Foundation, persistence and IPC implementation; Windows checks pending |
+| P04–P12 | NOT_STARTED | Await P03 exit gate |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected

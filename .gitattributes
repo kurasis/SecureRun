@@ -1,0 +1,3 @@
+* text=auto eol=lf
+# Preserve the uploaded specification byte-for-byte on Windows checkouts.
+docs/specification/** -text

@@ -1,0 +1,31 @@
+{
+  "phase": "P05",
+  "result": "BLOCKED",
+  "run_id": 38615378604,
+  "tested_commit": "dbf3206e3dec25e56fc4e30b4fc0bb21b5f422b9",
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38615378604",
+  "files": [
+    {
+      "path": "investigation-dbf3206/windows-2025/run-summary.json",
+      "sha256": "9e418c91395667643d4153200538e9551267bf66ac930fdc36416a1fba6237f4",
+      "size": 671
+    },
+    {
+      "path": "investigation-dbf3206/windows-2025/policy-cases.json",
+      "sha256": "4176136b0739762ccd3d9a7ec27d5e2a83b3c569304a197d3da4b69096d2efef",
+      "size": 5599
+    },
+    {
+      "path": "investigation-dbf3206/windows-2025/standard-user.json",
+      "sha256": "03b8491124fd75370467fe7b30661ebe02a8ea566e197fb3f8a83b9afef13474",
+      "size": 125
+    },
+    {
+      "path": "investigation-dbf3206/windows-2025/engine-events.json",
+      "sha256": "dc8e7f36b36e5d90483bda4ec32fb495b6f5ea399fa0f7e0a79ac99296cf58a4",
+      "size": 155
+    }
+  ],
+  "production_acceptance_scenarios_passed": 0,
+  "note": "Failed structured investigation preserved. DNS positive control failed before target dispatch; full native phase and P03/P04 regressions remain pending."
+}

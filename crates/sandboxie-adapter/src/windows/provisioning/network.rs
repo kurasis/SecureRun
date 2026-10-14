@@ -53,6 +53,7 @@ pub(super) fn raw_socket_created() -> bool {
     }
 }
 
+thread_local! { static DNS_STATUS: std::cell::Cell<i32> = const { std::cell::Cell::new(0) }; }
 pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
     let name = wide(name);
     let mut servers = DNS_ADDR_ARRAY {
@@ -91,6 +92,13 @@ pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
         ..Default::default()
     };
     let status = unsafe { DnsQueryEx(&request, &mut result, ptr::null_mut()) };
+    DNS_STATUS.with(|last| {
+        last.set(if status != 0 {
+            status
+        } else {
+            result.QueryStatus
+        })
+    });
     let passed = status == 0 && result.QueryStatus == 0 && !result.pQueryRecords.is_null();
     if !result.pQueryRecords.is_null() {
         unsafe { DnsFree(result.pQueryRecords.cast(), DnsFreeRecordList) };
@@ -136,7 +144,7 @@ pub(super) struct DnsControl {
     pub(super) target_name: String,
 }
 impl DnsControl {
-    pub(super) fn new(nonce: &str) -> R<Self> {
+    pub(super) fn new(nonce: &str, metadata: &Path) -> R<Self> {
         let socket = std::net::UdpSocket::bind("127.0.0.1:53")
             .map_err(|_| "DNS_CONTROL_ENDPOINT_UNAVAILABLE")?;
         socket
@@ -199,6 +207,14 @@ impl DnsControl {
             target_name,
         };
         if !dns_query(&control.cache_name, false) {
+            let status = DNS_STATUS.with(|last| last.get());
+            let data =
+                serde_json::json!({"schema":1,"dns_error_hex":format!("{:08x}",status as u32)});
+            std::fs::write(
+                metadata.join(format!("dns-status-{nonce}.json")),
+                serde_json::to_vec(&data).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+            )
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
             return Err("DNS_CONTROL_POSITIVE_FAILED");
         }
         if !icmp_echo() {

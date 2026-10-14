@@ -1247,7 +1247,13 @@ fn exercise_network(canary: &Canary) -> ChildNetwork {
                     && reply == *b"R";
             }
         } else {
-            let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+            let bind = if i >= 4 {
+                std::net::SocketAddr::from((canary.lan_address, 0))
+            } else if i % 2 == 0 {
+                std::net::SocketAddr::from(([127, 0, 0, 1], 0))
+            } else {
+                std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], 0))
+            };
             if let Ok(socket) = std::net::UdpSocket::bind(bind) {
                 let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
                 let mut reply = [0u8; 1];
@@ -1527,9 +1533,14 @@ impl Endpoints {
                     .read_exact(&mut answer)
                     .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
             } else {
-                let socket =
-                    std::net::UdpSocket::bind(if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" })
-                        .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                let socket = std::net::UdpSocket::bind(if i >= 4 {
+                    format!("{lan}:0")
+                } else if i % 2 == 0 {
+                    "127.0.0.1:0".into()
+                } else {
+                    "[::1]:0".into()
+                })
+                .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
                 socket
                     .set_read_timeout(Some(Duration::from_secs(1)))
                     .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
@@ -1713,7 +1724,7 @@ impl NativeEngine {
             .borrow_mut()
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
         let endpoints = Endpoints::new()?;
-        let dns = network::DnsControl::new(&nonce)?;
+        let dns = network::DnsControl::new(&nonce, &self.profile.join("metadata"))?;
         let icmp_before = network::icmp_sent()?;
         let smb_positive = network::share_positive(network::SHARE_CANARY);
         let mapped_positive = network::share_positive(network::MAPPED_CANARY);

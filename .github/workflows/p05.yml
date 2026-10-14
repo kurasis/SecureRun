@@ -24,7 +24,8 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: '24.19.0'
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - id: native-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: |
             ~/.cargo/registry
@@ -46,3 +47,12 @@ jobs:
           path: artifacts/p05/*.json
           if-no-files-found: error
           retention-days: 14
+      - name: Preserve compiled dependencies after diagnostic failure
+        if: failure() && steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p05-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}

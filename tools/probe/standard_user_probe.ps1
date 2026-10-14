@@ -46,6 +46,7 @@ try {
     $result.unboxed_manager_diagnostics = $bridge.ManagerDiagnostics()
     $null = New-Item -ItemType Directory -Path (Join-Path $root 'sealed-test')
     'P02_NORMAL_USER_CLEANUP' | Set-Content (Join-Path $root 'sealed-test/fixture.txt')
+    $result.unsafe_storage = $bridge.ExerciseUnsafeStorage($Box)
     $result.cleanup = $bridge.ClearOwnedWithNative($Box)
     if (-not $result.cleanup.contents_empty -or -not $result.cleanup.root_identity_retained) { throw 'STANDARD_USER_CLEANUP_UNCONFIRMED' }
     $result.status = 'PASSED'

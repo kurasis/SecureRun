@@ -76,6 +76,7 @@ public sealed class P02Bridge {
     public readonly string Base;
     public int LastLaunchError { get; private set; }
     public bool DiagnosticsAvailable { get; private set; }
+    public bool NativeCleanupDispatched { get; private set; }
     public uint CurrentSession { get; private set; }
     T Bind<T>(IntPtr module, string name) where T : Delegate {
         IntPtr address = GetProcAddress(module, name);
@@ -216,6 +217,7 @@ public sealed class P02Bridge {
     }
     public Dictionary<string,object> ClearOwnedWithNative(string box) {
         Scope(box);
+        NativeCleanupDispatched=false;
         string reason=CleanupReason(box);
         if(reason=="UNAPPROVED_AUTOMATION"||reason=="BOX_BUSY")throw new InvalidOperationException(reason);
         if(Read(box,"UseFileImage",0)=="y"||Read(box,"NeverDelete",0)=="y")throw new InvalidOperationException("LIFECYCLE_UNSUPPORTED");
@@ -243,6 +245,7 @@ public sealed class P02Bridge {
             var denied=seal.ExerciseDeniedMutation();
             RequireUnboxed();if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
             if(Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_CHANGED");
+            if(!RejectFencedProbe(box))throw new InvalidOperationException("EXTERNAL_LAUNCH_FENCE_FAILED");
             IntPtr module=LoadLibraryEx(Path.Combine(Home,"QSbieAPI.dll"),IntPtr.Zero,0x100|0x800);
             if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
             // Exact exports observed in both authenticated v1.18.6 distributions.
@@ -253,6 +256,7 @@ public sealed class P02Bridge {
                 Marshal.StructureToPtr(new NtName{length=0,maximum=2,buffer=name},descriptor,false);
                 var attr=new NtAttributes{length=(uint)Marshal.SizeOf<NtAttributes>(),root=handle.DangerousGetHandle(),name=descriptor,flags=0x40};
                 var clock=Stopwatch.StartNew();CleanupCallback callback=(text,state)=>clock.ElapsedMilliseconds<30000;
+                NativeCleanupDispatched=true;
                 int status=remove(ref attr,callback,IntPtr.Zero);GC.KeepAlive(callback);
                 FileIdentity after;
                 bool same=GetFileInformationByHandle(handle,out after)&&identity.Same(after);
@@ -261,9 +265,37 @@ public sealed class P02Bridge {
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
                 if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
-                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"dacl_restoration_by_retained_handles",true}};
+                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
+    }
+    bool RejectFencedProbe(string box) {
+        string exe=null;foreach(string probe in probes){if(Path.GetFileName(probe).StartsWith("feasibility_probe_",StringComparison.Ordinal)){exe=probe;break;}}
+        if(exe==null)throw new InvalidOperationException("FENCE_POSITIVE_CONTROL_UNAVAILABLE");
+        var startup=new Startup();startup.size=(uint)Marshal.SizeOf<Startup>();Receipt receipt;
+        bool started=run(box,Quote(exe)+" "+Quote("forbidden-host-marker")+" "+Quote(Base),Base,0,ref startup,out receipt);
+        if(started){StopReceipt(receipt);return false;}
+        return Count(box)==0;
+    }
+    public Dictionary<string,object> ExerciseUnsafeStorage(string box) {
+        Scope(box);CaptureRoot(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+        string path=Root(box),outside=Path.Combine(Base,"canaries","cleanup-outside");Directory.CreateDirectory(outside);
+        string canary=Path.Combine(outside,"keep.txt");File.WriteAllText(canary,"P02_OUTSIDE_NATIVE_CLEANUP_CANARY");
+        byte[] hash=SHA256.HashData(File.ReadAllBytes(canary));
+        string junction=Path.Combine(path,"P02_JUNCTION_FIXTURE");Directory.CreateDirectory(junction);
+        P02StorageSeal.MakeJunction(junction,outside,0x40000000U);
+        bool junctionRejected=false;
+        try{ClearOwnedWithNative(box);}catch(InvalidOperationException failure){junctionRejected=failure.Message.Contains("REPARSE_REJECTED");}
+        if(!junctionRejected||NativeCleanupDispatched)throw new InvalidOperationException("JUNCTION_CLEANUP_DISPATCHED");
+        Directory.Delete(junction,false); // remove only the known synthetic junction itself
+        string link=Path.Combine(path,"P02_HARDLINK_FIXTURE.txt");
+        P02StorageSeal.MakeHardLink(link,canary);
+        bool linkRejected=false;
+        try{ClearOwnedWithNative(box);}catch(InvalidOperationException failure){linkRejected=failure.Message.Contains("HARDLINK_REJECTED");}
+        if(!linkRejected||NativeCleanupDispatched)throw new InvalidOperationException("HARDLINK_CLEANUP_DISPATCHED");
+        File.Delete(link); // remove only this individually known synthetic hard link
+        if(!CryptographicOperations.FixedTimeEquals(hash,SHA256.HashData(File.ReadAllBytes(canary))))throw new InvalidOperationException("OUTSIDE_CLEANUP_CANARY_CHANGED");
+        return new Dictionary<string,object>{{"reparse_rejected_before_native_dispatch",true},{"multiple_hardlinks_rejected_before_native_dispatch",true},{"outside_canary_unchanged",true},{"negative_fixture_repair_was_individual",true}};
     }
     public bool MayMaterializeSibling(string[] affected) {
         foreach(string box in affected){Scope(box);if(Count(box)!=0)return false;}
@@ -428,7 +460,7 @@ public sealed class P02Bridge {
             if(!Completed(exited,10000)||ExitCode(exited)!=0)throw new InvalidOperationException("EXIT_POSITIVE_CONTROL_UNAVAILABLE");
             if(StopAuthorizedObject(box,exited.process,exited.pid))throw new InvalidOperationException("EXITED_OBJECT_REDISPATCHED");
         } finally {CloseReceipt(exited);StopHeld(box);}
-        return new Dictionary<string,object>{{"live_other_box_untouched",true},{"scope_rechecked_at_dispatch",true},{"natural_exit_on_retained_object",true},{"numeric_pid_kill_fallback",false},{"production_dispatch_function_exercised",true}};
+        return new Dictionary<string,object>{{"live_other_box_untouched",true},{"scope_rechecked_at_dispatch",true},{"natural_exit_on_retained_object",true},{"numeric_pid_kill_fallback",false},{"actual_dispatch_function_exercised",true}};
     }
     public int StopHeld(string box) {
         Scope(box);int stopped=0;
@@ -464,6 +496,22 @@ internal sealed class P02StorageSeal : IDisposable {
     [DllImport("advapi32")] static extern bool GetSecurityDescriptorOwner(IntPtr descriptor,out IntPtr owner,out bool defaulted);
     [DllImport("advapi32")] static extern bool GetSecurityDescriptorDacl(IntPtr descriptor,out bool present,out IntPtr dacl,out bool defaulted);
     [DllImport("kernel32")] static extern IntPtr LocalFree(IntPtr pointer);
+    [DllImport("kernel32",SetLastError=true)] static extern bool DeviceIoControl(SafeFileHandle file,uint code,byte[] input,uint size,IntPtr output,uint capacity,out uint returned,IntPtr overlapped);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateHardLink(string link,string target,IntPtr security);
+    public static void MakeHardLink(string link,string target){if(!CreateHardLink(link,target,IntPtr.Zero))throw new InvalidOperationException("HARDLINK_POSITIVE_CONTROL_FAILED_"+Marshal.GetLastWin32Error());}
+    static byte[] JunctionData(string target) {
+        byte[] substitute=Encoding.Unicode.GetBytes("\\??\\"+Path.GetFullPath(target)),display=Encoding.Unicode.GetBytes(Path.GetFullPath(target));
+        var data=new byte[16+substitute.Length+2+display.Length+2];
+        BitConverter.GetBytes(0xa0000003U).CopyTo(data,0);BitConverter.GetBytes(checked((ushort)(data.Length-8))).CopyTo(data,4);
+        BitConverter.GetBytes(checked((ushort)substitute.Length)).CopyTo(data,10);
+        BitConverter.GetBytes(checked((ushort)(substitute.Length+2))).CopyTo(data,12);BitConverter.GetBytes(checked((ushort)display.Length)).CopyTo(data,14);
+        substitute.CopyTo(data,16);display.CopyTo(data,16+substitute.Length+2);return data;
+    }
+    public static void MakeJunction(string link,string target,uint rights) {
+        using(var handle=Open(link,rights,7)){uint returned;var data=JunctionData(target);
+            if(!DeviceIoControl(handle,0x000900a4U,data,(uint)data.Length,IntPtr.Zero,0,out returned,IntPtr.Zero))throw new InvalidOperationException("JUNCTION_CONTROL_FAILED_"+Marshal.GetLastWin32Error());
+        }
+    }
     sealed class Node {
         public string path;public bool directory;public SafeFileHandle pin,security;
         public P02Bridge.FileIdentity identity;public byte[] descriptor;public bool changed;

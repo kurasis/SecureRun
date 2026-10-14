@@ -115,6 +115,7 @@ pub fn compile(desired: &DesiredPolicy, mandatory: &Mandatory) -> PolicyResult<C
     let mut section = Section::new();
     for (key, value) in [
         ("Enabled", "n"),
+        ("ConfigLevel", "10"),
         ("DropAdminRights", "y"),
         ("BlockNetworkFiles", "y"),
         ("AllowNetworkAccess", if offline { "n" } else { "y" }),
@@ -291,6 +292,7 @@ pub fn minimize_section(section: &Section) -> Section {
         "NeverDelete",
         "UseFileImage",
         "DropAppContainerToken",
+        "ConfigLevel",
         "CustomChromiumFlags",
         "ClosedFilePath",
         "ReadFilePath",

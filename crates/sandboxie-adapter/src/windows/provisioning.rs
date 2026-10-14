@@ -961,6 +961,13 @@ impl Engine for NativeEngine {
             return Err("CONFIGURATION_CONFLICT");
         }
         // Every write checks the complete prior section; no optimistic overwrite.
+        if baseline.is_empty() {
+            // The pinned original CSandBox constructor migrates ConfigLevel <10
+            // and adds templates/recovery settings. Declare the reviewed format
+            // before publishing Enabled so it cannot migrate this new section.
+            self.set(&e.name(), "ConfigLevel", &["10".into()])?;
+            expected.insert("ConfigLevel".into(), vec!["10".into()]);
+        }
         self.set(&e.name(), "Enabled", &["n".into()])?;
         expected.insert("Enabled".into(), vec!["n".into()]);
         if baseline.is_empty() {
@@ -973,7 +980,9 @@ impl Engine for NativeEngine {
             .cloned()
             .collect::<std::collections::BTreeSet<_>>();
         for key in keys {
-            if key == "Enabled" || (baseline.is_empty() && key == "SecureRunOwner") {
+            if key == "Enabled"
+                || (baseline.is_empty() && matches!(key.as_str(), "SecureRunOwner" | "ConfigLevel"))
+            {
                 continue;
             }
             if self.section(&e.name(), false)? != expected {

@@ -100,7 +100,7 @@ try {
     Case 'T08' 'baseline_effective_file_registry_network_evidence' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$reports=Probe-Reports
         $expected=if($target -like 'aarch64*'){3}else{2};Require ($reports.Count -eq $expected) 'ARCHITECTURE_ENFORCEMENT_REPORTS_MISSING'
-        foreach($p in $reports){Require ($p.report.member -and $p.report.virtualized_write -and $p.host_file_unchanged -and $p.host_registry_unchanged -and $p.report.registry_virtualized -and $p.report.blocked_read -and $p.report.read_only_write_denied -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied) 'ACTUAL_BASELINE_REPORT_FAILED'}
+        foreach($p in $reports){Require ($p.report.member -and $p.report.virtualized_write -and $p.report.virtualized_delete -and $p.host_file_unchanged -and $p.host_registry_unchanged -and $p.report.registry_virtualized -and $p.report.blocked_read -and $p.report.read_only_write_denied -and $p.report.metadata_alias_denied -and $p.report.sibling_alias_denied) 'ACTUAL_BASELINE_REPORT_FAILED'}
         @{fresh_architecture_reports=$reports;inferred_mock_enforcement=$false;production_target_launches=0}
     }
     foreach($id in @('T09','T10','T11','T12','T31','T40')) {

@@ -68,6 +68,12 @@ Original NT-to-DOS translation is used only for source-reviewed path-valued keys
 Unknown globals, user-selected templates, inherited lifecycle commands, password
 protection and unreviewed overlays fail rather than being silently overwritten.
 
+The compiler declares `ConfigLevel=10` before a new section gains `Enabled`. The
+pinned original `CSandBox` constructor automatically migrates lower levels and
+adds recovery/template settings; this explicit format version prevents that
+migration from rewriting an already complete policy. It does not accept unknown
+templates or import the original GUI's implementation.
+
 Diagnostics use a different generated box and fresh root for every attempt.
 The probe is a fixed protected paired executable, never a user target, and refuses
 unboxed execution. SDK components, injected architecture libraries and templates
@@ -78,6 +84,16 @@ worker job, bounded input/output and held process receipt limit failures; an
 unknown result blocks verification. The private journal records diagnostic scope
 before effects; failed probes are fenced. Retained diagnostics have a quota of 64;
 no generic recursive deletion is introduced ahead of the lifecycle phase.
+
+Original RPC support can outlive the fixed probe. The private diagnostic stop
+validates this worker's generated box, exact current section, marker and held
+root identity, then checks held process birth, driver box SID/membership, actual
+token owner and critical state before termination. The original service chooses
+SYSTEM or a WTS session token for its signed protected RpcSs image; that support
+identity is separate from the manager's original user and storage authority.
+There is no caller-selected process stop or product Stop command in P05.
+Stored verification binds the current manager/probe binaries and original engine;
+updating code invalidates cached proof rather than retaining a Verified label.
 
 Current probes check actual file and registry virtualization, explicit read/write
 denials, metadata/sibling denials, ordinary host visibility and controlled IPv4/

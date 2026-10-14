@@ -197,6 +197,45 @@ def validate(root: Path) -> None:
                     raise ValueError('Unsafe P04 tested source path')
                 verify_file(path, entry['sha256'], entry['size'])
 
+    p05_path = root / 'docs/evidence/p05/manifest.json'
+    if p05_path.exists():
+        p05 = json.loads(p05_path.read_text())
+        if (p05['phase'] != 'P05' or p05['result'] not in {'DONE', 'BLOCKED'}
+                or not re.fullmatch(r'[0-9a-f]{40}', p05['tested_commit'])
+                or p05['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p05['run_id']}"):
+            raise ValueError('Invalid P05 source/run provenance')
+        seen = set()
+        for entry in p05['files']:
+            path = (p05_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p05_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P05 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if p05['result'] == 'DONE':
+            if (not p04_path.exists() or p04['result'] != 'DONE'
+                    or p04['tested_commit'] != p05['tested_commit']):
+                raise ValueError('P05 DONE requires current P03/P04 regression for the same source')
+            if {t['runner'] for t in p05['targets']} != {'windows-2025', 'windows-11-arm'}:
+                raise ValueError('Both P05 native laboratories required')
+            import importlib.util
+            module_spec = importlib.util.spec_from_file_location('p05_retainer', root / 'tools/lab/retain_p05_evidence.py')
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            for target in p05['targets']:
+                folder = (p05_path.parent / target['evidence_directory']).resolve()
+                if not folder.is_relative_to(p05_path.parent.resolve()):
+                    raise ValueError('Unsafe P05 target directory')
+                for path in folder.glob('*.json'):
+                    if path.relative_to(p05_path.parent).as_posix() not in seen:
+                        raise ValueError('P05 report is not checksum-bound')
+                module.check_target(folder, p05['tested_commit'], 'aa64' if target['runner'] == 'windows-11-arm' else '8664')
+            for entry in p05['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P05 tested source path')
+                verify_file(path, entry['sha256'], entry['size'])
+
+
 
 if __name__ == '__main__':
     try:

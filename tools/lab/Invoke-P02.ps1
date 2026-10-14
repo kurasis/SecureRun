@@ -322,7 +322,11 @@ try {
         $taskName = 'SRP02_SAME_' + $run
         $taskArguments = ([string[]]@('user-launch',$userFixture,$standardBox,'same-owner-zero',$engineHome) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
         $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
-        $null = Register-ScheduledTask -TaskName $taskName -Action $action -User "$( [Environment]::MachineName )\$userName" -Password $password -RunLevel Limited
+        $taskUser = [Environment]::MachineName + '\' + $userName
+        $principal = New-ScheduledTaskPrincipal -UserId $taskUser -LogonType Password -RunLevel Limited
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromMinutes(1))
+        $definition = New-ScheduledTask -Action $action -Principal $principal -Settings $settings
+        $null = Register-ScheduledTask -TaskName $taskName -InputObject $definition -User $taskUser -Password $password
         $start = [Diagnostics.ProcessStartInfo]::new($guardShell)
         $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
         $start.UserName = $userName; $start.Domain = [Environment]::MachineName; $start.Password = $securePassword; $start.LoadUserProfile = $true
@@ -333,10 +337,12 @@ try {
             $ready = Join-Path $userFixture 'results/standard-user-ready.json'
             $clock = [Diagnostics.Stopwatch]::StartNew()
             while (-not (Test-Path $ready) -and -not $process.HasExited -and $clock.ElapsedMilliseconds -lt 45000) { Start-Sleep -Milliseconds 100 }
-            if (Test-Path $ready) { Start-ScheduledTask -TaskName $taskName }
+            $readyObserved = Test-Path $ready
+            if ($readyObserved) { Start-ScheduledTask -TaskName $taskName }
+            $task = Get-ScheduledTask -TaskName $taskName
             Require ($process.WaitForExit(45000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
             $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
-            @{ worker = $result; scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            @{ worker = $result; ready_observed = $readyObserved; scheduled_task_logon_type = $task.Principal.LogonType.ToString(); scheduled_task_state_after_start = $task.State.ToString(); scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
             if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
             Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
             $result

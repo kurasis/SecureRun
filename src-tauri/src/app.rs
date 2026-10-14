@@ -1,5 +1,6 @@
 use crate::native;
 use securerun_foundation::{binding::*, *};
+use securerun_sandboxie_adapter::{Health, HealthView};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs::File, sync::Mutex, time::Instant};
 use tauri::{Manager, State, WebviewWindow};
@@ -74,6 +75,8 @@ impl From<Operation> for OperationView {
     }
 }
 pub struct Backend {
+    pub health: Health,
+    pub observation_inflight: bool,
     pub state_channels: HashMap<Uuid, tauri::ipc::Channel<StateEvent>>,
     pub store: Store,
     pub selections: Selections,
@@ -184,6 +187,35 @@ pub struct SelectionView {
 #[tauri::command]
 fn get_snapshot(window: WebviewWindow, state: State<AppState>) -> Result<Snapshot> {
     locked(&window, &state)?.snapshot()
+}
+#[tauri::command]
+async fn get_engine_health(
+    window: WebviewWindow,
+    state: State<'_, AppState>,
+) -> Result<HealthView> {
+    let ticket = {
+        let mut backend = locked(&window, &state)?;
+        if backend.fixture || backend.observation_inflight {
+            return Ok(backend.health.view(Instant::now()));
+        }
+        backend.observation_inflight = true;
+        backend.health.begin(Instant::now())
+    };
+    let observation =
+        tauri::async_runtime::spawn_blocking(securerun_sandboxie_adapter::windows::bounded_observe)
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+    let mut backend = locked(&window, &state)?;
+    backend.observation_inflight = false;
+    let before = backend.health.view(Instant::now()).generation;
+    backend.health.accept(ticket, observation, Instant::now());
+    let view = backend.health.view(Instant::now());
+    if view.generation != before {
+        backend.store.reconnect()?;
+        backend.handles.clear();
+        backend.selections = Selections::default();
+    }
+    Ok(view)
 }
 #[derive(Serialize)]
 pub struct SubscriptionView {
@@ -475,6 +507,8 @@ pub fn run() {
         Err(_) => return,
     };
     let backend = Backend {
+        health: Health::default(),
+        observation_inflight: false,
         store,
         state_channels: HashMap::new(),
         selections: Selections::default(),
@@ -489,6 +523,7 @@ pub fn run() {
         .manage(AppState(Mutex::new(backend)))
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
+            get_engine_health,
             subscribe_state,
             unsubscribe_state,
             create_draft,
@@ -500,6 +535,32 @@ pub fn run() {
             ci_report
         ])
         .setup(move |app| {
+            if !fixture {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    let mut previous =
+                        securerun_sandboxie_adapter::windows::host_transition_marker();
+                    loop {
+                        std::thread::sleep(std::time::Duration::from_secs(1));
+                        let current =
+                            securerun_sandboxie_adapter::windows::host_transition_marker();
+                        let state = handle.state::<AppState>();
+                        if let Ok(mut backend) = state.inner().0.lock() {
+                            let changed = current != previous;
+                            let expired = backend.health.expire(Instant::now());
+                            if changed {
+                                backend.health.invalidate("HOST_TRANSITION");
+                            }
+                            if changed || expired {
+                                let _ = backend.store.reconnect();
+                                backend.handles.clear();
+                                backend.selections = Selections::default();
+                            }
+                        }
+                        previous = current;
+                    }
+                });
+            }
             let mut config = app.config().app.windows[0].clone();
             if fixture {
                 config.url = tauri::WebviewUrl::App("index.html?foundation-ci".into());
@@ -533,6 +594,8 @@ mod normal_configuration_tests {
     #[test]
     fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
         let backend = Backend {
+            health: Health::default(),
+            observation_inflight: false,
             state_channels: HashMap::new(),
             store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
             selections: Selections::default(),

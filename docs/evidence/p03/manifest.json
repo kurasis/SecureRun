@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38571221105,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38571221105",
   "tested_commit": "333e59cb6641fbcb3577c50f651fb9568df82140",
@@ -332,5 +332,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "P04 modifies the application/IPC runtime; original P03 proof is historical until the full native P03 regression is retained for the new source."
 }

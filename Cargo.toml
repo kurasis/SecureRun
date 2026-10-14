@@ -1,6 +1,6 @@
 [workspace]
-members = ["crates/foundation", "src-tauri"]
-default-members = ["crates/foundation"]
+members = ["crates/foundation", "crates/sandboxie-adapter", "src-tauri"]
+default-members = ["crates/foundation", "crates/sandboxie-adapter"]
 resolver = "3"
 
 [workspace.package]

@@ -10,6 +10,7 @@ foundation-ci = ["dep:webview2-com", "dep:windows"]
 
 [dependencies]
 securerun-foundation = { path = "../crates/foundation" }
+securerun-sandboxie-adapter = { path = "../crates/sandboxie-adapter" }
 serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true

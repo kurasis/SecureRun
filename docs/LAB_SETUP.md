@@ -175,3 +175,32 @@ install_script/start_skill is needed for this phase. Windows VM lifecycle and to
 activation are reproduced by the pinned workflow and lab scripts. A temporarily
 expired GitHub connection was refreshed through environment settings; no credentials
 were copied into scripts, repository files or a second secret binding.
+
+## P03 native application and real command boundary
+
+[p03.yml](../.github/workflows/p03.yml) builds the native x64 application on
+Windows Server and native ARM64 application on Windows 11 ARM. Both jobs use
+Node 24.19.0, Rust 1.90.0, frozen npm/Cargo locks, the native MSVC toolchain and
+the installed WebView2 Runtime. No engine installation or target execution is
+needed for these foundation checks.
+
+The normal feature/configuration is compiled and tested independently. Its
+frontend contains no test chunk and its capability excludes test reporting.
+The marked test binary is copied by the disposable harness to a protected
+Program Files directory and started as a fresh standard account with a minimized
+environment. Synthetic passwords never enter argv or evidence. Its private
+fixture is created with explicit user/SYSTEM/Administrators permissions.
+
+Real WebView2 main/local-ungranted/remote-origin windows exercise custom Tauri
+ACLs and Rust validation. The test HTTP server binds loopback only, survives
+browser preconnections, serves fixed synthetic HTML and stops with the process.
+Native file picking is automated only for the test process's own fixed fixture
+dialog. A scoped native click waits for readiness; callback/event waits are
+bounded. No Windows security setting is changed.
+
+Artifacts contain actual command cases, test/build summary, generated application
+ACL manifests and capability definitions. Retain exact bytes with
+tools/lab/retain_p03_evidence.py after verifying the completed run. The phase
+validator checks checksums, runtime source hashes, both native targets and real
+command outcomes. Sandbox containment and complete product acceptance remain
+separate from these foundation results.

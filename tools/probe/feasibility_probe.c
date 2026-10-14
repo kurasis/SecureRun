@@ -86,7 +86,7 @@ int wmain(int argc,WCHAR **argv) {
     host=wcscmp(argv[1],L"host")==0;child=wcscmp(argv[1],L"child")==0;
     if(argc<6 || !valid_base(argv[2]))return 64;
     module=GetModuleHandleW(L"SbieDll.dll");
-    if(!module && (host || wcscmp(argv[1],L"session-launch")==0)){
+    if(!module && (host || wcscmp(argv[1],L"session-launch")==0 || wcscmp(argv[1],L"user-launch")==0)){
         WCHAR dll[1024];const WCHAR *subdir=L"";
 #if defined(_M_IX86)
         subdir=L"\\32";
@@ -101,7 +101,7 @@ int wmain(int argc,WCHAR **argv) {
     mapping=(map_fn)(void*)GetProcAddress(module,"SbieDll_GetHandlePath");
     if(!query || !mapping)return 41;
     context=query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),box,NULL,NULL,&session);
-    if(wcscmp(argv[1],L"session-launch")==0){
+    if(wcscmp(argv[1],L"session-launch")==0 || wcscmp(argv[1],L"user-launch")==0){
         WCHAR exe[1024],command[4096];STARTUPINFOW startup={0};PROCESS_INFORMATION receipt={0};run_fn run;
         if(argc!=6 || (ULONG)context!=0xc000000bUL || !ProcessIdToSessionId(GetCurrentProcessId(),&session) || session!=0 || wcslen(argv[3])>38 || wcsncmp(argv[3],L"SRP02_",6)!=0 || wcspbrk(argv[3],L"\\/:.\" ")!=NULL)return 42;
         run=(run_fn)(void*)GetProcAddress(module,"SbieDll_RunSandboxed");

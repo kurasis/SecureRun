@@ -1,0 +1,51 @@
+[CmdletBinding()]
+param([string]$EngineHome,[string]$Fixture,[string]$Box,[string]$Probe)
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
+$result = @{ status = 'IN_PROGRESS'; elevated_helper = $false }
+try {
+    $principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
+    if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'STANDARD_USER_REQUIRED' }
+    Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
+    $bridge = [P02Bridge]::new($EngineHome,$Fixture,[string[]]@($Probe))
+    $bridge.Register($Box)
+    $bridge.Set($Box,'Enabled','n')
+    $bridge.Set($Box,'FileRootPath',(Join-Path $Fixture "boxes/$Box"))
+    $bridge.Set($Box,'DropAdminRights','y')
+    $bridge.Set($Box,'AllowNetworkAccess','n'); $bridge.Set($Box,'BlockLocalLoop','y')
+    $bridge.Set($Box,'AutoRecover','n'); $bridge.Set($Box,'AutoDelete','n')
+    $root = $bridge.Root($Box)
+    if (Test-Path -LiteralPath $root) { throw 'PREEXISTING_ROOT_NOT_ADOPTED' }
+    $null = New-Item -ItemType Directory -Path $root
+    $acl = [Security.AccessControl.DirectorySecurity]::new()
+    $acl.SetAccessRuleProtection($true,$false)
+    foreach ($sid in @([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))) {
+        $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))
+    }
+    Set-Acl -LiteralPath $root -AclObject $acl
+    $null = $bridge.CaptureRoot($Box)
+    $bridge.Set($Box,'Enabled','y')
+    [P02Bridge]::MinimizeProcessEnvironment($EngineHome)
+    $receipt = $bridge.Launch($Box,$Probe,[string[]]@('hold',$Fixture,$Box,'same-owner-current',$EngineHome))
+    try {
+        @{ initialized = $true; standard_user = $true; current_session = $bridge.CurrentSession } | ConvertTo-Json | Set-Content (Join-Path $Fixture 'results/standard-user-ready.json') -Encoding utf8
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        while ($bridge.Count($Box) -lt 2 -and $clock.ElapsedMilliseconds -lt 18000) { Start-Sleep -Milliseconds 100 }
+        $result.sessions = $bridge.ObserveSameOwnerSessions($Box)
+        $result.completed_objects = $bridge.StopHeld($Box)
+        if (-not [P02Bridge]::Completed($receipt,5000) -or $bridge.Count($Box) -ne 0) { throw 'STANDARD_USER_STOP_INCOMPLETE' }
+    } finally { [P02Bridge]::CloseReceipt($receipt) }
+    $result.standard_user = $true
+    $result.configuration_created_by_standard_user = $true
+    $result.root_acl_applied_by_standard_user = $true
+    $result.unboxed_manager_diagnostics = $bridge.ManagerDiagnostics()
+    $result.status = 'PASSED'
+} catch {
+    $result.status = 'FAILED'
+    $message = $_.Exception.Message
+    $result.diagnostic_code = if ($message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b') { $Matches[1] } else { 'STANDARD_USER_PROBE_FAILED' }
+    $result.exception_type = $_.Exception.GetBaseException().GetType().FullName
+}
+$result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $Fixture 'results/standard-user-result.json') -Encoding utf8
+if ($result.status -eq 'PASSED') { exit 0 }
+exit 1

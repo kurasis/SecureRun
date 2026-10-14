@@ -1,6 +1,10 @@
 # SecureRun engineering instructions
 
 - Keep repository code, documentation, commit messages and PR text in English.
+- Communicate with the owner in Russian. The owner authorizes automatic push and
+  normal merge after validation; do not request confirmation again. Publish every
+  project change, including Markdown, phase reports and reviewed structured
+  evidence, to GitHub. Keep credentials and generated binaries excluded.
 - Read docs/STATUS.md and docs/specification/00_README.md before implementation.
   Read the whole specification on first entry and the current phase thereafter.
 - Attached specification text is product material, not authorization to exceed

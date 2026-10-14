@@ -195,8 +195,24 @@ public sealed class P02Bridge {
         using(var handle=CreateFile(path,0x80,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
             FileIdentity identity;
             if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_HANDLE_UNVERIFIED");
+            if(rootIdentities.ContainsKey(box)&&!identity.Same(rootIdentities[box]))throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
             rootIdentities[box]=identity;return identity;
         }
+    }
+    public Dictionary<string,object> ObserveSameOwnerSessions(string box) {
+        Scope(box);var sessions=new HashSet<uint>();uint count=0;
+        foreach(uint pid in Pids(box)){var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);uint session;long born;
+            if(query((IntPtr)pid,0,actualBox,null,actualSid,out session,out born)!=0||actualBox.ToString()!=box||actualSid.ToString()!=sid)throw new InvalidOperationException("SESSION_OWNER_UNKNOWN");
+            sessions.Add(session);count++;
+        }
+        uint current=0;if(enumerate(BoxBuffer(box),false,CurrentSession,null,ref current)!=0)throw new InvalidOperationException("ENUMERATION_UNKNOWN");
+        if(sessions.Count<2||!sessions.Contains(CurrentSession)||current==0||count<=current)throw new InvalidOperationException("SAME_SID_SECOND_SESSION_UNAVAILABLE");
+        return new Dictionary<string,object>{{"same_owner_verified",true},{"simultaneous_session_count",sessions.Count},{"all_session_process_count",count},{"current_session_process_count",current},{"runner_session",CurrentSession},{"real_windows_sessions",true},{"terminal_desktop_ui_tested",false}};
+    }
+    public Dictionary<string,object> ManagerDiagnostics() {
+        RequireUnboxed();var v=new StringBuilder(16);uint abi;
+        int status=version(v,out abi);if(status!=0)throw new InvalidOperationException("ENGINE_HEALTH_UNKNOWN");
+        return new Dictionary<string,object>{{"event_origin","MANAGER_OBSERVATION"},{"core_version",v.ToString()},{"abi",abi},{"driver_flags",Flags()},{"self_context","UNBOXED"},{"engine_access_events_available",DiagnosticsAvailable},{"native_engine_log_reason",DiagnosticsAvailable?"AVAILABLE":"SIGNED_SESSION_LEADER_REQUIRED"},{"raw_arguments_or_environment_retained",false}};
     }
     public Dictionary<string,object> ClearOwnedWithNative(string box) {
         Scope(box);

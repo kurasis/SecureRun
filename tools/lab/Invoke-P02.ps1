@@ -55,6 +55,7 @@ $probeFiles = @(Get-ChildItem (Join-Path $out 'feasibility_probe_*.exe'))
 foreach ($file in $probeFiles) { Copy-Item $file.FullName -Destination $probeHome }
 $approved = @($probeFiles | ForEach-Object { Join-Path $probeHome $_.Name })
 Copy-Item (Join-Path $repo 'tools/probe/engine_bridge.cs'),(Join-Path $repo 'tools/probe/boxed_bridge_guard.ps1') -Destination $probeHome
+Copy-Item (Join-Path $repo 'tools/probe/standard_user_probe.ps1') -Destination $probeHome
 $guardShell = Join-Path $PSHOME 'pwsh.exe'
 $bridge = [P02Bridge]::new($engineHome, $fixture, [string[]]$approved)
 $guardBridge = [P02Bridge]::new($engineHome, $fixture, [string[]]@($guardShell))
@@ -300,6 +301,46 @@ try {
         Require ($access.different_identity -and -not $access.administrator -and $access.positive_read_error -eq 0) 'SECOND_USER_POSITIVE_CONTROL_UNAVAILABLE'
         Require ($access.metadata_read_error -eq 5 -and $access.root_read_error -eq 5) 'SECOND_USER_ACL_DENIAL_FAILED'
         $access
+    }
+    Invoke-Case 'T36' 'Same standard-user SID concurrently in two real Windows sessions' {
+        $userName = 'SRP02S_' + $run.Substring(0,10)
+        $password = 'P02aA!' + [Guid]::NewGuid().ToString('N')
+        $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+        $user = New-LocalUser -Name $userName -Password $securePassword -AccountNeverExpires
+        $usersGroup = ([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1]
+        Add-LocalGroupMember -Group $usersGroup -Member $userName
+        $userFixture = Join-Path $env:ProgramData "SecureRunLab/p02-user-$run"
+        $null = New-Item -ItemType Directory -Path (Join-Path $userFixture 'results') -Force
+        $null = New-Item -ItemType Directory -Path (Join-Path $userFixture 'boxes')
+        $userAcl = [Security.AccessControl.DirectorySecurity]::new(); $userAcl.SetAccessRuleProtection($true,$false)
+        foreach ($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))) {
+            $userAcl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))
+        }
+        Set-Acl -LiteralPath $userFixture -AclObject $userAcl
+        $standardBox = 'SRP02_STD_' + $run.Substring(0,12)
+        $nativeExe = Join-Path $probeHome ('feasibility_probe_' + $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }) + '.exe')
+        $taskName = 'SRP02_SAME_' + $run
+        $taskArguments = ([string[]]@('user-launch',$userFixture,$standardBox,'same-owner-zero',$engineHome) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
+        $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
+        $null = Register-ScheduledTask -TaskName $taskName -Action $action -User "$env:COMPUTERNAME\$userName" -Password $password -RunLevel Limited
+        $start = [Diagnostics.ProcessStartInfo]::new($guardShell)
+        $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
+        $start.UserName = $userName; $start.Domain = $env:COMPUTERNAME; $start.Password = $securePassword; $start.LoadUserProfile = $true
+        foreach ($arg in [string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $probeHome 'standard_user_probe.ps1'),'-EngineHome',$engineHome,'-Fixture',$userFixture,'-Box',$standardBox,'-Probe',$nativeExe)) { $start.ArgumentList.Add($arg) }
+        $process = [Diagnostics.Process]::Start($start)
+        $password = $null
+        try {
+            $ready = Join-Path $userFixture 'results/standard-user-ready.json'
+            $clock = [Diagnostics.Stopwatch]::StartNew()
+            while (-not (Test-Path $ready) -and -not $process.HasExited -and $clock.ElapsedMilliseconds -lt 45000) { Start-Sleep -Milliseconds 100 }
+            if (Test-Path $ready) { Start-ScheduledTask -TaskName $taskName }
+            Require ($process.WaitForExit(45000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
+            $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
+            $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
+            Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
+            $result
+        } finally { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false; $securePassword.Dispose(); $process.Dispose() }
     }
     Invoke-Case 'T57' 'Forged metadata cannot redirect the generated root scope' {
         $before = $bridge.Read($boxB,'FileRootPath',0x70000000)

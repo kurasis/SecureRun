@@ -484,3 +484,50 @@ pub fn run() {
     };
     app.run(|_, _| {});
 }
+
+#[cfg(test)]
+mod normal_configuration_tests {
+    use super::*;
+    #[test]
+    fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
+        let backend = Backend {
+            store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
+            selections: Selections::default(),
+            handles: HashMap::new(),
+            started: Instant::now(),
+            session: 2,
+            fixture: false,
+            profile: None,
+            _writer: None,
+        };
+        assert_eq!(
+            backend.allow_metadata().unwrap_err().code,
+            ErrorCode::ManagerContextUnsafe
+        );
+        let snapshot = backend.snapshot().unwrap();
+        assert!(!snapshot.mutations_available);
+        assert!(!snapshot.engine_operations_available);
+        assert_eq!(snapshot.mode, "READ_ONLY_SETUP");
+        assert!(snapshot.environments.is_empty());
+    }
+    #[test]
+    fn normal_capabilities_exclude_test_report_and_remote_origins() {
+        let config: serde_json::Value =
+            serde_json::from_str(include_str!("../tauri.conf.json")).unwrap();
+        assert_eq!(
+            config["app"]["security"]["capabilities"],
+            serde_json::json!(["main"])
+        );
+        let main: serde_json::Value =
+            serde_json::from_str(include_str!("../capabilities/main.json")).unwrap();
+        assert_eq!(main["webviews"], serde_json::json!(["main"]));
+        assert!(main.get("remote").is_none());
+        assert!(
+            !main["permissions"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|p| p == "allow-ci-report")
+        );
+    }
+}

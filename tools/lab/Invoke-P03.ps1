@@ -15,6 +15,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'NPM_LOCKED_INSTALL_FAILED' }
     npm run build
     if ($LASTEXITCODE -ne 0) { throw 'FRONTEND_BUILD_FAILED' }
+    if (@(Get-ChildItem (Join-Path $repo 'dist/assets/selftest-*.js')).Count -ne 0) { throw 'TEST_FRONTEND_CHUNK_IN_NORMAL_BUILD' }
     npm test
     if ($LASTEXITCODE -ne 0) { throw 'FRONTEND_TEST_FAILED' }
     $unit=& cargo test --locked -p securerun-foundation 2>&1
@@ -27,6 +28,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'RUST_FORMAT_FAILED' }
     cargo clippy --locked -p securerun-foundation --all-targets -- -D warnings
     if ($LASTEXITCODE -ne 0) { throw 'FOUNDATION_LINT_FAILED' }
+    cargo test --locked -p securerun
+    if ($LASTEXITCODE -ne 0) { throw 'NORMAL_NATIVE_CONFIGURATION_TEST_FAILED' }
+    $normalAcl=Get-Content (Join-Path $repo 'src-tauri/gen/schemas/acl-manifests.json') -Raw | ConvertFrom-Json
+    $appPermissions=$normalAcl.'__app-acl__'.permissions
+    if ($null -eq $appPermissions.'allow-get-snapshot' -or $null -eq $appPermissions.'deny-create-draft') { throw 'CUSTOM_APPLICATION_ACL_MISSING' }
     $env:VITE_FOUNDATION_CI='1'
     npm run tauri -- build --debug --no-bundle --target $target --features foundation-ci --config src-tauri/tauri.ci.conf.json
     if ($LASTEXITCODE -ne 0) { throw 'NATIVE_APPLICATION_BUILD_FAILED' }

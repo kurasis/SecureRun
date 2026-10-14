@@ -10,7 +10,7 @@ export interface StateEvent { environment_id: string; environment_generation: nu
 export interface Operation { id: string; environment_id: string; environment_generation: number; requested_revision: number; kind: 'IMPORT' | 'EXPORT' | 'LAUNCH'; dispatch_state: string }
 export interface AppError { code: string; diagnostic_id: string }
 export interface EngineHealth { generation: number; sequence: number; fresh: boolean; control_plane_safe: boolean; observation: {
-  trust: string; reason: string; manager_context: string; bridge_context: string;
+  trust: string; reason: string; manager_context: string; bridge_context: string; observed_unix_ms: number;
   core_version: string | null; architecture: string; service_running: boolean; driver_running: boolean;
   restart_required: boolean; enumeration_complete: boolean; release_evidence: string;
   production_launch_available: boolean; capabilities: {name: string; availability: string; reason: string; provenance: string}[];

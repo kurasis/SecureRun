@@ -159,6 +159,15 @@ pub fn parse_response(data: &[u8], pid: u32, birth: u64) -> Result<Observation, 
     {
         return Err("BRIDGE_IDENTITY_INVALID");
     }
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64;
+    if now.saturating_sub(value.observed_unix_ms) > FRESHNESS.as_millis() as u64
+        || value.observed_unix_ms > now.saturating_add(1000)
+    {
+        return Err("BRIDGE_OBSERVATION_EXPIRED");
+    }
     for b in &value.boxes {
         if !valid_box(&b.name)
             || b.owned

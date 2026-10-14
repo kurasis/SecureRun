@@ -133,7 +133,7 @@ fn protected(file: &File) -> R<()> {
                 if header.AceType == 0 {
                     // ACCESS_ALLOWED_ACE_TYPE
                     let allowed = &*(ace as *const ACCESS_ALLOWED_ACE);
-                    let write = 0x10000000 | 0x40000000 | 0x000d0000 | 0x00000116;
+                    let write = 0x10000000 | 0x40000000 | 0x000d0000 | 0x00000156;
                     if allowed.Mask & write != 0
                         && !privileged(&sid_string(&allowed.SidStart as *const _ as _)?)
                     {
@@ -156,7 +156,11 @@ fn lease(path: &Path, writable: bool) -> R<File> {
         } else {
             GENERIC_READ | READ_CONTROL
         })
-        .share_mode(FILE_SHARE_READ)
+        .share_mode(if writable {
+            FILE_SHARE_READ | FILE_SHARE_WRITE
+        } else {
+            FILE_SHARE_READ
+        })
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(path)
         .map_err(|_| "COMPONENT_OPEN_FAILED")?;
@@ -295,7 +299,7 @@ fn service(name: &str) -> R<Service> {
                 None
             };
             Ok(Service {
-                path: PathBuf::from(path),
+                path: PathBuf::from(path.strip_prefix("\\??\\").unwrap_or(path)),
                 running: status.dwCurrentState == SERVICE_RUNNING,
                 identity: id,
             })
@@ -608,7 +612,10 @@ impl Api {
             }
             let path = text(&output)?;
             let p = Path::new(&path);
-            if !p.exists() {
+            if let Err(error) = std::fs::symlink_metadata(p) {
+                if error.kind() != std::io::ErrorKind::NotFound {
+                    return Err("ROOT_IDENTITY_UNKNOWN");
+                }
                 return Ok(RootObservation {
                     path: Some(path),
                     identity: None,
@@ -878,64 +885,8 @@ pub fn bounded_observe() -> Observation {
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .creation_flags(CREATE_NO_WINDOW);
-        let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-        let job = unsafe { Handle(CreateJobObjectW(ptr::null(), ptr::null())) };
-        let mut limits = unsafe { std::mem::zeroed::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() };
-        limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-            | JOB_OBJECT_LIMIT_ACTIVE_PROCESS
-            | JOB_OBJECT_LIMIT_PROCESS_MEMORY;
-        limits.BasicLimitInformation.ActiveProcessLimit = 1;
-        limits.ProcessMemoryLimit = 128 * 1024 * 1024;
-        if job.0.is_null()
-            || unsafe {
-                SetInformationJobObject(
-                    job.0,
-                    JobObjectExtendedLimitInformation,
-                    &limits as *const _ as _,
-                    std::mem::size_of_val(&limits) as u32,
-                )
-            } == 0
-            || unsafe { AssignProcessToJobObject(job.0, child.as_raw_handle()) } == 0
-        {
-            let _ = child.kill();
-            return Err("BRIDGE_JOB_FAILED");
-        }
-        let mut stdout = child.stdout.take().ok_or("BRIDGE_PIPE_FAILED")?;
-        let (sender, receiver) = std::sync::mpsc::channel();
-        std::thread::spawn(move || {
-            let mut data = Vec::new();
-            let result = stdout
-                .by_ref()
-                .take((RESPONSE_LIMIT + 1) as u64)
-                .read_to_end(&mut data);
-            let _ = sender.send((result, data));
-        });
-        let deadline = Instant::now() + Duration::from_secs(20);
-        loop {
-            match child.try_wait() {
-                Ok(Some(status)) => {
-                    if !status.success() {
-                        return Err("BRIDGE_EXIT_FAILED");
-                    }
-                    let (result, data) = receiver
-                        .recv_timeout(Duration::from_secs(1))
-                        .map_err(|_| "BRIDGE_PIPE_TIMEOUT")?;
-                    result.map_err(|_| "BRIDGE_PIPE_FAILED")?;
-                    return parse_response(&data, pid, created);
-                }
-                Err(_) => {
-                    let _ = child.kill();
-                    return Err("BRIDGE_WAIT_FAILED");
-                }
-                _ => {}
-            }
-            if Instant::now() >= deadline {
-                let _ = child.kill();
-                let _ = child.wait();
-                return Err("BRIDGE_TIMEOUT");
-            }
-            std::thread::sleep(Duration::from_millis(20));
-        }
+        let data = bounded_capture(&mut command, Duration::from_secs(20))?;
+        parse_response(&data, pid, created)
     })();
     result.unwrap_or_else(|reason| {
         let mut o = Observation::failure(reason);
@@ -944,6 +895,85 @@ pub fn bounded_observe() -> Observation {
         o
     })
 }
+fn bounded_capture(command: &mut Command, timeout: Duration) -> R<Vec<u8>> {
+    let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+    let job = unsafe { Handle(CreateJobObjectW(ptr::null(), ptr::null())) };
+    let mut limits = unsafe { std::mem::zeroed::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() };
+    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        | JOB_OBJECT_LIMIT_ACTIVE_PROCESS
+        | JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+    limits.BasicLimitInformation.ActiveProcessLimit = 1;
+    limits.ProcessMemoryLimit = 128 * 1024 * 1024;
+    if job.0.is_null()
+        || unsafe {
+            SetInformationJobObject(
+                job.0,
+                JobObjectExtendedLimitInformation,
+                &limits as *const _ as _,
+                std::mem::size_of_val(&limits) as u32,
+            )
+        } == 0
+        || unsafe { AssignProcessToJobObject(job.0, child.as_raw_handle()) } == 0
+    {
+        let _ = child.kill();
+        return Err("BRIDGE_JOB_FAILED");
+    }
+    let mut stdout = child.stdout.take().ok_or("BRIDGE_PIPE_FAILED")?;
+    let (sender, receiver) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let mut data = Vec::new();
+        let result = stdout
+            .by_ref()
+            .take((RESPONSE_LIMIT + 1) as u64)
+            .read_to_end(&mut data);
+        let _ = sender.send((result, data));
+    });
+    let deadline = Instant::now() + timeout;
+    let mut captured = None;
+    loop {
+        if captured.is_none()
+            && let Ok((result, data)) = receiver.try_recv()
+        {
+            result.map_err(|_| "BRIDGE_PIPE_FAILED")?;
+            if data.len() > RESPONSE_LIMIT {
+                let _ = child.kill();
+                return Err("BRIDGE_RESPONSE_BOUND");
+            }
+            captured = Some(data);
+        }
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                if !status.success() {
+                    return Err("BRIDGE_EXIT_FAILED");
+                }
+                let data = if let Some(data) = captured {
+                    data
+                } else {
+                    let (result, data) = receiver
+                        .recv_timeout(Duration::from_secs(1))
+                        .map_err(|_| "BRIDGE_PIPE_TIMEOUT")?;
+                    result.map_err(|_| "BRIDGE_PIPE_FAILED")?;
+                    data
+                };
+                if data.len() > RESPONSE_LIMIT {
+                    return Err("BRIDGE_RESPONSE_BOUND");
+                }
+                return Ok(data);
+            }
+            Err(_) => {
+                let _ = child.kill();
+                return Err("BRIDGE_WAIT_FAILED");
+            }
+            _ => {}
+        }
+        if Instant::now() >= deadline {
+            let _ = child.kill();
+            return Err("BRIDGE_TIMEOUT");
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
 fn system_directory() -> R<PathBuf> {
     let mut data = [0u16; 32768];
     let len = unsafe { GetSystemDirectoryW(data.as_mut_ptr(), data.len() as u32) };
@@ -951,4 +981,42 @@ fn system_directory() -> R<PathBuf> {
         return Err("SYSTEM_PATH_UNKNOWN");
     }
     Ok(PathBuf::from(text(&data)?))
+}
+
+#[cfg(test)]
+mod native_bounds {
+    use super::*;
+    fn fixture(script: &str) -> Command {
+        let system = system_directory().unwrap();
+        let mut command = Command::new(system.join("WindowsPowerShell/v1.0/powershell.exe"));
+        command
+            .args([
+                "-NoLogo",
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                script,
+            ])
+            .current_dir(system)
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null());
+        command
+    }
+    #[test]
+    fn actual_native_worker_timeout_closes_the_job() {
+        let result = bounded_capture(
+            &mut fixture("Start-Sleep -Seconds 5"),
+            Duration::from_millis(300),
+        );
+        assert_eq!(result.unwrap_err(), "BRIDGE_TIMEOUT");
+    }
+    #[test]
+    fn actual_native_pipe_output_is_bounded() {
+        let result = bounded_capture(
+            &mut fixture("[Console]::Out.Write(('A' * 3145728))"),
+            Duration::from_secs(15),
+        );
+        assert_eq!(result.unwrap_err(), "BRIDGE_RESPONSE_BOUND");
+    }
 }

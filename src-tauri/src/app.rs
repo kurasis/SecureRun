@@ -199,7 +199,14 @@ async fn get_engine_health(
             return Ok(backend.health.view(Instant::now()));
         }
         backend.observation_inflight = true;
-        backend.health.begin(Instant::now())
+        let before = backend.health.view(Instant::now()).generation;
+        let ticket = backend.health.begin(Instant::now());
+        if backend.health.view(Instant::now()).generation != before {
+            backend.store.reconnect()?;
+            backend.handles.clear();
+            backend.selections = Selections::default();
+        }
+        ticket
     };
     let observation =
         tauri::async_runtime::spawn_blocking(securerun_sandboxie_adapter::windows::bounded_observe)

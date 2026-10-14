@@ -11,6 +11,8 @@ function App() {
   const [page, setPage] = useState<'environments' | 'settings'>('environments');
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [health, setHealth] = useState<EngineHealth | null>(null);
+  const [clock, setClock] = useState(Date.now());
+  const healthFresh = !!health?.fresh && clock - health.observation.observed_unix_ms < 15000;
   const [error, setError] = useState<AppError | null>(null);
   const [search, setSearch] = useState(''); const [name, setName] = useState('');
   const [theme, setTheme] = useState('system'); const t = strings[language];
@@ -37,8 +39,9 @@ function App() {
       catch { if (!disposed) setHealth(null); } finally { inflight = false; }
     };
     const timer = window.setInterval(() => void observe(), 5000);
+    const ageTimer = window.setInterval(() => setClock(Date.now()), 1000);
     const resume = () => { setHealth(null); void observe(); }; window.addEventListener('focus', resume); document.addEventListener('visibilitychange', resume);
-    void observe(); return () => { disposed = true; window.clearInterval(timer); window.removeEventListener('focus', resume); document.removeEventListener('visibilitychange', resume); };
+    void observe(); return () => { disposed = true; window.clearInterval(timer); window.clearInterval(ageTimer); window.removeEventListener('focus', resume); document.removeEventListener('visibilitychange', resume); };
   }, []);
   const create = async (event: React.FormEvent) => { event.preventDefault(); try { await invoke('create_draft', { request: { display_name: name } }); setName(''); await refresh(); } catch (error) { setError(error as AppError); } };
   return <div className="shell"><aside><div className="brand"><span className="brandMark" aria-hidden>SR</span>SecureRun</div><nav aria-label={language === 'en' ? 'Main navigation' : 'Главная навигация'}>{(['environments', 'settings'] as const).map(item => <button key={item} aria-current={page === item ? 'page' : undefined} onClick={() => setPage(item)}>{t[item]}</button>)}</nav><span className="version">SecureRun · 0.3</span></aside><main>
@@ -46,11 +49,11 @@ function App() {
     <header><div><h1>{page === 'environments' ? t.title : t.settings}</h1><p>{t.subtitle}</p></div><button onClick={() => void refresh()}>{t.refresh}</button></header>
     <section className="notice" aria-labelledby="engine-heading"><span className="statusDot" aria-hidden/><div><h2 id="engine-heading">{t.engine}</h2><p>{t.unavailable}</p></div><span className="badge">{t.readonly}</span></section>
     <section className="engineHealth" aria-labelledby="health-heading"><h2 id="health-heading">{t.health}</h2>
-      <dl><dt>{t.trust}</dt><dd>{health?.observation.trust ?? t.unknown}</dd><dt>{t.context}</dt><dd>{health?.observation.manager_context ?? t.unknown} / {health?.observation.bridge_context ?? t.unknown}</dd><dt>{t.service}</dt><dd>{health?.observation.service_running ? t.running : t.unknown}</dd><dt>{t.driver}</dt><dd>{health?.observation.driver_running ? t.running : t.unknown}</dd><dt>{t.version}</dt><dd>{health?.observation.core_version ?? t.unknown}</dd><dt>{t.freshness}</dt><dd>{health?.fresh ? t.fresh : t.unknown}</dd></dl>
+      <dl><dt>{t.trust}</dt><dd>{health?.observation.trust ?? t.unknown}</dd><dt>{t.context}</dt><dd>{health?.observation.manager_context ?? t.unknown} / {health?.observation.bridge_context ?? t.unknown}</dd><dt>{t.service}</dt><dd>{health?.observation.service_running ? t.running : t.unknown}</dd><dt>{t.driver}</dt><dd>{health?.observation.driver_running ? t.running : t.unknown}</dd><dt>{t.version}</dt><dd>{health?.observation.core_version ?? t.unknown}</dd><dt>{t.freshness}</dt><dd>{healthFresh ? t.fresh : t.unknown}</dd></dl>
       <p role="status">{health?.observation.reason ?? t.observing}</p><p>{t.phaseGuard}</p>
       {health?.observation.capabilities.map(item => <p key={item.name}>{item.name}: {item.availability} · {item.reason}</p>)}
       <h3>{t.existingBoxes}</h3><p>{t.unowned}</p>
-      {health?.observation.boxes.map(box => <article key={box.name}><h3>{box.name}</h3><p>{t.activity}: {box.activity} · {box.complete ? t.complete : t.incomplete}</p><p>{box.reason}</p><details><summary>{t.observationDetails}</summary><p>{t.root}: {box.root.path ?? t.unknown} · {box.root.reason} ({t.callerScope})</p><p>{t.fingerprint}: <code>{box.configuration_fingerprint}</code></p><ul>{box.processes.map(p => <li key={`${p.pid}:${p.creation_time}`}>PID {p.pid} · {t.session} {p.session} · {p.creation_time}</li>)}</ul><table><thead><tr><th>{t.directive}</th><th>{t.raw}</th><th>{t.effective}</th></tr></thead><tbody>{box.configuration.map(v => <tr key={v.key}><td>{v.key}</td><td>{v.raw.join(' · ')}</td><td>{v.effective.join(' · ')}</td></tr>)}</tbody></table><p>{t.notOracle}</p></details></article>)}
+      {health?.observation.boxes.map(box => <article key={box.name}><h3>{box.name}</h3><p>{t.activity}: {healthFresh ? box.activity : t.unknown} · {healthFresh && box.complete ? t.complete : t.incomplete}</p><p>{box.reason}</p><details><summary>{t.observationDetails}</summary><p>{t.root}: {box.root.path ?? t.unknown} · {box.root.reason} ({t.callerScope})</p><p>{t.fingerprint}: <code>{box.configuration_fingerprint}</code></p><ul>{box.processes.map(p => <li key={`${p.pid}:${p.creation_time}`}>PID {p.pid} · {t.session} {p.session} · {p.creation_time}</li>)}</ul><table><thead><tr><th>{t.directive}</th><th>{t.raw}</th><th>{t.effective}</th></tr></thead><tbody>{box.configuration.map(v => <tr key={v.key}><td>{v.key}</td><td>{v.raw.join(' · ')}</td><td>{v.effective.join(' · ')}</td></tr>)}</tbody></table><p>{t.notOracle}</p></details></article>)}
     </section>
     {error && <section className="error" role="alert"><strong>{t.error}</strong><p>{t.next}</p><details><summary>{t.diagnosticId}</summary><code>{error.code} {error.diagnostic_id}</code></details></section>}
     {page === 'environments' ? <><label className="search">{t.search}<input value={search} onChange={event => setSearch(event.target.value)} type="search"/></label>{snapshot?.mutations_available && <form onSubmit={create}><label>{t.name}<input value={name} onChange={event => setName(event.target.value)} maxLength={80} required/></label><button type="submit">{t.add}</button></form>}

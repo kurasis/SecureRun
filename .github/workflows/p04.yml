@@ -28,6 +28,9 @@ jobs:
             ~/.cargo/git
             target
           key: p04-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            p04-${{ matrix.runner }}-rust190-
+            p03-${{ matrix.runner }}-rust190-
       - name: Validate production observation and trust paths
         shell: pwsh
         run: ./tools/lab/Invoke-P04.ps1

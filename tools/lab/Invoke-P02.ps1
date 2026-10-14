@@ -322,51 +322,35 @@ try {
         $standardBox = 'SRP02_STD_' + $run.Substring(0,12)
         $nativeExe = Join-Path $probeHome ('feasibility_probe_' + $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }) + '.exe')
         $taskName = 'SRP02_SAME_' + $run
-        $taskArguments = ([string[]]@('user-launch',$userFixture,$standardBox,'same-owner-zero',$engineHome) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
+        $pipeName = 'SecureRunP02Logon_' + $run
+        $taskArguments = ([string[]]@('logon-fixture',$pipeName) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
         $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
-        $taskUser = [Environment]::MachineName + '\' + $userName
-        $principal = New-ScheduledTaskPrincipal -UserId $taskUser -LogonType Password -RunLevel Limited
+        $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromMinutes(1))
-        $definition = New-ScheduledTask -Action $action -Principal $principal -Settings $settings
-        $null = Register-ScheduledTask -TaskName $taskName -InputObject $definition -User $taskUser -Password $password
+        $null = Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal -Settings $settings
         $start = [Diagnostics.ProcessStartInfo]::new($guardShell)
         $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
         $start.UserName = $userName; $start.Domain = [Environment]::MachineName; $start.Password = $securePassword; $start.LoadUserProfile = $true
         foreach ($arg in [string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $probeHome 'standard_user_probe.ps1'),'-EngineHome',$engineHome,'-Fixture',$userFixture,'-Box',$standardBox,'-Probe',$nativeExe)) { $start.ArgumentList.Add($arg) }
         $process = [Diagnostics.Process]::Start($start)
-        $password = $null
         try {
             $ready = Join-Path $userFixture 'results/standard-user-ready.json'
             $clock = [Diagnostics.Stopwatch]::StartNew()
             while (-not (Test-Path $ready) -and -not $process.HasExited -and $clock.ElapsedMilliseconds -lt 45000) { Start-Sleep -Milliseconds 100 }
             $readyObserved = Test-Path $ready
-            $schedulerCode = 0; $instanceState = 'NOT_REQUESTED'
-            $taskStart = [DateTime]::Now
+            $transport = $null
             if ($readyObserved) {
-                try {
-                    $scheduler = New-Object -ComObject Schedule.Service
-                    $scheduler.Connect()
-                    $registered = $scheduler.GetFolder('\').GetTask($taskName)
-                    $instance = $registered.Run($null)
-                    $instanceState = "$($instance.State)"
-                } catch { $schedulerCode = $_.Exception.GetBaseException().HResult }
+                $startTask = [Action]{ Start-ScheduledTask -TaskName $taskName }
+                $transport = $bridge.SendFixtureLogon($startTask,$pipeName,$userName,$password,$user.SID.Value,$userFixture,$standardBox,$nativeExe)
             }
-            $task = Get-ScheduledTask -TaskName $taskName
+            $password = $null
             Require ($process.WaitForExit(90000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
             $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
-            $logonFailures = @()
-            try {
-                foreach ($event in (Get-WinEvent -FilterHashtable @{ LogName = 'Security'; Id = 4625; StartTime = $taskStart } -MaxEvents 16 -ErrorAction Stop)) {
-                    [xml]$xml = $event.ToXml(); $data = @{}
-                    foreach ($entry in $xml.Event.EventData.Data) { $data[$entry.Name] = $entry.'#text' }
-                    if ($data.TargetUserName -eq $userName) { $logonFailures += @{ logon_type = $data.LogonType; status = $data.Status; substatus = $data.SubStatus } }
-                }
-            } catch { }
-            @{ worker = $result; ready_observed = $readyObserved; scheduler_request_hresult = $schedulerCode; scheduler_instance_state = $instanceState; synthetic_logon_failures = $logonFailures; scheduled_task_logon_type = $task.Principal.LogonType.ToString(); scheduled_task_state_after_start = $task.State.ToString(); scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            @{ worker = $result; ready_observed = $readyObserved; logon_fixture_transport = $transport; scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult; batch_logon_policy_changed = $false } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
             if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
             Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
             $result
-        } finally { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false; $securePassword.Dispose(); $process.Dispose() }
+        } finally { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false; $password = $null; $securePassword.Dispose(); $process.Dispose() }
     }
     Invoke-Case 'T57' 'Forged metadata cannot redirect the generated root scope' {
         $before = $bridge.Read($boxB,'FileRootPath',0x70000000)

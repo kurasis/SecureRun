@@ -14,6 +14,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Security.AccessControl;
+using System.IO.Pipes;
 using Microsoft.Win32.SafeHandles;
 
 public sealed class P02Bridge {
@@ -28,6 +29,13 @@ public sealed class P02Bridge {
     [DllImport("kernel32")] static extern bool CloseHandle(IntPtr handle);
     [DllImport("kernel32")] static extern bool GetExitCodeProcess(IntPtr handle, out uint code);
     [DllImport("kernel32")] static extern uint GetCurrentProcessId();
+    [StructLayout(LayoutKind.Sequential)] struct SecurityAttributes {public uint length;public IntPtr descriptor;public int inherit;}
+    [DllImport("advapi32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool ConvertStringSecurityDescriptorToSecurityDescriptor(string text,uint revision,out IntPtr descriptor,out uint size);
+    [DllImport("kernel32")] static extern IntPtr LocalFree(IntPtr pointer);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafePipeHandle CreateNamedPipe(string name,uint open,uint mode,uint instances,uint output,uint input,uint timeout,ref SecurityAttributes attributes);
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetNamedPipeClientProcessId(SafePipeHandle pipe,out uint pid);
+    [DllImport("advapi32",SetLastError=true)] static extern bool OpenProcessToken(IntPtr process,uint access,out SafeAccessTokenHandle token);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool QueryFullProcessImageName(IntPtr process,uint flags,StringBuilder path,ref uint chars);
     [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
     [StructLayout(LayoutKind.Sequential,Pack=4)] public struct FileIdentity {
         public uint attributes; public long creation,access,write;
@@ -237,6 +245,38 @@ public sealed class P02Bridge {
         RequireUnboxed();var v=new StringBuilder(16);uint abi;
         int status=version(v,out abi);if(status!=0)throw new InvalidOperationException("ENGINE_HEALTH_UNKNOWN");
         return new Dictionary<string,object>{{"event_origin","MANAGER_OBSERVATION"},{"core_version",v.ToString()},{"abi",abi},{"driver_flags",Flags()},{"self_context","UNBOXED"},{"engine_access_events_available",DiagnosticsAvailable},{"native_engine_log_reason",DiagnosticsAvailable?"AVAILABLE":"SIGNED_SESSION_LEADER_REQUIRED"},{"raw_arguments_or_environment_retained",false}};
+    }
+    public Dictionary<string,object> SendFixtureLogon(Action start,string pipeName,string user,string password,string userSid,string fixture,string box,string approvedExe) {
+        RequireUnboxed();
+        if(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true"||!Regex.IsMatch(pipeName,@"\ASecureRunP02Logon_[0-9a-f]{32}\z")||!Regex.IsMatch(user,@"\ASRP02S_[0-9a-f]{10}\z")||!probes.Contains(approvedExe))throw new InvalidOperationException("LOGON_FIXTURE_SCOPE_REJECTED");
+        IntPtr descriptor;uint size;
+        if(!ConvertStringSecurityDescriptorToSecurityDescriptor("D:P(A;;GA;;;SY)(A;;GA;;;BA)",1,out descriptor,out size))throw new Win32Exception();
+        SafePipeHandle handle;
+        try {var attributes=new SecurityAttributes{length=(uint)Marshal.SizeOf<SecurityAttributes>(),descriptor=descriptor};
+            handle=CreateNamedPipe("\\\\.\\pipe\\"+pipeName,2|0x40000000U|0x00080000U,8,1,4096,4096,15000,ref attributes);
+        } finally {LocalFree(descriptor);}
+        if(handle.IsInvalid){handle.Dispose();throw new InvalidOperationException("LOGON_FIXTURE_PIPE_CREATE_FAILED");}
+        using(var pipe=new NamedPipeServerStream(PipeDirection.Out,true,false,handle)){
+            start();
+            using(var cancellation=new System.Threading.CancellationTokenSource(20000))pipe.WaitForConnectionAsync(cancellation.Token).GetAwaiter().GetResult();
+            uint pid;if(!GetNamedPipeClientProcessId(handle,out pid))throw new InvalidOperationException("LOGON_FIXTURE_PEER_UNKNOWN");
+            IntPtr process=OpenProcess(0x1000|0x100000,false,pid);if(process==IntPtr.Zero)throw new InvalidOperationException("LOGON_FIXTURE_PEER_HANDLE_FAILED");
+            try {
+                SafeAccessTokenHandle token;if(!OpenProcessToken(process,8,out token))throw new InvalidOperationException("LOGON_FIXTURE_PEER_TOKEN_FAILED");
+                using(token)using(var identity=new WindowsIdentity(token.DangerousGetHandle()))if(identity.User.Value!="S-1-5-18")throw new InvalidOperationException("LOGON_FIXTURE_PEER_NOT_SYSTEM");
+                var path=new StringBuilder(1024);uint chars=1024;
+                if(!QueryFullProcessImageName(process,0,path,ref chars)||!String.Equals(path.ToString(),approvedExe,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("LOGON_FIXTURE_PEER_IMAGE_REJECTED");
+                uint session;long born;
+                if(unchecked((uint)query((IntPtr)pid,0,new StringBuilder(40),null,null,out session,out born))!=0xc000000bU||WaitForSingleObject(process,0)==0)throw new InvalidOperationException("LOGON_FIXTURE_PEER_CONTEXT_UNKNOWN");
+                foreach(string value in new[]{user,password,userSid,fixture,box}){
+                    byte[] bytes=Encoding.Unicode.GetBytes(value),length=BitConverter.GetBytes(value.Length);
+                    try {pipe.Write(length,0,length.Length);pipe.Write(bytes,0,bytes.Length);}
+                    finally {Array.Clear(bytes,0,bytes.Length);}
+                }
+                pipe.Flush();
+            } finally {CloseHandle(process);}
+        }
+        return new Dictionary<string,object>{{"peer_sid_verified_from_os",true},{"peer_unboxed_verified",true},{"peer_image_pinned",true},{"protected_local_pipe",true},{"password_in_argv_or_environment",false},{"windows_logon_policy_changed",false},{"fixture_not_a_product_helper",true}};
     }
     public Dictionary<string,object> ClearOwnedWithNative(string box) {
         Scope(box);

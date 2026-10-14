@@ -8,12 +8,48 @@
 #include <wchar.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sddl.h>
 #pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib,"advapi32.lib")
 /* The pinned Win32 build uses /Gz; its .def exports the legacy undecorated aliases. */
 typedef LONG (WINAPI *query_fn)(HANDLE,WCHAR*,WCHAR*,WCHAR*,ULONG*);
 typedef ULONG (WINAPI *map_fn)(HANDLE,WCHAR*,BOOLEAN*);
 typedef BOOL (WINAPI *run_fn)(const WCHAR*,const WCHAR*,const WCHAR*,ULONG,STARTUPINFOW*,PROCESS_INFORMATION*);
+
+/* Disposable logon harness. Credentials remain in a protected local pipe and
+   memory; it creates only this fixed benign manager facade with a standard token. */
+static BOOL pipe_text(HANDLE pipe,WCHAR *text,DWORD capacity) {
+    DWORD length=0,got=0,total=0;
+    if(!ReadFile(pipe,&length,sizeof(length),&got,NULL)||got!=sizeof(length)||length==0||length>=capacity)return FALSE;
+    while(total<length*sizeof(WCHAR)){if(!ReadFile(pipe,(BYTE*)text+total,length*sizeof(WCHAR)-total,&got,NULL)||got==0)return FALSE;total+=got;}
+    text[length]=0;return TRUE;
+}
+static BOOL valid_base(const WCHAR *base);
+static int logon_fixture(const WCHAR *name) {
+    WCHAR pipePath[256],user[64]={0},password[128]={0},sidText[184]={0},base[1024]={0},box[40]={0},exe[1024],home[1024],command[4096];
+    HANDLE pipe,token=NULL,currentToken=NULL;BYTE info[256],systemSid[SECURITY_MAX_SID_SIZE];DWORD size=sizeof(systemSid),got=0;
+    STARTUPINFOW startup={0};PROCESS_INFORMATION process={0};LPWSTR actualSid=NULL;DWORD error=0;BOOL ok=FALSE;
+    if(wcsncmp(name,L"SecureRunP02Logon_",17)!=0||wcslen(name)>64||wcspbrk(name,L"\\/:.\" ")!=NULL)return 64;
+    if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&currentToken))return 65;
+    ok=GetTokenInformation(currentToken,TokenUser,info,sizeof(info),&got)&&CreateWellKnownSid(WinLocalSystemSid,NULL,systemSid,&size)&&EqualSid(((TOKEN_USER*)info)->User.Sid,systemSid);
+    CloseHandle(currentToken);if(!ok)return 66;
+    if(swprintf_s(pipePath,256,L"\\\\.\\pipe\\%s",name)<0)return 64;
+    pipe=CreateFileW(pipePath,GENERIC_READ,0,NULL,OPEN_EXISTING,0,NULL);if(pipe==INVALID_HANDLE_VALUE)return 67;
+    ok=pipe_text(pipe,user,64)&&pipe_text(pipe,password,128)&&pipe_text(pipe,sidText,184)&&pipe_text(pipe,base,1024)&&pipe_text(pipe,box,40);CloseHandle(pipe);
+    if(!ok||!valid_base(base)||wcsncmp(user,L"SRP02S_",7)!=0||wcspbrk(user,L"\\/:.\" ")!=NULL||wcsncmp(box,L"SRP02_STD_",10)!=0||wcspbrk(box,L"\\/:.\" ")!=NULL){SecureZeroMemory(password,sizeof(password));return 68;}
+    ok=LogonUserW(user,L".",password,LOGON32_LOGON_INTERACTIVE,LOGON32_PROVIDER_DEFAULT,&token);error=GetLastError();SecureZeroMemory(password,sizeof(password));
+    if(!ok){printf("{\"stage\":\"fixture_logon\",\"win32_error\":%lu}\n",error);return 69;}
+    ok=GetTokenInformation(token,TokenUser,info,sizeof(info),&got)&&ConvertSidToStringSidW(((TOKEN_USER*)info)->User.Sid,&actualSid)&&wcscmp(actualSid,sidText)==0;
+    if(actualSid)LocalFree(actualSid);
+    if(!ok){CloseHandle(token);return 70;}
+    if(!GetModuleFileNameW(NULL,exe,1024)||!GetEnvironmentVariableW(L"ProgramFiles",home,1024)){CloseHandle(token);return 71;}
+    wcscat_s(home,1024,L"\\Sandboxie-Plus");
+    if(swprintf_s(command,4096,L"\"%s\" user-launch \"%s\" %s logon-facade \"%s\"",exe,base,box,home)<0){CloseHandle(token);return 64;}
+    startup.cb=sizeof(startup);
+    ok=CreateProcessAsUserW(token,exe,command,NULL,NULL,FALSE,CREATE_NO_WINDOW,NULL,home,&startup,&process);error=GetLastError();CloseHandle(token);
+    if(!ok){printf("{\"stage\":\"fixture_manager_creation\",\"win32_error\":%lu}\n",error);return 72;}
+    {DWORD result=WaitForSingleObject(process.hProcess,45000);DWORD code=0;GetExitCodeProcess(process.hProcess,&code);CloseHandle(process.hThread);CloseHandle(process.hProcess);return result==WAIT_OBJECT_0?(int)code:73;}
+}
 
 static BOOL path(WCHAR *out,const WCHAR *base,const WCHAR *suffix) {
     return swprintf_s(out,1024,L"%s\\%s",base,suffix)>=0;
@@ -72,6 +108,7 @@ int wmain(int argc,WCHAR **argv) {
     HMODULE module;query_fn query;map_fn mapping;WCHAR box[40]={0},file[1024],mapped[4096]={0};ULONG session=0;LONG context;
     int ports[4]={0},net[4]={0};BOOL host,child;WSADATA wsa;
     if(argc<2)return 64;
+    if(wcscmp(argv[1],L"logon-fixture")==0)return argc==3?logon_fixture(argv[2]):64;
     if(wcscmp(argv[1],L"forbidden-host-marker")==0){
         if(argc==3 && valid_base(argv[2])){HANDLE marker;path(file,argv[2],L"FORBIDDEN-HOST-EXECUTION.txt");marker=CreateFileW(file,GENERIC_WRITE,0,NULL,CREATE_NEW,0,NULL);if(marker!=INVALID_HANDLE_VALUE)CloseHandle(marker);}
         return 99; /* synthetic failure detector, never normal-launch recovery */

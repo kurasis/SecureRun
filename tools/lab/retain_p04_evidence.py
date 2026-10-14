@@ -12,6 +12,7 @@ REQUIRED = {
     'missing_engine_fail_closed', 'trusted_installed_components',
     'changed_component_rejected_before_loading', 'stopped_service_is_not_ready',
     'fresh_observation_after_service_restart', 'unavailable_driver_never_reports_idle',
+    'production_generation_changes_across_actual_restart', 'native_and_x86_process_identities_observed',
     'bounded_typed_protocol_and_generation_tests',
     'optional_paid_capabilities_do_not_invent_entitlement',
     'hostile_cwd_path_and_dll_are_not_loaded', 'user_writable_installation_refused',
@@ -37,7 +38,7 @@ def check_target(folder, commit, machine):
     if (summary['manager_commit'] != commit or summary['phase'] != 'P04'
             or summary['result'] != 'PASSED' or summary['pe_machine'] != machine
             or not re.fullmatch('[0-9a-f]{64}', summary['manager_binary_sha256'])
-            or summary['adapter_tests_passed'] < 9 or summary['production_target_launches'] != 0
+            or summary['adapter_tests_passed'] < 11 or summary['production_target_launches'] != 0
             or summary['production_mutations'] != 0 or summary['os_security_settings_modified']):
         raise ValueError('P04 native source/architecture/phase boundary invalid')
     if (not REQUIRED.issubset({c['name'] for c in cases}) or any(c['status'] != 'PASSED' for c in cases)

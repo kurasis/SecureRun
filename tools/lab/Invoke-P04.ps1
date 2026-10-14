@@ -19,7 +19,7 @@ try {
     $unit=& cargo test --locked -p securerun-sandboxie-adapter 2>&1;$unit | Out-Host
     if ($LASTEXITCODE -ne 0) {throw 'ADAPTER_TEST_FAILED'}
     $unitCount=0;foreach($line in $unit){if([string]$line -match 'test result: ok\. (\d+) passed; 0 failed'){$unitCount += [int]$Matches[1]}}
-    if ($unitCount -lt 7) {throw 'ADAPTER_TEST_COVERAGE_MISSING'}
+    if ($unitCount -lt 11) {throw 'ADAPTER_TEST_COVERAGE_MISSING'}
     cargo clippy --locked -p securerun-sandboxie-adapter --all-targets -- -D warnings
     if ($LASTEXITCODE -ne 0) {throw 'ADAPTER_LINT_FAILED'}
     npm run tauri -- build --debug --no-bundle --target $target
@@ -62,6 +62,24 @@ try {
         finally {Start-Service SbieSvc}
     }
     Case 'T46' 'fresh_observation_after_service_restart' { $o=Observe;Require ($o.reason -eq 'OBSERVED' -and $o.service_running) 'RECONNECT_NOT_OBSERVED';@{fresh_native_query=$true;service_identity_present=($null -ne $o.service_identity);release_evidence=$o.release_evidence} }
+    Case 'T46' 'production_generation_changes_across_actual_restart' {
+        $start=[Diagnostics.ProcessStartInfo]::new($app);$start.UseShellExecute=$false;$start.WorkingDirectory=$managerHome;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add('--observation-watch')
+        $p=[Diagnostics.Process]::Start($start)
+        function Read-Watch { $read=$p.StandardOutput.ReadLineAsync();Require ($read.Wait(30000) -and $null -ne $read.Result) 'WATCH_OBSERVATION_TIMEOUT';return $read.Result|ConvertFrom-Json }
+        try{
+            $first=Read-Watch;Require ($first.control_plane_safe -and $first.observation.reason -eq 'OBSERVED') 'WATCH_INITIAL_CONTEXT_FAILED'
+            Stop-Service SbieSvc
+            $samples=2;$stopped=Read-Watch
+            while($stopped.control_plane_safe -and $samples -lt 4){$stopped=Read-Watch;$samples++}
+            Require (-not $stopped.control_plane_safe -and $stopped.generation -gt $first.generation) 'STOP_DID_NOT_INVALIDATE_GENERATION'
+            Start-Service SbieSvc
+            $resumed=Read-Watch;$samples++
+            while(-not $resumed.control_plane_safe -and $samples -lt 6){$resumed=Read-Watch;$samples++}
+            Require ($resumed.control_plane_safe -and $resumed.generation -gt $stopped.generation -and $resumed.observation.service_identity -ne $first.observation.service_identity) 'RESTART_DID_NOT_REFRESH_GENERATION'
+            Require ($resumed.observation.release_evidence -eq $first.observation.release_evidence) 'CACHED_ROUTE_EVIDENCE_LOST'
+            @{same_actual_manager_process=$true;generation_before=$first.generation;generation_stopped=$stopped.generation;generation_reconnected=$resumed.generation;cached_route_evidence_preserved=$true;observations_queried_fresh=$true}
+        }finally{if((Get-Service SbieSvc).Status -ne 'Running'){Start-Service SbieSvc};if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+    }
     Case 'T01' 'unavailable_driver_never_reports_idle' {
         try{
             Stop-Service SbieSvc
@@ -88,6 +106,7 @@ try {
     $nativeArch=if($target -like 'aarch64*'){'arm64'}else{'x64'}
     $probe=Join-Path $managerHome "feasibility_probe_$nativeArch.exe"
     Copy-Item (Join-Path $repo "artifacts/p02/feasibility_probe_$nativeArch.exe") $probe
+    $x86Probe=Join-Path $managerHome 'feasibility_probe_x86.exe';Copy-Item (Join-Path $repo 'artifacts/p02/feasibility_probe_x86.exe') $x86Probe
     Case 'T50' 'hostile_cwd_path_and_dll_are_not_loaded' {
         $hostile=Join-Path $fixture 'hostile';[IO.File]::WriteAllText((Join-Path $hostile 'Start.exe'),'P04_INVALID_PATH_IMPOSTOR');[IO.File]::WriteAllText((Join-Path $hostile 'SbieDll.dll'),'P04_INVALID_DLL_IMPOSTOR')
         $savedPath=$env:PATH
@@ -107,7 +126,7 @@ try {
         finally{& sc.exe config SbieSvc binPath= ('"'+(Join-Path $engine 'SbieSvc.exe')+'"') | Out-Null;Require ($LASTEXITCODE -eq 0) 'SERVICE_METADATA_RESTORE_FAILED'}
     }
     $shell=Join-Path $PSHOME 'pwsh.exe'
-    $bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($shell,$app,$probe))
+    $bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($shell,$app,$probe,$x86Probe))
     $box='SRP02_P04_'+$run.Substring(0,12)
     $bridge.Register($box);$bridge.Set($box,'Enabled','y');$bridge.Set($box,'FileRootPath',(Join-Path $fixture "boxes/$box"));$bridge.Set($box,'DropAdminRights','y');$bridge.Set($box,'AutoRecover','n');$bridge.Set($box,'AutoDelete','n');$bridge.Set($box,'UseFileImage','n')
     $root=$bridge.Root($box);$null=New-Item -ItemType Directory -Path $root;$null=$bridge.CaptureRoot($box)
@@ -129,6 +148,16 @@ try {
             Require ($result.actual_manager_executed -and $result.manager_context -ne 'UNBOXED' -and $result.boxes_observed -eq 0 -and -not $result.production_launch_available) 'BOXED_MANAGER_UNEXPECTED_ACCESS'
             $result
         }finally{[P02Bridge]::CloseReceipt($receipt)}
+    }
+    Case 'T36' 'native_and_x86_process_identities_observed' {
+        $native=$bridge.Launch($box,$probe,[string[]]@('hold',$fixture,$box,'p04-native',$engine))
+        $x86=$bridge.Launch($box,$x86Probe,[string[]]@('hold',$fixture,$box,'p04-x86',$engine))
+        try{
+            $o=Observe;$b=@($o.boxes|Where-Object name -eq $box)
+            Require ($b.Count -eq 1 -and $b[0].complete -and $b[0].activity -eq 'RUNNING' -and $b[0].processes.pid -contains $native.pid -and $b[0].processes.pid -contains $x86.pid) 'NATIVE_X86_OBSERVATION_MISSING'
+            $bytes=[IO.File]::ReadAllBytes($x86Probe);$offset=[BitConverter]::ToInt32($bytes,0x3c);Require ([BitConverter]::ToUInt16($bytes,$offset+4) -eq 0x014c) 'X86_FIXTURE_PE_INVALID'
+            @{native_and_genuine_x86_pids_present=$true;all_session_complete=$true;creation_times_verified=$true;fixture_pe_machine='014c';production_target_launches=0}
+        }finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($native);[P02Bridge]::CloseReceipt($x86)}
     }
     Case 'T07' 'live_process_wrong_birth_cannot_be_attributed' {
         $birth=[DateTime]::UtcNow.ToFileTimeUtc()+1

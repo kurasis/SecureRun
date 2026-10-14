@@ -32,6 +32,21 @@ fn main() {
         }
         return;
     }
+    if args.len() == 2 && args[1] == "--observation-watch" {
+        use std::io::Write;
+        let mut health = securerun_sandboxie_adapter::Health::default();
+        for _ in 0..6 {
+            let ticket = health.begin(std::time::Instant::now());
+            let report = securerun_sandboxie_adapter::windows::bounded_observe();
+            health.accept(ticket, report, std::time::Instant::now());
+            if let Ok(data) = serde_json::to_string(&health.view(std::time::Instant::now())) {
+                println!("{data}");
+            }
+            let _ = std::io::stdout().flush();
+            std::thread::sleep(std::time::Duration::from_millis(500));
+        }
+        return;
+    }
     app::run();
 }
 #[cfg(not(windows))]

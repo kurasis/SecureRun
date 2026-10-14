@@ -290,11 +290,20 @@ fn service(name: &str) -> R<Service> {
                 return Err("SERVICE_STATUS_UNKNOWN");
             }
             let id = if status.dwProcessId != 0 {
-                Some(format!(
-                    "{}:{}",
-                    status.dwProcessId,
-                    process_birth(status.dwProcessId)?
-                ))
+                let process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, status.dwProcessId);
+                if process.is_null() {
+                    return Err("SERVICE_IDENTITY_UNKNOWN");
+                }
+                let process = Handle(process);
+                let mut image = [0u16; 4096];
+                let mut chars = image.len() as u32;
+                if QueryFullProcessImageNameW(process.0, 0, image.as_mut_ptr(), &mut chars) == 0
+                    || !text(&image)?
+                        .eq_ignore_ascii_case(path.strip_prefix("\\??\\").unwrap_or(path))
+                {
+                    return Err("SERVICE_IMAGE_MISMATCH");
+                }
+                Some(format!("{}:{}", status.dwProcessId, birth(&process)?))
             } else {
                 None
             };

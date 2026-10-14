@@ -64,6 +64,7 @@ pub fn session() -> Result<u32> {
         }
     }
 }
+#[cfg(feature = "foundation-ci")]
 pub fn administrator() -> Result<bool> {
     unsafe {
         let mut data = [0u8; 68];

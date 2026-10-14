@@ -211,7 +211,9 @@ async fn get_engine_health(
     let observation =
         tauri::async_runtime::spawn_blocking(securerun_sandboxie_adapter::windows::bounded_observe)
             .await
-            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+            .unwrap_or_else(|_| {
+                securerun_sandboxie_adapter::Observation::failure("BRIDGE_TASK_FAILED")
+            });
     let mut backend = locked(&window, &state)?;
     backend.observation_inflight = false;
     let before = backend.health.view(Instant::now()).generation;

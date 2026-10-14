@@ -55,6 +55,60 @@ fn process_sid(process: HANDLE) -> R<String> {
         sid_string(user.User.Sid)
     }
 }
+fn session_owner(session: u32) -> R<String> {
+    use windows_sys::Win32::System::RemoteDesktop::*;
+    fn field(session: u32, kind: WTS_INFO_CLASS) -> R<String> {
+        let mut value = ptr::null_mut();
+        let mut bytes = 0;
+        if unsafe {
+            WTSQuerySessionInformationW(
+                WTS_CURRENT_SERVER_HANDLE,
+                session,
+                kind,
+                &mut value,
+                &mut bytes,
+            )
+        } == 0
+            || value.is_null()
+        {
+            return Err("DIAGNOSTIC_SESSION_OWNER_UNKNOWN");
+        }
+        let result = if bytes > 0 && bytes <= 1024 {
+            unsafe { pointer_text(value, (bytes / 2) as usize) }
+        } else {
+            Err("DIAGNOSTIC_SESSION_OWNER_UNKNOWN")
+        };
+        unsafe { WTSFreeMemory(value.cast()) };
+        result
+    }
+    let user = field(session, WTSUserName)?;
+    let domain = field(session, WTSDomainName)?;
+    if user.is_empty() {
+        return Err("DIAGNOSTIC_SESSION_OWNER_UNKNOWN");
+    }
+    let account = wide(&format!("{domain}\\{user}"));
+    let mut size = 184;
+    let mut sid = [0u64; 23];
+    let mut domain_name = [0u16; 256];
+    let mut domain_size = 256;
+    let mut kind = 0;
+    if unsafe {
+        LookupAccountNameW(
+            ptr::null(),
+            account.as_ptr(),
+            sid.as_mut_ptr().cast(),
+            &mut size,
+            domain_name.as_mut_ptr(),
+            &mut domain_size,
+            &mut kind,
+        )
+    } == 0
+        || kind != SidTypeUser
+    {
+        return Err("DIAGNOSTIC_SESSION_OWNER_UNKNOWN");
+    }
+    unsafe { sid_string(sid.as_mut_ptr().cast()) }
+}
 pub fn profile_path() -> R<PathBuf> {
     let mut raw = ptr::null_mut();
     if unsafe { SHGetKnownFolderPath(&FOLDERID_LocalAppData, 0, ptr::null_mut(), &mut raw) } != 0 {
@@ -1692,6 +1746,22 @@ impl NativeEngine {
             || section.get("SecureRunOwner") != Some(&vec![diagnostic.marker()])
             || section.get("FileRootPath") != Some(&vec![self.root_for(diagnostic.id)])
         {
+            let keys: Vec<_> = section
+                .keys()
+                .chain(expected.keys())
+                .filter(|key| section.get(*key) != expected.get(*key))
+                .cloned()
+                .collect::<std::collections::BTreeSet<_>>()
+                .into_iter()
+                .collect();
+            let data = serde_json::json!({"schema":1,"changed_keys":keys,"enabled":section.get("Enabled").and_then(|v|v.first()).filter(|s|s.as_str()=="y"||s.as_str()=="n")});
+            std::fs::write(
+                self.profile
+                    .join("metadata")
+                    .join(format!("scope-status-{}.json", diagnostic.id.simple())),
+                serde_json::to_vec(&data).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+            )
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
             return Err("DIAGNOSTIC_SCOPE_CHANGED");
         }
         self.set(&diagnostic.name(), "Enabled", &["n".into()])?;
@@ -1737,11 +1807,17 @@ impl NativeEngine {
                     return Err("DIAGNOSTIC_PROCESS_BIRTH_OR_BOX_OWNER_CHANGED");
                 }
                 let token_owner = process_sid(held.0)?;
-                let _system_helper = if token_owner == "S-1-5-18" {
-                    // Original RunSandboxedGetToken deliberately starts RpcSs
-                    // using the service SYSTEM token, while the driver's box SID
-                    // remains the original user's. Accept only its protected,
-                    // signed installed image in this fresh generated box.
+                let _rpc_helper = if token_owner != self.owner {
+                    // Original RunSandboxedGetToken chooses a session token or
+                    // SYSTEM for RpcSs. The driver's box SID remains the owner.
+                    // Keep this separate from storage/target user authority.
+                    let mut parent_session = 0;
+                    if unsafe { ProcessIdToSessionId(self.parent_pid, &mut parent_session) } == 0
+                        || (token_owner != "S-1-5-18"
+                            && token_owner != session_owner(parent_session)?)
+                    {
+                        return Err("DIAGNOSTIC_PROCESS_TOKEN_OWNER_CHANGED");
+                    }
                     let mut path = [0u16; 32768];
                     let mut length = path.len() as u32;
                     if unsafe {
@@ -1762,10 +1838,8 @@ impl NativeEngine {
                     protected(&file)?;
                     signature(&image, &file)?;
                     Some(file)
-                } else if token_owner == self.owner {
-                    None
                 } else {
-                    return Err("DIAGNOSTIC_PROCESS_TOKEN_OWNER_CHANGED");
+                    None
                 };
                 let mut name = [0u16; 40];
                 let mut sid = [0u16; 96];
@@ -1973,6 +2047,7 @@ impl NativeEngine {
         let command = wide(&format!("\"{}\" {encoded}", probe.to_string_lossy()));
         let run: Run = unsafe { bind(&self.api, b"SbieDll_RunSandboxed\0")? };
         self.set(&diagnostic.name(), "Enabled", &["y".into()])?;
+        self.reload()?;
         let result = (|| -> R<CanaryReport> {
             let mut startup = unsafe { std::mem::zeroed::<STARTUPINFOW>() };
             startup.cb = std::mem::size_of_val(&startup) as u32;

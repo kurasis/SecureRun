@@ -21,7 +21,7 @@ PY
     chmod +x /workspace/.securerun-tools/rustup-init
     /workspace/.securerun-tools/rustup-init -y --no-modify-path --profile minimal --default-toolchain 1.90.0
 fi
-rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy --no-self-update
 npm ci --ignore-scripts
 npm run build
 npm test

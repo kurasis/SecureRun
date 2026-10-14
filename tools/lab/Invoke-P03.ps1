@@ -22,7 +22,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'FOUNDATION_TEST_FAILED' }
     $count=0
     foreach ($line in $unit) { if ([string]$line -match 'test result: ok\. (\d+) passed; 0 failed') { $count += [int]$Matches[1] } }
-    if ($count -lt 16) { throw 'FOUNDATION_TEST_COVERAGE_MISSING' }
+    if ($count -lt 19) { throw 'FOUNDATION_TEST_COVERAGE_MISSING' }
     cargo fmt --all -- --check
     if ($LASTEXITCODE -ne 0) { throw 'RUST_FORMAT_FAILED' }
     cargo clippy --locked -p securerun-foundation --all-targets -- -D warnings
@@ -44,7 +44,11 @@ try {
     $acl=[Security.AccessControl.DirectorySecurity]::new();$acl.SetAccessRuleProtection($true,$false)
     foreach ($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))) { $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow')) }
     Set-Acl -LiteralPath $lab -AclObject $acl
-    $start=[Diagnostics.ProcessStartInfo]::new($exe);$start.UseShellExecute=$false;$start.WorkingDirectory=$repo
+    $probeHome=Join-Path $env:ProgramFiles "SecureRunP03-Probe-$run"
+    $null=New-Item -ItemType Directory -Path $probeHome
+    $protectedExe=Join-Path $probeHome "securerun.exe";Copy-Item $exe $protectedExe
+    if ((Get-FileHash $exe).Hash -ne (Get-FileHash $protectedExe).Hash) {throw 'PROBE_COPY_HASH_MISMATCH'}
+    $start=[Diagnostics.ProcessStartInfo]::new($protectedExe);$start.UseShellExecute=$false;$start.WorkingDirectory=$probeHome
     $start.UserName=$userName;$start.Domain=[Environment]::MachineName;$start.Password=$password;$start.LoadUserProfile=$true
     $start.Environment.Clear()
     foreach ($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','OS','PROCESSOR_ARCHITECTURE','NUMBER_OF_PROCESSORS')) { $value=[Environment]::GetEnvironmentVariable($key);if ($null -ne $value) {$start.Environment[$key]=$value} }

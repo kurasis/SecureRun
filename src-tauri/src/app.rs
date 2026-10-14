@@ -116,6 +116,7 @@ fn locked<'a>(
 ) -> Result<std::sync::MutexGuard<'a, Backend>> {
     authorize(window)?;
     state
+        .inner()
         .0
         .lock()
         .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))

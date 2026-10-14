@@ -14,7 +14,7 @@
     "windows": [{ "label": "main", "title": "SecureRun", "width": 1100, "height": 760, "minWidth": 760, "minHeight": 520, "useHttpsScheme": true, "create": false }],
     "security": {
       "capabilities": ["main"],
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src ipc: http://ipc.localhost https://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
     }
   },
   "bundle": { "active": false }

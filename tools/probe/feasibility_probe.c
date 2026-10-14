@@ -152,7 +152,7 @@ int wmain(int argc,WCHAR **argv) {
         if(argc!=6 || (ULONG)context!=0xc000000bUL || !ProcessIdToSessionId(GetCurrentProcessId(),&session) || session!=0 || wcslen(argv[3])>38 || wcsncmp(argv[3],L"SRP02_",6)!=0 || wcspbrk(argv[3],L"\\/:.\" ")!=NULL)return 42;
         run=(run_fn)(void*)GetProcAddress(module,"SbieDll_RunSandboxed");
         if(!run || !GetModuleFileNameW(NULL,exe,1024))return 41;
-        if(swprintf_s(command,4096,L"\"%s\" hold-session \"%s\" %s session-zero \"%s\"",exe,argv[2],argv[3],argv[5])<0)return 64;
+        if(swprintf_s(command,4096,L"\"%s\" %s \"%s\" %s session-zero \"%s\"",exe,wcscmp(argv[1],L"user-launch")==0?L"hold-session":L"hold",argv[2],argv[3],argv[5])<0)return 64;
         startup.cb=sizeof(startup);
         if(!run(argv[3],command,argv[2],0,&startup,&receipt))return 47;
         {DWORD result=WaitForSingleObject(receipt.hProcess,30000);CloseHandle(receipt.hThread);CloseHandle(receipt.hProcess);return result==WAIT_OBJECT_0?0:48;}

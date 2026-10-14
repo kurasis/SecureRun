@@ -79,6 +79,7 @@ public sealed class P02Bridge {
     readonly HashSet<string> owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly HashSet<string> probes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly Dictionary<string,FileIdentity> rootIdentities=new Dictionary<string,FileIdentity>();
+    readonly HashSet<string> cleared=new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     readonly string sid = WindowsIdentity.GetCurrent().User.Value;
     public readonly string Home;
     public readonly string Base;
@@ -150,6 +151,14 @@ public sealed class P02Bridge {
         if(status!=0||Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DEFINITION_REMOVAL_UNCONFIRMED");
         owned.Remove(box);return new Dictionary<string,object>{{"upstream_status",status},{"section_absent",true},{"root_was_never_materialized",true},{"used_definition_requires_verified_cleanup",true}};
     }
+    public Dictionary<string,object> RemoveClearedDefinition(string box) {
+        Scope(box);AssertRoot(box);
+        if(!cleared.Contains(box)||Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n"||Directory.GetFileSystemEntries(Root(box)).Length!=0)throw new InvalidOperationException("VERIFIED_CLEANUP_REQUIRED");
+        uint status=update('s',null,box,"*",null);
+        if(status!=0||Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DEFINITION_REMOVAL_UNCONFIRMED");
+        owned.Remove(box);cleared.Remove(box);rootIdentities.Remove(box);
+        return new Dictionary<string,object>{{"upstream_status",status},{"section_absent",true},{"verified_native_cleanup_preceded_removal",true},{"empty_retained_root_preserved",true},{"generic_recursive_delete_used",false}};
+    }
     public Dictionary<string,object> ExerciseProtectedConfiguration(string box) {
         Scope(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
         if(Read("GlobalSettings","EditPassword",0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_PASSWORD_NOT_CHANGED");
@@ -219,6 +228,19 @@ public sealed class P02Bridge {
         AssertRoot(box);
         return new Dictionary<string,object>{{"native_relative_create",true},{"non_reparse_parent_leases",true},{"preexisting_object_never_adopted",true},{"acl_applied_before_lease_release",true},{"identity_from_created_handle",true},{"target_enabled_during_provisioning",false}};
     }
+    public Dictionary<string,object> ExerciseProvisionParentReplacement(string box) {
+        Scope(box);if(rootIdentities.ContainsKey(box)||Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("PENDING_ROOT_PRECONDITION_FAILED");
+        string path=Root(box),parent=Path.GetDirectoryName(path),backup=parent+".original",outside=Path.Combine(Base,"canaries","provision-outside");
+        Directory.CreateDirectory(outside);string canary=Path.Combine(outside,"keep.txt");File.WriteAllText(canary,"P02_PROVISION_OUTSIDE_CANARY");
+        byte[] hash=SHA256.HashData(File.ReadAllBytes(canary));bool rejected=false;
+        Directory.Move(parent,backup);
+        try {
+            Directory.CreateDirectory(parent);P02StorageSeal.MakeJunction(parent,outside,0x40000000U);
+            try{ProvisionFreshRoot(box);}catch(InvalidOperationException failure){rejected=failure.Message=="STORAGE_REPARSE_REJECTED";}
+            if(!rejected||Directory.Exists(Path.Combine(outside,box))||!CryptographicOperations.FixedTimeEquals(hash,SHA256.HashData(File.ReadAllBytes(canary))))throw new InvalidOperationException("PROVISION_PARENT_SUBSTITUTION_ACCEPTED");
+        } finally {Directory.Delete(parent,false);Directory.Move(backup,parent);}
+        return new Dictionary<string,object>{{"real_parent_junction_exercised",true},{"reparse_parent_rejected_before_create",true},{"outside_root_never_created",true},{"outside_canary_unchanged",true},{"known_parent_restored",true}};
+    }
     public Dictionary<string,object> ExerciseRootReplacement(string box) {
         Scope(box);AssertRoot(box);if(Count(box)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("ROOT_REPLACEMENT_PRECONDITION_FAILED");
         string path=Root(box),backup=path+".original";bool pinnedRenameDenied=false;
@@ -287,6 +309,7 @@ public sealed class P02Bridge {
         if(!rootIdentities.ContainsKey(box))throw new InvalidOperationException("ROOT_NOT_ENROLLED");
         string path=Root(box);
         if(update('s',null,box,"Enabled","n")!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_UNVERIFIED");
+        Dictionary<string,object> result;
         using(var seal=new P02StorageSeal(path,rootIdentities[box])){
             var handle=seal.RootHandle;
             FileIdentity identity;
@@ -328,9 +351,10 @@ public sealed class P02Bridge {
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
                 if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
-                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
+                result=new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
+        cleared.Add(box);return result;
     }
     bool RejectFencedProbe(string box) {
         string exe=null;foreach(string probe in probes){if(Path.GetFileName(probe).StartsWith("feasibility_probe_",StringComparison.Ordinal)){exe=probe;break;}}

@@ -17,6 +17,7 @@ try {
     $bridge.Set($Box,'AutoRecover','n'); $bridge.Set($Box,'AutoDelete','n')
     $root = $bridge.Root($Box)
     if (Test-Path -LiteralPath $root) { throw 'PREEXISTING_ROOT_NOT_ADOPTED' }
+    $result.parent_replacement = $bridge.ExerciseProvisionParentReplacement($Box)
     $result.provisioning = $bridge.ProvisionFreshRoot($Box)
     $result.root_replacement = $bridge.ExerciseRootReplacement($Box)
     $result.standard_user = $true
@@ -43,6 +44,7 @@ try {
     $result.unsafe_storage = $bridge.ExerciseUnsafeStorage($Box)
     $result.cleanup = $bridge.ClearOwnedWithNative($Box)
     if (-not $result.cleanup.contents_empty -or -not $result.cleanup.root_identity_retained) { throw 'STANDARD_USER_CLEANUP_UNCONFIRMED' }
+    $result.definition_removal = $bridge.RemoveClearedDefinition($Box)
     $result.status = if ($result.sessions_status -eq 'PASSED') { 'PASSED' } else { 'BLOCKED' }
     if ($result.status -eq 'BLOCKED') { $result.diagnostic_code = 'SAME_SID_SECOND_SESSION_UNAVAILABLE' }
 } catch {

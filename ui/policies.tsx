@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import type { Language } from './strings';
 
@@ -12,13 +12,14 @@ const copy = {
 };
 export function Policies({language}: {language: Language}) {
   const t=copy[language];const [reply,setReply]=useState<Reply|null>(null);const [busy,setBusy]=useState(false);const [error,setError]=useState('');
+  const sequence=useRef(0);
   const [name,setName]=useState('');const [preset,setPreset]=useState<Preset>('STANDARD_OFFLINE');const [permission,setPermission]=useState<Permission>('BLOCK');
   const [observedAt,setObservedAt]=useState(0);const [now,setNow]=useState(Date.now());const [repairAck,setRepairAck]=useState<Record<string,boolean>>({});
   const [operation,setOperation]=useState(()=>crypto.randomUUID());const [editing,setEditing]=useState<Owned|null>(null);const [ack,setAck]=useState(false);
   const [grants,setGrants]=useState<{selection_id:string;display_name:string;permission:Permission}[]>([]);
   const request=async (body:unknown) => {
-    setBusy(true);setError('');try {const result=await invoke<Reply>('policy_request',{request:body});setReply(result);setObservedAt(Date.now());setRepairAck({});if(result.reason!=='OBSERVED')setError(result.reason);return result;}
-    catch {setError('POLICY_REQUEST_UNAVAILABLE');return null;}finally{setBusy(false);}
+    const issued=++sequence.current;setBusy(true);setError('');try {const result=await invoke<Reply>('policy_request',{request:body});if(issued!==sequence.current)return null;setReply(result);setObservedAt(Date.now());setRepairAck({});if(result.reason!=='OBSERVED')setError(result.reason);return result;}
+    catch {if(issued===sequence.current)setError('POLICY_REQUEST_UNAVAILABLE');return null;}finally{if(issued===sequence.current)setBusy(false);}
   };
   const refresh=()=>request({action:'LIST'});
   useEffect(()=>{void refresh();const timer=setInterval(()=>setNow(Date.now()),1000);const resumed=()=>{if(document.visibilityState==='visible'){setObservedAt(0);void refresh();}};document.addEventListener('visibilitychange',resumed);return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',resumed);};},[]);

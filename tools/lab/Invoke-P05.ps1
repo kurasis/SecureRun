@@ -198,6 +198,16 @@ try {
         Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id
         @{family=$environment.compiled.family;new_runtime_fingerprint=$true;release_per_user_path_required=$false;view_change_acknowledged=$true;fresh_box_diagnostic=$true}
     }
+    Case 'T55' 'same_path_root_replacement_is_not_adopted' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$backup=$root+'-lab-backup-'+[Guid]::NewGuid().ToString('N');$acl=Get-Acl -LiteralPath $root
+        [IO.Directory]::Move($root,$backup)
+        try{
+            $null=New-Item -ItemType Directory -Path $root;Set-Acl -LiteralPath $root -AclObject $acl
+            $r=Current;$e=$r.environments|Where-Object id -eq $environment.id;Require ($e.stage -eq 'CONFLICT' -and $null -eq $e.fingerprint -and $e.reason -eq 'ROOT_IDENTITY_CHANGED' -and -not $e.production_launch_available) 'REPLACED_ROOT_ADOPTED'
+            Require ([IO.Directory]::GetFileSystemEntries($root).Length -eq 0) 'REPLACEMENT_ROOT_POPULATED'
+            @{same_spelling_different_object_refused=$true;replacement_acl_was_equivalent=$true;new_storage_not_adopted=$true;production_target_launches=0}
+        }finally{Require ([IO.Directory]::GetFileSystemEntries($root).Length -eq 0) 'UNKNOWN_REPLACEMENT_DATA_NOT_DELETED';[IO.Directory]::Delete($root,$false);[IO.Directory]::Move($backup,$root);$r=Repair $environment;Require ($r.reason -eq 'OBSERVED') $r.reason;$script:environment=$r.environments|Where-Object id -eq $environment.id}
+    }
     Case 'T59' 'reparse_and_dos_alias_grants_rejected' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$alias=Join-Path $fixture 'root-alias';$null=New-Item -ItemType Junction -Path $alias -Target $environment.compiled.section.FileRootPath[0]
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$alias;permission='READ_ONLY'})}}

@@ -1090,6 +1090,21 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
                 )?;
             }
         }
+        // Reconcile every returned Verified label, including idempotent retries
+        // and inspection responses, against current code/root/effective state.
+        let current = journal.list()?;
+        for mut e in current.clone() {
+            if e.stage == Stage::Verified
+                && let Err(reason) = validate_owned(&engine, &e, &current)
+            {
+                e.stage = Stage::Conflict;
+                e.reason = reason.into();
+                e.fingerprint = None;
+                e.enforcement_evidence = None;
+                e.enforcement_binding = None;
+                journal.save(&e)?;
+            }
+        }
         environments = journal.list()?;
         Ok(())
     })();
@@ -1709,7 +1724,13 @@ impl NativeEngine {
                 }
                 let created = birth(&held)?;
                 let mut critical = 0;
-                if unsafe { IsProcessCritical(held.0, &mut critical) } == 0 || critical != 0 {
+                if unsafe { IsProcessCritical(held.0, &mut critical) } == 0 {
+                    if unsafe { WaitForSingleObject(held.0, 0) } == WAIT_OBJECT_0 {
+                        continue;
+                    }
+                    return Err("DIAGNOSTIC_CRITICAL_STATE_UNKNOWN");
+                }
+                if critical != 0 {
                     return Err("DIAGNOSTIC_CRITICAL_PROCESS_REFUSED");
                 }
                 if created != process.creation_time || process.owner_sid != self.owner {

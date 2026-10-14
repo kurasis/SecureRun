@@ -165,7 +165,7 @@ try {
     }
     Case 'T37' 'configuration_password_refused_without_secret_transport' {
         $password=$lab.InstallPassword()
-        try{$r=Policy @{action='LIST'};Require ($r.reason -eq 'PASSWORD_PROTECTED_CONFIGURATION' -and $r.environments.Count -eq 0 -and -not $r.production_launch_available) 'PASSWORD_PROTECTION_IGNORED';@{reason=$r.reason;product_password_prompt=$false;secret_command_line_values=0;password_value_read_into_product=$false;protected_control_refused=$true}}
+        try{$r=Policy @{action='CREATE';display_name='Protected configuration must reject creation';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'PASSWORD_PROTECTED_CONFIGURATION' -and $r.environments.Count -eq 0 -and -not $r.production_launch_available) 'PASSWORD_PROTECTION_IGNORED';@{reason=$r.reason;product_password_prompt=$false;secret_command_line_values=0;password_value_read_into_product=$false;protected_control_refused=$true}}
         finally{$lab.ClearPassword($password);$password=$null}
     }
     Case 'T17' 'global_template_changes_block_without_overwrite' {

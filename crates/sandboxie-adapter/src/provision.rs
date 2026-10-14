@@ -32,6 +32,8 @@ pub struct OwnedEnvironment {
     pub compiled: CompiledPolicy,
     pub fingerprint: Option<String>,
     pub enforcement_evidence: Option<String>,
+    #[serde(default)]
+    pub enforcement_binding: Option<String>,
     pub reason: String,
     pub operation_id: Uuid,
     pub operation_signature: String,
@@ -268,6 +270,7 @@ impl Journal {
                 e.reason = "OUTCOME_UNKNOWN_INSPECT_ONLY".into();
                 e.fingerprint = None;
                 e.enforcement_evidence = None;
+                e.enforcement_binding = None;
                 self.save(&e)?;
                 count += 1;
             }
@@ -285,6 +288,9 @@ pub trait Engine {
     fn metadata(&self) -> String;
     fn code(&self) -> String;
     fn engine_identity(&self) -> String;
+    fn enforcement_identity(&self) -> String {
+        fingerprint(&(FAMILY, self.engine_identity()))
+    }
     fn global(&self) -> PolicyResult<Section>;
     fn section(&self, name: &str, effective: bool) -> PolicyResult<Section>;
     fn idle(&self, name: &str) -> PolicyResult<()>;
@@ -358,6 +364,7 @@ pub fn create(
         compiled,
         fingerprint: None,
         enforcement_evidence: None,
+        enforcement_binding: None,
         reason: "PENDING_ROOT".into(),
         operation_id,
         operation_signature,
@@ -393,6 +400,7 @@ pub fn create(
             sibling.reason = "FUTURE_SIBLING_ROLLOUT".into();
             sibling.fingerprint = None;
             sibling.enforcement_evidence = None;
+            sibling.enforcement_binding = None;
             journal.save(&sibling)?;
             engine.fence(&sibling)?;
             engine.idle(&sibling.name())?;
@@ -408,6 +416,7 @@ pub fn create(
             engine.validate_root(&sibling)?;
             sibling.fingerprint = Some(fp);
             sibling.enforcement_evidence = Some(engine.verify_enforcement(&sibling)?);
+            sibling.enforcement_binding = Some(engine.enforcement_identity());
             sibling.stage = Stage::Verified;
             sibling.reason = "POLICY_VERIFIED_TARGET_LAUNCH_DEFERRED".into();
             sibling.revision += 1;
@@ -433,6 +442,7 @@ pub fn create(
         e.stage = Stage::Verifying;
         journal.save(&e)?;
         e.enforcement_evidence = Some(engine.verify_enforcement(&e)?);
+        e.enforcement_binding = Some(engine.enforcement_identity());
         e.fingerprint = Some(fp);
         e.revision = 1;
         e.stage = Stage::Verified;
@@ -445,6 +455,7 @@ pub fn create(
         e.reason = reason.into();
         e.fingerprint = None;
         e.enforcement_evidence = None;
+        e.enforcement_binding = None;
         journal.save(&e)?;
         return Err(reason);
     }
@@ -467,6 +478,11 @@ pub fn validate_owned(
         || e.compiled.family != FAMILY
     {
         return Err("MANDATORY_POLICY_DRIFT");
+    }
+    if e.enforcement_evidence.is_none()
+        || e.enforcement_binding.as_ref() != Some(&engine.enforcement_identity())
+    {
+        return Err("ENFORCEMENT_BINDING_CHANGED");
     }
     engine.validate_root(e)?;
     let raw = engine.section(&e.name(), false)?;
@@ -562,6 +578,7 @@ pub fn apply(
     e.stage = Stage::Fenced;
     e.fingerprint = None;
     e.enforcement_evidence = None;
+    e.enforcement_binding = None;
     e.reason = "POLICY_UPDATE_PENDING".into();
     journal.save(&e)?;
     let result: PolicyResult<()> = (|| {
@@ -589,6 +606,7 @@ pub fn apply(
         e.stage = Stage::Verifying;
         journal.save(&e)?;
         e.enforcement_evidence = Some(engine.verify_enforcement(&e)?);
+        e.enforcement_binding = Some(engine.enforcement_identity());
         e.fingerprint = Some(fp);
         e.revision += 1;
         e.stage = Stage::Verified;
@@ -601,6 +619,7 @@ pub fn apply(
         e.reason = reason.into();
         e.fingerprint = None;
         e.enforcement_evidence = None;
+        e.enforcement_binding = None;
         journal.save(&e)?;
         return Err(reason);
     }

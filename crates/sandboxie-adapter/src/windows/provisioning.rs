@@ -945,6 +945,17 @@ impl Engine for NativeEngine {
         self.root_leases.borrow_mut().extend(leases);
         Ok(())
     }
+    fn enforcement_identity(&self) -> String {
+        fingerprint(&(
+            FAMILY,
+            &self.trusted.identity,
+            &self.probe_hash,
+            self.additional_probes
+                .iter()
+                .map(|(_, hash)| hash)
+                .collect::<Vec<_>>(),
+        ))
+    }
     fn verify_enforcement(&self, e: &OwnedEnvironment) -> R<String> {
         let mut reports = vec![self.diagnostic(e, &self.probe, &self.probe_hash)?];
         for (probe, hash) in &self.additional_probes {
@@ -987,6 +998,7 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
                         e.reason = reason.into();
                         e.fingerprint = None;
                         e.enforcement_evidence = None;
+                        e.enforcement_binding = None;
                         journal.save(&e)?;
                     }
                 }
@@ -1118,6 +1130,7 @@ pub fn bounded_request(request: &Request) -> Reply {
 struct Canary {
     box_name: String,
     write: String,
+    delete: String,
     blocked: String,
     read_only: String,
     metadata: String,
@@ -1140,6 +1153,7 @@ struct Canary {
 struct CanaryReport {
     member: bool,
     virtualized_write: bool,
+    virtualized_delete: bool,
     blocked_read: bool,
     read_only_read: bool,
     read_only_write_denied: bool,
@@ -1355,6 +1369,7 @@ pub fn run_canary(encoded: &str) -> i32 {
         }
         for p in [
             &canary.write,
+            &canary.delete,
             &canary.blocked,
             &canary.read_only,
             &canary.metadata,
@@ -1395,6 +1410,10 @@ pub fn run_canary(encoded: &str) -> i32 {
         let report = CanaryReport {
             member: true,
             virtualized_write,
+            virtualized_delete: std::fs::remove_file(&canary.delete).is_ok()
+                && std::fs::read(&canary.delete)
+                    .err()
+                    .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound),
             blocked_read: denied(&canary.blocked),
             read_only_read,
             read_only_write_denied,
@@ -1623,6 +1642,88 @@ fn locate_report(root: &Path, leaf: &str) -> R<PathBuf> {
     visit(root, leaf, 0, &mut 0)?.ok_or("DIAGNOSTIC_REPORT_MISSING")
 }
 impl NativeEngine {
+    fn stop_diagnostic(&self, diagnostic: &OwnedEnvironment) -> R<()> {
+        // This private scope was generated and journaled by this worker and
+        // never hosted a user target. No caller-selected box stop is exposed.
+        self.mutation_context()?;
+        self.validate_root(diagnostic)?;
+        let section = self.section(&diagnostic.name(), false)?;
+        if section.get("SecureRunOwner") != Some(&vec![diagnostic.marker()])
+            || section.get("FileRootPath") != Some(&vec![self.root_for(diagnostic.id)])
+        {
+            return Err("DIAGNOSTIC_SCOPE_CHANGED");
+        }
+        self.set(&diagnostic.name(), "Enabled", &["n".into()])?;
+        self.reload()?;
+        for _ in 0..4 {
+            let processes = self.api.processes(&diagnostic.name())?;
+            if processes.is_empty() {
+                return Ok(());
+            }
+            if processes.len() > 16 {
+                return Err("DIAGNOSTIC_PROCESS_BOUND");
+            }
+            for process in processes {
+                let raw = unsafe {
+                    OpenProcess(
+                        PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE | SYNCHRONIZE,
+                        0,
+                        process.pid,
+                    )
+                };
+                if raw.is_null() {
+                    if unsafe { GetLastError() } == ERROR_INVALID_PARAMETER {
+                        continue;
+                    }
+                    return Err("DIAGNOSTIC_PROCESS_HANDLE_UNAVAILABLE");
+                }
+                let held = Handle(raw);
+                if unsafe { WaitForSingleObject(held.0, 0) } == WAIT_OBJECT_0 {
+                    continue;
+                }
+                let created = birth(&held)?;
+                let mut critical = 0;
+                if unsafe { IsProcessCritical(held.0, &mut critical) } == 0
+                    || critical != 0
+                    || created != process.creation_time
+                    || process.owner_sid != self.owner
+                    || process_sid(held.0)? != self.owner
+                {
+                    return Err("DIAGNOSTIC_PROCESS_IDENTITY_CHANGED");
+                }
+                let mut name = [0u16; 40];
+                let mut sid = [0u16; 96];
+                let mut session = 0;
+                let mut observed_birth = 0;
+                if unsafe {
+                    (self.api.query)(
+                        process.pid as usize as _,
+                        0,
+                        name.as_mut_ptr(),
+                        ptr::null_mut(),
+                        sid.as_mut_ptr(),
+                        &mut session,
+                        &mut observed_birth,
+                    )
+                } != 0
+                    || text(&name)? != diagnostic.name()
+                    || text(&sid)? != self.owner
+                    || observed_birth != created
+                {
+                    if unsafe { WaitForSingleObject(held.0, 0) } == WAIT_OBJECT_0 {
+                        continue;
+                    }
+                    return Err("DIAGNOSTIC_PROCESS_SCOPE_CHANGED");
+                }
+                if unsafe { TerminateProcess(held.0, 79) } == 0
+                    || unsafe { WaitForSingleObject(held.0, 5000) } != WAIT_OBJECT_0
+                {
+                    return Err("DIAGNOSTIC_STOP_UNCONFIRMED");
+                }
+            }
+        }
+        self.idle(&diagnostic.name())
+    }
     fn diagnostic(&self, owned: &OwnedEnvironment, probe: &Path, probe_hash: &str) -> R<String> {
         self.mutation_context()?;
         let global = self.global()?;
@@ -1654,9 +1755,10 @@ impl NativeEngine {
         let canary_base = self.profile.join("canaries").join(&nonce);
         let _canary_pin = fresh_directory(&canary_base, &self.owner)?;
         let write = canary_base.join("write.txt");
+        let delete = canary_base.join("delete.txt");
         let blocked = canary_base.join("blocked.txt");
         let readonly = canary_base.join("readonly.txt");
-        for p in [&write, &blocked, &readonly] {
+        for p in [&write, &delete, &blocked, &readonly] {
             let mut f = OpenOptions::new()
                 .write(true)
                 .create_new(true)
@@ -1727,6 +1829,7 @@ impl NativeEngine {
             compiled,
             fingerprint: None,
             enforcement_evidence: None,
+            enforcement_binding: None,
             reason: "DIAGNOSTIC_ONLY".into(),
             operation_id: id,
             operation_signature: fingerprint(&("DIAGNOSTIC", id)),
@@ -1772,6 +1875,7 @@ impl NativeEngine {
         let canary = Canary {
             box_name: diagnostic.name(),
             write: write.to_string_lossy().into(),
+            delete: delete.to_string_lossy().into(),
             blocked: blocked.to_string_lossy().into(),
             read_only: readonly.to_string_lossy().into(),
             metadata: metadata.to_string_lossy().into(),
@@ -1850,7 +1954,8 @@ impl NativeEngine {
                     _ => "DIAGNOSTIC_EXECUTION_FAILED",
                 });
             }
-            self.idle(&diagnostic.name())?;
+            // Original RPC support processes may outlive the fixed canary.
+            self.stop_diagnostic(&diagnostic)?;
             let p = locate_report(
                 Path::new(&self.root_for(id)),
                 output.file_name().unwrap().to_str().unwrap(),
@@ -1875,6 +1980,10 @@ impl NativeEngine {
             (
                 report.virtualized_write,
                 "CANARY_WRITE_VIRTUALIZATION_FAILED",
+            ),
+            (
+                report.virtualized_delete,
+                "CANARY_DELETE_VIRTUALIZATION_FAILED",
             ),
             (report.blocked_read, "CANARY_BLOCKED_READ_FAILED"),
             (report.read_only_read, "CANARY_READ_ONLY_READ_FAILED"),
@@ -1915,7 +2024,8 @@ impl NativeEngine {
                 return Err(code);
             }
         }
-        if std::fs::read(&write).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
+        if std::fs::read(&delete).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
+            || std::fs::read(&write).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
             || std::fs::read(&readonly).map_err(|_| "CANARY_READ_FAILED")?
                 != b"SYNTHETIC_HOST_CANARY"
             || registry_value(&nonce, None) != Ok(1)

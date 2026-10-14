@@ -124,7 +124,26 @@ impl Observation {
             certificate_state: None,
             enumeration_complete: false,
             boxes: vec![],
-            capabilities: vec![],
+            capabilities: vec![
+                Capability {
+                    name: "read_only_observation".into(),
+                    availability: Availability::Unknown,
+                    reason: reason.into(),
+                    provenance: "NO_FRESH_TRUSTED_OBSERVATION".into(),
+                },
+                Capability {
+                    name: "paid_profiles".into(),
+                    availability: Availability::Unknown,
+                    reason: "ENTITLEMENT_UNKNOWN".into(),
+                    provenance: "NO_CERTIFICATE_CONTENT_INSPECTION".into(),
+                },
+                Capability {
+                    name: "production_launch".into(),
+                    availability: Availability::Unavailable,
+                    reason: "OBSERVATION_ONLY".into(),
+                    provenance: "PHASE_BOUNDARY".into(),
+                },
+            ],
             release_evidence: "PINNED_ROUTE_EVIDENCE_ONLY".into(),
             production_launch_available: false,
         }
@@ -374,5 +393,51 @@ mod tests {
             h.view(t).observation.release_evidence,
             "PINNED_ROUTE_EVIDENCE_ONLY"
         );
+    }
+    #[test]
+    fn delayed_native_observation_is_expired_before_acceptance() {
+        let mut o = Observation::failure("OBSERVED");
+        o.manager_pid = 1;
+        o.manager_birth = 2;
+        o.observed_unix_ms = o.observed_unix_ms.saturating_sub(16000);
+        assert_eq!(
+            parse_response(&serde_json::to_vec(&o).unwrap(), 1, 2).unwrap_err(),
+            "BRIDGE_OBSERVATION_EXPIRED"
+        );
+    }
+    #[test]
+    fn replaced_root_and_resume_invalidate_observation_without_adoption() {
+        let now = Instant::now();
+        let mut h = Health::default();
+        let mut o = Observation::failure("OBSERVED");
+        o.boxes.push(BoxObservation {
+            name: "UnownedBox".into(),
+            owned: false,
+            read_only: true,
+            activity: "IDLE".into(),
+            complete: true,
+            reason: "OBSERVED".into(),
+            processes: vec![],
+            root: RootObservation {
+                path: None,
+                identity: Some("original".into()),
+                reason: "OBSERVED".into(),
+                scope: "CURRENT_CALLER_ONLY".into(),
+            },
+            configuration: vec![],
+            configuration_fingerprint: "fingerprint".into(),
+        });
+        let first = h.begin(now);
+        h.accept(first, o.clone(), now);
+        o.boxes[0].root.identity = Some("replacement".into());
+        o.resume_epoch_ms = 2000;
+        let old_generation = h.view(now).generation;
+        let second = h.begin(now);
+        h.accept(second, o, now);
+        let view = h.view(now);
+        assert!(view.generation > old_generation);
+        assert_eq!(view.observation.boxes[0].activity, "UNKNOWN");
+        assert!(!view.observation.boxes[0].complete);
+        assert_eq!(view.observation.boxes[0].reason, "ROOT_IDENTITY_CHANGED");
     }
 }

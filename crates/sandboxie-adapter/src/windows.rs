@@ -342,6 +342,9 @@ fn discover() -> R<Trusted> {
     protected(held.last().ok_or("INSTALL_PATH_UNSAFE")?)?;
     let manifest: serde_json::Value =
         serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
+    if manifest["schema_version"] != 1 || manifest["adapter_protocol"] != PROTOCOL {
+        return Err("MANIFEST_VERSION_UNSUPPORTED");
+    }
     let target = manifest["targets"]
         .as_array()
         .ok_or("MANIFEST_INVALID")?

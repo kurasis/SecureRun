@@ -63,9 +63,21 @@ try {
     }
     Case 'T46' 'fresh_observation_after_service_restart' { $o=Observe;Require ($o.reason -eq 'OBSERVED' -and $o.service_running) 'RECONNECT_NOT_OBSERVED';@{fresh_native_query=$true;service_identity_present=($null -ne $o.service_identity);release_evidence=$o.release_evidence} }
     Case 'T01' 'unavailable_driver_never_reports_idle' {
-        Stop-Service SbieSvc;Stop-Service SbieDrv
-        try{$o=Observe;Require (-not $o.driver_running -and $o.reason -ne 'OBSERVED' -and $o.boxes.Count -eq 0 -and $o.manager_context -eq 'UNKNOWN') 'UNHEALTHY_DRIVER_ACCEPTED';@{reason=$o.reason;driver_running=$o.driver_running;idle_or_launch_authorized=$false}}
-        finally{Start-Service SbieDrv;Start-Service SbieSvc}
+        try{
+            Stop-Service SbieSvc
+            # The pinned driver requires upstream API_UNLOAD_DRIVER before the
+            # native unload; ordinary SCM Stop is not its supported shutdown path.
+            # This authenticated utility is lab administration, never a product API.
+            $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $engine 'KmdUtil.exe'));$start.UseShellExecute=$false;$start.WorkingDirectory=$engine
+            $start.ArgumentList.Add('stop');$start.ArgumentList.Add('SbieDrv');$start.Environment.Clear()
+            foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}}
+            $start.Environment['PATH']=Join-Path $env:SystemRoot 'System32'
+            $utility=[Diagnostics.Process]::Start($start)
+            try{if(-not $utility.WaitForExit(30000)){$utility.Kill();throw 'ORIGINAL_DRIVER_UNLOAD_TIMEOUT'};Require ($utility.ExitCode -eq 0) 'ORIGINAL_DRIVER_UNLOAD_FAILED'}finally{$utility.Dispose()}
+            $o=Observe;Require (-not $o.driver_running -and $o.reason -ne 'OBSERVED' -and $o.boxes.Count -eq 0 -and $o.manager_context -eq 'UNKNOWN') 'UNHEALTHY_DRIVER_ACCEPTED'
+            @{reason=$o.reason;driver_running=$o.driver_running;idle_or_launch_authorized=$false;lab_unload='AUTHENTICATED_ORIGINAL_KMDUTIL';windows_security_settings_modified=$false}
+        }
+        finally{if((Get-Service SbieDrv).Status -ne 'Running'){Start-Service SbieDrv};if((Get-Service SbieSvc).Status -ne 'Running'){Start-Service SbieSvc}}
     }
     Case 'T56' 'bounded_typed_protocol_and_generation_tests' { @{actual_adapter_tests_passed=$unitCount;old_worker_and_generation_refused=$true;incomplete_enumeration_never_idle=$true;cached_evidence_is_separate=$true} }
     Case 'T02' 'optional_paid_capabilities_do_not_invent_entitlement' { $o=Observe;$paid=@($o.capabilities|Where-Object name -eq 'paid_profiles');Require ($paid.Count -eq 1 -and $paid[0].availability -ne 'AVAILABLE') 'PAID_CAPABILITY_UNVERIFIED';@{availability=$paid[0].availability;reason=$paid[0].reason;provenance=$paid[0].provenance;certificate_contents_recorded=$false} }

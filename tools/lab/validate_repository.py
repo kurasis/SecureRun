@@ -159,6 +159,45 @@ def validate(root: Path) -> None:
             verify_file(path, entry['sha256'], entry['size'])
 
 
+    p04_path = root / 'docs/evidence/p04/manifest.json'
+    if p04_path.exists():
+        p04 = json.loads(p04_path.read_text())
+        if p04['phase'] != 'P04' or p04['result'] not in {'DONE', 'BLOCKED'} or not re.fullmatch(r'[0-9a-f]{40}', p04['tested_commit']):
+            raise ValueError('Invalid P04 source provenance')
+        if p04['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p04['run_id']}":
+            raise ValueError('Invalid P04 run provenance')
+        seen = set()
+        for entry in p04['files']:
+            path = (p04_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p04_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P04 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if p04['result'] == 'DONE':
+            if not p03_path.exists() or p03['result'] != 'DONE' or p03['tested_commit'] != p04['tested_commit']:
+                raise ValueError('P04 DONE requires current P03 regression for the same source')
+            if {t['runner'] for t in p04['targets']} != {'windows-2025', 'windows-11-arm'}:
+                raise ValueError('Both P04 native laboratories required')
+            import importlib.util
+            module_spec = importlib.util.spec_from_file_location('p04_retainer', root / 'tools/lab/retain_p04_evidence.py')
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            for target in p04['targets']:
+                folder = (p04_path.parent / target['evidence_directory']).resolve()
+                if not folder.is_relative_to(p04_path.parent.resolve()):
+                    raise ValueError('Unsafe P04 target directory')
+                for name in ('run-summary.json', 'observation-cases.json', 'standard-user.json'):
+                    if (folder / name).relative_to(p04_path.parent).as_posix() not in seen:
+                        raise ValueError('P04 outcome is not checksum-bound')
+                machine = 'aa64' if target['runner'] == 'windows-11-arm' else '8664'
+                module.check_target(folder, p04['tested_commit'], machine)
+            for entry in p04['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P04 tested source path')
+                verify_file(path, entry['sha256'], entry['size'])
+
+
 if __name__ == '__main__':
     try:
         validate(ROOT)

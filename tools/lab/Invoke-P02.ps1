@@ -362,7 +362,7 @@ try {
         @{ parent = $script:standardEvidence.parent_replacement; root = $script:standardEvidence.root_replacement }
     }
     Invoke-Case 'T24' 'Standard-user native clear and used-definition removal require verified postconditions' {
-        Require ($script:standardEvidence.cleanup.contents_empty -and $script:standardEvidence.cleanup.external_client_launch_rejected -and $script:standardEvidence.cleanup.mutation_during_native_dispatch.attribute_only_reparse_mutation_denied -and $script:standardEvidence.definition_removal.section_absent) 'STANDARD_USER_LIFECYCLE_UNCONFIRMED'
+        Require ($script:standardEvidence.cleanup.contents_empty -and $script:standardEvidence.cleanup.external_client_launch_rejected -and $script:standardEvidence.cleanup.sealed_mutation_checks_before_native_dispatch.attribute_only_reparse_mutation_denied -and $script:standardEvidence.definition_removal.section_absent) 'STANDARD_USER_LIFECYCLE_UNCONFIRMED'
         @{ cleanup = $script:standardEvidence.cleanup; unsafe_storage = $script:standardEvidence.unsafe_storage; removal = $script:standardEvidence.definition_removal }
     }
     Invoke-Case 'T57' 'Forged metadata cannot redirect the generated root scope' {

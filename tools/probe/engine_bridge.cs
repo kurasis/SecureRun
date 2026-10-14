@@ -351,7 +351,7 @@ public sealed class P02Bridge {
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
                 if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
-                result=new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
+                result=new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"external_client_launch_rejected",true},{"sealed_descendant_count",seal.DescendantCount},{"sealed_mutation_checks_before_native_dispatch",denied},{"root_dacl_restoration_by_retained_handle",true},{"survivor_dacl_restoration_identity_checked",true}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
         cleared.Add(box);return result;

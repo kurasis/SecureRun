@@ -1,5 +1,6 @@
-"""Failures here validate P01 tooling, never Windows containment."""
+"""Repository integrity and evidence gates, never Windows containment."""
 import hashlib
+import json
 import importlib.util
 from pathlib import Path
 import shutil
@@ -48,6 +49,19 @@ class IntegrityTests(unittest.TestCase):
             with (copy / 'docs/specification/00_README.md').open('a') as out:
                 out.write('\nUnapproved change\n')
             with self.assertRaisesRegex(ValueError, 'Checksum mismatch'):
+                validator.validate(copy)
+
+    def test_done_gate_cannot_relabel_historical_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__'))
+            path = copy / 'docs/evidence/p02/manifest.json'
+            manifest = json.loads(path.read_text())
+            manifest['result'] = 'DONE'
+            for run in manifest['runs']:
+                run['role'] = 'historical'
+            path.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'successful current evidence run'):
                 validator.validate(copy)
 
 

@@ -13,6 +13,7 @@
 /* The pinned Win32 build uses /Gz; its .def exports the legacy undecorated aliases. */
 typedef LONG (WINAPI *query_fn)(HANDLE,WCHAR*,WCHAR*,WCHAR*,ULONG*);
 typedef ULONG (WINAPI *map_fn)(HANDLE,WCHAR*,BOOLEAN*);
+typedef BOOL (WINAPI *run_fn)(const WCHAR*,const WCHAR*,const WCHAR*,ULONG,STARTUPINFOW*,PROCESS_INFORMATION*);
 
 static BOOL path(WCHAR *out,const WCHAR *base,const WCHAR *suffix) {
     return swprintf_s(out,1024,L"%s\\%s",base,suffix)>=0;
@@ -85,7 +86,7 @@ int wmain(int argc,WCHAR **argv) {
     host=wcscmp(argv[1],L"host")==0;child=wcscmp(argv[1],L"child")==0;
     if(argc<6 || !valid_base(argv[2]))return 64;
     module=GetModuleHandleW(L"SbieDll.dll");
-    if(!module && host){
+    if(!module && (host || wcscmp(argv[1],L"session-launch")==0)){
         WCHAR dll[1024];const WCHAR *subdir=L"";
 #if defined(_M_IX86)
         subdir=L"\\32";
@@ -100,6 +101,16 @@ int wmain(int argc,WCHAR **argv) {
     mapping=(map_fn)(void*)GetProcAddress(module,"SbieDll_GetHandlePath");
     if(!query || !mapping)return 41;
     context=query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),box,NULL,NULL,&session);
+    if(wcscmp(argv[1],L"session-launch")==0){
+        WCHAR exe[1024],command[4096];STARTUPINFOW startup={0};PROCESS_INFORMATION receipt={0};run_fn run;
+        if(argc!=6 || (ULONG)context!=0xc000000bUL || !ProcessIdToSessionId(GetCurrentProcessId(),&session) || session!=0 || wcslen(argv[3])>38 || wcsncmp(argv[3],L"SRP02_",6)!=0 || wcspbrk(argv[3],L"\\/:.\" ")!=NULL)return 42;
+        run=(run_fn)(void*)GetProcAddress(module,"SbieDll_RunSandboxed");
+        if(!run || !GetModuleFileNameW(NULL,exe,1024))return 41;
+        if(swprintf_s(command,4096,L"\"%s\" hold \"%s\" %s session-zero \"%s\"",exe,argv[2],argv[3],argv[5])<0)return 64;
+        startup.cb=sizeof(startup);
+        if(!run(argv[3],command,argv[2],0,&startup,&receipt))return 47;
+        {DWORD result=WaitForSingleObject(receipt.hProcess,30000);CloseHandle(receipt.hThread);CloseHandle(receipt.hProcess);return result==WAIT_OBJECT_0?0:48;}
+    }
     if(wcscmp(argv[1],L"guard")==0)return context==0 ? 43 : 44; /* boxed control plane refuses all mutation */
     if(host){if((ULONG)context!=0xc000000bUL)return 42;}
     else if(context!=0 || wcscmp(box,argv[3])!=0)return 42; /* check before canary operations */

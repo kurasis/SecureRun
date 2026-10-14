@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using Microsoft.Win32.SafeHandles;
 
 public sealed class P02Bridge {
@@ -117,8 +118,33 @@ public sealed class P02Bridge {
         if(status!=0)throw new InvalidOperationException("CONFIG_QUERY_FAILED_"+unchecked((uint)status).ToString("x8"));
         return text.ToString();
     }
+    public Dictionary<string,object> ExerciseProtectedConfiguration(string box) {
+        Scope(box);if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+        if(Read("GlobalSettings","EditPassword",0x70000000U)!=null)throw new InvalidOperationException("PREEXISTING_PASSWORD_NOT_CHANGED");
+        string password="P02!"+Guid.NewGuid().ToString("N");
+        byte[] salt=RandomNumberGenerator.GetBytes(16),plain=Encoding.Unicode.GetBytes(password);
+        byte[] input=new byte[salt.Length+plain.Length];salt.CopyTo(input,0);plain.CopyTo(input,16);
+        byte[] hash=SHA256.HashData(input),combined=new byte[48];salt.CopyTo(combined,0);hash.CopyTo(combined,16);
+        uint installed=update('s',null,"GlobalSettings","EditPassword",Convert.ToBase64String(combined));
+        Array.Clear(plain,0,plain.Length);Array.Clear(input,0,input.Length);Array.Clear(hash,0,hash.Length);Array.Clear(combined,0,combined.Length);
+        if(installed!=0)throw new InvalidOperationException("PASSWORD_FIXTURE_SETUP_FAILED");
+        try {
+            string before=Read(box,"AutoRecover",0x70000000U);
+            uint absent=update('s',null,box,"AutoRecover","y");
+            uint wrong=update('s',"P02_WRONG_SYNTHETIC_PASSWORD",box,"AutoRecover","y");
+            if(absent!=0xc000006aU||wrong!=0xc000006aU||Read(box,"AutoRecover",0x70000000U)!=before)throw new InvalidOperationException("PROTECTED_CONFIG_FAIL_CLOSED_UNCONFIRMED");
+            uint accepted=update('s',password,box,"AutoRecover","y");
+            if(accepted!=0||Read(box,"AutoRecover",0x70000000U)!="y")throw new InvalidOperationException("PROTECTED_CONFIG_POSITIVE_CONTROL_FAILED");
+            if(update('s',password,box,"AutoRecover",before)!=0)throw new InvalidOperationException("PROTECTED_CONFIG_RESTORE_FAILED");
+            return new Dictionary<string,object>{{"missing_password_status",absent.ToString("x8")},{"wrong_password_status",wrong.ToString("x8")},{"correct_password_status",accepted},{"rejected_writes_unchanged",true},{"transport","Original SbieDll_UpdateConf service IPC; no argv, environment or logs"},{"synthetic_password_recorded",false}};
+        } finally {
+            uint restored=update('s',password,"GlobalSettings","EditPassword",null);password=null;
+            if(restored!=0)throw new InvalidOperationException("PASSWORD_FIXTURE_RESTORE_FAILED");
+        }
+    }
     public void Set(string box,string key,string value) {
         Scope(box);
+        if(value==String.Empty)value=null; // PowerShell binds $null to an empty string.
         if (value!=null && (value.IndexOfAny(new char[]{'\r','\n','\0',','})>=0)) throw new InvalidOperationException("INI_VALUE_REJECTED");
         if(!Regex.IsMatch(key,@"\A(Enabled|FileRootPath|DropAdminRights|BlockNetworkFiles|AllowNetworkAccess|BlockLocalLoop|AutoRecover|AutoDelete|ClosedFilePath|DeleteCommand|OnBoxDelete|OnBoxTerminate|OnFileRecovery|UseFileImage|NeverDelete)\z")) throw new InvalidOperationException("KEY_NOT_ALLOWED");
         if(Count(box)!=0) throw new InvalidOperationException("BOX_BUSY");
@@ -187,10 +213,10 @@ public sealed class P02Bridge {
                 FileIdentity after;
                 bool same=GetFileInformationByHandle(handle,out after)&&identity.Same(after);
                 bool empty=Directory.Exists(path)&&Directory.GetFileSystemEntries(path).Length==0;
-                if(!same||!empty)throw new InvalidOperationException("NATIVE_CLEANUP_POSTCONDITION_FAILED_"+unchecked((uint)status).ToString("x8"));
+                if(!same||!empty)throw new InvalidOperationException("NATIVE_CLEANUP_POSTCONDITION_FAILED_"+unchecked((uint)status).ToString("X8"));
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
-                if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("x8"));
+                if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
                 return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
@@ -242,6 +268,16 @@ public sealed class P02Bridge {
         uint after=Count(box);
         if(after<=count)throw new InvalidOperationException("ENUMERATION_POSITIVE_CONTROL_UNAVAILABLE");
         return new Dictionary<string,object>{{"upstream_status",status},{"requested_capacity",1},{"returned_count",count},{"authoritative_count_before",before},{"authoritative_count_after",after},{"partial_snapshot_rejected",true},{"idle_or_cleanup_authorized",false}};
+    }
+    public Dictionary<string,object> ObserveIndependentSession(string box) {
+        ScopeRead(box);uint[] all=Pids(box);uint other=0;bool otherOwner=false;
+        foreach(uint pid in all){var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);uint session;long created;
+            if(query((IntPtr)pid,0,actualBox,null,actualSid,out session,out created)!=0||actualBox.ToString()!=box)throw new InvalidOperationException("SESSION_MEMBERSHIP_UNKNOWN");
+            if(session!=CurrentSession){other++;otherOwner|=actualSid.ToString()!=sid;}
+        }
+        uint current=0;if(enumerate(BoxBuffer(box),false,CurrentSession,null,ref current)!=0)throw new InvalidOperationException("ENUMERATION_UNKNOWN");
+        if(other==0||!otherOwner||all.Length<=current)throw new InvalidOperationException("SECOND_SESSION_POSITIVE_CONTROL_UNAVAILABLE");
+        return new Dictionary<string,object>{{"all_session_count",all.Length},{"current_session_count",current},{"other_session_count",other},{"different_owner_observed",otherOwner},{"all_sessions_coverage",true},{"interactive_logon_sessions_tested",false},{"scope","Real session-zero SYSTEM task and current runner session"}};
     }
     public string Root(string box) {
         ScopeRead(box);uint bytes=0;

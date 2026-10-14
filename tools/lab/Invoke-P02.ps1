@@ -16,6 +16,7 @@ function Invoke-Case([string]$id, [string]$name, [scriptblock]$body) {
     try { $result.evidence = (& $body); $result.status = 'PASSED' }
     catch {
         $result.status = 'FAILED'
+        $result.exception_type = $_.Exception.GetBaseException().GetType().FullName
         $message = $_.Exception.Message
         $result.diagnostic_code = if ($message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b') { $Matches[1] } else { 'SPIKE_OPERATION_FAILED' }
         if ($result.diagnostic_code -match 'POSITIVE_CONTROL_UNAVAILABLE|UNAVAILABLE|UNRESOLVED|OUTCOME_UNKNOWN|INCOMPLETE') { $result.status = 'BLOCKED' }
@@ -178,6 +179,7 @@ try {
         Require ($bridge.CleanupReason($boxA) -eq 'BUILTIN_CLEANUP_SCOPE_UNVERIFIED') 'CLEANUP_SCOPE_GUARD_FAILED'
         @{ dispatch_permitted = $false; hooks_checked = $observed; hook_never_executed = $true; builtin_cleanup_scope = 'BLOCKED_SOURCE_REVIEW' }
     }
+    Invoke-Case 'T16' 'Password-protected engine configuration uses private IPC' { $bridge.ExerciseProtectedConfiguration($boxB) }
     Invoke-Case 'T62' 'Retained process handle termination and completed wait' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'hold',$engineHome))
         try { Start-Sleep -Milliseconds 500; $stopped = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.Count($boxA) -eq 0) 'STOP_NOT_COMPLETE'; @{ stopped_objects = $stopped; numeric_pid_kill_fallback = $false; creation_time_matched = $true; completed_wait = $true } }
@@ -187,6 +189,23 @@ try {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'enum-bound',$engineHome))
         try { Start-Sleep -Milliseconds 750; $result = $bridge.ExerciseTruncatedEnumeration($boxA); $null = $bridge.StopHeld($boxA); $result }
         finally { [P02Bridge]::CloseReceipt($receipt) }
+    }
+    Invoke-Case 'T36' 'All-session enumeration includes a real independent session and owner' {
+        $taskName = 'SRP02_' + $run
+        $nativeExe = Join-Path $probeHome ('feasibility_probe_' + $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }) + '.exe')
+        $taskArguments = ([string[]]@('session-launch',$fixture,$boxB,'session-zero',$engineHome) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
+        $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
+        $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
+        $null = Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal
+        try {
+            Start-ScheduledTask -TaskName $taskName
+            $deadline = [Diagnostics.Stopwatch]::StartNew()
+            while ($bridge.Count($boxB) -eq 0 -and $deadline.ElapsedMilliseconds -lt 15000) { Start-Sleep -Milliseconds 250 }
+            $result = $bridge.ObserveIndependentSession($boxB)
+            while ($bridge.Count($boxB) -ne 0 -and $deadline.ElapsedMilliseconds -lt 35000) { Start-Sleep -Milliseconds 250 }
+            Require ($bridge.Count($boxB) -eq 0) 'SECOND_SESSION_OUTCOME_UNKNOWN'
+            $result
+        } finally { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false }
     }
     Invoke-Case 'T58' 'Boxed native control plane refuses operations' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('guard',$fixture,$boxA,'guard',$engineHome))

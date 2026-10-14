@@ -10,6 +10,7 @@ label and current URL in Rust. Renderer-supplied labels/PIDs/SIDs are not eviden
 | Command | Typed request / result | Independent backend constraints |
 |---|---|---|
 | get_snapshot | No input; Snapshot | Main local origin; no private paths/SIDs; actual backend state and generations |
+| subscribe_state / unsubscribe_state | Native typed Channel and backend-issued subscription ID / initial Snapshot | Actual main WebView, maximum four subscriptions, callback binding registered before snapshot; no renderer emission |
 | create_draft | display_name; EnvironmentView | Valid bounded inert label, metadata gate, generated UUID, Unconfigured/Unknown/Unverified; no engine definition |
 | reserve_operation | environment ID, expected generation/revision, UUID idempotency key, Import/Export kind; OperationView | Owned current environment, revision, per-environment operation lock, persistent reservation; Launch and other kinds unavailable |
 | select_file | Reserved operation ID and purpose; optional SelectionView | Backend native picker, owning session, actual file/ancestor handles and identity, reauthorization after asynchronous completion |
@@ -51,9 +52,11 @@ environment generation; reconnection increments the engine generation and clears
 cached runtime/eligibility observations. These are internal foundation primitives,
 not exposed production reset commands.
 
-Backend manager-state events carry environment ID/generation, engine generation,
-expected revision, operation ID and a persisted monotonic sequence. Only main is
-targeted; the renderer lacks event-emission permission. Rust and the UI discard
+Backend typed-channel state events carry environment ID/generation, engine generation,
+expected revision, operation ID and a persisted monotonic sequence. Channels bind to the invoking main WebView; the renderer lacks event-emission
+permission. Channel callbacks exist before registration; registration and initial
+snapshot are serialized in Rust, with pre-snapshot messages buffered in the UI.
+The asynchronous global event-listener startup route is not used. Rust and the UI discard
 older generations/revisions/sequences and older operation results. A delayed
 snapshot cannot overwrite newer event state. Command results originate in Rust;
 frontend state does not confer backend authority.

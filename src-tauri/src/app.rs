@@ -2,7 +2,7 @@ use crate::native;
 use securerun_foundation::{binding::*, *};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs::File, sync::Mutex, time::Instant};
-use tauri::{Emitter, Manager, State, WebviewWindow};
+use tauri::{Manager, State, WebviewWindow};
 use uuid::Uuid;
 
 #[derive(Serialize)]
@@ -74,6 +74,7 @@ impl From<Operation> for OperationView {
     }
 }
 pub struct Backend {
+    pub state_channels: HashMap<Uuid, tauri::ipc::Channel<StateEvent>>,
     pub store: Store,
     pub selections: Selections,
     pub handles: HashMap<Uuid, native::SelectionLease>,
@@ -184,6 +185,49 @@ pub struct SelectionView {
 fn get_snapshot(window: WebviewWindow, state: State<AppState>) -> Result<Snapshot> {
     locked(&window, &state)?.snapshot()
 }
+#[derive(Serialize)]
+pub struct SubscriptionView {
+    id: Uuid,
+    snapshot: Snapshot,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SubscriptionReference {
+    subscription_id: Uuid,
+}
+#[tauri::command]
+fn subscribe_state(
+    window: WebviewWindow,
+    state: State<AppState>,
+    channel: tauri::ipc::Channel<StateEvent>,
+) -> Result<SubscriptionView> {
+    let mut backend = locked(&window, &state)?;
+    if backend.state_channels.len() >= 4 {
+        return err(ErrorCode::CapabilityUnavailable);
+    }
+    let id = Uuid::new_v4();
+    backend.state_channels.insert(id, channel);
+    Ok(SubscriptionView {
+        id,
+        snapshot: backend.snapshot()?,
+    })
+}
+#[tauri::command]
+fn unsubscribe_state(
+    window: WebviewWindow,
+    state: State<AppState>,
+    request: SubscriptionReference,
+) -> Result<()> {
+    let mut backend = locked(&window, &state)?;
+    if backend
+        .state_channels
+        .remove(&request.subscription_id)
+        .is_none()
+    {
+        return err(ErrorCode::Unauthorized);
+    }
+    Ok(())
+}
 #[tauri::command]
 fn create_draft(
     window: WebviewWindow,
@@ -199,13 +243,9 @@ fn create_draft(
     let env = backend
         .store
         .environment(env.id, env.generation, env.desired_revision)?;
-    window
-        .emit_to(
-            tauri::EventTarget::webview_window("main"),
-            "manager-state",
-            event,
-        )
-        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+    backend
+        .state_channels
+        .retain(|_, channel| channel.send(event.clone()).is_ok());
     backend.flush_diagnostics()?;
     Ok(env.into())
 }
@@ -436,6 +476,7 @@ pub fn run() {
     };
     let backend = Backend {
         store,
+        state_channels: HashMap::new(),
         selections: Selections::default(),
         handles: HashMap::new(),
         started: Instant::now(),
@@ -448,6 +489,8 @@ pub fn run() {
         .manage(AppState(Mutex::new(backend)))
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
+            subscribe_state,
+            unsubscribe_state,
             create_draft,
             reserve_operation,
             select_file,
@@ -490,6 +533,7 @@ mod normal_configuration_tests {
     #[test]
     fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
         let backend = Backend {
+            state_channels: HashMap::new(),
             store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
             selections: Selections::default(),
             handles: HashMap::new(),

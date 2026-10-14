@@ -120,7 +120,7 @@ def validate(root: Path) -> None:
     p03_path = root / 'docs/evidence/p03/manifest.json'
     if p03_path.exists():
         p03 = json.loads(p03_path.read_text())
-        if p03['phase'] != 'P03' or p03['result'] != 'DONE' or not re.fullmatch(r'[0-9a-f]{40}', p03['tested_commit']):
+        if p03['phase'] != 'P03' or p03['result'] not in {'DONE', 'BLOCKED'} or not re.fullmatch(r'[0-9a-f]{40}', p03['tested_commit']):
             raise ValueError('Invalid P03 completed evidence provenance')
         if p03['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p03['run_id']}":
             raise ValueError('Invalid P03 run provenance')
@@ -133,7 +133,7 @@ def validate(root: Path) -> None:
             verify_file(path, entry['sha256'], entry['size'])
         if {target['runner'] for target in p03['targets']} != {'windows-2025', 'windows-11-arm'}:
             raise ValueError('P03 DONE requires both Windows laboratories')
-        for target in p03['targets']:
+        for target in p03['targets'] if p03['result'] == 'DONE' else []:
             folder = p03_path.parent / target['evidence_directory']
             for name in ('command-boundary.json', 'run-summary.json', 'acl-manifests.json', 'capabilities.json'):
                 if (folder / name).relative_to(p03_path.parent).as_posix() not in seen:
@@ -152,7 +152,7 @@ def validate(root: Path) -> None:
             acl = json.loads((folder / 'acl-manifests.json').read_text())['__app-acl__']['permissions']
             if acl['allow-get-snapshot']['commands']['allow'] != ['get_snapshot']:
                 raise ValueError('P03 generated custom command ACL missing')
-        for entry in p03['tested_sources']:
+        for entry in p03['tested_sources'] if p03['result'] == 'DONE' else []:
             path = (root / entry['path']).resolve()
             if not path.is_relative_to(root.resolve()):
                 raise ValueError('Unsafe P03 tested source path')

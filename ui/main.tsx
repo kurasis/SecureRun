@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { Channel, invoke } from '@tauri-apps/api/core';
 import type { Snapshot, StateEvent, AppError } from './contracts';
 import { applyEvent, acceptSnapshot } from './state';
 import { strings, type Language } from './strings';
@@ -15,9 +14,19 @@ function App() {
   const [search, setSearch] = useState(''); const [name, setName] = useState('');
   const [theme, setTheme] = useState('system'); const t = strings[language];
   const refresh = async () => { try { const incoming = await invoke<Snapshot>('get_snapshot'); setSnapshot(current => acceptSnapshot(current, incoming)); setError(null); } catch (error) { const value = error as AppError; setError({ code: value?.code ?? 'BACKEND_UNAVAILABLE', diagnostic_id: value?.diagnostic_id ?? '' }); } };
-  useEffect(() => { void refresh(); let disposed = false; let unlisten: (() => void) | undefined;
-    void listen<StateEvent>('manager-state', event => setSnapshot(current => current ? applyEvent(current, event.payload) : current)).then(value => { if (disposed) value(); else unlisten = value; }).catch(() => {});
-    return () => { disposed = true; unlisten?.(); }; }, []);
+  useEffect(() => { let disposed = false; let subscriptionId: string | undefined;
+    let initialized = false; const pending: StateEvent[] = [];
+    const channel = new Channel<StateEvent>(event => {
+      if (!initialized) { if (pending.length < 1024) pending.push(event); return; }
+      setSnapshot(current => current ? applyEvent(current, event) : current);
+    });
+    void invoke<{ id: string; snapshot: Snapshot }>('subscribe_state', { channel }).then(value => {
+      if (disposed) { void invoke('unsubscribe_state', { request: { subscription_id: value.id } }).catch(() => {}); return; }
+      subscriptionId = value.id; initialized = true;
+      setSnapshot(current => pending.reduce(applyEvent, acceptSnapshot(current, value.snapshot)));
+    }).catch(() => void refresh());
+    return () => { disposed = true; if (subscriptionId) void invoke('unsubscribe_state', { request: { subscription_id: subscriptionId } }).catch(() => {}); };
+  }, []);
   useEffect(() => { document.documentElement.lang = language; document.documentElement.dataset.theme = theme; }, [language, theme]);
   const create = async (event: React.FormEvent) => { event.preventDefault(); try { await invoke('create_draft', { request: { display_name: name } }); setName(''); await refresh(); } catch (error) { setError(error as AppError); } };
   return <div className="shell"><aside><div className="brand"><span className="brandMark" aria-hidden>SR</span>SecureRun</div><nav aria-label={language === 'en' ? 'Main navigation' : 'Главная навигация'}>{(['environments', 'settings'] as const).map(item => <button key={item} aria-current={page === item ? 'page' : undefined} onClick={() => setPage(item)}>{t[item]}</button>)}</nav><span className="version">SecureRun · 0.3</span></aside><main>

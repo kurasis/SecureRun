@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38568549251,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38568549251",
   "tested_commit": "742c2ab3ac39a7146005ca1f540a93ec592ddc0a",
@@ -283,5 +283,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Historical successful primary run. Repeated native execution revealed startup event-listener ordering; runtime event transport is being revised and must be revalidated."
 }

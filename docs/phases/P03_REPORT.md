@@ -1,6 +1,6 @@
 # P03 phase report
 
-Status: DONE. Requested scope: full P03. P01/P02 remain DONE with their original
+Status: IN_PROGRESS — event transport revalidation. Requested scope: full P03. P01/P02 remain DONE with their original
 retained evidence. All 26 specification documents remain byte-for-byte unchanged.
 No P04 implementation is included in this request.
 
@@ -58,7 +58,7 @@ actual NTFS replacement plus old-generation refusal, with no deletion. Full
 production engine/transfer/recovery and final acceptance variants remain in their
 owning phases. All 66 production acceptance entries remain NOT_STARTED.
 
-The exit gate is closed: typed data flow, custom-command ACL and independent
+The retained primary gate passed, but repeated startup exposed asynchronous event-listener ordering. Typed IPC channel transport is being implemented; current gate is pending revalidation. Historical gate: typed data flow, custom-command ACL and independent
 backend authorization are enforced; stale events/snapshots cannot overwrite newer
 state and no unscoped renderer command is available. Compiled ACL manifests and
 capability definitions are retained alongside actual command outcomes, with raw

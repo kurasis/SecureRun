@@ -3,6 +3,8 @@ fn main() {
         tauri_build::try_build(tauri_build::Attributes::new().app_manifest(
             tauri_build::AppManifest::new().commands(&[
                 "get_snapshot",
+                "subscribe_state",
+                "unsubscribe_state",
                 "create_draft",
                 "reserve_operation",
                 "select_file",

@@ -4,8 +4,10 @@ $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'DISPOSABLE_ACTIONS_VM_REQUIRED' }
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+$testedCommit=(& git -C $repo rev-parse HEAD).Trim()
+if($LASTEXITCODE -ne 0 -or $testedCommit -notmatch '^[0-9a-f]{40}$'){throw 'SOURCE_COMMIT_UNAVAILABLE'}
 $out=Join-Path $repo 'artifacts/p04';$null=New-Item -ItemType Directory -Path $out -Force
-@{phase='P04';stage='STARTED';manager_commit=(& git -C $repo rev-parse HEAD).Trim();security_settings_modified=$false} | ConvertTo-Json | Set-Content (Join-Path $out 'stage.json') -Encoding utf8
+@{phase='P04';stage='STARTED';manager_commit=$testedCommit;security_settings_modified=$false} | ConvertTo-Json | Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 $target=if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') {'aarch64-pc-windows-msvc'} else {'x86_64-pc-windows-msvc'}
 $env:RUSTUP_TOOLCHAIN="1.90.0-$target"
 rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal --component rustfmt,clippy
@@ -221,6 +223,6 @@ try {
         }finally{if(-not $process.HasExited){$process.Kill($true)};$process.Dispose();Unregister-ScheduledTask -TaskName $task -Confirm:$false;$secure.Dispose();$password=$null}
     }
     $pe=[IO.File]::ReadAllBytes($app);$offset=[BitConverter]::ToInt32($pe,0x3c);$machine=('{0:x4}' -f [BitConverter]::ToUInt16($pe,$offset+4))
-    @{phase='P04';result=$(if(@($cases|Where-Object status -ne 'PASSED').Count -eq 0){'PASSED'}else{'FAILED'});manager_commit=(& git rev-parse HEAD).Trim();target=$target;pe_machine=$machine;manager_binary_sha256=$binaryHash;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;os_build=[Environment]::OSVersion.Version.ToString();production_target_launches=0;production_mutations=0;os_security_settings_modified=$false;teardown='DISCARD_ACTIONS_VM'} | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
+    @{phase='P04';result=$(if(@($cases|Where-Object status -ne 'PASSED').Count -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;target=$target;pe_machine=$machine;manager_binary_sha256=$binaryHash;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;os_build=[Environment]::OSVersion.Version.ToString();production_target_launches=0;production_mutations=0;os_security_settings_modified=$false;teardown='DISCARD_ACTIONS_VM'} | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
     Require (@($cases|Where-Object status -ne 'PASSED').Count -eq 0) 'P04_NATIVE_GATE_FAILED'
 } finally {Pop-Location}

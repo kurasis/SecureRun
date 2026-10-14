@@ -28,8 +28,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'RUST_FORMAT_FAILED' }
     cargo clippy --locked -p securerun-foundation --all-targets -- -D warnings
     if ($LASTEXITCODE -ne 0) { throw 'FOUNDATION_LINT_FAILED' }
-    cargo test --locked -p securerun
+    $normal=& cargo test --locked -p securerun 2>&1
+    $normal | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'NORMAL_NATIVE_CONFIGURATION_TEST_FAILED' }
+    $normalCount=0
+    foreach ($line in $normal) {if ([string]$line -match 'test result: ok\. (\d+) passed; 0 failed') {$normalCount += [int]$Matches[1]}}
+    if ($normalCount -ne 2) {throw 'NORMAL_CONFIGURATION_COVERAGE_MISSING'}
     $normalAcl=Get-Content (Join-Path $repo 'src-tauri/gen/schemas/acl-manifests.json') -Raw | ConvertFrom-Json
     $appPermissions=$normalAcl.'__app-acl__'.permissions
     if ($null -eq $appPermissions.'allow-get-snapshot' -or $null -eq $appPermissions.'deny-create-draft') { throw 'CUSTOM_APPLICATION_ACL_MISSING' }
@@ -71,5 +75,5 @@ try {
         $boundary=Get-Content $result -Raw | ConvertFrom-Json
         if ($boundary.result -ne 'PASSED' -or -not $boundary.real_webview2 -or -not $boundary.real_native_picker -or $boundary.engine_operations_executed -ne 0) { throw 'COMMAND_BOUNDARY_EVIDENCE_INVALID' }
     } finally { $process.Dispose();$password.Dispose() }
-    @{phase='P03';result='PASSED';manager_commit=(& git rev-parse HEAD).Trim();target=$target;pe_machine=('{0:x4}' -f $machine);rust_version=(& rustc --version);node_version=(& node --version);foundation_tests_passed=$count;frontend_tests_passed=3;windows_command_cases_passed=@($boundary.cases | Where-Object passed).Count;os_build=[Environment]::OSVersion.Version.ToString();engine_operations_executed=0;os_security_settings_modified=$false;teardown='DISCARD_ACTIONS_VM'} | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
+    @{phase='P03';result='PASSED';manager_commit=(& git rev-parse HEAD).Trim();target=$target;pe_machine=('{0:x4}' -f $machine);rust_version=(& rustc --version);node_version=(& node --version);foundation_tests_passed=$count;normal_native_tests_passed=$normalCount;frontend_tests_passed=3;windows_command_cases_passed=@($boundary.cases | Where-Object passed).Count;os_build=[Environment]::OSVersion.Version.ToString();engine_operations_executed=0;os_security_settings_modified=$false;teardown='DISCARD_ACTIONS_VM'} | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
 } finally { Remove-Item Env:VITE_FOUNDATION_CI -ErrorAction SilentlyContinue;Pop-Location }

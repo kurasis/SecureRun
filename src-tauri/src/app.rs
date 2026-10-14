@@ -413,20 +413,19 @@ pub fn run() {
             return;
         }
     };
-    let mut profile = None;
-    let mut fixture = false;
-    let mut writer = None;
     #[cfg(feature = "foundation-ci")]
-    if std::env::args().any(|arg| arg == "--foundation-self-test") {
-        match crate::ci::profile() {
-            Ok((path, file)) => {
-                profile = Some(path);
-                writer = Some(file);
-                fixture = true;
+    let (profile, fixture, writer): (Option<std::path::PathBuf>, bool, Option<File>) =
+        if std::env::args().any(|arg| arg == "--foundation-self-test") {
+            match crate::ci::profile() {
+                Ok((path, file)) => (Some(path), true, Some(file)),
+                Err(_) => return,
             }
-            Err(_) => return,
-        }
-    }
+        } else {
+            (None, false, None)
+        };
+    #[cfg(not(feature = "foundation-ci"))]
+    let (profile, fixture, writer): (Option<std::path::PathBuf>, bool, Option<File>) =
+        (None, false, None);
     let store = match &profile {
         Some(path) => Store::open(&path.join("manager.sqlite"), &owner),
         None => Store::memory(&owner),

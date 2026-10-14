@@ -117,6 +117,47 @@ def validate(root: Path) -> None:
                     raise ValueError('Unsafe tested source path')
                 verify_file(path, entry['sha256'], entry['size'])
 
+    p03_path = root / 'docs/evidence/p03/manifest.json'
+    if p03_path.exists():
+        p03 = json.loads(p03_path.read_text())
+        if p03['phase'] != 'P03' or p03['result'] != 'DONE' or not re.fullmatch(r'[0-9a-f]{40}', p03['tested_commit']):
+            raise ValueError('Invalid P03 completed evidence provenance')
+        if p03['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p03['run_id']}":
+            raise ValueError('Invalid P03 run provenance')
+        seen = set()
+        for entry in p03['files']:
+            path = (p03_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p03_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P03 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if {target['runner'] for target in p03['targets']} != {'windows-2025', 'windows-11-arm'}:
+            raise ValueError('P03 DONE requires both Windows laboratories')
+        for target in p03['targets']:
+            folder = p03_path.parent / target['evidence_directory']
+            for name in ('command-boundary.json', 'run-summary.json', 'acl-manifests.json', 'capabilities.json'):
+                if (folder / name).relative_to(p03_path.parent).as_posix() not in seen:
+                    raise ValueError('P03 current results must be checksum-bound')
+            summary = json.loads((folder / 'run-summary.json').read_text(encoding='utf-8-sig'))
+            boundary = json.loads((folder / 'command-boundary.json').read_text(encoding='utf-8-sig'))
+            if summary['manager_commit'] != p03['tested_commit'] or summary['result'] != 'PASSED' or boundary['result'] != 'PASSED' or any(not case['passed'] for case in boundary['cases']):
+                raise ValueError('P03 DONE contradicts native command outcomes')
+            if not boundary['real_webview2'] or not boundary['real_native_picker'] or boundary['engine_operations_executed'] != 0:
+                raise ValueError('Missing real P03 boundary/phase separation')
+            if summary['foundation_tests_passed'] < 19 or summary['frontend_tests_passed'] != 3 or summary['normal_native_tests_passed'] != 2 or len(boundary['cases']) != summary['windows_command_cases_passed']:
+                raise ValueError('P03 required suites did not execute')
+            names = {case['name'] for case in boundary['cases']}
+            if not {'local_ungranted_webview_denied', 'remote_origin_commands_denied', 'standard_user_token_observed', 'actual_replaced_windows_artifact_retained', 'selection_consumed_once', 'backend_event_has_independent_generations_and_sequence'}.issubset(names):
+                raise ValueError('Required P03 native cases missing')
+            acl = json.loads((folder / 'acl-manifests.json').read_text())['__app-acl__']['permissions']
+            if acl['allow-get-snapshot']['commands']['allow'] != ['get_snapshot']:
+                raise ValueError('P03 generated custom command ACL missing')
+        for entry in p03['tested_sources']:
+            path = (root / entry['path']).resolve()
+            if not path.is_relative_to(root.resolve()):
+                raise ValueError('Unsafe P03 tested source path')
+            verify_file(path, entry['sha256'], entry['size'])
+
 
 if __name__ == '__main__':
     try:

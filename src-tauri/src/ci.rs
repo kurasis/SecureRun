@@ -39,8 +39,8 @@ pub fn profile() -> Result<(PathBuf, File)> {
     Ok((profile, writer))
 }
 const REMOTE: &str = r#"<!doctype html><title>Unauthorized origin fixture</title><script>
-(async()=>{let denied=true;for(const command of ['get_snapshot','create_draft','reserve_operation','diagnostic_summary','ci_report']){
-if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false}catch(error){denied &&= typeof error==='string' && /not allowed|permission|capability|scope/i.test(error)}}}
+(async()=>{window.__foundationRemoteStarted=true;let denied=true;for(const command of ['get_snapshot','create_draft','reserve_operation','diagnostic_summary','ci_report']){
+if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false;window.__foundationRemoteCommandAccepted=true}catch(error){const acl=typeof error==='string' && /not allowed|permission|capability|scope/i.test(error);denied &&= acl;if(!acl)window.__foundationRemoteUnexpectedDenial=true}}}
 window.__foundationAclDenied=denied;})();</script>"#;
 pub fn start(
     app: AppHandle,
@@ -48,17 +48,28 @@ pub fn start(
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind("127.0.0.1:0")?;
     let address = listener.local_addr()?;
+    listener.set_nonblocking(true)?;
     std::thread::spawn(move || {
-        if let Ok((mut stream, _)) = listener.accept() {
-            let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
-            let mut request = [0u8; 4096];
-            let _ = stream.read(&mut request);
-            let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
-                REMOTE.len(),
-                REMOTE
-            );
-            let _ = stream.write_all(response.as_bytes());
+        let deadline = Instant::now();
+        let mut requests = 0;
+        while deadline.elapsed().as_secs() < 120 && requests < 32 {
+            if let Ok((mut stream, _)) = listener.accept() {
+                let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
+                let mut request = [0u8; 4096];
+                let read = stream.read(&mut request).unwrap_or(0);
+                if read == 0 || !request[..read].starts_with(b"GET ") {
+                    continue;
+                }
+                requests += 1;
+                let response = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                    REMOTE.len(),
+                    REMOTE
+                );
+                let _ = stream.write_all(response.as_bytes());
+            } else {
+                std::thread::sleep(Duration::from_millis(20));
+            }
         }
     });
     WebviewWindowBuilder::new(
@@ -185,6 +196,21 @@ pub fn finish(app: &AppHandle, profile: &Path, mut cases: Vec<CiCase>) -> Result
         name: "remote_origin_commands_denied".into(),
         passed: wait_denied(app, "unauthorized-remote"),
     });
+    let remote_started = script_bool(
+        app,
+        "unauthorized-remote",
+        "window.__foundationRemoteStarted === true",
+    );
+    let remote_accepted = script_bool(
+        app,
+        "unauthorized-remote",
+        "window.__foundationRemoteCommandAccepted === true",
+    );
+    let remote_unexpected = script_bool(
+        app,
+        "unauthorized-remote",
+        "window.__foundationRemoteUnexpectedDenial === true",
+    );
     cases.push(CiCase {
         id: "T65".into(),
         name: "actual_replaced_windows_artifact_retained".into(),
@@ -199,7 +225,7 @@ pub fn finish(app: &AppHandle, profile: &Path, mut cases: Vec<CiCase>) -> Result
         passed: redacted,
     });
     let passed = cases.iter().all(|c| c.passed) && cases.len() >= 10;
-    let report = serde_json::json!({"phase":"P03","result":if passed{"PASSED"}else{"FAILED"},"real_webview2":true,"real_native_picker":true,"engine_operations_executed":0,"cases":cases});
+    let report = serde_json::json!({"phase":"P03","result":if passed{"PASSED"}else{"FAILED"},"real_webview2":true,"real_native_picker":true,"engine_operations_executed":0,"cases":cases,"remote_probe_started":remote_started,"remote_command_accepted":remote_accepted,"remote_unexpected_denial":remote_unexpected});
     fs::write(
         profile.join("command-boundary.json"),
         serde_json::to_vec_pretty(&report).map_err(|_| AppError::new(ErrorCode::CorruptRecord))?,

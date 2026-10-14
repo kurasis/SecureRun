@@ -557,6 +557,8 @@ internal sealed class P02StorageSeal : IDisposable {
     [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
     [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle file,out P02Bridge.FileIdentity identity);
     [StructLayout(LayoutKind.Sequential)] struct StandardInfo { public long allocated,length;public uint links;[MarshalAs(UnmanagedType.U1)]public bool pending;[MarshalAs(UnmanagedType.U1)]public bool directory; }
+    [StructLayout(LayoutKind.Sequential)] struct BasicInfo {public long creation,access,write,change;public uint attributes;}
+    [DllImport("kernel32",SetLastError=true)] static extern bool SetFileInformationByHandle(SafeFileHandle file,int kind,ref BasicInfo info,uint size);
     [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandleEx(SafeFileHandle file,int kind,out StandardInfo data,uint size);
     [DllImport("advapi32",SetLastError=true)] static extern uint GetSecurityInfo(SafeFileHandle file,int type,uint information,out IntPtr owner,out IntPtr group,out IntPtr dacl,out IntPtr sacl,out IntPtr descriptor);
     [DllImport("advapi32",SetLastError=true)] static extern uint SetSecurityInfo(SafeFileHandle file,int type,uint information,IntPtr owner,IntPtr group,IntPtr dacl,IntPtr sacl);
@@ -643,11 +645,11 @@ internal sealed class P02StorageSeal : IDisposable {
         FileSystemSecurity acl=directory?(FileSystemSecurity)new DirectorySecurity():new FileSecurity();
         var user=WindowsIdentity.GetCurrent().User;
         acl.SetOwner(user);acl.SetAccessRuleProtection(true,false);
-        var deny=FileSystemRights.WriteData|FileSystemRights.AppendData|FileSystemRights.WriteExtendedAttributes|FileSystemRights.ChangePermissions|FileSystemRights.TakeOwnership;
+        var deny=FileSystemRights.WriteData|FileSystemRights.AppendData|FileSystemRights.WriteExtendedAttributes|FileSystemRights.WriteAttributes|FileSystemRights.ChangePermissions|FileSystemRights.TakeOwnership;
         var inherit=directory?InheritanceFlags.ContainerInherit|InheritanceFlags.ObjectInherit:InheritanceFlags.None;
         acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-3-4"),deny,inherit,PropagationFlags.None,AccessControlType.Deny));
         acl.AddAccessRule(new FileSystemAccessRule(user,deny,inherit,PropagationFlags.None,AccessControlType.Deny));
-        var permitted=FileSystemRights.ReadAndExecute|FileSystemRights.WriteAttributes|FileSystemRights.Delete|FileSystemRights.DeleteSubdirectoriesAndFiles|FileSystemRights.Synchronize;
+        var permitted=FileSystemRights.ReadAndExecute|FileSystemRights.Delete|FileSystemRights.DeleteSubdirectoriesAndFiles|FileSystemRights.Synchronize;
         acl.AddAccessRule(new FileSystemAccessRule(user,permitted,inherit,PropagationFlags.None,AccessControlType.Allow));
         foreach(string sid in new[]{"S-1-5-18","S-1-5-32-544"})acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(sid),FileSystemRights.FullControl,inherit,PropagationFlags.None,AccessControlType.Allow));
         return acl.GetSecurityDescriptorBinaryForm();
@@ -670,7 +672,7 @@ internal sealed class P02StorageSeal : IDisposable {
     void Capture(string path,int depth) {
         if(depth>32||nodes.Count>=513)throw new InvalidOperationException("STORAGE_TREE_BOUND");
         var node=new Node{path=path};
-        node.security=Open(path,0x60080U,7);nodes.Add(node);node.identity=Identify(node.security);
+        node.security=Open(path,0x60180U,7);nodes.Add(node);node.identity=Identify(node.security);
         node.directory=(node.identity.attributes&0x10)!=0;
         node.descriptor=Descriptor(node.security);
         if(node.directory){node.pin=Open(path,0x20081U,3);if(!Identify(node.pin).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");
@@ -698,6 +700,16 @@ internal sealed class P02StorageSeal : IDisposable {
             observed++;if(node.directory)foreach(string entry in Directory.EnumerateFileSystemEntries(path))queue.Enqueue(entry);
         }
         if(observed!=nodes.Count)throw new InvalidOperationException("STORAGE_SNAPSHOT_CHANGED");
+        // The original routine normally clears DOS attributes itself. Frozen new
+        // opens deliberately lack WRITE_ATTRIBUTES (also required for reparse
+        // updates), so normalize only these verified objects using retained access.
+        foreach(var node in nodes){
+            Identify(node.security);
+            uint attributes=node.identity.attributes&~7U;
+            if(attributes==0||attributes==0x10)attributes=0x80;
+            var info=new BasicInfo{attributes=attributes};
+            if(!SetFileInformationByHandle(node.security,0,ref info,(uint)Marshal.SizeOf<BasicInfo>()))throw new InvalidOperationException("STORAGE_ATTRIBUTE_PREPARATION_FAILED_"+Marshal.GetLastWin32Error());
+        }
         // Security handles were authorized before tightening and allow delete sharing;
         // release nested namespace pins only after every creation/ACL right is sealed.
         for(int index=1;index<nodes.Count;index++)if(nodes[index].pin!=null){nodes[index].pin.Dispose();nodes[index].pin=null;}

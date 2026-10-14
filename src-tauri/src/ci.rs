@@ -40,7 +40,7 @@ pub fn profile() -> Result<(PathBuf, File)> {
 }
 const REMOTE: &str = r#"<!doctype html><title>Unauthorized origin fixture</title><script>
 (async()=>{let denied=true;for(const command of ['get_snapshot','create_draft','reserve_operation','diagnostic_summary','ci_report']){
-if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false}catch{}}}
+if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false}catch(error){denied &&= typeof error==='string' && /not allowed|permission|capability|scope/i.test(error)}}}
 window.__foundationAclDenied=denied;})();</script>"#;
 pub fn start(
     app: AppHandle,
@@ -79,9 +79,10 @@ pub fn start(
     std::thread::spawn(move || {
         std::thread::sleep(Duration::from_secs(120));
         if !profile.join("command-boundary.json").exists() {
+            let diagnostic = serde_json::json!({"result":"FAILED","diagnostic_code":"WEBVIEW_TEST_TIMEOUT","script_started":script_bool(&timeout_app,"main","window.__foundationTestsStarted === true"),"picker_waiting":script_bool(&timeout_app,"main","window.__foundationPickerWaiting === true"),"report_started":script_bool(&timeout_app,"main","window.__foundationReportStarted === true"),"native_dialog_title_seen":native::PICKER_TITLE_SEEN.load(std::sync::atomic::Ordering::Relaxed),"native_dialog_button_seen":native::PICKER_BUTTON_SEEN.load(std::sync::atomic::Ordering::Relaxed)});
             let _ = fs::write(
                 profile.join("command-boundary.json"),
-                r#"{"result":"FAILED","diagnostic_code":"WEBVIEW_TEST_TIMEOUT"}"#,
+                serde_json::to_vec_pretty(&diagnostic).unwrap_or_default(),
             );
             timeout_app.exit(1);
         }
@@ -169,6 +170,11 @@ fn artifact_test(profile: &Path) -> Result<bool> {
             == b"P03_REPLACEMENT_CANARY")
 }
 pub fn finish(app: &AppHandle, profile: &Path, mut cases: Vec<CiCase>) -> Result<()> {
+    cases.push(CiCase {
+        id: "T49".into(),
+        name: "standard_user_token_observed".into(),
+        passed: native::administrator().is_ok_and(|value| !value),
+    });
     cases.push(CiCase {
         id: "T49".into(),
         name: "local_ungranted_webview_denied".into(),

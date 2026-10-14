@@ -64,6 +64,26 @@ pub fn session() -> Result<u32> {
         }
     }
 }
+pub fn administrator() -> Result<bool> {
+    unsafe {
+        let mut data = [0u8; 68];
+        let mut bytes = 68u32;
+        if CreateWellKnownSid(
+            WinBuiltinAdministratorsSid,
+            std::ptr::null_mut(),
+            data.as_mut_ptr() as _,
+            &mut bytes,
+        ) == 0
+        {
+            return err(ErrorCode::Unauthorized);
+        }
+        let mut member = 0;
+        if CheckTokenMembership(std::ptr::null_mut(), data.as_ptr() as _, &mut member) == 0 {
+            return err(ErrorCode::Unauthorized);
+        }
+        Ok(member != 0)
+    }
+}
 pub fn identify(file: &File) -> Result<FileIdentity> {
     unsafe {
         let handle = file.as_raw_handle();
@@ -137,6 +157,12 @@ pub fn capture(path: &Path) -> Result<SelectionLease> {
 }
 
 #[cfg(feature = "foundation-ci")]
+pub static PICKER_TITLE_SEEN: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "foundation-ci")]
+pub static PICKER_BUTTON_SEEN: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "foundation-ci")]
 pub fn accept_fixture_picker() {
     use windows_sys::Win32::UI::WindowsAndMessaging::*;
     unsafe extern "system" fn visit(hwnd: HWND, param: LPARAM) -> i32 {
@@ -153,20 +179,22 @@ pub fn accept_fixture_picker() {
             {
                 return 1;
             }
+            PICKER_TITLE_SEEN.store(true, std::sync::atomic::Ordering::Relaxed);
             let button = GetDlgItem(hwnd, 1);
-            if button.is_null() {
+            if button.is_null() || IsWindowEnabled(button) == 0 {
                 return 1;
             }
+            PICKER_BUTTON_SEEN.store(true, std::sync::atomic::Ordering::Relaxed);
             SendMessageW(button, BM_CLICK, 0, 0);
             0
         }
     }
     std::thread::spawn(|| {
         let deadline = std::time::Instant::now();
-        while deadline.elapsed().as_secs() < 15 {
-            if unsafe { EnumWindows(Some(visit), GetCurrentProcessId() as isize) } == 0 {
-                break;
-            }
+        while deadline.elapsed().as_secs() < 30 {
+            // A freshly created dialog can expose its button before shell view
+            // initialization completes. Retry the same scoped native click.
+            unsafe { EnumWindows(Some(visit), GetCurrentProcessId() as isize) };
             std::thread::sleep(std::time::Duration::from_millis(100));
         }
     });

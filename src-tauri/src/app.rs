@@ -44,6 +44,35 @@ pub struct Snapshot {
     pub engine_operations_available: bool,
     pub reason: ErrorCode,
 }
+#[derive(Serialize)]
+pub struct OperationView {
+    id: Uuid,
+    idempotency_key: Uuid,
+    environment_id: Uuid,
+    environment_generation: u64,
+    requested_revision: u64,
+    kind: OperationKind,
+    dispatch_state: DispatchState,
+    phase: OperationPhase,
+    error: Option<ErrorCode>,
+    recovery_action: RecoveryAction,
+}
+impl From<Operation> for OperationView {
+    fn from(op: Operation) -> Self {
+        Self {
+            id: op.id,
+            idempotency_key: op.idempotency_key,
+            environment_id: op.environment_id,
+            environment_generation: op.environment_generation,
+            requested_revision: op.requested_revision,
+            kind: op.kind,
+            dispatch_state: op.dispatch_state,
+            phase: op.phase,
+            error: op.error,
+            recovery_action: op.recovery_action,
+        }
+    }
+}
 pub struct Backend {
     pub store: Store,
     pub selections: Selections,
@@ -185,7 +214,7 @@ fn reserve_operation(
     window: WebviewWindow,
     state: State<AppState>,
     request: ReservationRequest,
-) -> Result<Operation> {
+) -> Result<OperationView> {
     let mut backend = locked(&window, &state)?;
     backend.allow_metadata()?;
     if !matches!(request.kind, OperationKind::Import | OperationKind::Export) {
@@ -194,7 +223,7 @@ fn reserve_operation(
     let session = backend.session;
     let (operation, _) = backend.store.reserve(&request, session)?;
     backend.flush_diagnostics()?;
-    Ok(operation)
+    Ok(operation.into())
 }
 #[tauri::command]
 async fn select_file(
@@ -308,9 +337,12 @@ fn get_operation(
     window: WebviewWindow,
     state: State<AppState>,
     request: OperationReference,
-) -> Result<Operation> {
+) -> Result<OperationView> {
     let backend = locked(&window, &state)?;
-    backend.store.operation(request.operation_id)
+    backend
+        .store
+        .operation(request.operation_id)
+        .map(Into::into)
 }
 #[tauri::command]
 fn diagnostic_summary(window: WebviewWindow, state: State<AppState>) -> Result<Vec<AuditEntry>> {

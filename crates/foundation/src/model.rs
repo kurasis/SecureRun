@@ -192,6 +192,9 @@ pub struct Environment {
     pub last_sequence: u64,
     pub created_at: u64,
     pub updated_at: u64,
+    pub persistence: Persistence,
+    pub policy_id: Option<Uuid>,
+    pub policy_version: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]

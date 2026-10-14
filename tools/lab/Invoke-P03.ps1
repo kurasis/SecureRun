@@ -30,6 +30,7 @@ try {
     $env:VITE_FOUNDATION_CI='1'
     npm run tauri -- build --debug --no-bundle --target $target --features foundation-ci --config src-tauri/tauri.ci.conf.json
     if ($LASTEXITCODE -ne 0) { throw 'NATIVE_APPLICATION_BUILD_FAILED' }
+    foreach ($name in @('acl-manifests.json','capabilities.json')) { Copy-Item (Join-Path $repo "src-tauri/gen/schemas/$name") (Join-Path $out $name) }
     $exe=Join-Path $repo "target/$target/debug/securerun.exe"
     $pe=[IO.File]::ReadAllBytes($exe); $offset=[BitConverter]::ToInt32($pe,0x3c)
     $machine=[BitConverter]::ToUInt16($pe,$offset+4)

@@ -105,6 +105,9 @@ impl Store {
             last_sequence: 0,
             created_at: now,
             updated_at: now,
+            persistence: Persistence::Persistent,
+            policy_id: None,
+            policy_version: None,
         };
         self.db
             .execute(

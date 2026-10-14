@@ -164,7 +164,9 @@ pub static PICKER_BUTTON_SEEN: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
 #[cfg(feature = "foundation-ci")]
 pub fn accept_fixture_picker() {
-    use windows_sys::Win32::UI::WindowsAndMessaging::*;
+    use windows_sys::Win32::UI::{
+        Input::KeyboardAndMouse::IsWindowEnabled, WindowsAndMessaging::*,
+    };
     unsafe extern "system" fn visit(hwnd: HWND, param: LPARAM) -> i32 {
         unsafe {
             let mut pid = 0;

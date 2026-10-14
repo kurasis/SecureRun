@@ -1123,9 +1123,12 @@ struct Canary {
     sibling: Option<String>,
     output: String,
     registry_leaf: String,
-    ports: [u16; 4],
+    ports: [u16; 6],
     dns_target: String,
     dns_cached: String,
+    mapped_share: bool,
+    lan_address: [u8; 4],
+    child: bool,
 }
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -1139,10 +1142,14 @@ struct CanaryReport {
     sibling_denied: bool,
     standard_read_visible: bool,
     registry_virtualized: bool,
-    sockets: [bool; 4],
+    sockets: [bool; 6],
     dns_network: bool,
     dns_cached_answer: bool,
     icmp_echo: bool,
+    smb_denied: bool,
+    mapped_share_denied: Option<bool>,
+    raw_socket_created: bool,
+    child_network: ChildNetwork,
 }
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
@@ -1212,6 +1219,92 @@ fn registry_value(leaf: &str, write: Option<u32>) -> R<u32> {
         result
     }
 }
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ChildNetwork {
+    sockets: [bool; 6],
+    dns_network: bool,
+    icmp_echo: bool,
+}
+fn exercise_network(canary: &Canary) -> ChildNetwork {
+    let mut sockets = [false; 6];
+    for (i, port) in canary.ports.iter().enumerate() {
+        let address: std::net::SocketAddr = if i >= 4 {
+            std::net::SocketAddr::from((canary.lan_address, *port))
+        } else if i % 2 == 0 {
+            std::net::SocketAddr::from(([127, 0, 0, 1], *port))
+        } else {
+            std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], *port))
+        };
+        if i < 2 || i == 4 {
+            if let Ok(mut socket) =
+                std::net::TcpStream::connect_timeout(&address, Duration::from_millis(750))
+            {
+                let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
+                let mut reply = [0u8; 1];
+                sockets[i] = socket.write_all(b"P").is_ok()
+                    && socket.read_exact(&mut reply).is_ok()
+                    && reply == *b"R";
+            }
+        } else {
+            let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+            if let Ok(socket) = std::net::UdpSocket::bind(bind) {
+                let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
+                let mut reply = [0u8; 1];
+                sockets[i] = socket.connect(address).is_ok()
+                    && socket.send(b"P").is_ok()
+                    && socket.recv(&mut reply).is_ok_and(|n| n == 1)
+                    && reply == *b"R";
+            }
+        }
+    }
+    ChildNetwork {
+        sockets,
+        dns_network: network::dns_query(&canary.dns_target, false),
+        icmp_echo: network::icmp_echo(),
+    }
+}
+fn spawn_canary_child(canary: &Canary) -> R<ChildNetwork> {
+    let mut request: Canary =
+        serde_json::from_slice(&serde_json::to_vec(canary).map_err(|_| "PROBE_REQUEST_INVALID")?)
+            .map_err(|_| "PROBE_REQUEST_INVALID")?;
+    request.child = true;
+    request.output = format!("{}.child", canary.output);
+    let data = hex(&serde_json::to_vec(&request).map_err(|_| "PROBE_REQUEST_INVALID")?);
+    let executable = std::env::current_exe().map_err(|_| "PROBE_IMAGE_UNKNOWN")?;
+    let mut child = Command::new(executable)
+        .arg(data)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|_| "CANARY_CHILD_DISPATCH_FAILED")?;
+    let clock = Instant::now();
+    loop {
+        if let Some(status) = child.try_wait().map_err(|_| "CANARY_CHILD_WAIT_FAILED")? {
+            if !status.success() {
+                return Err("CANARY_CHILD_FAILED");
+            }
+            break;
+        }
+        if clock.elapsed() >= Duration::from_secs(15) {
+            let _ = child.kill();
+            return Err("CANARY_CHILD_TIMEOUT");
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    let mut file = File::open(&request.output).map_err(|_| "CANARY_CHILD_REPORT_FAILED")?;
+    let mut data = Vec::new();
+    Read::by_ref(&mut file)
+        .take(4097)
+        .read_to_end(&mut data)
+        .map_err(|_| "CANARY_CHILD_REPORT_FAILED")?;
+    if data.len() > 4096 {
+        return Err("CANARY_CHILD_REPORT_FAILED");
+    }
+    serde_json::from_slice(&data).map_err(|_| "CANARY_CHILD_REPORT_FAILED")
+}
+
 pub fn run_canary(encoded: &str) -> i32 {
     let result = (|| -> R<()> {
         // This executable cannot read metadata or perform controls, even if unboxed.
@@ -1252,6 +1345,18 @@ pub fn run_canary(encoded: &str) -> i32 {
         ] {
             literal_path(p)?;
         }
+        if canary.child {
+            let report = exercise_network(&canary);
+            let bytes = serde_json::to_vec(&report).map_err(|_| "CANARY_REPORT_INVALID")?;
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&canary.output)
+                .map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
+            file.write_all(&bytes)
+                .map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
+            return Ok(());
+        }
         let original = std::fs::read(&canary.write).map_err(|_| "CANARY_READ_FAILED")?;
         let virtualized_write = original == b"SYNTHETIC_HOST_CANARY"
             && std::fs::write(&canary.write, b"SYNTHETIC_BOX_CHANGE").is_ok()
@@ -1268,35 +1373,8 @@ pub fn run_canary(encoded: &str) -> i32 {
             .open(&canary.read_only)
             .err()
             .is_some_and(|e| e.raw_os_error() == Some(5));
-        let mut sockets = [false; 4];
-        for (i, port) in canary.ports.iter().enumerate() {
-            let address: std::net::SocketAddr = if i % 2 == 0 {
-                std::net::SocketAddr::from(([127, 0, 0, 1], *port))
-            } else {
-                std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], *port))
-            };
-            if i < 2 {
-                if let Ok(mut socket) =
-                    std::net::TcpStream::connect_timeout(&address, Duration::from_millis(750))
-                {
-                    let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
-                    let mut reply = [0u8; 1];
-                    sockets[i] = socket.write_all(b"P").is_ok()
-                        && socket.read_exact(&mut reply).is_ok()
-                        && reply == *b"R";
-                }
-            } else {
-                let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
-                if let Ok(socket) = std::net::UdpSocket::bind(bind) {
-                    let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
-                    let mut reply = [0u8; 1];
-                    sockets[i] = socket.connect(address).is_ok()
-                        && socket.send(b"P").is_ok()
-                        && socket.recv(&mut reply).is_ok_and(|n| n == 1)
-                        && reply == *b"R";
-                }
-            }
-        }
+        let child_network = spawn_canary_child(&canary)?;
+        let network = exercise_network(&canary);
         let report = CanaryReport {
             member: true,
             virtualized_write,
@@ -1307,10 +1385,14 @@ pub fn run_canary(encoded: &str) -> i32 {
             sibling_denied: canary.sibling.as_ref().is_none_or(|p| denied(p)),
             standard_read_visible: original == b"SYNTHETIC_HOST_CANARY",
             registry_virtualized: registry_value(&canary.registry_leaf, Some(2)) == Ok(2),
-            sockets,
-            dns_network: network::dns_query(&canary.dns_target, false),
+            sockets: network.sockets,
+            dns_network: network.dns_network,
             dns_cached_answer: network::dns_query(&canary.dns_cached, true),
-            icmp_echo: network::icmp_echo(),
+            icmp_echo: network.icmp_echo,
+            raw_socket_created: network::raw_socket_created(),
+            child_network,
+            smb_denied: denied(network::SHARE_CANARY),
+            mapped_share_denied: canary.mapped_share.then(|| denied(network::MAPPED_CANARY)),
         };
         let data = serde_json::to_vec(&report).map_err(|_| "CANARY_REPORT_INVALID")?;
         let mut file = OpenOptions::new()
@@ -1336,8 +1418,9 @@ pub fn run_canary(encoded: &str) -> i32 {
 }
 
 struct Endpoints {
-    ports: [u16; 4],
-    counts: std::sync::Arc<[std::sync::atomic::AtomicUsize; 4]>,
+    lan_address: [u8; 4],
+    ports: [u16; 6],
+    counts: std::sync::Arc<[std::sync::atomic::AtomicUsize; 6]>,
     stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
     threads: Vec<std::thread::JoinHandle<()>>,
 }
@@ -1349,13 +1432,21 @@ impl Endpoints {
         };
         let counts = Arc::new(std::array::from_fn(|_| AtomicUsize::new(0)));
         let stop = Arc::new(AtomicBool::new(false));
-        let mut ports = [0u16; 4];
+        let lan_address = network::lan_address()?;
+        let lan = std::net::Ipv4Addr::from(lan_address);
+        let mut ports = [0u16; 6];
         let mut threads = vec![];
         for (i, port) in ports.iter_mut().enumerate() {
-            let address = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+            let address = if i >= 4 {
+                format!("{lan}:0")
+            } else if i % 2 == 0 {
+                "127.0.0.1:0".into()
+            } else {
+                "[::1]:0".into()
+            };
             let counter = counts.clone();
             let stopped = stop.clone();
-            if i < 2 {
+            if i < 2 || i == 4 {
                 let listener = std::net::TcpListener::bind(address)
                     .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
                 *port = listener
@@ -1366,7 +1457,7 @@ impl Endpoints {
                     .set_nonblocking(true)
                     .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
                 threads.push(std::thread::spawn(move || {
-                    let deadline = Instant::now() + Duration::from_secs(20);
+                    let deadline = Instant::now() + Duration::from_secs(60);
                     while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
                         if let Ok((mut socket, _)) = listener.accept() {
                             let _ = socket.set_read_timeout(Some(Duration::from_secs(1)));
@@ -1392,7 +1483,7 @@ impl Endpoints {
                     .set_read_timeout(Some(Duration::from_millis(50)))
                     .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
                 threads.push(std::thread::spawn(move || {
-                    let deadline = Instant::now() + Duration::from_secs(20);
+                    let deadline = Instant::now() + Duration::from_secs(60);
                     while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
                         let mut b = [0u8; 1];
                         if let Ok((1, peer)) = socket.recv_from(&mut b)
@@ -1406,6 +1497,7 @@ impl Endpoints {
             }
         }
         let endpoints = Self {
+            lan_address,
             ports,
             counts,
             stop,
@@ -1414,13 +1506,15 @@ impl Endpoints {
         // Independent unboxed positive control for every live server, before the
         // blocked canary: a failed connection to a dead service is not evidence.
         for (i, port) in endpoints.ports.iter().enumerate() {
-            let address = if i % 2 == 0 {
+            let address = if i >= 4 {
+                format!("{lan}:{port}")
+            } else if i % 2 == 0 {
                 format!("127.0.0.1:{port}")
             } else {
                 format!("[::1]:{port}")
             };
             let mut answer = [0u8; 1];
-            if i < 2 {
+            if i < 2 || i == 4 {
                 let mut socket = std::net::TcpStream::connect(&address)
                     .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
                 socket
@@ -1457,7 +1551,7 @@ impl Endpoints {
         }
         Ok(endpoints)
     }
-    fn observed(mut self) -> [bool; 4] {
+    fn observed(mut self) -> [bool; 6] {
         use std::sync::atomic::Ordering;
         std::thread::sleep(Duration::from_millis(100));
         self.stop.store(true, Ordering::SeqCst);
@@ -1621,6 +1715,8 @@ impl NativeEngine {
         let endpoints = Endpoints::new()?;
         let dns = network::DnsControl::new(&nonce)?;
         let icmp_before = network::icmp_sent()?;
+        let smb_positive = network::share_positive(network::SHARE_CANARY);
+        let mapped_positive = network::share_positive(network::MAPPED_CANARY);
         let output = canary_base.join(format!("report-{nonce}.json"));
         let canary = Canary {
             box_name: diagnostic.name(),
@@ -1634,6 +1730,9 @@ impl NativeEngine {
             ports: endpoints.ports,
             dns_target: dns.target_name.clone(),
             dns_cached: dns.cache_name.clone(),
+            mapped_share: mapped_positive,
+            lan_address: endpoints.lan_address,
+            child: false,
         };
         let encoded = hex(&serde_json::to_vec(&canary).map_err(|_| "PROBE_REQUEST_INVALID")?);
         let command = wide(&format!("\"{}\" {encoded}", probe.to_string_lossy()));
@@ -1659,7 +1758,7 @@ impl NativeEngine {
             }
             let process = Handle(receipt.hProcess);
             let _thread = Handle(receipt.hThread);
-            if unsafe { WaitForSingleObject(process.0, 15000) } != WAIT_OBJECT_0 {
+            if unsafe { WaitForSingleObject(process.0, 30000) } != WAIT_OBJECT_0 {
                 // Only the fixed benign process held from this dispatch may be
                 // terminated. A timeout never authorizes a PID-based box stop.
                 unsafe {
@@ -1730,6 +1829,11 @@ impl NativeEngine {
             ),
             (report.metadata_denied, "CANARY_METADATA_DENIAL_FAILED"),
             (report.sibling_denied, "CANARY_SIBLING_DENIAL_FAILED"),
+            (report.smb_denied, "CANARY_SMB_DENIAL_FAILED"),
+            (
+                report.mapped_share_denied.unwrap_or(!mapped_positive),
+                "CANARY_MAPPED_SHARE_DENIAL_FAILED",
+            ),
             (
                 report.standard_read_visible,
                 "CANARY_STANDARD_VISIBILITY_FAILED",
@@ -1750,8 +1854,12 @@ impl NativeEngine {
         {
             return Err("CANARY_HOST_STATE_CHANGED");
         }
-        let expected = [!owned.compiled.offline; 4];
-        if report.dns_network == owned.compiled.offline
+        let expected = [!owned.compiled.offline; 6];
+        if report.child_network.sockets != expected
+            || report.child_network.dns_network == owned.compiled.offline
+            || report.child_network.icmp_echo == owned.compiled.offline
+            || report.raw_socket_created
+            || report.dns_network == owned.compiled.offline
             || dns.observed() == owned.compiled.offline
             || report.icmp_echo == owned.compiled.offline
             || (owned.compiled.offline && network::icmp_sent()? != icmp_before)
@@ -1760,7 +1868,7 @@ impl NativeEngine {
         {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")

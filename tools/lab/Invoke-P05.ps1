@@ -67,6 +67,19 @@ try {
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
     $bridge=[P02Bridge]::new($engine,$fixture,[string[]]@());$bridge.EnableLabWfp()
     Case 'T39' 'explicit_lab_wfp_prerequisite' {@{lab_installation_reviewed=$true;global_setting='NetworkEnableWFP=y';driver_flag_verified=(($bridge.Flags() -band 1)-ne 0);product_global_writes=0;os_security_settings_modified=$false}}
+    $shareName='SecureRunP05Synthetic';Require ($null -eq (Get-SmbShare -Name $shareName -ErrorAction SilentlyContinue)) 'PREEXISTING_SMB_SHARE_NOT_CHANGED'
+    $shareRoot=Join-Path $fixture 'synthetic-network';$null=New-Item -ItemType Directory -Path $shareRoot
+    [IO.File]::WriteAllText((Join-Path $shareRoot 'canary.txt'),'SYNTHETIC_NETWORK_CANARY')
+    $users=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value
+    $admins=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544')).Translate([Security.Principal.NTAccount]).Value
+    $null=New-SmbShare -Name $shareName -Path $shareRoot -ReadAccess $users -FullAccess $admins
+    Require (-not (Test-Path 'Q:/')) 'PREEXISTING_DRIVE_NOT_CHANGED'
+    $null=New-PSDrive -Name Q -PSProvider FileSystem -Root ('\\127.0.0.1\'+$shareName) -Persist -Scope Global
+    Require ([IO.File]::ReadAllText('Q:/canary.txt') -eq 'SYNTHETIC_NETWORK_CANARY') 'MAPPED_SHARE_POSITIVE_FAILED'
+    Case 'T14' 'paid_presets_rejected_without_entitlement' {
+        $r=Policy @{action='CREATE';display_name='Unverified paid profile';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='PRIVACY_HARDENED_OFFLINE';grants=@()}}
+        Require ($r.reason -eq 'PAID_PRESET_UNVERIFIED') 'UNVERIFIED_ENTITLEMENT_ACCEPTED';@{paid_features_enabled=0;reason=$r.reason}
+    }
     $script:environment=$null
     Case 'T55' 'native_pending_root_and_verified_policy' {
         $r=Policy @{action='CREATE';display_name='Synthetic P05 offline';policy=(Desired);operation_id=[Guid]::NewGuid().ToString()}
@@ -103,12 +116,9 @@ try {
     function Start-Standard($account,[string]$script,[string[]]$arguments) {
         $shell=$labShell
         $start=[Diagnostics.ProcessStartInfo]::new($shell);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.UserName=$account.name;$start.Domain=[Environment]::MachineName;$start.Password=$account.secure;$start.LoadUserProfile=$true
+        $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
         foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome $script))+$arguments){$start.ArgumentList.Add($arg)}
         return [Diagnostics.Process]::Start($start)
-    }
-    Case 'T14' 'paid_presets_rejected_without_entitlement' {
-        $r=Policy @{action='CREATE';display_name='Unverified paid profile';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='PRIVACY_HARDENED_OFFLINE';grants=@()}}
-        Require ($r.reason -eq 'PAID_PRESET_UNVERIFIED') 'UNVERIFIED_ENTITLEMENT_ACCEPTED';@{paid_features_enabled=0;reason=$r.reason}
     }
     Case 'T37' 'literal_grammar_and_root_grants_rejected' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED'

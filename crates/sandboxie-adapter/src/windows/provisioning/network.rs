@@ -6,6 +6,53 @@ use std::sync::{
 };
 use windows_sys::Win32::NetworkManagement::{Dns::*, IpHelper::*};
 
+pub(super) const SHARE_CANARY: &str = "\\\\127.0.0.1\\SecureRunP05Synthetic\\canary.txt";
+pub(super) const MAPPED_CANARY: &str = "Q:\\canary.txt";
+pub(super) fn share_positive(path: &str) -> bool {
+    std::fs::read(path).is_ok_and(|v| v == b"SYNTHETIC_NETWORK_CANARY")
+}
+pub(super) fn lan_address() -> R<[u8; 4]> {
+    let mut size = 0u32;
+    unsafe { GetIpAddrTable(ptr::null_mut(), &mut size, 0) };
+    if size == 0 || size > 65536 {
+        return Err("LAN_CONTROL_ADDRESS_UNAVAILABLE");
+    }
+    let mut bytes = vec![0u64; (size as usize).div_ceil(8)];
+    let table = bytes.as_mut_ptr() as *mut MIB_IPADDRTABLE;
+    if unsafe { GetIpAddrTable(table, &mut size, 0) } != 0 {
+        return Err("LAN_CONTROL_ADDRESS_UNAVAILABLE");
+    }
+    let count = unsafe { (*table).dwNumEntries } as usize;
+    let offset = std::mem::offset_of!(MIB_IPADDRTABLE, table);
+    if count > 256 || offset + count * std::mem::size_of::<MIB_IPADDRROW_XP>() > size as usize {
+        return Err("LAN_CONTROL_ADDRESS_UNAVAILABLE");
+    }
+    let rows = unsafe {
+        std::slice::from_raw_parts(
+            (table as *const u8).add(offset) as *const MIB_IPADDRROW_XP,
+            count,
+        )
+    };
+    for row in rows {
+        let address = row.dwAddr.to_ne_bytes();
+        if address[0] != 0 && address[0] != 127 && address[0] < 224 {
+            return Ok(address);
+        }
+    }
+    Err("LAN_CONTROL_ADDRESS_UNAVAILABLE")
+}
+pub(super) fn raw_socket_created() -> bool {
+    use windows_sys::Win32::Networking::WinSock::*;
+    unsafe {
+        let socket = socket(AF_INET as i32, SOCK_RAW, IPPROTO_ICMP);
+        if socket == INVALID_SOCKET {
+            return false;
+        }
+        closesocket(socket);
+        true
+    }
+}
+
 pub(super) fn dns_query(name: &str, cache_only: bool) -> bool {
     let name = wide(name);
     let mut servers = DNS_ADDR_ARRAY {
@@ -124,14 +171,16 @@ impl DnsControl {
                         .push(String::from_utf8_lossy(&bytes[offset..offset + length]).to_string());
                     offset += length;
                 }
-                if offset + 5 != n || bytes[offset..n] != [0, 0, 1, 0, 1] {
+                // Windows may append an EDNS OPT record. The response echoes only
+                // the validated A/IN question and clears additional records.
+                if offset + 5 > n || bytes[offset..offset + 5] != [0, 0, 1, 0, 1] {
                     continue;
                 }
                 let name = labels.join(".");
                 if name != expected && name != allowed {
                     continue;
                 }
-                let mut response = bytes[..n].to_vec();
+                let mut response = bytes[..offset + 5].to_vec();
                 response[2..4].copy_from_slice(&[0x81, 0x80]);
                 response[6..8].copy_from_slice(&[0, 1]);
                 response[8..12].fill(0);

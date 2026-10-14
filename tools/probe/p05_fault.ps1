@@ -10,8 +10,9 @@ try {
     if($Stage -eq 'Fenced') {
         $initial=[Diagnostics.ProcessStartInfo]::new($Manager);$initial.UseShellExecute=$false;$initial.WorkingDirectory=$EngineHome;$initial.RedirectStandardInput=$true;$initial.RedirectStandardOutput=$true;$initial.RedirectStandardError=$true;$initial.ArgumentList.Add('--policy-once')
         $first=[Diagnostics.Process]::Start($initial)
-        try{$read=$first.StandardOutput.ReadToEndAsync();$err=$first.StandardError.ReadToEndAsync();$first.StandardInput.Write((ConvertTo-Json -InputObject @{action='CREATE';display_name='Fault apply baseline';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} -Depth 8 -Compress));$first.StandardInput.Close();Require ($first.WaitForExit(60000)) 'FAULT_BASELINE_TIMEOUT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OBSERVED' -and $r.environments.Count -eq 1) 'FAULT_BASELINE_NOT_VERIFIED';$previous=$r.environments[0]}finally{if(-not $first.HasExited){$first.Kill($true)};$first.Dispose()}
+        try{$read=$first.StandardOutput.ReadToEndAsync();$err=$first.StandardError.ReadToEndAsync();$first.StandardInput.Write((ConvertTo-Json -InputObject @{action='CREATE';display_name='Fault apply baseline';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} -Depth 8 -Compress));$first.StandardInput.Close();Require ($first.WaitForExit(60000)) 'FAULT_BASELINE_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$result.native_reason=$r.reason;Require ($r.reason -eq 'OBSERVED' -and $r.environments.Count -eq 1) 'FAULT_BASELINE_NOT_VERIFIED';$previous=$r.environments[0]}finally{if(-not $first.HasExited){$first.Kill($true)};$first.Dispose()}
     }
+    $result.actions_marker_present=($env:GITHUB_ACTIONS -eq 'true')
     $env:SECURERUN_P05_PAUSE_STAGE=$Stage
     $request=@{action='CREATE';display_name='Interrupted synthetic provision';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}}
     if($null -ne $previous){$request=@{action='APPLY';environment_id=$previous.id;expected_revision=$previous.revision;operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_ONLINE';grants=@()};acknowledge_view_change=$false}}
@@ -20,7 +21,8 @@ try {
     $process=[Diagnostics.Process]::Start($start)
     try {
         $line=$process.StandardOutput.ReadLineAsync();$process.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 8 -Compress));$process.StandardInput.Close()
-        Require ($line.Wait(45000) -and $line.Result -eq "CHECKPOINT_$Stage") 'JOURNAL_CHECKPOINT_NOT_REACHED'
+        Require ($line.Wait(45000)) 'JOURNAL_CHECKPOINT_TIMEOUT'
+        if($line.Result -ne "CHECKPOINT_$Stage"){if($null -ne $line.Result -and $line.Result.StartsWith('{')){$reply=$line.Result|ConvertFrom-Json;$result.native_reason=$reply.reason};throw 'JOURNAL_CHECKPOINT_NOT_REACHED'}
         $process.Kill($true);Require ($process.WaitForExit(10000)) 'INTERRUPTED_PROCESS_STILL_RUNNING';$result.real_process_interruption=$true
     }finally{if(-not $process.HasExited){$process.Kill($true)};$process.Dispose()}
     Remove-Item Env:/SECURERUN_P05_PAUSE_STAGE

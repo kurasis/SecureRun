@@ -93,7 +93,7 @@ Invoke-Case 'T55' 'Pending root and fixed trusted initializer' {
 }
 if ($roots.Count -ne 3) { throw 'Root initialization failed; mutation stops.' }
 'P02_PRIVATE_SIBLING_CANARY' | Set-Content (Join-Path $roots[$boxB] 'private.txt')
-[IO.File]::WriteAllText((Join-Path $fixture 'sibling-probe.txt'),(Join-Path $roots[$boxB] 'private.txt'),[Text.Encoding]::Unicode)
+[IO.File]::WriteAllText((Join-Path $fixture 'sibling-probe.txt'),(Join-Path $roots[$boxB] 'private.txt'),[Text.UnicodeEncoding]::new($false,$false))
 # Protect manager metadata independently from sandbox policy, using generated lab paths only.
 $metadataAcl = Get-Acl -LiteralPath $roots[$boxB]
 Set-Acl -LiteralPath (Join-Path $fixture 'metadata') -AclObject $metadataAcl

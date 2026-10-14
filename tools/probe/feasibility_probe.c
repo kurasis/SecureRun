@@ -112,7 +112,7 @@ int wmain(int argc,WCHAR **argv) {
         return 0;
     }
     {
-        DWORD wrote=0,blocked,metadata,sibling;BOOL changed=FALSE,isBoxed=FALSE,argsOk,writeOk=FALSE,childOk=FALSE;ULONG mapStatus=0xffffffff;char content[32]={0},output[1400];PROCESS_INFORMATION pi;HANDLE handle;
+        DWORD wrote=0,blocked,metadata,sibling;BOOL changed=FALSE,argsOk,writeOk=FALSE,childOk=FALSE;BOOLEAN isBoxed=FALSE;ULONG mapStatus=0xffffffff;char content[32]={0},output[1400];PROCESS_INFORMATION pi;HANDLE handle;
         if(!path(file,argv[2],L"canaries\\write.txt"))return 64;
         handle=CreateFileW(file,GENERIC_READ|GENERIC_WRITE,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
         if(handle!=INVALID_HANDLE_VALUE){

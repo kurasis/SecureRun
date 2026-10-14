@@ -67,9 +67,16 @@ def retain(download, commit, run_id):
     for source, destination, _ in copies:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
+    old_path = evidence / 'manifest.json'
+    old = read(old_path) if old_path.exists() else {}
+    known = {entry['path']: entry for entry in old.get('files', [])}
+    known.update({entry['path']: entry for _, _, entry in copies})
+    historical = old.get('historical_runs', [])
+    if old.get('tested_commit') and old['tested_commit'] != commit:
+        historical.append({key: old[key] for key in ('tested_commit', 'run_id', 'url', 'result', 'note') if key in old})
     manifest = {'phase': 'P03', 'result': 'DONE', 'run_id': run_id,
                 'url': f'https://github.com/kurasis/SecureRun/actions/runs/{run_id}', 'tested_commit': commit,
-                'targets': targets, 'files': [entry for _, _, entry in copies], 'tested_sources': sources,
+                'targets': targets, 'files': list(known.values()), 'tested_sources': sources, 'historical_runs': historical,
                 'production_acceptance_scenarios_passed': 0,
                 'note': 'Foundation paths only. No engine execution, production target launcher or P04 observation is claimed.'}
     evidence.mkdir(parents=True, exist_ok=True)

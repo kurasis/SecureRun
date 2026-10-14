@@ -88,8 +88,8 @@ remain explicit; no Windows security setting was changed.
 
 ## P03 foundation and actual IPC
 
-Exact source 742c2ab3ac39a7146005ca1f540a93ec592ddc0a,
-[run 38568549251](https://github.com/kurasis/SecureRun/actions/runs/38568549251).
+Exact source 333e59cb6641fbcb3577c50f651fb9568df82140,
+[run 38571221105](https://github.com/kurasis/SecureRun/actions/runs/38571221105).
 [Original Windows JSON, generated ACL/capability manifests and source hashes](evidence/p03/manifest.json).
 
 Both Windows Server x64 and Windows 11 ARM64 pass 19 foundation tests, 2 tests of

@@ -1,6 +1,6 @@
 # P03 phase report
 
-Status: IN_PROGRESS — event transport revalidation. Requested scope: full P03. P01/P02 remain DONE with their original
+Status: DONE. Requested scope: full P03. P01/P02 remain DONE with their original
 retained evidence. All 26 specification documents remain byte-for-byte unchanged.
 No P04 implementation is included in this request.
 
@@ -25,8 +25,8 @@ No P04 implementation is included in this request.
 
 ## Validation and gate
 
-Exact tested source: 742c2ab3ac39a7146005ca1f540a93ec592ddc0a.
-[Actions run 38568549251](https://github.com/kurasis/SecureRun/actions/runs/38568549251),
+Exact tested source: 333e59cb6641fbcb3577c50f651fb9568df82140.
+[Actions run 38571221105](https://github.com/kurasis/SecureRun/actions/runs/38571221105),
 2026-10-14 UTC, completed successfully on both selected native Windows targets.
 
 | Check | Server 2025 x64 | Windows 11 ARM64 |
@@ -41,7 +41,7 @@ Exact tested source: 742c2ab3ac39a7146005ca1f540a93ec592ddc0a.
 The command cases observe a real standard token; a trusted main window; denied
 ungranted local/remote calls with actual ACL errors; forged IDs/path/confirmation
 and stale generations; persistent duplicate delivery; one-use native selection;
-backend event tags; denied renderer event emission; actual replaced Windows
+backend typed-channel event tags; denied renderer event emission; actual replaced Windows
 artifact identity refusal; and absence of secret/injection canaries in diagnostics.
 Both normal/native PE architectures are checked (8664/aa64), not inferred from
 filenames. OS bases: 10.0.26100 and 10.0.26200; Node 24.19.0, Rust 1.90.0 and
@@ -58,7 +58,10 @@ actual NTFS replacement plus old-generation refusal, with no deletion. Full
 production engine/transfer/recovery and final acceptance variants remain in their
 owning phases. All 66 production acceptance entries remain NOT_STARTED.
 
-The retained primary gate passed, but repeated startup exposed asynchronous event-listener ordering. Typed IPC channel transport is being implemented; current gate is pending revalidation. Historical gate: typed data flow, custom-command ACL and independent
+The exit gate is closed with typed IPC channels registered atomically in Rust
+before returning the initial snapshot. The earlier global event-listener ACK could
+precede its asynchronous JavaScript registration; historical evidence is retained
+but is superseded for the revised transport. Gate: typed data flow, custom-command ACL and independent
 backend authorization are enforced; stale events/snapshots cannot overwrite newer
 state and no unscoped renderer command is available. Compiled ACL manifests and
 capability definitions are retained alongside actual command outcomes, with raw

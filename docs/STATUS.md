@@ -6,8 +6,8 @@ Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P03.
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | IN_PROGRESS — event transport revalidation | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
-| P04–P12 | NOT_STARTED | Await revalidated P03 gate |
+| P03 | DONE — native foundation and IPC gate | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
+| P04–P12 | NOT_STARTED | P04 is eligible; no later phase is implemented here |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected
@@ -39,8 +39,8 @@ No SandMan implementation or engine binary is copied or bundled. All project
 source, Markdown and reviewed JSON evidence are published as authorized by the
 owner. Historical BLOCKED evidence is preserved separately in the [manifest](evidence/p02/manifest.json).
 
-P03 final source 742c2ab3ac39a7146005ca1f540a93ec592ddc0a,
-[run 38568549251](https://github.com/kurasis/SecureRun/actions/runs/38568549251):
+P03 final source 333e59cb6641fbcb3577c50f651fb9568df82140,
+[run 38571221105](https://github.com/kurasis/SecureRun/actions/runs/38571221105):
 both native Windows targets pass 19 foundation, 2 normal-configuration, 3 UI and
 21 real command-boundary cases. [Raw reports/generated ACLs](evidence/p03/manifest.json)
 are checksum-bound to the tested runtime sources. No required P03 gate remains

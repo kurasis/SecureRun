@@ -36,7 +36,7 @@ established by push and run evidence, not by permissions metadata.
 - `tools/probe/lab_probe.c`: harmless Windows process/architecture smoke probe.
 - `tools/lab/Build-Probe.ps1`: MSVC x64 build with warnings treated as errors.
 - `tools/lab/Invoke-P01.ps1`: OS/security inventory, native smoke, installer trust,
-  opt-in disposable x64 fixture preparation; no Sandboxie installation/mutation.
+  opt-in disposable Windows 11 fixture preparation; no Sandboxie installation/mutation.
 - `tools/lab/validate_repository.py`, `tests/test_lab_tools.py`: source integrity
   and evidence structure tooling, independent of Windows security behavior.
 - `.github/workflows/p01.yml`: Linux tooling plus Windows 11 ARM64 smoke.

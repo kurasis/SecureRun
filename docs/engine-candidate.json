@@ -28,5 +28,13 @@
       "url": "https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/LICENSE.Plus"
     }
   ],
-  "support_status": "UNTESTED_CANDIDATE"
+  "support_status": "UNTESTED_CANDIDATE",
+  "lab_installer": {
+    "name": "Sandboxie-Plus-ARM64-v1.18.6.exe",
+    "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.18.6/Sandboxie-Plus-ARM64-v1.18.6.exe",
+    "sha256": "7d2e4ca2ed7943beacad3e1df14d3159ad7d700f12a4ca11d4a4eaa20ffd527a",
+    "size": 22452544,
+    "architecture": "ARM64",
+    "role": "Official native candidate for owner-selected Windows 11 ARM64 lab; not a supported product tuple"
+  }
 }

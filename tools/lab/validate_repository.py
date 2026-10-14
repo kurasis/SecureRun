@@ -51,10 +51,10 @@ def validate(root: Path) -> None:
         raise ValueError('Candidate needs a full source commit')
     if pin['support_status'] != 'UNTESTED_CANDIDATE':
         raise ValueError('P01 cannot declare a supported engine')
-    installer = pin['installer']
-    prefix = f"https://github.com/{pin['repository']}/releases/download/{pin['tag']}/"
-    if installer['url'] != prefix + installer['name'] or not re.fullmatch(r'[0-9a-f]{64}', installer['sha256']):
-        raise ValueError('Candidate installer must use the pinned official release')
+    for installer in (pin['installer'], pin['lab_installer']):
+        prefix = f"https://github.com/{pin['repository']}/releases/download/{pin['tag']}/"
+        if installer['url'] != prefix + installer['name'] or not re.fullmatch(r'[0-9a-f]{64}', installer['sha256']):
+            raise ValueError('Candidate installer must use the pinned official release')
     results = json.loads((root / 'docs/test-catalog.json').read_text())
     if [test['id'] for test in results] != [f'T{i:02}' for i in range(1, 67)]:
         raise ValueError('Acceptance catalog must contain T01–T66 exactly once')

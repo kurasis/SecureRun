@@ -21,9 +21,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5, Node 24
+      - name: Verify original specification on the Windows checkout
+        shell: pwsh
+        run: python tools/lab/validate_repository.py
       - name: Run native probe and verify official installer
         shell: pwsh
-        run: ./tools/lab/Invoke-P01.ps1
+        run: ./tools/lab/Invoke-P01.ps1 -PrepareFixtures
       - name: Retain evidence even on failure
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5, Node 24

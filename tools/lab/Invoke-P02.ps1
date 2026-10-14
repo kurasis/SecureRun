@@ -322,10 +322,10 @@ try {
         $taskName = 'SRP02_SAME_' + $run
         $taskArguments = ([string[]]@('user-launch',$userFixture,$standardBox,'same-owner-zero',$engineHome) | ForEach-Object { [P02Bridge]::Quote($_) }) -join ' '
         $action = New-ScheduledTaskAction -Execute $nativeExe -Argument $taskArguments -WorkingDirectory $engineHome
-        $null = Register-ScheduledTask -TaskName $taskName -Action $action -User "$env:COMPUTERNAME\$userName" -Password $password -RunLevel Limited
+        $null = Register-ScheduledTask -TaskName $taskName -Action $action -User "$( [Environment]::MachineName )\$userName" -Password $password -RunLevel Limited
         $start = [Diagnostics.ProcessStartInfo]::new($guardShell)
         $start.UseShellExecute = $false; $start.WorkingDirectory = $engineHome
-        $start.UserName = $userName; $start.Domain = $env:COMPUTERNAME; $start.Password = $securePassword; $start.LoadUserProfile = $true
+        $start.UserName = $userName; $start.Domain = [Environment]::MachineName; $start.Password = $securePassword; $start.LoadUserProfile = $true
         foreach ($arg in [string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $probeHome 'standard_user_probe.ps1'),'-EngineHome',$engineHome,'-Fixture',$userFixture,'-Box',$standardBox,'-Probe',$nativeExe)) { $start.ArgumentList.Add($arg) }
         $process = [Diagnostics.Process]::Start($start)
         $password = $null

@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Security.AccessControl;
 using Microsoft.Win32.SafeHandles;
 
 public sealed class P02Bridge {
@@ -221,7 +222,9 @@ public sealed class P02Bridge {
         if(Read(box,"UseFileImage",0)=="y"||Read(box,"NeverDelete",0)=="y")throw new InvalidOperationException("LIFECYCLE_UNSUPPORTED");
         if(!rootIdentities.ContainsKey(box))throw new InvalidOperationException("ROOT_NOT_ENROLLED");
         string path=Root(box);
-        using(var handle=CreateFile(path,0x81,3,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero)){
+        if(update('s',null,box,"Enabled","n")!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_UNVERIFIED");
+        using(var seal=new P02StorageSeal(path,rootIdentities[box])){
+            var handle=seal.RootHandle;
             FileIdentity identity;
             if(handle.IsInvalid||!GetFileInformationByHandle(handle,out identity)||!identity.Same(rootIdentities[box])||(identity.attributes&0x400)!=0)throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
             int total=0;
@@ -237,7 +240,10 @@ public sealed class P02Bridge {
                     }
                 }
             }
+            seal.Freeze();
+            var denied=seal.ExerciseDeniedMutation();
             RequireUnboxed();if(Count(box)!=0)throw new InvalidOperationException("BOX_BUSY");
+            if(Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAUNCH_FENCE_CHANGED");
             IntPtr module=LoadLibraryEx(Path.Combine(Home,"QSbieAPI.dll"),IntPtr.Zero,0x100|0x800);
             if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
             // Exact exports observed in both authenticated v1.18.6 distributions.
@@ -256,7 +262,7 @@ public sealed class P02Bridge {
                 // A no-delete-share lease deliberately prevents unlinking the retained root.
                 // Accept only observed empty contents, the original identity, and the exact expected result.
                 if(status!=0&&unchecked((uint)status)!=0xc0000043U)throw new InvalidOperationException("NATIVE_CLEANUP_STATUS_UNRESOLVED_"+unchecked((uint)status).ToString("X8"));
-                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false}};
+                return new Dictionary<string,object>{{"status",unchecked((uint)status).ToString("x8")},{"contents_empty",true},{"root_identity_retained",true},{"root_unlink_deliberately_blocked",status!=0},{"builtin","QSbieAPI.NtIo_DeleteFolderRecursively"},{"legacy_delete_command_dispatched",false},{"launch_fence_read_back",true},{"sealed_descendant_count",seal.DescendantCount},{"mutation_during_native_dispatch",denied},{"dacl_restoration_by_retained_handles",true}};
             } finally {Marshal.FreeHGlobal(descriptor);Marshal.FreeHGlobal(name);}
         }
     }
@@ -427,6 +433,129 @@ public sealed class P02Bridge {
             }
         }
         throw new InvalidOperationException("STOP_RECONCILIATION_REQUIRED");
+    }
+}
+
+// Lab-only storage authority: Windows access checks use the caller token. No
+// elevation, generic deletion implementation, configurable ACL or helper IPC.
+internal sealed class P02StorageSeal : IDisposable {
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle file,out P02Bridge.FileIdentity identity);
+    [StructLayout(LayoutKind.Sequential)] struct StandardInfo { public long allocated,length;public uint links;[MarshalAs(UnmanagedType.U1)]public bool pending;[MarshalAs(UnmanagedType.U1)]public bool directory; }
+    [DllImport("kernel32",SetLastError=true)] static extern bool GetFileInformationByHandleEx(SafeFileHandle file,int kind,out StandardInfo data,uint size);
+    [DllImport("advapi32",SetLastError=true)] static extern uint GetSecurityInfo(SafeFileHandle file,int type,uint information,out IntPtr owner,out IntPtr group,out IntPtr dacl,out IntPtr sacl,out IntPtr descriptor);
+    [DllImport("advapi32",SetLastError=true)] static extern uint SetSecurityInfo(SafeFileHandle file,int type,uint information,IntPtr owner,IntPtr group,IntPtr dacl,IntPtr sacl);
+    [DllImport("advapi32")] static extern uint GetSecurityDescriptorLength(IntPtr descriptor);
+    [DllImport("advapi32")] static extern bool GetSecurityDescriptorOwner(IntPtr descriptor,out IntPtr owner,out bool defaulted);
+    [DllImport("advapi32")] static extern bool GetSecurityDescriptorDacl(IntPtr descriptor,out bool present,out IntPtr dacl,out bool defaulted);
+    [DllImport("kernel32")] static extern IntPtr LocalFree(IntPtr pointer);
+    sealed class Node {
+        public string path;public bool directory;public SafeFileHandle pin,security;
+        public P02Bridge.FileIdentity identity;public byte[] descriptor;public bool changed;
+    }
+    readonly List<SafeFileHandle> ancestors=new List<SafeFileHandle>();
+    readonly List<Node> nodes=new List<Node>();
+    readonly string root;
+    bool frozen;
+    public SafeFileHandle RootHandle { get {return nodes[0].pin;} }
+    public int DescendantCount { get {return nodes.Count-1;} }
+    static SafeFileHandle Open(string path,uint rights,uint share) {
+        var handle=CreateFile(path,rights,share,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero);
+        if(handle.IsInvalid){handle.Dispose();throw new InvalidOperationException("STORAGE_HANDLE_UNAVAILABLE_"+Marshal.GetLastWin32Error());}return handle;
+    }
+    static P02Bridge.FileIdentity Identify(SafeFileHandle handle) {
+        P02Bridge.FileIdentity identity;
+        if(!GetFileInformationByHandle(handle,out identity)||(identity.attributes&0x400)!=0)throw new InvalidOperationException("STORAGE_REPARSE_REJECTED");
+        if((identity.attributes&0x10)==0&&identity.links!=1)throw new InvalidOperationException("STORAGE_HARDLINK_REJECTED");return identity;
+    }
+    static byte[] Descriptor(SafeFileHandle file) {
+        IntPtr owner,group,dacl,sacl,descriptor;
+        if(GetSecurityInfo(file,1,5,out owner,out group,out dacl,out sacl,out descriptor)!=0)throw new InvalidOperationException("STORAGE_DACL_QUERY_FAILED");
+        try {int size=checked((int)GetSecurityDescriptorLength(descriptor));if(size>16384||size<20)throw new InvalidOperationException("STORAGE_DACL_BOUND");var bytes=new byte[size];Marshal.Copy(descriptor,bytes,0,size);return bytes;}
+        finally {LocalFree(descriptor);}
+    }
+    static void Apply(SafeFileHandle file,byte[] descriptor) {
+        var pinned=GCHandle.Alloc(descriptor,GCHandleType.Pinned);
+        try {IntPtr owner,dacl;bool present,defaulted;
+            if(!GetSecurityDescriptorOwner(pinned.AddrOfPinnedObject(),out owner,out defaulted)||!GetSecurityDescriptorDacl(pinned.AddrOfPinnedObject(),out present,out dacl,out defaulted)||!present)throw new InvalidOperationException("STORAGE_DACL_INVALID");
+            var original=new RawSecurityDescriptor(descriptor,0);
+            uint protectedFlag=(original.ControlFlags&ControlFlags.DiscretionaryAclProtected)!=0?0x80000000U:0x20000000U;
+            uint status=SetSecurityInfo(file,1,5|protectedFlag,owner,IntPtr.Zero,dacl,IntPtr.Zero);
+            if(status!=0)throw new InvalidOperationException("STORAGE_DACL_UPDATE_FAILED_"+status);
+        } finally {pinned.Free();}
+    }
+    static byte[] FrozenDescriptor(bool directory) {
+        FileSystemSecurity acl=directory?(FileSystemSecurity)new DirectorySecurity():new FileSecurity();
+        var user=WindowsIdentity.GetCurrent().User;
+        acl.SetOwner(user);acl.SetAccessRuleProtection(true,false);
+        var deny=FileSystemRights.WriteData|FileSystemRights.AppendData|FileSystemRights.WriteExtendedAttributes|FileSystemRights.ChangePermissions|FileSystemRights.TakeOwnership;
+        acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-3-4"),deny,AccessControlType.Deny));
+        var permitted=FileSystemRights.ReadAndExecute|FileSystemRights.WriteAttributes|FileSystemRights.Delete|FileSystemRights.DeleteSubdirectoriesAndFiles|FileSystemRights.Synchronize;
+        acl.AddAccessRule(new FileSystemAccessRule(user,permitted,AccessControlType.Allow));
+        foreach(string sid in new[]{"S-1-5-18","S-1-5-32-544"})acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(sid),FileSystemRights.FullControl,AccessControlType.Allow));
+        return acl.GetSecurityDescriptorBinaryForm();
+    }
+    public P02StorageSeal(string path,P02Bridge.FileIdentity expected) {
+        root=Path.GetFullPath(path);
+        string volume=Path.GetPathRoot(root);var drive=new DriveInfo(volume);
+        if(drive.DriveType!=DriveType.Fixed||drive.DriveFormat!="NTFS"||volume.Length!=3)throw new InvalidOperationException("STORAGE_VOLUME_UNSUPPORTED");
+        try {
+            string walk=volume;
+            var parts=root.Substring(volume.Length).Split('\\');
+            for(int index=-1;index<parts.Length-1;index++){
+                if(index>=0)walk=Path.Combine(walk,parts[index]);
+                var handle=Open(walk,0x20080U,3);ancestors.Add(handle);Identify(handle);
+            }
+            Capture(root,0);
+            if(!nodes[0].identity.Same(expected))throw new InvalidOperationException("ROOT_IDENTITY_CHANGED");
+        } catch {Dispose();throw;}
+    }
+    void Capture(string path,int depth) {
+        if(depth>32||nodes.Count>=513)throw new InvalidOperationException("STORAGE_TREE_BOUND");
+        var node=new Node{path=path};
+        node.security=Open(path,0xe0080U,7);nodes.Add(node);node.identity=Identify(node.security);
+        node.directory=(node.identity.attributes&0x10)!=0;
+        node.descriptor=Descriptor(node.security);
+        if(node.directory){node.pin=Open(path,0x20081U,3);if(!Identify(node.pin).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");
+            foreach(string child in Directory.EnumerateFileSystemEntries(path))Capture(child,depth+1);
+        }
+    }
+    public void Freeze() {
+        foreach(var node in nodes){Apply(node.security,FrozenDescriptor(node.directory));node.changed=true;}
+        var known=new Dictionary<string,Node>(StringComparer.OrdinalIgnoreCase);foreach(var node in nodes)known.Add(node.path,node);
+        var queue=new Queue<string>();queue.Enqueue(root);int observed=0;
+        while(queue.Count!=0){string path=queue.Dequeue();Node node;
+            if(!known.TryGetValue(path,out node))throw new InvalidOperationException("STORAGE_NEW_ENTRY_REJECTED");
+            using(var current=Open(path,0x80,7)){if(!Identify(current).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");}
+            observed++;if(node.directory)foreach(string entry in Directory.EnumerateFileSystemEntries(path))queue.Enqueue(entry);
+        }
+        if(observed!=nodes.Count)throw new InvalidOperationException("STORAGE_SNAPSHOT_CHANGED");
+        // Security handles were authorized before tightening and allow delete sharing;
+        // release nested namespace pins only after every creation/ACL right is sealed.
+        for(int index=1;index<nodes.Count;index++)if(nodes[index].pin!=null){nodes[index].pin.Dispose();nodes[index].pin=null;}
+        frozen=true;
+    }
+    public Dictionary<string,object> ExerciseDeniedMutation() {
+        if(!frozen)throw new InvalidOperationException("STORAGE_NOT_SEALED");
+        bool denied=false;try{using(var file=new FileStream(Path.Combine(root,"P02_RACE_INSERT.txt"),FileMode.CreateNew,FileAccess.Write)){}}
+        catch(UnauthorizedAccessException){denied=true;}
+        if(!denied)throw new InvalidOperationException("STORAGE_SEAL_CREATION_NOT_DENIED");
+        bool daclDenied=false;
+        using(var attempt=CreateFile(root,0x40000,7,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero))daclDenied=attempt.IsInvalid&&Marshal.GetLastWin32Error()==5;
+        if(!daclDenied)throw new InvalidOperationException("STORAGE_OWNER_RIGHTS_NOT_DENIED");
+        return new Dictionary<string,object>{{"new_entry_denied",true},{"new_write_dac_handle_denied",true},{"owner_rights_ace_enforced",true},{"retained_authorized_security_handles",true}};
+    }
+    public void Dispose() {
+        Exception error=null;
+        for(int index=nodes.Count-1;index>=0;index--){var node=nodes[index];
+            try {if(node.changed&&node.security!=null&&!node.security.IsClosed){StandardInfo info;
+                bool pending=GetFileInformationByHandleEx(node.security,1,out info,(uint)Marshal.SizeOf<StandardInfo>())&&info.pending;
+                if(!pending)Apply(node.security,node.descriptor);
+            }}catch(Exception failure){error=failure;}
+            finally {if(node.pin!=null)node.pin.Dispose();if(node.security!=null)node.security.Dispose();}
+        }
+        nodes.Clear();foreach(var handle in ancestors)handle.Dispose();ancestors.Clear();
+        if(error!=null)throw new InvalidOperationException("STORAGE_DACL_RECONCILIATION_REQUIRED",error);
     }
 }
 

@@ -7,6 +7,8 @@ Per the owner's instruction, `.github/workflows/p01.yml` uses the public GitHub
 Server. The script builds an x64 probe using the installed Visual Studio C++
 tools and runs it via Windows application emulation. No extra emulator, x86
 sandbox, VM download, engine installer execution or driver workaround is needed.
+The native ARM64 distribution from the same official release is pinned as the
+lab candidate; both installers are checked without installation.
 Exact build, architecture, hypervisor observations, security observations, source
 commit and timestamps are emitted to `inventory.json`. Unknown observations
 remain UNKNOWN. Workflow artifacts contain the probe and JSON evidence only.
@@ -17,10 +19,13 @@ and image inventory:
 https://github.com/actions/runner-images/blob/main/images/windows/Windows11-Arm64-Readme.md
 
 **This is a tooling lab.** It cannot load the pinned x64 Sandboxie driver through
-user-mode emulation. It is not a supported Windows/engine tuple and cannot close
-P02 containment tests. Windows 11 x64 disposable VM/PC remains the runtime lab
-prerequisite. An ARM64 engine would require a separately approved platform design
-and new source/trust/ABI evidence, not silent substitution.
+user-mode emulation. Per the explicit user request, Windows 11 ARM64 replaces the
+P01 x64 lab default. Native ARM64 Sandboxie is a P02 feasibility candidate, not a
+supported product tuple. P02 must source-review and test its native driver and
+x64-emulated targets before production ARM64 support can be claimed. Original
+Windows 11 x64 product compatibility still requires its own native x64 evidence.
+The first hosted inventory reports Secure Boot disabled by the image; no setting
+was changed. Treat production security-setting parity as unresolved in P02.
 
 ## Reproduce the hosted checks
 
@@ -28,27 +33,27 @@ Push changes or use the `P01 validation` workflow dispatch. The workflow checks
 out the exact manager commit, validates source-only outputs, then runs:
 
 ```powershell
-./tools/lab/Invoke-P01.ps1
+./tools/lab/Invoke-P01.ps1 -PrepareFixtures
 ```
 
 Equivalent local prerequisites: Windows 11 ARM64 or x64, PowerShell 7, Git,
 Visual Studio 2022 C++ tools for the x64 target and the Windows SDK. In the
 repository, run the same command. It builds only lab_probe.exe, runs it, downloads
-the pinned installer over verified HTTPS and checks size, SHA256 and Windows
-Authenticode status. It never executes that installer. A bad or unknown signature
+the pinned x64 and ARM64 installers over verified HTTPS and checks size, SHA256 and Windows
+Authenticode status. It never executes either installer. A bad or unknown signature
 fails the check; do not bypass it. The Windows trust result is platform validation,
 not independent proof of every distribution component. Installed component trust,
 including catalog trust for the driver, belongs to P02/P04.
 
-Retain `artifacts/p01/{inventory,probe,installer-trust}.json` with exact workflow
+Retain `artifacts/p01/{inventory,probe,installer-trust,installer-trust-arm64,fixtures}.json` with exact workflow
 run/job URL. Artifacts are retained for 14 days; commit reviewed non-sensitive
 JSON results and links to docs/evidence before expiration. Do not commit binaries,
 certificates, machine names, usernames, SIDs, real paths or credential values.
 No diagnostic environment dump is performed.
 
-## Required x64 engine lab
+## Later native engine validation
 
-Provision a disposable Windows 11 x64 VM with 4 vCPU, 8 GiB RAM, 40 GiB disk,
+For the original x64 compatibility target, provision a disposable Windows 11 x64 VM with 4 vCPU, 8 GiB RAM, 40 GiB disk,
 local fixed NTFS, a serviced OS build, normal Secure Boot, driver signature
 checks, Defender and existing HVCI settings preserved. No real host shared
 folders, clipboard sync, personal accounts or production credentials. Record the
@@ -56,8 +61,9 @@ hypervisor/version and a clean snapshot ID manually in local evidence. A PC is
 acceptable only with dedicated synthetic accounts and a restorable backup.
 
 Install Visual Studio C++ tools/Windows SDK, Git, PowerShell 7 and official
-WebView2. Run `./tools/lab/Invoke-P01.ps1 -DedicatedLab`. The dedicated switch
-requires Windows client build >=22000, native AMD64 and NTFS. It creates a unique
+WebView2. Run `./tools/lab/Invoke-P01.ps1 -PrepareFixtures`. Fixture preparation requires
+Windows client build >=22000 and fixed local NTFS; the probe supports native
+AMD64 and ARM64 with an x64 process. It creates a unique
 `%LOCALAPPDATA%\SecureRunLab\runs\<random UUID>` with host-canaries, import,
 export and evidence directories, and one synthetic marker. This is not an ACL
 or containment pass. Review the captured security state, attach backup/snapshot
@@ -65,10 +71,11 @@ identity and hash the probe. A required protection reported UNKNOWN needs a
 read-only administrative observation; never change settings just to pass.
 
 Download/install only the official pinned engine, after installer trust succeeds,
-inside that dedicated VM. Record actual component file versions, hashes, embedded
+inside an appropriate native-architecture disposable VM during P02. Record actual component file versions, hashes, embedded
 or catalog signatures, service/driver health and reboot state. P01 records the
 candidate; P02 source review decides which fixed benign operations can run.
-Never install a kernel driver on the cloud Linux machine or ARM emulation runner.
+Never attempt to load an x64 kernel driver on Linux or ARM64; do not install any
+engine during P01. ARM64 native-driver installation/testing belongs to P02.
 No WFP/global engine setting changes are part of P01.
 
 ## Fixture contract for P02

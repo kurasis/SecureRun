@@ -5,8 +5,8 @@ No supported tuple exists. P01 provenance does not establish enforcement.
 | Platform | Engine candidate | State | Evidence |
 |---|---|---|---|
 | Current Linux cloud | Not installed | Source/checksum checks only | [provenance](evidence/p01/linux-provenance.json) |
-| GitHub Windows 11 ARM64 | Plus x64 1.18.6 installer, not installed | Tooling-only; x64 probe emulated; CI result pending | [lab](LAB_SETUP.md) |
-| Serviced Windows 11 x64 | Plus 1.18.6 / core 5.73.6 | BLOCKED: disposable runtime runner unavailable | P02 required |
+| GitHub Windows 11 ARM64 | Plus ARM64 and x64 1.18.6 installers, not installed | Tooling-only; x64 probe emulated; first CI passed, final fixture run pending | [lab](LAB_SETUP.md) |
+| Serviced Windows 11 x64 | Plus 1.18.6 / core 5.73.6 | NOT_TESTED: requires a native x64 compatibility runner | P02 required |
 
 Pinned source: `cdba7096240b93d79c5373aa81a75a1c5c71b883` at official
 [tag v1.18.6](https://github.com/sandboxie-plus/Sandboxie/releases/tag/v1.18.6),
@@ -22,7 +22,10 @@ and SbieDrv.sys use
 Installer size: 24,914,432 bytes. SHA256:
 `3ad29e1ec18618ee9aa4ef4e21ab0548cf2188b94c05c41cb7a07b5d2d0270e2`.
 HTTPS download matched official GitHub release asset digest on Linux.
-Authenticode, signer identity, installed component/cat signatures, architecture,
+The first Windows run verified x64 installer Authenticode as Valid; signer
+CN=NOVASYNC LABS PTE. LTD. ARM64 candidate SHA256:
+`7d2e4ca2ed7943beacad3e1df14d3159ad7d700f12a4ca11d4a4eaa20ffd527a`.
+Installed component/cat signatures, architecture,
 service/driver health, enforcement and entitlement must be recorded on Windows.
 A digest served with a binary is not independent authenticity evidence.
 

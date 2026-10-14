@@ -19,9 +19,10 @@ own phase needs them. Current C probe is lab-only, not the adapter.
 
 The user requested GitHub Actions, then specifically Windows 11 ARM64 rather than
 Windows Server. Use `windows-11-arm`, compiling a harmless x64 executable and
-running it through OS emulation. This changes the P01 tooling runner, not the
-product's supported engine matrix. Emulation cannot validate an x64 kernel driver.
-Do not install x64 Sandboxie on ARM64 or silently switch to an ARM64 engine.
+running it through OS emulation. This explicitly replaces P01's x64 lab default. Product support remains
+unproven; the ARM64 distribution is a native lab candidate for P02. Emulation cannot validate an x64 kernel driver.
+Do not install x64 Sandboxie on ARM64. Pin the official ARM64 installer separately
+for lab feasibility; no engine installation or production support is claimed in P01.
 
 All 26 uploaded specification documents are preserved unchanged. Their embedded
 coding prompt asks for P02, but the current user request is limited to P01.

@@ -38,6 +38,9 @@ try {
         if($LASTEXITCODE -ne 0){throw 'ARCHITECTURE_PROBE_BUILD_FAILED'}
         Copy-Item (Join-Path $repo ("target/"+$probeTarget.target+"/debug/securerun-policy-probe.exe")) (Join-Path $managerHome ("securerun-policy-probe-"+$probeTarget.architecture+'.exe'))
     }
+    cargo build --locked -p securerun-sandboxie-adapter --example p05_metadata_fixture --features policy-ci --target $target
+    if($LASTEXITCODE -ne 0){throw 'METADATA_FIXTURE_BUILD_FAILED'}
+    Copy-Item (Join-Path $repo "target/$target/debug/examples/p05_metadata_fixture.exe") $managerHome
     $normalBackup=Join-Path $managerHome 'normal-manager.bin';Copy-Item $app $normalBackup
     npm run tauri -- build --debug --no-bundle --target $target --features policy-ci
     if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
@@ -108,7 +111,7 @@ try {
         }
     }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
-    foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
+    foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1','p05_metadata.ps1','p05_boxed.ps1','p05_noenforcement.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
     foreach($arch in @('x86','x64','arm64')){$file=Join-Path $repo "artifacts/p02/feasibility_probe_$arch.exe";if(Test-Path $file){Copy-Item $file $managerHome}}
     $lab=[P05Lab]::new($engine,$fixture,$managerHome)
     function Current { $r=Policy @{action='LIST'};Require ($r.reason -eq 'OBSERVED') $r.reason;return $r }
@@ -135,6 +138,18 @@ try {
         foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome $script))+$arguments){$start.ArgumentList.Add($arg)}
         return [Diagnostics.Process]::Start($start)
     }
+    $boxedReport=$null
+    Case 'T58' 'boxed_production_manager_and_worker_refuse_forged_parent' {
+        $bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($labShell,$app));$box='SRP02_P05_CTL_'+$run.Substring(0,12);$bridge.Register($box)
+        foreach($setting in @(@('Enabled','y'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$bridge.Set($box,$setting[0],$setting[1])};$bridge.Set($box,'FileRootPath',(Join-Path $fixture "boxes/$box"));$root=$bridge.Root($box);$null=New-Item -ItemType Directory -Path $root -Force;$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'results') -Force;$null=$bridge.CaptureRoot($box)
+        $hostBirth=[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc());[P02Bridge]::MinimizeProcessEnvironment($engine)
+        $receipt=$bridge.Launch($box,$labShell,[string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $managerHome 'p05_boxed.ps1'),'-Manager',$app,'-Fixture',$fixture,'-HostPid',[string]$PID,'-HostBirth',$hostBirth))
+        try{Require ([P02Bridge]::Completed($receipt,70000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'BOXED_POLICY_GATE_FAILED';$files=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'boxed-policy.json');Require ($files.Count -eq 1 -and $files[0].Length -le 4096) 'BOXED_POLICY_REPORT_MISSING';$script:boxedReport=Get-Content $files[0].FullName -Raw|ConvertFrom-Json;Copy-Item $files[0].FullName (Join-Path $out 'boxed-policy.json');$boxedReport}finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($receipt)}
+    }
+    Case 'T47' 'boxed_same_sid_client_cannot_claim_unboxed_authority' {Require ($null -ne $boxedReport -and $boxedReport.status -eq 'PASSED' -and $boxedReport.actual_boxed_worker_executed -and -not $boxedReport.claimed_unboxed_parent_accepted -and -not $boxedReport.control_dispatched) 'BOXED_PEER_AUTHORITY_NOT_REFUSED';$boxedReport}
+    Case 'T27' 'boxed_ipc_client_has_no_privileged_route' {Require ($null -ne $boxedReport -and $boxedReport.status -eq 'PASSED' -and -not $boxedReport.privileged_helper -and -not $boxedReport.control_dispatched) 'BOXED_PRIVILEGED_ROUTE_ACCEPTED';@{actual_boxed_control_refused=$true;privileged_helper=$false;uac_denial_subcase='NOT_APPLICABLE_NO_ELEVATION_ROUTE'}}
+    Case 'T52' 'different_admin_uac_route_is_absent' {@{reason='NO_PRODUCT_ELEVATION_OR_HELPER_ROUTE';original_profile_authority='OS_CURRENT_USER';production_target_launches=0}}
+    ($cases|Where-Object name -eq 'different_admin_uac_route_is_absent').status='NOT_APPLICABLE';Save
     Case 'T37' 'literal_grammar_and_root_grants_rejected' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
         foreach($path in @('C:\bad%TEMP%','C:\bad,selector',"C:\bad`nEnabled=y",'C:\bad:stream','\\localhost\share','C:\bad*',$environment.compiled.section.FileRootPath[0])){
@@ -230,14 +245,17 @@ try {
         $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count;Require ($after -gt $before) 'FRESH_DIAGNOSTIC_NOT_CREATED';$script:environment=$r.environments|Where-Object id -eq $environment.id
         @{fresh_throwaway_record_created=$true;existing_storage_not_diagnostic_host=$true;actual_virtualized_executable_shadow=$true;protected_host_probe_unchanged=$true;shadow_file_retained=(Test-Path $shadows[0].FullName)}
     }
+    $script:runningMutation=$null
     Case 'T60' 'running_sibling_prevents_any_new_storage' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$box='SR_'+$environment.id.Replace('-','');$lab.Register($box);$arch=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'arm64'}else{'x64'}
         [P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.Hold($box,(Join-Path $managerHome "feasibility_probe_$arch.exe"))
         try {Start-Sleep -Milliseconds 500;$before=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/boxes')).Count
+            $update=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired)};Require ($update.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') 'RUNNING_POLICY_UPDATE_ALLOWED';$script:runningMutation=@{reason=$update.reason;policy_applied_while_running=$false;held_process_not_terminated=$true}
             $r=Policy @{action='CREATE';display_name='Running rollout must defer';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -in @('STOP_REQUIRED_ALL_SESSIONS','SIBLING_RECONCILIATION_REQUIRED','CONFIGURATION_CONFLICT')) 'RUNNING_ROLLOUT_ALLOWED'
             $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/boxes')).Count;Require ($after -eq $before) 'PRIVATE_STORAGE_MATERIALIZED_WHILE_RUNNING';@{new_storage_absent=$true;running_box_not_terminated=$true;manager_launch_disabled=$true}
         }finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
     }
+    Case 'T16' 'running_policy_mutation_is_deferred' {Require ($null -ne $runningMutation -and $runningMutation.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') 'RUNNING_POLICY_GATE_NOT_OBSERVED';$runningMutation}
     Case 'T60' 'future_sibling_denials_verified_before_root_creation' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$r=Policy @{action='CREATE';display_name='Synthetic future sibling';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'OBSERVED') $r.reason
         $existing=$r.environments|Where-Object id -eq $environment.id;$new=$r.environments|Where-Object id -ne $environment.id
@@ -254,6 +272,20 @@ try {
         Require ($null -ne $standardAccount) 'STANDARD_OWNER_REQUIRED';$request=Get-Content (Join-Path $standardAccount.fixture 'results/acl-request.json') -Raw|ConvertFrom-Json
         $account=New-Standard 'other';$result=Join-Path $account.fixture 'results/acl.json';$p=Start-Standard $account 'p05_acl.ps1' @('-RootCanary',$request.root_canary,'-MetadataCanary',$request.metadata_canary,'-ResultFile',$result)
         try{Require ($p.WaitForExit(30000)) 'SECOND_USER_ACL_TIMEOUT';$worker=Get-Content $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.root_denied -and $worker.metadata_denied -and $worker.standard_user) 'SECOND_USER_ACL_BYPASS';$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+    }
+    Case 'T15' 'accepted_writes_without_independent_enforcement_remain_conflicted' {
+        $account=New-Standard 'unprove';$probePath=Join-Path $managerHome 'securerun-policy-probe.exe';$probeBackup=Join-Path $managerHome 'probe-normal.bin';Copy-Item $probePath $probeBackup
+        $probeHash=(Get-FileHash $probePath).Hash
+        try{
+            # A different fixed benign fixture rejects the canary protocol.
+            # Accepted engine writes cannot substitute for a probe result.
+            Copy-Item (Join-Path $managerHome 'p05-view-probe.exe') $probePath -Force;$p=Start-Standard $account 'p05_noenforcement.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine)
+            try{Require ($p.WaitForExit(180000)) 'NO_ENFORCEMENT_CASE_TIMEOUT';$file=Join-Path $account.fixture 'results/no-enforcement.json';$worker=Get-Content $file -Raw|ConvertFrom-Json;Copy-Item $file (Join-Path $out 'no-enforcement.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'NO_ENFORCEMENT_GATE_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+        }finally{Copy-Item $probeBackup $probePath -Force;Require ((Get-FileHash $probePath).Hash -eq $probeHash) 'PAIRED_PROBE_RESTORE_FAILED'}
+    }
+    Case 'T57' 'forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules' {
+        $account=New-Standard 'meta';$p=Start-Standard $account 'p05_metadata.ps1' @('-Manager',$app,'-Fixture',$account.fixture,'-EngineHome',$engine,'-Tool',(Join-Path $managerHome 'p05_metadata_fixture.exe'))
+        try{Require ($p.WaitForExit(180000)) 'METADATA_AUTHORITY_TIMEOUT';$file=Join-Path $account.fixture 'results/metadata-authority.json';$worker=Get-Content $file -Raw|ConvertFrom-Json;Copy-Item $file (Join-Path $out 'metadata-authority.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'METADATA_AUTHORITY_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code;$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
     foreach($stage in @('Intent','Fenced','Writing','Readback','PendingRoot','RootBound','Verifying')) {
         Case 'T18' ("actual_worker_interruption_"+$stage.ToLowerInvariant()) {
@@ -275,7 +307,7 @@ try {
     }
     $failed=@($cases|Where-Object status -eq 'FAILED').Count
     $data=[IO.File]::ReadAllBytes($app);$pe=[BitConverter]::ToInt32($data,0x3c);$machine=[BitConverter]::ToUInt16($data,$pe+4).ToString('x4')
-    @{phase='P05';result=$(if($failed -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;manager_binary_sha256=(Get-FileHash $app).Hash.ToLowerInvariant();probe_binary_sha256=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash.ToLowerInvariant();pe_machine=$machine;os_build=[Environment]::OSVersion.Version.Build;fault_binary_sha256=$faultHash;fault_feature_release_enabled=$false;adapter_tests_passed=$unitCount;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;production_target_launches=0;elevated_helper=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
+    @{phase='P05';result=$(if($failed -eq 0){'PASSED'}else{'FAILED'});manager_commit=$testedCommit;manager_binary_sha256=(Get-FileHash $app).Hash.ToLowerInvariant();probe_binary_sha256=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash.ToLowerInvariant();pe_machine=$machine;os_build=[Environment]::OSVersion.Version.Build;fault_binary_sha256=$faultHash;fault_feature_release_enabled=$false;adapter_tests_passed=$unitCount;native_not_applicable=@($cases|Where-Object status -eq 'NOT_APPLICABLE').Count;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;production_target_launches=0;elevated_helper=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
     if($failed -ne 0){throw 'P05_NATIVE_VALIDATION_FAILED'}
 }finally{
     $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'

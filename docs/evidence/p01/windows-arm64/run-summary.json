@@ -1,0 +1,26 @@
+{
+  "workflow_run_id": 38536438262,
+  "workflow_url": "https://github.com/kurasis/SecureRun/actions/runs/38536438262",
+  "result": "success",
+  "source_head_commit": "3529b11d7657fb4520c1aa3b17aaa23f2ff33dfb",
+  "tested_checkout_commit": "795f167855acb46c65e8a1ef21967d7baa91e9fd",
+  "repository_integrity": "PASS",
+  "tooling_tests": {
+    "run": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "native_smoke": "PASS_X64_EMULATED_ON_ARM64",
+  "installer_x64": "SHA256_AND_AUTHENTICODE_VALID",
+  "installer_arm64": "SHA256_AND_AUTHENTICODE_VALID",
+  "fixtures": "UNIQUE_SYNTHETIC_NTFS_CANARY_PREPARED",
+  "security_scenarios_executed": 0,
+  "scope_adjustment": "Owner explicitly selected Windows 11 ARM64 instead of the original x64 lab default",
+  "runtime_tool_hashes": {
+    "tools/probe/lab_probe.c": "5d985b5d06b91402b88041f1f25a264a046ef227535b98e3b9cc58905d23b8e1",
+    "tools/lab/Build-Probe.ps1": "5b439fbc27a46f5781ec01a5702ae8af75661dc44781850d3f066cb1feb380ef",
+    "tools/lab/Invoke-P01.ps1": "3d16afd88b60c422f001fe2b09cd4da731398359edaa60e1c4deaa5ad123cab2",
+    ".github/workflows/p01.yml": "91d8fc1249165ded17f27d08d821a81cde31ec08bff19b57852e01327f3a7efd",
+    "docs/engine-candidate.json": "8b6fe72b6bbeb3a718cfda3c11ff50f5338c29aa6215f1fdebffe00b89c19303"
+  }
+}

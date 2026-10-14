@@ -25,6 +25,9 @@ try {
     }
     Set-Acl -LiteralPath $root -AclObject $acl
     $null = $bridge.CaptureRoot($Box)
+    $result.standard_user = $true
+    $result.configuration_created_by_standard_user = $true
+    $result.root_acl_applied_by_standard_user = $true
     $bridge.Set($Box,'Enabled','y')
     [P02Bridge]::MinimizeProcessEnvironment($EngineHome)
     $receipt = $bridge.Launch($Box,$Probe,[string[]]@('hold-session',$Fixture,$Box,'same-owner-current',$EngineHome))
@@ -36,20 +39,18 @@ try {
             if ($result.sessions.simultaneous_session_count -ge 2) { break }
             Start-Sleep -Milliseconds 100
         } while ($clock.ElapsedMilliseconds -lt 45000)
-        if ($result.sessions.simultaneous_session_count -lt 2 -or -not $result.sessions.current_session_observed -or $result.sessions.current_session_process_count -lt 1) { throw 'SAME_SID_SECOND_SESSION_UNAVAILABLE' }
+        $result.sessions_status = if ($result.sessions.simultaneous_session_count -ge 2 -and $result.sessions.current_session_observed -and $result.sessions.current_session_process_count -ge 1) { 'PASSED' } else { 'BLOCKED' }
         $result.completed_objects = $bridge.StopHeld($Box)
         if (-not [P02Bridge]::Completed($receipt,5000) -or $bridge.Count($Box) -ne 0) { throw 'STANDARD_USER_STOP_INCOMPLETE' }
     } finally { [P02Bridge]::CloseReceipt($receipt) }
-    $result.standard_user = $true
-    $result.configuration_created_by_standard_user = $true
-    $result.root_acl_applied_by_standard_user = $true
     $result.unboxed_manager_diagnostics = $bridge.ManagerDiagnostics()
     $null = New-Item -ItemType Directory -Path (Join-Path $root 'sealed-test')
     'P02_NORMAL_USER_CLEANUP' | Set-Content (Join-Path $root 'sealed-test/fixture.txt')
     $result.unsafe_storage = $bridge.ExerciseUnsafeStorage($Box)
     $result.cleanup = $bridge.ClearOwnedWithNative($Box)
     if (-not $result.cleanup.contents_empty -or -not $result.cleanup.root_identity_retained) { throw 'STANDARD_USER_CLEANUP_UNCONFIRMED' }
-    $result.status = 'PASSED'
+    $result.status = if ($result.sessions_status -eq 'PASSED') { 'PASSED' } else { 'BLOCKED' }
+    if ($result.status -eq 'BLOCKED') { $result.diagnostic_code = 'SAME_SID_SECOND_SESSION_UNAVAILABLE' }
 } catch {
     $result.status = 'FAILED'
     $message = $_.Exception.Message

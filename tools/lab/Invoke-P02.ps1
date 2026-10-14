@@ -379,7 +379,9 @@ try {
         foreach ($box in $boxes) { $null = $bridge.StopHeld($box) }
         $siblingCanary = Join-Path $roots[$boxB] 'private.txt'
         $before = (Get-FileHash $siblingCanary).Hash
+        $unsafe = $bridge.ExerciseUnsafeStorage($boxA)
         $result = $bridge.ClearOwnedWithNative($boxA)
+        $result['unsafe_fixture_rejection'] = $unsafe
         Require ((Get-FileHash $siblingCanary).Hash -eq $before -and (Get-FileHash (Join-Path $fixture 'canaries/write.txt')).Hash -eq $hostHash) 'CLEANUP_HOST_CANARY_CHANGED'
         $result
     }

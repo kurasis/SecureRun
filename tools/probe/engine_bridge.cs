@@ -294,6 +294,7 @@ public sealed class P02Bridge {
         try{ClearOwnedWithNative(box);}catch(InvalidOperationException failure){linkRejected=failure.Message.Contains("HARDLINK_REJECTED");}
         if(!linkRejected||NativeCleanupDispatched)throw new InvalidOperationException("HARDLINK_CLEANUP_DISPATCHED");
         File.Delete(link); // remove only this individually known synthetic hard link
+        Directory.CreateDirectory(Path.Combine(path,"P02_REPARSE_SEALED"));
         if(!CryptographicOperations.FixedTimeEquals(hash,SHA256.HashData(File.ReadAllBytes(canary))))throw new InvalidOperationException("OUTSIDE_CLEANUP_CANARY_CHANGED");
         return new Dictionary<string,object>{{"reparse_rejected_before_native_dispatch",true},{"multiple_hardlinks_rejected_before_native_dispatch",true},{"outside_canary_unchanged",true},{"negative_fixture_repair_was_individual",true}};
     }
@@ -622,7 +623,14 @@ internal sealed class P02StorageSeal : IDisposable {
         bool daclDenied=false;
         using(var attempt=CreateFile(root,0x40000,7,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero))daclDenied=attempt.IsInvalid&&Marshal.GetLastWin32Error()==5;
         if(!daclDenied)throw new InvalidOperationException("STORAGE_OWNER_RIGHTS_NOT_DENIED");
-        return new Dictionary<string,object>{{"new_entry_denied",true},{"new_write_dac_handle_denied",true},{"owner_rights_ace_enforced",true},{"retained_authorized_security_handles",true}};
+        bool reparseDenied=false;string slot=Path.Combine(root,"P02_REPARSE_SEALED");
+        if(Directory.Exists(slot)){
+            string outside=Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(root)),"canaries","cleanup-outside");
+            try {MakeJunction(slot,outside,0x100U);}
+            catch(InvalidOperationException failure){reparseDenied=failure.Message=="JUNCTION_CONTROL_FAILED_5"||failure.Message=="STORAGE_HANDLE_UNAVAILABLE_5";}
+            if(!reparseDenied)throw new InvalidOperationException("STORAGE_REPARSE_MUTATION_NOT_DENIED");
+        }
+        return new Dictionary<string,object>{{"new_entry_denied",true},{"new_write_dac_handle_denied",true},{"owner_rights_ace_enforced",true},{"retained_authorized_security_handles",true},{"attribute_only_reparse_attack_exercised",Directory.Exists(slot)},{"attribute_only_reparse_mutation_denied",reparseDenied}};
     }
     public void Dispose() {
         Exception error=null;

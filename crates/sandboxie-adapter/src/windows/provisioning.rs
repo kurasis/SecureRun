@@ -66,6 +66,18 @@ fn fixed_ntfs(path: &Path) -> R<()> {
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     literal_path(value)?;
     let volume = wide(&value[..3]);
+    let drive = wide(&value[..2]);
+    let mut mapping = [0u16; 1024];
+    if unsafe { QueryDosDeviceW(drive.as_ptr(), mapping.as_mut_ptr(), 1024) } == 0 {
+        return Err("DOS_NAMESPACE_UNKNOWN");
+    }
+    let device = text(&mapping)?;
+    let Some(number) = device.strip_prefix("\\Device\\HarddiskVolume") else {
+        return Err("DOS_NAMESPACE_ALIAS_UNSUPPORTED");
+    };
+    if number.is_empty() || !number.bytes().all(|b| b.is_ascii_digit()) {
+        return Err("DOS_NAMESPACE_ALIAS_UNSUPPORTED");
+    }
     let mut fs = [0u16; 32];
     if unsafe { GetDriveTypeW(volume.as_ptr()) } != DRIVE_FIXED
         || unsafe {
@@ -104,6 +116,23 @@ fn canonical(path: &Path) -> R<Vec<File>> {
         })
         .collect::<R<Vec<File>>>()?;
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
+    let mut final_name = [0u16; 1024];
+    let n = unsafe {
+        GetFinalPathNameByHandleW(
+            held.last().ok_or("PATH_IDENTITY_UNKNOWN")?.as_raw_handle(),
+            final_name.as_mut_ptr(),
+            1024,
+            FILE_NAME_NORMALIZED | VOLUME_NAME_DOS,
+        )
+    };
+    if n == 0
+        || n >= 1024
+        || !text(&final_name)?
+            .strip_prefix("\\\\?\\")
+            .is_some_and(|s| s.eq_ignore_ascii_case(value))
+    {
+        return Err("PATH_ALIAS_UNSUPPORTED");
+    }
     let mut long = [0u16; 1024];
     let n = unsafe { GetLongPathNameW(wide(value).as_ptr(), long.as_mut_ptr(), 1024) };
     if n == 0 || n >= 1024 || !text(&long)?.eq_ignore_ascii_case(value) {
@@ -307,7 +336,11 @@ fn ensure_private(path: &Path, owner: &str) -> R<Vec<File>> {
     match std::fs::symlink_metadata(path) {
         Ok(_) => {}
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            drop(fresh_directory(path, owner)?);
+            match fresh_directory(path, owner) {
+                Ok(f) => drop(f),
+                Err("PREEXISTING_ROOT_NOT_ADOPTED") => {}
+                Err(code) => return Err(code),
+            };
         }
         Err(_) => return Err("PROFILE_UNAVAILABLE"),
     }
@@ -319,7 +352,11 @@ fn read_section(api: &Api, name: &str, effective: bool) -> R<Section> {
     let mut keys = std::collections::BTreeSet::new();
     let mut ended = false;
     for i in 0..128 {
-        match api.conf(Some(name), None, i | 0x60000000)? {
+        match api.conf(
+            Some(name),
+            None,
+            i | if effective { 0x60000000 } else { RAW_FLAGS },
+        )? {
             Some(key) => {
                 if key.len() > 64 || !key.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_') {
                     return Err("CONFIGURATION_KEY_UNSUPPORTED");

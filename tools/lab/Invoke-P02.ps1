@@ -18,6 +18,7 @@ function Invoke-Case([string]$id, [string]$name, [scriptblock]$body) {
         $result.status = 'FAILED'
         $message = $_.Exception.Message
         $result.diagnostic_code = if ($message -match '\b([A-Z][A-Z0-9_]{3,80})\b') { $Matches[1] } else { 'SPIKE_OPERATION_FAILED' }
+        if ($result.diagnostic_code -match 'POSITIVE_CONTROL_UNAVAILABLE|UNAVAILABLE|UNRESOLVED|OUTCOME_UNKNOWN|INCOMPLETE') { $result.status = 'BLOCKED' }
     }
     Save-Cases
 }
@@ -46,6 +47,7 @@ New-Item -ItemType Directory -Path $probeHome | Out-Null
 foreach ($dir in @('canaries','blocked','metadata','results','boxes')) { New-Item -ItemType Directory -Path (Join-Path $fixture $dir) -Force | Out-Null }
 'P02_HOST_CANARY' | Set-Content (Join-Path $fixture 'canaries/write.txt') -NoNewline
 'P02_SYNTHETIC_SECRET' | Set-Content (Join-Path $fixture 'blocked/secret.txt')
+'P02_PUBLIC_SYNTHETIC_CONTROL' | Set-Content (Join-Path $fixture 'canaries/read-positive.txt')
 'P02_SYNTHETIC_MANAGER_DATA' | Set-Content (Join-Path $fixture 'metadata/manager.txt')
 $hostHash = (Get-FileHash (Join-Path $fixture 'canaries/write.txt')).Hash
 $probeFiles = @(Get-ChildItem (Join-Path $out 'feasibility_probe_*.exe'))
@@ -160,10 +162,15 @@ try {
         }
     }
     Invoke-Case 'T33' 'Unapproved automation blocks cleanup dispatch' {
-        $bridge.Set($boxA,'DeleteCommand','P02_UNAPPROVED_SYNTHETIC_COMMAND')
-        Require ($bridge.Read($boxA,'DeleteCommand',0) -eq 'P02_UNAPPROVED_SYNTHETIC_COMMAND') 'HOOK_NOT_OBSERVED'
-        $bridge.Set($boxA,'DeleteCommand',$null)
-        @{ dispatch_permitted = $false; hook_never_executed = $true; builtin_cleanup_scope = 'BLOCKED_SOURCE_REVIEW' }
+        $observed = @()
+        foreach ($key in @('DeleteCommand','OnBoxDelete','OnBoxTerminate','OnFileRecovery')) {
+            $bridge.Set($boxA,$key,'P02_UNAPPROVED_SYNTHETIC_COMMAND')
+            Require ($bridge.CleanupReason($boxA) -eq 'UNAPPROVED_AUTOMATION') 'HOOK_GUARD_FAILED'
+            $observed += $key
+            $bridge.Set($boxA,$key,$null)
+        }
+        Require ($bridge.CleanupReason($boxA) -eq 'BUILTIN_CLEANUP_SCOPE_UNVERIFIED') 'CLEANUP_SCOPE_GUARD_FAILED'
+        @{ dispatch_permitted = $false; hooks_checked = $observed; hook_never_executed = $true; builtin_cleanup_scope = 'BLOCKED_SOURCE_REVIEW' }
     }
     Invoke-Case 'T62' 'Retained process handle termination and completed wait' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'hold',$engineHome))
@@ -178,8 +185,41 @@ try {
     }
     Invoke-Case 'T60' 'Stop affected box before future sibling rollout' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'rollout',$engineHome))
-        try { Start-Sleep -Milliseconds 500; $busyRejected = $false; try { $bridge.Set($boxA,'AutoRecover','n') } catch { $busyRejected = $_.Exception.Message -match 'BOX_BUSY' }; Require $busyRejected 'RUNNING_MUTATION_ALLOWED'; $null = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000)) 'STOP_NOT_COMPLETE'; @{ running_policy_mutation_rejected = $true; creation_must_wait_for_all_affected_boxes = $true; future_box_creation_variant = 'NOT_TESTED' } }
+        try {
+            Start-Sleep -Milliseconds 500
+            Require (-not $bridge.MayMaterializeSibling([string[]]$boxes)) 'RUNNING_SIBLING_CREATION_ALLOWED'
+            $futureBox = 'SRP02_NEW_' + $run.Substring(0,12)
+            $futureRoot = Join-Path $fixture "boxes/$futureBox"
+            Require (-not (Test-Path $futureRoot)) 'FUTURE_STORAGE_ALREADY_EXISTS'
+            $null = $bridge.StopHeld($boxA)
+            Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.MayMaterializeSibling([string[]]$boxes)) 'STOP_NOT_COMPLETE'
+            foreach ($existing in $boxes) { $bridge.AppendClosed($existing,($futureRoot+'\*')) }
+            $bridge.Register($futureBox); $bridge.Set($futureBox,'Enabled','y'); $bridge.Set($futureBox,'FileRootPath',$futureRoot); $bridge.Set($futureBox,'DropAdminRights','y')
+            $roots[$futureBox] = New-Root $futureBox
+            'P02_FUTURE_PRIVATE_CANARY' | Set-Content (Join-Path $roots[$futureBox] 'private.txt')
+            [IO.File]::WriteAllText((Join-Path $fixture 'sibling-probe.txt'),(Join-Path $roots[$futureBox] 'private.txt'),[Text.UnicodeEncoding]::new($false,$false))
+            $futureReceipt = $bridge.Launch($boxA,$approved[0],(Probe-Args 'exercise' $boxA 'future-sibling'))
+            try { Require ([P02Bridge]::Completed($futureReceipt,30000) -and [P02Bridge]::ExitCode($futureReceipt) -eq 0) 'FUTURE_PROBE_FAILED' }
+            finally { [P02Bridge]::CloseReceipt($futureReceipt) }
+            $futureReport = Read-Report $roots[$boxA] 'future-sibling'
+            Require ($futureReport.sibling_read_error -eq 5) 'FUTURE_SIBLING_READ_DENIAL_FAILED'
+            $null = $bridge.StopHeld($boxA)
+            @{ running_creation_deferred = $true; private_data_absent_until_stopped_and_policy_applied = $true; newly_materialized_sibling_denied = $true; namespace_wide_parent_deny_assumed = $false }
+        }
         finally { [P02Bridge]::CloseReceipt($receipt) }
+    }
+    Invoke-Case 'T35' 'Second standard Windows account root and metadata ACLs' {
+        $userName = 'SRP02B_' + $run.Substring(0,10)
+        $syntheticPassword = 'P02aA!' + [Guid]::NewGuid().ToString('N')
+        $passwordObject = ConvertTo-SecureString $syntheticPassword -AsPlainText -Force
+        $null = New-LocalUser -Name $userName -Password $passwordObject -AccountNeverExpires
+        $usersGroup = ([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1]
+        Add-LocalGroupMember -Group $usersGroup -Member $userName
+        $access = $bridge.OtherUserAccess($userName,$syntheticPassword,$boxB)
+        $syntheticPassword = $null; $passwordObject.Dispose()
+        Require ($access.different_identity -and -not $access.administrator -and $access.positive_read_error -eq 0) 'SECOND_USER_POSITIVE_CONTROL_UNAVAILABLE'
+        Require ($access.metadata_read_error -eq 5 -and $access.root_read_error -eq 5) 'SECOND_USER_ACL_DENIAL_FAILED'
+        $access
     }
 } finally {
     $endpoints.Dispose(); Pop-Location
@@ -187,8 +227,7 @@ try {
 }
 $cases.Add(@{ id = 'T36'; case = 'Independent Windows interactive sessions'; status = 'BLOCKED'; diagnostic_code = 'SECOND_INTERACTIVE_SESSION_UNAVAILABLE'; source_route = 'SbieApi_EnumProcessEx all_sessions TRUE; capacity and owner validation'; current_session = $bridge.CurrentSession })
 $cases.Add(@{ id = 'T57'; case = 'Elevated helper authority'; status = 'NOT_APPLICABLE'; reason = 'No elevated helper path exists in this prototype; protected enrollment design recorded for P05' })
-$cases.Add(@{ id = 'T35'; case = 'Second standard Windows account'; status = 'NOT_RUN'; diagnostic_code = 'SECOND_ACCOUNT_PROBE_PENDING' })
-$cases.Add(@{ id = 'T60'; case = 'New sibling storage materialization order and aliases'; status = 'NOT_RUN'; diagnostic_code = 'ROLLOUT_VARIANTS_PENDING' })
+$cases.Add(@{ id = 'T60'; case = 'Root alias variants'; status = 'NOT_RUN'; diagnostic_code = 'ALIAS_VARIANTS_PENDING' })
 Save-Cases
 @{ phase = 'P02'; result = 'BLOCKED'; mandatory_cleanup = 'Start.exe phase2 enumerates all boxes; no verified owned-only builtin route'; production_security_scenarios_passed = 0; passed_smoke_cases = @($cases | Where-Object status -EQ 'PASSED').Count; failed_smoke_cases = @($cases | Where-Object status -EQ 'FAILED').Count; os_security_settings_modified = $false; lab_engine_wfp_enabled = $true; teardown = 'DISCARD_ACTIONS_VM' } |
     ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'phase-result.json') -Encoding utf8

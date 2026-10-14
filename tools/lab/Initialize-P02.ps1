@@ -32,6 +32,9 @@ foreach ($step in @(
 $components = @()
 $componentNames = @('SbieDrv.sys', 'SbieSvc.exe', 'SbieDll.dll', 'SbieIni.exe', 'Start.exe', 'SbieMsg.dll', 'KmdUtil.exe', '32/SbieDll.dll')
 if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { $componentNames += '64/SbieDll.dll' }
+foreach ($optional in @('QSbieAPI.dll','Qt6Core.dll','Qt6Concurrent.dll','MiscHelpers.dll')) {
+    if (Test-Path (Join-Path $engineHome $optional)) { $componentNames += $optional }
+}
 foreach ($name in $componentNames) {
     $installed = Join-Path $engineHome $name
     $original = Join-Path $reference $name
@@ -59,6 +62,13 @@ $inventory = @{
 }
 $inventory | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'installation.json') -Encoding utf8
 & (Join-Path $PSScriptRoot 'Build-P02.ps1')
+$qtDeletion = @{ component_present = (Test-Path (Join-Path $engineHome 'QSbieAPI.dll')); exports = @(); route = 'PINNED_NATIVE_NTIO_CANDIDATE_NOT_EXECUTED' }
+if ($qtDeletion.component_present) {
+    $exports = & dumpbin.exe /exports (Join-Path $engineHome 'QSbieAPI.dll')
+    if ($LASTEXITCODE -ne 0) { throw 'Export inspection failed.' }
+    $qtDeletion.exports = @($exports | ForEach-Object { if ($_ -match '(\?NtIo_(?:DeleteFolderRecursively|WaitForFolder)@@\S+)') { $Matches[1] } })
+}
+$qtDeletion | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $out 'native-cleanup-discovery.json') -Encoding utf8
 $inspection = & (Join-Path $out 'engine_inspect.exe') $engineHome
 $inspectorExit = $LASTEXITCODE
 $inspection | Set-Content (Join-Path $out 'engine-inspection.json') -Encoding utf8

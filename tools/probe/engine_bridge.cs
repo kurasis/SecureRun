@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Win32.SafeHandles;
 
 public sealed class P02Bridge {
     [DllImport("kernel32", CharSet=CharSet.Unicode, SetLastError=true)] static extern IntPtr LoadLibraryEx(string path, IntPtr file, uint flags);
@@ -25,6 +26,7 @@ public sealed class P02Bridge {
     [DllImport("kernel32")] static extern bool CloseHandle(IntPtr handle);
     [DllImport("kernel32")] static extern bool GetExitCodeProcess(IntPtr handle, out uint code);
     [DllImport("kernel32")] static extern uint GetCurrentProcessId();
+    [DllImport("advapi32", CharSet=CharSet.Unicode, SetLastError=true)] static extern bool LogonUser(string user,string domain,string password,int kind,int provider,out SafeAccessTokenHandle token);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int Version(StringBuilder output, out uint abi);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int QueryProcess(IntPtr pid, uint imageChars, StringBuilder box, StringBuilder image, StringBuilder sid, out uint session, out long created);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Unicode)] delegate int EnumProcess(string box, [MarshalAs(UnmanagedType.U1)] bool allSessions, uint session, [Out] uint[] pids, ref uint count);
@@ -68,6 +70,7 @@ public sealed class P02Bridge {
         string expectedHome=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"Sandboxie-Plus");
         string labParent=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"SecureRunLab");
         if (!String.Equals(Home,expectedHome,StringComparison.OrdinalIgnoreCase) || !Base.StartsWith(labParent+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        Directory.SetCurrentDirectory(Home);
         if (!SetDefaultDllDirectories(0x800|0x400)) throw new Win32Exception();
         IntPtr module=LoadLibraryEx(Path.Combine(Home,"SbieDll.dll"),IntPtr.Zero,0x100|0x800);
         if (module==IntPtr.Zero) throw new Win32Exception();
@@ -113,6 +116,37 @@ public sealed class P02Bridge {
         if(path.IndexOfAny(new char[]{'\r','\n','\0',',','%'})>=0) throw new InvalidOperationException("INI_VALUE_REJECTED");
         uint status=update('a',null,box,"ClosedFilePath",path);
         if(status!=0) throw new InvalidOperationException("CONFIG_APPEND_FAILED");
+        bool found=false;
+        for(uint index=0;index<64;index++){string value=Read(box,"ClosedFilePath",index);if(value==null)break;if(value==path)found=true;}
+        if(!found)throw new InvalidOperationException("CONFIG_APPEND_READBACK_FAILED");
+    }
+    public string CleanupReason(string box) {
+        Scope(box);if(Count(box)!=0)return "BOX_BUSY";
+        foreach(string key in new[]{"DeleteCommand","OnBoxDelete","OnBoxTerminate","OnFileRecovery"})
+            for(uint index=0;index<64;index++){string value=Read(box,key,index|0x20000000U);if(value==null)break;if(value.Length!=0)return "UNAPPROVED_AUTOMATION";}
+        return "BUILTIN_CLEANUP_SCOPE_UNVERIFIED";
+    }
+    public bool MayMaterializeSibling(string[] affected) {
+        foreach(string box in affected){Scope(box);if(Count(box)!=0)return false;}
+        return true;
+    }
+    public Dictionary<string,object> OtherUserAccess(string user,string password,string box) {
+        Scope(box);string rootPath=Root(box);SafeAccessTokenHandle token;
+        if(!LogonUser(user,".",password,2,0,out token))throw new InvalidOperationException("SECOND_USER_LOGON_FAILED_"+Marshal.GetLastWin32Error());
+        using(token){
+            return WindowsIdentity.RunImpersonated(token,()=>{
+                var result=new Dictionary<string,object>();
+                var identity=WindowsIdentity.GetCurrent();
+                result["different_identity"]=identity.User.Value!=sid;
+                result["administrator"]=new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
+                foreach(var item in new[]{new[]{"positive",Path.Combine(Base,"canaries","read-positive.txt")},new[]{"metadata",Path.Combine(Base,"metadata","manager.txt")},new[]{"root",Path.Combine(rootPath,"private.txt")}}){
+                    try{using(var stream=File.Open(item[1],FileMode.Open,FileAccess.Read,FileShare.Read)){result[item[0]+"_read_error"]=0;}}
+                    catch(UnauthorizedAccessException){result[item[0]+"_read_error"]=5;}
+                    catch(IOException){result[item[0]+"_read_error"]=-1;}
+                }
+                return result;
+            });
+        }
     }
     public uint Flags() { RequireUnboxed(); uint flags; if(info(0,out flags,4)!=0) throw new InvalidOperationException("DRIVER_INFO_UNKNOWN");return flags; }
     public void EnableLabWfp() {

@@ -101,7 +101,7 @@ int wmain(int argc,WCHAR **argv) {
     for(int i=0;i<4;i++)net[i]=socket_probe(i%2==0?AF_INET:AF_INET6,i<2?SOCK_STREAM:SOCK_DGRAM,ports[i]);
     WSACleanup();
     if(child){
-        int depth=_wtoi(argv[6]);WCHAR tag[96];char output[512];PROCESS_INFORMATION pi;BOOL spawned=FALSE;
+        int depth=_wtoi(argv[6]);WCHAR tag[96];char output[512];PROCESS_INFORMATION pi={0};BOOL spawned=FALSE;
         if(depth!=0 && depth!=1)return 64;
         if(depth==1)spawned=spawn_child(argv[2],argv[3],argv[4],argv[5],0,ports,&pi);
         swprintf_s(tag,96,L"%s-child%d",argv[4],depth);
@@ -112,7 +112,7 @@ int wmain(int argc,WCHAR **argv) {
         return 0;
     }
     {
-        DWORD wrote=0,blocked,metadata,sibling;BOOL changed=FALSE,argsOk,writeOk=FALSE,childOk=FALSE;BOOLEAN isBoxed=FALSE;ULONG mapStatus=0xffffffff;char content[32]={0},output[1400];PROCESS_INFORMATION pi;HANDLE handle;
+        DWORD wrote=0,blocked,metadata,sibling;BOOL changed=FALSE,argsOk,writeOk=FALSE,childOk=FALSE;BOOLEAN isBoxed=FALSE;ULONG mapStatus=0xffffffff;char content[32]={0},output[1400];PROCESS_INFORMATION pi={0};HANDLE handle;
         if(!path(file,argv[2],L"canaries\\write.txt"))return 64;
         handle=CreateFileW(file,GENERIC_READ|GENERIC_WRITE,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
         if(handle!=INVALID_HANDLE_VALUE){

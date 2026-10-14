@@ -569,6 +569,27 @@ impl NativeEngine {
         let probe_hash = format!("{:x}", Sha256::digest(bytes));
         leases.push(file);
         leases.push(template_pin(&trusted)?);
+        // Windows environment mutation is thread-safe; this worker has not yet
+        // started diagnostic threads. Never serialize inherited credentials into
+        // the original engine's child environment, including direct CLI workers.
+        for (key, _) in std::env::vars_os() {
+            let keep = matches!(key.to_str(), Some("SystemRoot" | "WINDIR" | "PATH"));
+            #[cfg(feature = "policy-ci")]
+            let keep = keep
+                || matches!(
+                    key.to_str(),
+                    Some("GITHUB_ACTIONS" | "SECURERUN_P05_PAUSE_STAGE")
+                );
+            if !keep {
+                unsafe { std::env::remove_var(&key) };
+            }
+        }
+        let system = system_directory()?;
+        unsafe {
+            std::env::set_var("SystemRoot", system.parent().ok_or("SYSTEM_PATH_UNKNOWN")?);
+            std::env::set_var("WINDIR", system.parent().unwrap());
+            std::env::set_var("PATH", &system);
+        }
         leases.extend(ensure_private(&profile, &owner)?);
         for leaf in ["metadata", "boxes", "canaries"] {
             leases.extend(ensure_private(&profile.join(leaf), &owner)?);
@@ -665,6 +686,16 @@ impl NativeEngine {
     }
 }
 impl Engine for NativeEngine {
+    fn exists(&self, name: &str) -> R<bool> {
+        for i in 0..MAX_BOXES {
+            match self.api.conf(None, None, i as u32 | RAW_FLAGS)? {
+                Some(found) if found.eq_ignore_ascii_case(name) => return Ok(true),
+                Some(_) => {}
+                None => return Ok(false),
+            }
+        }
+        Err("BOX_ENUMERATION_BOUND")
+    }
     fn root_for(&self, id: Uuid) -> String {
         self.profile
             .join("boxes")
@@ -1203,7 +1234,16 @@ pub fn run_canary(encoded: &str) -> i32 {
         file.sync_all().map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
         Ok(())
     })();
-    if result.is_ok() { 0 } else { 78 }
+    match result {
+        Ok(()) => 0,
+        Err("PROBE_NOT_BOXED") => 71,
+        Err("PROBE_CONTEXT_MISMATCH") => 72,
+        Err("CANARY_READ_FAILED") => 73,
+        Err("CANARY_REPORT_UNAVAILABLE") => 74,
+        Err("CANARY_REGISTRY_UNAVAILABLE") => 75,
+        Err("PROBE_REQUEST_INVALID") => 76,
+        Err(_) => 78,
+    }
 }
 
 struct Endpoints {
@@ -1527,8 +1567,21 @@ impl NativeEngine {
                 return Err("DIAGNOSTIC_OUTCOME_UNKNOWN");
             }
             let mut code = 0;
-            if unsafe { GetExitCodeProcess(process.0, &mut code) } == 0 || code != 0 {
-                return Err("DIAGNOSTIC_EXECUTION_FAILED");
+            if unsafe { GetExitCodeProcess(process.0, &mut code) } == 0 {
+                return Err("DIAGNOSTIC_EXIT_UNKNOWN");
+            }
+            if code != 0 {
+                return Err(match code {
+                    71 => "DIAGNOSTIC_CONTEXT_NOT_BOXED",
+                    72 => "DIAGNOSTIC_BOX_ID_MISMATCH",
+                    73 => "DIAGNOSTIC_HOST_CANARY_UNREADABLE",
+                    74 => "DIAGNOSTIC_REPORT_WRITE_REFUSED",
+                    75 => "DIAGNOSTIC_REGISTRY_UNAVAILABLE",
+                    76 => "DIAGNOSTIC_REQUEST_INVALID",
+                    0xc0000142 => "DIAGNOSTIC_DLL_INITIALIZATION_FAILED",
+                    0xc0000005 => "DIAGNOSTIC_NATIVE_ACCESS_VIOLATION",
+                    _ => "DIAGNOSTIC_EXECUTION_FAILED",
+                });
             }
             self.idle(&diagnostic.name())?;
             let p = locate_report(

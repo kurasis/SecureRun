@@ -245,7 +245,20 @@ impl Journal {
         )
         .map_err(sql_error)?;
         tx.execute("DELETE FROM events WHERE sequence < (SELECT coalesce(max(sequence),0)-4096 FROM events)",[]).map_err(sql_error)?;
-        tx.commit().map_err(sql_error)
+        tx.commit().map_err(sql_error)?;
+        #[cfg(all(windows, feature = "policy-ci"))]
+        if std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true")
+            && std::env::var("SECURERUN_P05_PAUSE_STAGE").ok().as_deref()
+                == Some(format!("{:?}", e.stage).as_str())
+        {
+            use std::io::Write;
+            println!("CHECKPOINT_{:?}", e.stage);
+            let _ = std::io::stdout().flush();
+            loop {
+                std::thread::park();
+            }
+        }
+        Ok(())
     }
     pub fn recover(&mut self) -> PolicyResult<usize> {
         let mut count = 0;
@@ -266,6 +279,9 @@ impl Journal {
 /// Native operations cannot be called with renderer-supplied root/INI keys.
 pub trait Engine {
     fn root_for(&self, id: Uuid) -> String;
+    fn exists(&self, name: &str) -> PolicyResult<bool> {
+        Ok(!self.section(name, false)?.is_empty())
+    }
     fn metadata(&self) -> String;
     fn code(&self) -> String;
     fn engine_identity(&self) -> String;
@@ -321,12 +337,12 @@ pub fn create(
         if existing.stage != Stage::Verified {
             return Err("SIBLING_RECONCILIATION_REQUIRED");
         }
-        validate_owned(engine, existing, &all)?;
         engine.idle(&existing.name())?;
+        validate_owned(engine, existing, &all)?;
     }
     let id = Uuid::new_v4();
     let name = format!("SR_{}", id.simple());
-    if !engine.section(&name, false)?.is_empty() {
+    if engine.exists(&name)? {
         return Err("PREEXISTING_BOX_NOT_ADOPTED");
     }
     let compiled = compile(&policy, &mandatory(engine, id, owner, &all))?;

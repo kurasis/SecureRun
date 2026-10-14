@@ -2,11 +2,12 @@
 
 Status: DONE. Requested scope: full P04. Dependencies: P02 feasibility and P03
 foundation/IPC, with current P03 native regression for the same final source.
-No P05–P12 implementation is included.
+This historical section describes original P04 scope; current P05 regression is
+recorded below.
 
 ## Implementation and evidence
 
-Runtime/test source: 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb.
+Original P04 runtime/test source: 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb.
 P04 [run 38586140093](https://github.com/kurasis/SecureRun/actions/runs/38586140093).
 P03 regression [run 38586144696](https://github.com/kurasis/SecureRun/actions/runs/38586144696).
 [P04 retained results/source hashes](../evidence/p04/manifest.json) and
@@ -96,3 +97,16 @@ push/normal-merge authorization. Generated binaries, raw private observations an
 credentials remain excluded. Reusable cloud install/start instructions were saved
 as a draft; publishing a cloud snapshot is a separate environment-settings action.
 Next eligible phase: P05, not started here.
+
+## Current regression after P05
+
+Current source `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636` passes
+[run 38649290153](https://github.com/kurasis/SecureRun/actions/runs/38649290153)
+on both native targets: 28 adapter tests and all 19 production observation cases,
+zero failures/blocked/skipped, zero product target launches or mutations in this
+read-only suite. The same source passes the complete P03 regression in
+[run 38649287239](https://github.com/kurasis/SecureRun/actions/runs/38649287239).
+Current manifests bind the actual reports and unchanged runtime sources; earlier
+proof remains historical. Ordinary-user service-process birth remains Unknown
+where access is denied, and boxed startup still exits before metadata/WebView.
+The separate P05 suite validates user-owned policy/provisioning mutation.

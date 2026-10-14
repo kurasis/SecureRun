@@ -1,4 +1,6 @@
-//! Production read-only observation. This crate has no engine mutation exports.
+//! Trusted observation and constrained journaled policy provisioning.
+pub mod policy;
+pub mod provision;
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 

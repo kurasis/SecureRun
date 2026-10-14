@@ -95,3 +95,14 @@ source 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb passed the full P03 suite in
 both native Windows targets. The current manifest retains those exact sources;
 original proof remains historical. P03 does not claim P04 engine evidence, which
 is retained in the [P04 report](P04_REPORT.md).
+
+## Current regression after P05
+
+Current source `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636` passes
+[run 38649287239](https://github.com/kurasis/SecureRun/actions/runs/38649287239)
+on both native Windows targets: 19 foundation, 2 normal-configuration, 3 UI and
+23 real command-boundary cases. The added cases reject renderer-supplied policy
+paths and forged native-picker IDs. Generated ACLs, actual outcomes and the full
+current runtime hashes are retained in the manifest. Historical P03/P04-era proof
+remains immutable. Foundation tests execute no engine operations; P05 production
+mutation evidence is recorded separately in the P05 report.

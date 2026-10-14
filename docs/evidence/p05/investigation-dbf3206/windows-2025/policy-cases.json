@@ -1,0 +1,181 @@
+[
+  {
+    "id": "T58",
+    "name": "missing_context_cannot_open_control_plane",
+    "status": "PASSED",
+    "evidence": {
+      "elevated_helper": false,
+      "production_target_launches": 0,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    }
+  },
+  {
+    "id": "T39",
+    "name": "explicit_lab_wfp_prerequisite",
+    "status": "PASSED",
+    "evidence": {
+      "os_security_settings_modified": false,
+      "global_setting": "NetworkEnableWFP=y",
+      "lab_installation_reviewed": true,
+      "driver_flag_verified": true,
+      "product_global_writes": 0
+    }
+  },
+  {
+    "code": "DNS_CONTROL_POSITIVE_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T55",
+    "name": "native_pending_root_and_verified_policy",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T08",
+    "name": "baseline_effective_file_registry_network_evidence",
+    "status": "FAILED"
+  },
+  {
+    "code": "UNVERIFIED_ENTITLEMENT_ACCEPTED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T14",
+    "name": "paid_presets_rejected_without_entitlement",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T37",
+    "name": "literal_grammar_and_root_grants_rejected",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T13",
+    "name": "online_policy_keeps_file_and_sibling_protection",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T39",
+    "name": "wfp_loss_invalidates_offline_policy",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T17",
+    "name": "external_owned_setting_requires_reviewed_repair",
+    "status": "FAILED"
+  },
+  {
+    "id": "T17",
+    "name": "global_template_changes_block_without_overwrite",
+    "status": "PASSED",
+    "evidence": {
+      "unsafe_automation_not_executed": true,
+      "inherited_global_template_rejected": true,
+      "unmanaged_sections_unchanged": true
+    }
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T53",
+    "name": "new_supported_path_grant_keeps_tested_family",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T59",
+    "name": "reparse_and_dos_alias_grants_rejected",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T51",
+    "name": "polluted_existing_box_does_not_host_diagnostic",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T60",
+    "name": "running_sibling_prevents_any_new_storage",
+    "status": "FAILED"
+  },
+  {
+    "code": "PROVISIONING_REQUIRED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T60",
+    "name": "future_sibling_denials_verified_before_root_creation",
+    "status": "FAILED"
+  },
+  {
+    "code": "DNS_CONTROL_POSITIVE_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T35",
+    "name": "production_provisioning_as_actual_standard_user",
+    "status": "FAILED"
+  },
+  {
+    "code": "POLICY_CASE_FAILED",
+    "exception_type": "System.Management.Automation.ItemNotFoundException",
+    "id": "T35",
+    "name": "second_standard_user_cannot_read_root_or_metadata",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_intent",
+    "status": "FAILED"
+  },
+  {
+    "code": "FAULT_BASELINE_NOT_VERIFIED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_fenced",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_writing",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_readback",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_pendingroot",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_rootbound",
+    "status": "FAILED"
+  },
+  {
+    "code": "JOURNAL_CHECKPOINT_NOT_REACHED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T18",
+    "name": "actual_worker_interruption_verifying",
+    "status": "FAILED"
+  }
+]

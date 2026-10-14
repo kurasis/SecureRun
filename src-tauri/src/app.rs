@@ -545,6 +545,7 @@ pub fn run() {
         _writer: writer,
     };
     let app = tauri::Builder::default()
+        .manage(crate::policies::PolicyState::default())
         .manage(AppState(Mutex::new(backend)))
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
@@ -557,6 +558,8 @@ pub fn run() {
             prepare_transfer,
             get_operation,
             diagnostic_summary,
+            crate::policies::policy_request,
+            crate::policies::select_policy_path,
             ci_report
         ])
         .setup(move |app| {

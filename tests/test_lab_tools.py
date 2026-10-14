@@ -64,6 +64,21 @@ class IntegrityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'successful current evidence run'):
                 validator.validate(copy)
 
+    def test_p05_cannot_close_with_failed_proof_and_stale_dependencies(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'docs/evidence/p05/manifest.json'
+            manifest = json.loads(path.read_text())
+            manifest['result'] = 'DONE'
+            path.write_text(json.dumps(manifest))
+            dependency = copy / 'docs/evidence/p04/manifest.json'
+            stale = json.loads(dependency.read_text())
+            stale['result'] = 'BLOCKED'
+            dependency.write_text(json.dumps(stale))
+            with self.assertRaisesRegex(ValueError, 'P05 DONE requires current P03/P04 regression'):
+                validator.validate(copy)
+
 
 if __name__ == '__main__':
     unittest.main()

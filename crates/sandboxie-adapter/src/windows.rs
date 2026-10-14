@@ -1,4 +1,5 @@
 //! Independently declared read-only ABI for the source-pinned native 64-bit engine.
+pub mod provisioning;
 use crate::*;
 use sha2::{Digest, Sha256};
 use std::{
@@ -968,7 +969,14 @@ pub fn bounded_observe() -> Observation {
     })
 }
 fn bounded_capture(command: &mut Command, timeout: Duration) -> R<Vec<u8>> {
-    let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+    let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+    capture_child(child, timeout, None)
+}
+fn capture_child(
+    mut child: std::process::Child,
+    timeout: Duration,
+    request: Option<Vec<u8>>,
+) -> R<Vec<u8>> {
     let job = unsafe { Handle(CreateJobObjectW(ptr::null(), ptr::null())) };
     let mut limits = unsafe { std::mem::zeroed::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() };
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
@@ -989,6 +997,14 @@ fn bounded_capture(command: &mut Command, timeout: Duration) -> R<Vec<u8>> {
     {
         let _ = child.kill();
         return Err("BRIDGE_JOB_FAILED");
+    }
+    if let Some(data) = request {
+        let mut stdin = child.stdin.take().ok_or("BRIDGE_PIPE_FAILED")?;
+        // No mutation request is released until job containment is established.
+        std::thread::spawn(move || {
+            use std::io::Write;
+            let _ = stdin.write_all(&data);
+        });
     }
     let mut stdout = child.stdout.take().ok_or("BRIDGE_PIPE_FAILED")?;
     let (sender, receiver) = std::sync::mpsc::channel();
@@ -1085,10 +1101,27 @@ mod native_bounds {
     }
     #[test]
     fn actual_native_pipe_output_is_bounded() {
-        let result = bounded_capture(
-            &mut fixture("[Console]::Out.Write(('A' * 3145728))"),
-            Duration::from_secs(15),
-        );
+        let mut command = Command::new(std::env::current_exe().unwrap());
+        command
+            .args([
+                "--exact",
+                "windows::native_bounds::pipe_fixture_child",
+                "--nocapture",
+            ])
+            .env("SECURERUN_TEST_PIPE_FIXTURE", "1")
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null());
+        let result = bounded_capture(&mut command, Duration::from_secs(15));
         assert_eq!(result.unwrap_err(), "BRIDGE_RESPONSE_BOUND");
+    }
+    #[test]
+    fn pipe_fixture_child() {
+        if std::env::var("SECURERUN_TEST_PIPE_FIXTURE").as_deref() == Ok("1") {
+            use std::io::Write;
+            std::io::stdout()
+                .write_all(&vec![b'A'; RESPONSE_LIMIT + 1024])
+                .unwrap();
+        }
     }
 }

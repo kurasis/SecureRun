@@ -1,0 +1,15 @@
+{
+  "pe_machine": "aa64",
+  "os_build": "10.0.26200.0",
+  "production_mutations": 0,
+  "teardown": "DISCARD_ACTIONS_VM",
+  "adapter_tests_passed": 28,
+  "native_cases_passed": 19,
+  "manager_binary_sha256": "f458ef6d9abc253f937c000ca440d3989a2922e9923a61b87289a0015864bd80",
+  "result": "PASSED",
+  "phase": "P04",
+  "manager_commit": "a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636",
+  "production_target_launches": 0,
+  "os_security_settings_modified": false,
+  "target": "aarch64-pc-windows-msvc"
+}

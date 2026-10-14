@@ -12,6 +12,8 @@ fn main() {
                 "prepare_transfer",
                 "get_operation",
                 "diagnostic_summary",
+                "policy_request",
+                "select_policy_path",
                 "ci_report",
             ]),
         ))

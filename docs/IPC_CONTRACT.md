@@ -11,6 +11,8 @@ label and current URL in Rust. Renderer-supplied labels/PIDs/SIDs are not eviden
 |---|---|---|
 | get_snapshot | No input; Snapshot | Main local origin; no private paths/SIDs; actual backend state and generations |
 | get_engine_health | No input; HealthView | Actual main origin; deduplicated bounded production read-only observation; native manager/bridge context, connection generation, sequence and freshness; no path/box/command supplied by renderer |
+| policy_request | List/Create/Apply/Inspect/Repair; bounded PolicyReply | Actual main origin; OS-derived owner/root/code authority; one-use selected grants, current revision, immutable operation signature, current-baseline repair and independent verification; no raw INI, password, global mutation, PID stop or user-target arguments |
+| select_policy_path | Operation UUID, optional owned environment UUID/revision, directory/file kind; SelectionView | Actual main origin; current native policy observation, native picker, fixed NTFS/canonical path and retained handles; one use and 60-second operation/environment/revision binding |
 | subscribe_state / unsubscribe_state | Native typed Channel and backend-issued subscription ID / initial Snapshot | Actual main WebView, maximum four subscriptions, callback binding registered before snapshot; no renderer emission |
 | create_draft | display_name; EnvironmentView | Valid bounded inert label, metadata gate, generated UUID, Unconfigured/Unknown/Unverified; no engine definition |
 | reserve_operation | environment ID, expected generation/revision, UUID idempotency key, Import/Export kind; OperationView | Owned current environment, revision, per-environment operation lock, persistent reservation; Launch and other kinds unavailable |
@@ -36,13 +38,27 @@ mutations stay unavailable until provisioning is implemented in P05. A positivel
 boxed normal desktop startup exits before metadata/WebView creation. Unknown
 context exposes minimum read-only setup; no control/elevation or self-escape is
 available. A small in-memory store supplies setup state; real engine observations
-come from the isolated backend worker, never mocks. Target dispatch, import/export,
-cleanup and engine writes are absent. See [observation contract](ENGINE_OBSERVATION.md).
+come from the isolated backend worker, never mocks. P05 exposes constrained
+user-owned provisioning separately through policy_request. User-target dispatch,
+import/export and lifecycle cleanup remain unavailable.
+See [observation contract](ENGINE_OBSERVATION.md) and
+[policy contract](POLICY_PROVISIONING.md).
 
 HealthView contains private root/configuration/process identity observations for
 the authorized local UI only. These fields do not enter diagnostic_summary or
 shared evidence. Its generation/sequence ordering and 15-second freshness are
 independent from each environment's lifetime generation.
+
+Policy requests use an isolated same-executable worker with an OS-captured parent
+PID/birth, a private bounded inherited pipe, job containment established before
+request release, 16 KiB request/2 MiB response limits and a 120-second deadline.
+Worker context and original owner are independently checked before profile access.
+Only the fixed protected diagnostic executable can be dispatched, in a fresh
+generated diagnostic scope. Current manager/probe and engine identities bind the
+stored verification. Returned Verified records are reconciled even for retries
+and inspection. The policy UI ignores older request completions, expires a viewed
+observation after 30 seconds and refreshes on visibility resumption. These UI
+checks do not replace native revision/root/configuration verification.
 
 The separate foundation-ci feature/configuration runs an explicitly marked
 synthetic metadata fixture. A fresh private test directory, native Windows standard

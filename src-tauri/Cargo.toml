@@ -6,6 +6,7 @@ rust-version.workspace = true
 build = "build.rs"
 
 [features]
+policy-ci = ["securerun-sandboxie-adapter/policy-ci"]
 foundation-ci = ["dep:webview2-com", "dep:windows"]
 
 [dependencies]

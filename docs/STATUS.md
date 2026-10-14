@@ -1,14 +1,15 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P04.
+Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P05.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | DONE — current native regression | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
-| P04 | DONE — trusted read-only observation gate | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
-| P05–P12 | NOT_STARTED | No later phase is implemented here |
+| P03 | DONE — current P05 regression verified | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
+| P04 | DONE — current P05 regression verified | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
+| P05 | DONE | [P05 report](phases/P05_REPORT.md), [policy/provisioning contract](POLICY_PROVISIONING.md), retained complete native evidence |
+| P06–P12 | NOT_STARTED | Production target launch remains unavailable |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected
@@ -34,8 +35,10 @@ requires the documented runtime dependency/license assessment before distributio
 
 P03 adds the native application shell, typed domain/SQLite foundation and explicitly
 scoped IPC. P04 adds trusted read-only observation while the ordinary shell remains
-observation-only. No production engine mutation, helper, user-target launcher or
-installer is implemented.
+observation-only. At the completed P04 gate no production engine mutation, helper, user-target
+launcher or installer was implemented. P05 now adds constrained user-owned
+provisioning; its native gate is complete on both owner-selected laboratories. Target launch and installation
+remain unavailable.
 No SandMan implementation or engine binary is copied or bundled. All project
 source, Markdown and reviewed JSON evidence are published as authorized by the
 owner. Historical BLOCKED evidence is preserved separately in the [manifest](evidence/p02/manifest.json).
@@ -54,3 +57,22 @@ The same source passes full P03 regression in [run 38586144696](https://github.c
 The ordinary desktop observes verified installed components and unowned boxes; it
 exits before metadata when boxed, retains explicit Unknown service-process identity
 for ordinary users, and exposes no product mutation or target launch. P05 is eligible.
+
+P05 final runtime source a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636,
+[run 38648135812](https://github.com/kurasis/SecureRun/actions/runs/38648135812):
+both targets pass 28 adapter tests and 45 applicable production policy/provisioning
+scenarios with zero failed/blocked/skipped; one absent different-administrator UAC
+route is accurately Not applicable per target. Fresh diagnostics use native and
+genuine/emulated x86/x64 PEs. Ordinary-user provisioning/ACLs, real sessions 0/2,
+future-sibling denial, metadata authority, incoming/outgoing network controls,
+BITS denial and all seven real interruption checkpoints pass. No product helper,
+user-target launcher or Windows security relaxation is introduced.
+
+The same source passes complete P03 regression in
+[run 38649287239](https://github.com/kurasis/SecureRun/actions/runs/38649287239):
+19 foundation, 2 normal, 3 UI and 23 real command-boundary cases per native target.
+It passes P04 regression in
+[run 38649290153](https://github.com/kurasis/SecureRun/actions/runs/38649290153):
+28 adapter tests and 19 production read-only observation cases per target.
+Historical evidence remains immutable; all three current manifests bind the same
+runtime sources. P06 is eligible and remains NOT_STARTED.

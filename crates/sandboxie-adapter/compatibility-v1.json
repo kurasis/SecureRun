@@ -57,6 +57,13 @@
           "name": "SbieMsg.dll",
           "authenticated_payload_match": true
         }
+      ],
+      "injected_libraries": [
+        {
+          "name": "32/SbieDll.dll",
+          "sha256": "889ab370db334e16aa68b23f984f164935774a751af16a5249f6a96abceaa630",
+          "machine": "014c"
+        }
       ]
     },
     {
@@ -106,7 +113,36 @@
           "authenticated_payload_match": true,
           "file_version": "5.73.6"
         }
+      ],
+      "injected_libraries": [
+        {
+          "name": "32/SbieDll.dll",
+          "sha256": "6f4e095f558391523fddcc590462a505a7a90a8c02f794bfc8410386edb4dca6",
+          "machine": "014c"
+        },
+        {
+          "name": "64/SbieDll.dll",
+          "sha256": "339bf8881215ed9d3902aba2b1e24fbf3db167a5071e37eb50327d1d3c65526c",
+          "machine": "8664"
+        }
       ]
     }
-  ]
+  ],
+  "policy_inheritance": {
+    "template_source": "Sandboxie/install/Templates.ini",
+    "normalized_utf8_sha256": "bc3b83df4d5cfd8ed4346ea2f880bd9f41940493de42d9096ac271912d8c2a91",
+    "default_templates": [
+      "RpcPortBindings",
+      "SpecialImages",
+      "COM",
+      "WindowsExplorer",
+      "ThirdPartyIsolation",
+      "BlockSoftwareUpdaters",
+      "BlockWinRM",
+      "OpenWinInetCache",
+      "CredentialUIBroker",
+      "MSI_Lite"
+    ],
+    "unexpanded_default_settings_sha256": "8594a269c52d455cc2ba3f5fb66a9f1134b86ce5221e9ad404f8ab4d0ca8496c"
+  }
 }

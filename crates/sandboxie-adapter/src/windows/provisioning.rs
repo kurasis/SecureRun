@@ -2021,6 +2021,23 @@ impl NativeEngine {
             marker: format!("v1:{}:{nonce}", self.owner),
         };
         let mut compiled = compile(&desired, &mandatory)?;
+        // Keep the full owned policy's mandatory sibling layer, including a
+        // stopped rollout's not-yet-materialized root. The diagnostic adds
+        // denial of the owned root itself but must not discard other siblings.
+        let closed = compiled.section.entry("ClosedFilePath".into()).or_default();
+        for path in owned
+            .compiled
+            .section
+            .get("ClosedFilePath")
+            .ok_or("MANDATORY_POLICY_DRIFT")?
+        {
+            if !closed.contains(path) {
+                closed.push(path.clone());
+            }
+        }
+        if closed.len() >= 64 {
+            return Err("POLICY_RULE_BOUND");
+        }
         // Generated synthetic checks do not consume the user's grant quota.
         // They can only narrow this fresh diagnostic, never an owned policy.
         for (key, path) in [("ClosedFilePath", &blocked), ("ReadFilePath", &readonly)] {
@@ -2191,6 +2208,17 @@ impl NativeEngine {
         let observed = endpoints.observed();
         fenced?;
         let report = result?;
+        // Preserve the typed, minimized result even when a mandatory check
+        // below refuses verification. These booleans contain no target data
+        // and never constitute an enforcement receipt on their own.
+        std::fs::write(
+            self.profile
+                .join("metadata")
+                .join(format!("probe-result-{nonce}.json")),
+            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"server_observed":observed,"dns_server_observed":dns.observed(),"icmp_host_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
+                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+        )
+        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
         for (passed, code) in [
             (report.member, "CANARY_MEMBERSHIP_FAILED"),
             (

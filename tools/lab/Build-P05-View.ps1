@@ -14,4 +14,6 @@ Push-Location $out
 try{
     & cl.exe /nologo /W4 /WX /wd4055 /wd4054 /O2 /MT /DUNICODE /D_UNICODE (Join-Path $repo 'tools/probe/p05_view_probe.c') '/Fe:p05-view-probe.exe'
     if($LASTEXITCODE -ne 0){throw 'VIEW_FIXTURE_BUILD_FAILED'}
+    & cl.exe /nologo /W4 /WX /wd4055 /wd4054 /O2 /MT /DUNICODE /D_UNICODE (Join-Path $repo 'tools/probe/p05_session_probe.c') '/Fe:p05-session-probe.exe'
+    if($LASTEXITCODE -ne 0){throw 'SESSION_FIXTURE_BUILD_FAILED'}
 }finally{Pop-Location}

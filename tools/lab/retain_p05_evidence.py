@@ -19,6 +19,7 @@ REQUIRED = {
     'new_supported_path_grant_keeps_tested_family', 'same_path_root_replacement_is_not_adopted',
     'actual_subst_namespace_is_rejected_before_mutation', 'polluted_existing_box_does_not_host_diagnostic',
     'running_sibling_prevents_any_new_storage', 'running_policy_mutation_is_deferred',
+    'actual_other_session_prevents_policy_and_sibling_mutation',
     'future_sibling_denials_verified_before_root_creation', 'production_provisioning_as_actual_standard_user',
     'second_standard_user_cannot_read_root_or_metadata',
     'forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules',
@@ -65,7 +66,7 @@ def check_target(folder, commit, machine):
         if (fault['status'] != 'PASSED' or not fault['standard_user'] or not fault['real_process_interruption']
                 or not fault['conflict_after_restart'] or fault['automatic_replay'] or not fault['launch_blocked']):
             raise ValueError('Actual journal interruption proof missing')
-    for name in ('standard-user.json', 'metadata-authority.json', 'no-enforcement.json', 'boxed-policy.json'):
+    for name in ('standard-user.json', 'metadata-authority.json', 'no-enforcement.json', 'boxed-policy.json', 'cross-session.json'):
         if read(folder / name)['status'] != 'PASSED':
             raise ValueError('Native security boundary report failed')
     return summary

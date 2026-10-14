@@ -67,6 +67,7 @@ try {
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
     & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
     Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-view-probe.exe') $managerHome
+    Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-session-probe.exe') $managerHome
     $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-$run"
     $null=New-Item -ItemType Directory -Path $fixture -Force
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
@@ -111,7 +112,7 @@ try {
         }
     }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/p05_lab.cs')))
-    foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1','p05_metadata.ps1','p05_boxed.ps1','p05_noenforcement.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
+    foreach($file in @('p05_standard.ps1','p05_fault.ps1','p05_acl.ps1','p05_metadata.ps1','p05_boxed.ps1','p05_noenforcement.ps1','p05_sessions.ps1','p05_lab.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") (Join-Path $managerHome $file)}
     foreach($arch in @('x86','x64','arm64')){$file=Join-Path $repo "artifacts/p02/feasibility_probe_$arch.exe";if(Test-Path $file){Copy-Item $file $managerHome}}
     $lab=[P05Lab]::new($engine,$fixture,$managerHome)
     function Current { $r=Policy @{action='LIST'};Require ($r.reason -eq 'OBSERVED') $r.reason;return $r }
@@ -122,6 +123,7 @@ try {
     }
     function New-Standard([string]$suffix) {
         $name='SRP05_'+$suffix+'_'+$run.Substring(0,7);$secure=ConvertTo-SecureString ('P05aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
+        if($suffix -eq 'session'){$name='SRP02S_'+$run.Substring(0,10)}
         $user=New-LocalUser -Name $name -Password $secure -AccountNeverExpires
         $group=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
         $base=Join-Path $env:ProgramData "SecureRunLab/p02-p05-$suffix-$run";foreach($d in @('results','boxes')){$null=New-Item -ItemType Directory -Path (Join-Path $base $d) -Force}
@@ -205,7 +207,7 @@ try {
         function View([string]$mode,[string]$label) {
             [P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.View($box,$mode,$nonce,$label)
             try{Require ([P05Lab]::Success($receipt)) 'VIEW_PROBE_FAILED';$root=$environment.compiled.section.FileRootPath[0];$files=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "view-$nonce-$label.json");Require ($files.Count -eq 1 -and $files[0].Length -le 4096) 'VIEW_REPORT_MISSING';return Get-Content $files[0].FullName -Raw|ConvertFrom-Json}
-            finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+            finally{[P05Lab]::Stop($receipt);$lab.FenceFixture($box)}
         }
         $initial=View 'write' 'before';Require ($initial.member -and $initial.write_succeeded -and $initial.view -eq 'BOX' -and [IO.File]::ReadAllText($hostFile) -eq 'SYNTHETIC_HOST_VIEW') 'BOXED_OVERLAY_NOT_CREATED'
         $copies=@(Get-ChildItem -LiteralPath $environment.compiled.section.FileRootPath[0] -Recurse -File -Filter "view-$nonce.txt");Require ($copies.Count -eq 1) 'BOXED_OVERLAY_NOT_LOCATED';$copyHash=(Get-FileHash $copies[0].FullName).Hash
@@ -249,7 +251,7 @@ try {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$root=$environment.compiled.section.FileRootPath[0];$box='SR_'+$environment.id.Replace('-','');$lab.Register($box)
         $nonce=[Guid]::NewGuid().ToString('N');$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'input') -Force;[IO.File]::WriteAllText((Join-Path $fixture "input/view-$nonce.txt"),'SYNTHETIC_HOST_VIEW')
         $originalHash=(Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash;[P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.View($box,'shadow',$nonce,'before')
-        try{Require ([P05Lab]::Success($receipt)) 'ACTUAL_VIRTUAL_SHADOW_NOT_CREATED'}finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+        try{Require ([P05Lab]::Success($receipt)) 'ACTUAL_VIRTUAL_SHADOW_NOT_CREATED'}finally{[P05Lab]::Stop($receipt);$lab.FenceFixture($box)}
         $shadows=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'securerun-policy-probe.exe');Require ($shadows.Count -eq 1 -and (Get-FileHash $shadows[0].FullName).Hash -ne $originalHash -and (Get-FileHash (Join-Path $managerHome 'securerun-policy-probe.exe')).Hash -eq $originalHash) 'SHADOW_NOT_ISOLATED'
         $before=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata') -Filter 'diagnostic-*.json').Count
         $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=$environment.desired};Require ($r.reason -eq 'OBSERVED') $r.reason
@@ -264,14 +266,32 @@ try {
             $update=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired)};Require ($update.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') 'RUNNING_POLICY_UPDATE_ALLOWED';$script:runningMutation=@{reason=$update.reason;policy_applied_while_running=$false;held_process_not_terminated=$true}
             $r=Policy @{action='CREATE';display_name='Running rollout must defer';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -in @('STOP_REQUIRED_ALL_SESSIONS','SIBLING_RECONCILIATION_REQUIRED','CONFIGURATION_CONFLICT')) 'RUNNING_ROLLOUT_ALLOWED'
             $after=@(Get-ChildItem (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/boxes')).Count;Require ($after -eq $before) 'PRIVATE_STORAGE_MATERIALIZED_WHILE_RUNNING';@{new_storage_absent=$true;running_box_not_terminated=$true;manager_launch_disabled=$true}
-        }finally{[P05Lab]::Stop($receipt);$lab.Set($box,'Enabled','n')}
+        }finally{[P05Lab]::Stop($receipt);$lab.FenceFixture($box)}
     }
     Case 'T16' 'running_policy_mutation_is_deferred' {Require ($null -ne $runningMutation -and $runningMutation.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') 'RUNNING_POLICY_GATE_NOT_OBSERVED';$runningMutation}
+    Case 'T16' 'actual_other_session_prevents_policy_and_sibling_mutation' {
+        $account=New-Standard 'session';$probe=Join-Path $managerHome 'p05-session-probe.exe';$transportBridge=[P02Bridge]::new($engine,$fixture,[string[]]@($probe))
+        $task='SRP05_SESSION_'+$run;$pipe='SecureRunP02Logon_'+$run;$action=New-ScheduledTaskAction -Execute $probe -Argument ('logon-fixture '+$pipe) -WorkingDirectory $engine
+        $principal=New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest;$settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::FromMinutes(2))
+        $null=Register-ScheduledTask -TaskName $task -Action $action -Principal $principal -Settings $settings
+        $p=Start-Standard $account 'p05_sessions.ps1' @('-Manager',$app,'-EngineHome',$engine,'-Fixture',$account.fixture)
+        try{
+            $ready=Join-Path $account.fixture 'results/session-ready.json';$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 150000){Start-Sleep -Milliseconds 100}
+            Require (Test-Path $ready) 'SESSION_PROVISIONING_NOT_READY';$r=Get-Content $ready -Raw|ConvertFrom-Json
+            $password=([pscredential]::new($account.name,$account.secure)).GetNetworkCredential().Password
+            try{$transport=$transportBridge.SendFixtureLogon([Action]{Start-ScheduledTask -TaskName $task},$pipe,$account.name,$password,$r.owner_sid,$account.fixture,$r.box,$probe)}finally{$password=$null}
+            Require ($p.WaitForExit(60000)) 'SESSION_PRODUCTION_GATE_TIMEOUT';$file=Join-Path $account.fixture 'results/cross-session.json';$worker=Get-Content $file -Raw|ConvertFrom-Json;Copy-Item $file (Join-Path $out 'cross-session.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'CROSS_SESSION_GATE_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code
+            @{production=$worker;protected_lab_transport=$transport;windows_logon_policy_changed=$false;product_helper=$false}
+        }finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();Unregister-ScheduledTask -TaskName $task -Confirm:$false;$account.secure.Dispose()}
+    }
     Case 'T60' 'future_sibling_denials_verified_before_root_creation' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$r=Policy @{action='CREATE';display_name='Synthetic future sibling';operation_id=[Guid]::NewGuid().ToString();policy=(Desired)};Require ($r.reason -eq 'OBSERVED') $r.reason
         $existing=$r.environments|Where-Object id -eq $environment.id;$new=$r.environments|Where-Object id -ne $environment.id
         Require ($existing.stage -eq 'VERIFIED' -and $new.stage -eq 'VERIFIED' -and $existing.compiled.section.ClosedFilePath -contains ($new.compiled.section.FileRootPath[0]+'\*')) 'FUTURE_SIBLING_BASELINE_NOT_APPLIED';$script:environment=$existing
-        @{all_affected_stopped=$true;new_sibling_rule_read_back=$true;root_identity_bound_after_rollout=$true;namespace_parent_deny_assumed=$false}
+        $nonce=[Guid]::NewGuid().ToString('N');$box='SR_'+$existing.id.Replace('-','');$lab.Register($box)
+        [P02Bridge]::MinimizeProcessEnvironment($engine);$receipt=$lab.FutureSibling($box,('SR_'+$new.id.Replace('-','')),$nonce)
+        try{Require ([P05Lab]::Success($receipt)) 'FUTURE_SIBLING_PROBE_FAILED';$files=@(Get-ChildItem -LiteralPath $existing.compiled.section.FileRootPath[0] -Recurse -File -Filter "view-$nonce-before.json");Require ($files.Count -eq 1 -and $files[0].Length -le 4096) 'FUTURE_SIBLING_REPORT_MISSING';$actual=Get-Content $files[0].FullName -Raw|ConvertFrom-Json;Require ($actual.member -and $actual.sibling_denied) 'FUTURE_SIBLING_ACCESS_NOT_DENIED'}finally{[P05Lab]::Stop($receipt);$lab.FenceFixture($box)}
+        @{all_affected_stopped=$true;new_sibling_rule_read_back=$true;root_identity_bound_after_rollout=$true;namespace_parent_deny_assumed=$false;actual_old_box_denied_new_root=$actual;host_canary_positive=$true;fixture_only_target=$true}
     }
     $script:standardAccount=$null
     Case 'T35' 'production_provisioning_as_actual_standard_user' {
@@ -322,7 +342,7 @@ try {
     if($failed -ne 0){throw 'P05_NATIVE_VALIDATION_FAILED'}
 }finally{
     $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
-    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-','dns-status-','scope-status-','identity-status-','image-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','dns-status-','scope-status-','identity-status-','image-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
     $events=@(Get-WinEvent -FilterHashtable @{LogName=@('Application','System');StartTime=(Get-Date).AddMinutes(-35)} -MaxEvents 2000 -ErrorAction SilentlyContinue | Where-Object ProviderName -Match 'Sandboxie|Sbie' | ForEach-Object {@{event_id=$_.Id;codes=@([regex]::Matches($_.Message,'SBIE[0-9]{4}|\[[0-9A-Fa-f ,/x]+\]|status=[0-9A-Fa-f]{8}')|ForEach-Object Value)}})
     ConvertTo-Json -InputObject $events -Depth 5|Set-Content (Join-Path $out 'engine-events.json') -Encoding utf8
     Pop-Location

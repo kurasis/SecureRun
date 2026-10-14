@@ -54,11 +54,23 @@ preserve that result and source instead of implying a completed phase. Subsequen
 work accepts Windows EDNS OPT records, adds exact DNS status diagnostics, and
 records native reasons when a journal checkpoint is not reached.
 
-Current local checks pass 24 portable adapter tests, strict portable and Windows
+Current local checks pass 25 portable adapter tests, strict portable and Windows
 MSVC metadata Clippy, the TypeScript/UI build, 3 UI state tests, the repository
-validator and 7 tooling tests. Linux Windows metadata checks use host SQLite
+validator and 8 tooling tests. Linux Windows metadata checks use host SQLite
 declarations for type/lint checking only; they are not Windows executable proof.
 The real Actions jobs build bundled SQLite and run actual native binaries.
+
+Run [38635235915](https://github.com/kurasis/SecureRun/actions/runs/38635235915),
+source `7050529a2a41ed7c723fd8d6a0ba9ee11c9c27cd`, identifies the remaining
+diagnostic companion as SandboxieDcomLaunch.exe in the installed engine directory.
+The pinned original `apps/com/DcomLaunch/dcomlaunch.c` and `apps/com/common.h`
+implement this service alongside RpcSs. Private diagnostic shutdown now accepts
+only these two exact installed paths, with protected ACLs and Authenticode checks,
+held process birth, driver-owned box SID and immediate membership revalidation.
+The original restricted anonymous primary token remains enabled. Six actual
+kill/restart checkpoints already pass in failed runs; the Fenced checkpoint still
+depends on successful initial provisioning. These partial results do not close
+the native gate.
 
 The lab now builds actual x86 probes alongside the native binary, plus emulated
 x64 probes on ARM. Each architecture gets a fresh diagnostic box. Controlled
@@ -78,7 +90,7 @@ native evidence before any containment claim is made.
 | T12–T13, T39–T40 | Controlled sockets/DNS/ICMP/share/interface/child checks and WFP-loss invalidation; positive controls and both-platform proof pending |
 | T14–T15 | Paid profiles rejected; accepted writes without enforcement remain unverified; native failure case and complete labels pending |
 | T16–T17, T53 | Stopped mutation, revision/current-fingerprint drift, unknown inheritance and reusable path family; native pass pending |
-| T18 | Portable recovery across seven stages passes; actual Windows kill/restart cases currently fail before their checkpoint |
+| T18 | Portable recovery across seven stages passes; six actual Windows checkpoints pass, Fenced baseline and complete both-platform gate pending |
 | T27, T47, T58 | No helper exists; applicable boxed manager/worker and OS caller-identity production tests remain required |
 | T37 | Literal grammar, password/global/template rejection and minimized records; native password and injection cases pending |
 | T38 | Read only acknowledgement implemented; populated-overlay host view and reversal proof pending |

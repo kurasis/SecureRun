@@ -1816,7 +1816,7 @@ impl NativeEngine {
                     return Err("DIAGNOSTIC_PROCESS_BIRTH_OR_BOX_OWNER_CHANGED");
                 }
                 let token_owner = process_sid(held.0)?;
-                let _rpc_helper = if token_owner != self.owner {
+                let _service_helper = if token_owner != self.owner {
                     // Original RunSandboxedGetToken chooses a session token or
                     // SYSTEM for RpcSs. The driver's box SID remains the owner.
                     // Token_RestrictHelper substitutes Anonymous Logon in the
@@ -1855,11 +1855,17 @@ impl NativeEngine {
                         return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
                     }
                     let image = PathBuf::from(text(&path)?);
-                    let expected = self.trusted.home.join("SandboxieRpcSs.exe");
-                    if !image
-                        .to_string_lossy()
-                        .eq_ignore_ascii_case(&expected.to_string_lossy())
-                    {
+                    // The pinned original apps/com implementations provide both
+                    // RpcSs and its DcomLaunch companion. Accept only these two
+                    // protected, signed installed images in our fresh scope.
+                    let original_helper = ["SandboxieRpcSs.exe", "SandboxieDcomLaunch.exe"]
+                        .iter()
+                        .any(|name| {
+                            image.to_string_lossy().eq_ignore_ascii_case(
+                                &self.trusted.home.join(name).to_string_lossy(),
+                            )
+                        });
+                    if !original_helper {
                         let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
                         let allowed_name = [
                             "SandboxieRpcSs.exe",

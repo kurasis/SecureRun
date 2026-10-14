@@ -392,7 +392,12 @@ public sealed class P02Bridge {
             uint[] pids=Pids(box);if(pids.Length==0)return stopped;
             foreach(uint pid in pids){
                 IntPtr handle=OpenProcess(0x100000|0x1000|1,false,pid);
-                if(handle==IntPtr.Zero)throw new InvalidOperationException("PROCESS_HANDLE_UNAVAILABLE");
+                if(handle==IntPtr.Zero){
+                    // PID disappeared between snapshots. Never dispatch to that number;
+                    // the next bounded sweep must reconcile current engine membership.
+                    if(Marshal.GetLastWin32Error()==87)continue;
+                    throw new InvalidOperationException("PROCESS_HANDLE_UNAVAILABLE");
+                }
                 try {
                     long born,exit,kernel,user,engineBorn;uint session;var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);
                     if(!GetProcessTimes(handle,out born,out exit,out kernel,out user))throw new Win32Exception();
@@ -400,7 +405,10 @@ public sealed class P02Bridge {
                     if(WaitForSingleObject(handle,0)==0)continue;
                     int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
                     if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn)throw new InvalidOperationException("PROCESS_SCOPE_REJECTED");
-                    if(!TerminateProcess(handle,99) || WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
+                    // An object may naturally exit after authorization. Even if terminate
+                    // reports failure, only a signalled retained handle proves completion.
+                    TerminateProcess(handle,99);
+                    if(WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
                     stopped++;
                 } finally { CloseHandle(handle); }
             }

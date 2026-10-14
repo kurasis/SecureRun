@@ -44,6 +44,10 @@ try {
     $result.configuration_created_by_standard_user = $true
     $result.root_acl_applied_by_standard_user = $true
     $result.unboxed_manager_diagnostics = $bridge.ManagerDiagnostics()
+    $null = New-Item -ItemType Directory -Path (Join-Path $root 'sealed-test')
+    'P02_NORMAL_USER_CLEANUP' | Set-Content (Join-Path $root 'sealed-test/fixture.txt')
+    $result.cleanup = $bridge.ClearOwnedWithNative($Box)
+    if (-not $result.cleanup.contents_empty -or -not $result.cleanup.root_identity_retained) { throw 'STANDARD_USER_CLEANUP_UNCONFIRMED' }
     $result.status = 'PASSED'
 } catch {
     $result.status = 'FAILED'

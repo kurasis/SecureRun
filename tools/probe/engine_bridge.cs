@@ -479,7 +479,9 @@ internal sealed class P02StorageSeal : IDisposable {
             if(!GetSecurityDescriptorOwner(pinned.AddrOfPinnedObject(),out owner,out defaulted)||!GetSecurityDescriptorDacl(pinned.AddrOfPinnedObject(),out present,out dacl,out defaulted)||!present)throw new InvalidOperationException("STORAGE_DACL_INVALID");
             var original=new RawSecurityDescriptor(descriptor,0);
             uint protectedFlag=(original.ControlFlags&ControlFlags.DiscretionaryAclProtected)!=0?0x80000000U:0x20000000U;
-            uint status=SetSecurityInfo(file,1,5|protectedFlag,owner,IntPtr.Zero,dacl,IntPtr.Zero);
+            // Preserve ownership. Only the DACL is changed on the already-authorized
+            // object; no restore/take-ownership privilege is enabled or requested.
+            uint status=SetSecurityInfo(file,1,4|protectedFlag,IntPtr.Zero,IntPtr.Zero,dacl,IntPtr.Zero);
             if(status!=0)throw new InvalidOperationException("STORAGE_DACL_UPDATE_FAILED_"+status);
         } finally {pinned.Free();}
     }
@@ -488,10 +490,12 @@ internal sealed class P02StorageSeal : IDisposable {
         var user=WindowsIdentity.GetCurrent().User;
         acl.SetOwner(user);acl.SetAccessRuleProtection(true,false);
         var deny=FileSystemRights.WriteData|FileSystemRights.AppendData|FileSystemRights.WriteExtendedAttributes|FileSystemRights.ChangePermissions|FileSystemRights.TakeOwnership;
-        acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-3-4"),deny,AccessControlType.Deny));
+        var inherit=directory?InheritanceFlags.ContainerInherit|InheritanceFlags.ObjectInherit:InheritanceFlags.None;
+        acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier("S-1-3-4"),deny,inherit,PropagationFlags.None,AccessControlType.Deny));
+        acl.AddAccessRule(new FileSystemAccessRule(user,deny,inherit,PropagationFlags.None,AccessControlType.Deny));
         var permitted=FileSystemRights.ReadAndExecute|FileSystemRights.WriteAttributes|FileSystemRights.Delete|FileSystemRights.DeleteSubdirectoriesAndFiles|FileSystemRights.Synchronize;
-        acl.AddAccessRule(new FileSystemAccessRule(user,permitted,AccessControlType.Allow));
-        foreach(string sid in new[]{"S-1-5-18","S-1-5-32-544"})acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(sid),FileSystemRights.FullControl,AccessControlType.Allow));
+        acl.AddAccessRule(new FileSystemAccessRule(user,permitted,inherit,PropagationFlags.None,AccessControlType.Allow));
+        foreach(string sid in new[]{"S-1-5-18","S-1-5-32-544"})acl.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(sid),FileSystemRights.FullControl,inherit,PropagationFlags.None,AccessControlType.Allow));
         return acl.GetSecurityDescriptorBinaryForm();
     }
     public P02StorageSeal(string path,P02Bridge.FileIdentity expected) {
@@ -512,7 +516,7 @@ internal sealed class P02StorageSeal : IDisposable {
     void Capture(string path,int depth) {
         if(depth>32||nodes.Count>=513)throw new InvalidOperationException("STORAGE_TREE_BOUND");
         var node=new Node{path=path};
-        node.security=Open(path,0xe0080U,7);nodes.Add(node);node.identity=Identify(node.security);
+        node.security=Open(path,0x60080U,7);nodes.Add(node);node.identity=Identify(node.security);
         node.directory=(node.identity.attributes&0x10)!=0;
         node.descriptor=Descriptor(node.security);
         if(node.directory){node.pin=Open(path,0x20081U,3);if(!Identify(node.pin).Same(node.identity))throw new InvalidOperationException("STORAGE_OBJECT_REPLACED");
@@ -520,7 +524,18 @@ internal sealed class P02StorageSeal : IDisposable {
         }
     }
     public void Freeze() {
-        foreach(var node in nodes){Apply(node.security,FrozenDescriptor(node.directory));node.changed=true;}
+        for(int index=0;index<nodes.Count;index++){
+            var node=nodes[index];
+            if(index==0)Apply(node.security,FrozenDescriptor(true));
+            else {
+                // Child permissions inherit the sealed root. Closing child security
+                // handles then permits the original native deleter to unlink them.
+                // Root-handle restoration restores inheritance after a partial result.
+                var descriptor=new RawSecurityDescriptor(ControlFlags.DiscretionaryAclPresent,null,null,null,new RawAcl(2,0));
+                var bytes=new byte[descriptor.BinaryLength];descriptor.GetBinaryForm(bytes,0);Apply(node.security,bytes);
+            }
+            node.changed=true;
+        }
         var known=new Dictionary<string,Node>(StringComparer.OrdinalIgnoreCase);foreach(var node in nodes)known.Add(node.path,node);
         var queue=new Queue<string>();queue.Enqueue(root);int observed=0;
         while(queue.Count!=0){string path=queue.Dequeue();Node node;
@@ -533,6 +548,7 @@ internal sealed class P02StorageSeal : IDisposable {
         // release nested namespace pins only after every creation/ACL right is sealed.
         for(int index=1;index<nodes.Count;index++)if(nodes[index].pin!=null){nodes[index].pin.Dispose();nodes[index].pin=null;}
         frozen=true;
+        for(int index=1;index<nodes.Count;index++){nodes[index].security.Dispose();nodes[index].security=null;}
     }
     public Dictionary<string,object> ExerciseDeniedMutation() {
         if(!frozen)throw new InvalidOperationException("STORAGE_NOT_SEALED");
@@ -546,8 +562,20 @@ internal sealed class P02StorageSeal : IDisposable {
     }
     public void Dispose() {
         Exception error=null;
+        if(frozen&&nodes.Count!=0){
+            try {Apply(nodes[0].security,nodes[0].descriptor);nodes[0].changed=false;}
+            catch(Exception failure){error=failure;}
+        }
         for(int index=nodes.Count-1;index>=0;index--){var node=nodes[index];
-            try {if(node.changed&&node.security!=null&&!node.security.IsClosed){StandardInfo info;
+            try {if(node.changed){
+                if(node.security==null){
+                    var reopened=CreateFile(node.path,0x60080,7,IntPtr.Zero,3,0x02000000|0x00200000,IntPtr.Zero);
+                    int code=Marshal.GetLastWin32Error();
+                    if(reopened.IsInvalid){reopened.Dispose();if(code==2||code==3)continue;throw new InvalidOperationException("STORAGE_REOPEN_UNRESOLVED_"+code);}
+                    node.security=reopened;
+                    if(!Identify(reopened).Same(node.identity))throw new InvalidOperationException("STORAGE_RESTORE_IDENTITY_CHANGED");
+                }
+                StandardInfo info;
                 bool pending=GetFileInformationByHandleEx(node.security,1,out info,(uint)Marshal.SizeOf<StandardInfo>())&&info.pending;
                 if(!pending)Apply(node.security,node.descriptor);
             }}catch(Exception failure){error=failure;}

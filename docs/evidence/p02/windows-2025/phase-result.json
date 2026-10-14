@@ -1,0 +1,22 @@
+{
+  "os_security_settings_modified": false,
+  "lab_engine_wfp_enabled": true,
+  "result": "BLOCKED",
+  "blocked_smoke_cases": 2,
+  "failed_smoke_cases": 0,
+  "not_run_smoke_cases": 0,
+  "production_security_scenarios_passed": 0,
+  "gate_blockers": [
+    "SAME_SID_SECOND_INTERACTIVE_SESSION",
+    "ORDINARY_USER_PROVISIONING",
+    "ROOT_REPLACEMENT_AND_CLEANUP_RACES",
+    "TERMINATION_FAULT_VARIANTS",
+    "COMPLETE_BASELINE_RELEASE_COVERAGE",
+    "ENGINE_LOG_SIGNED_LEADER_INTERFACE"
+  ],
+  "mandatory_cleanup": "Pinned native smoke recorded separately; descendant and external-launch races unresolved",
+  "teardown": "DISCARD_ACTIONS_VM",
+  "not_applicable_smoke_cases": 1,
+  "phase": "P02",
+  "passed_smoke_cases": 43
+}

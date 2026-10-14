@@ -50,6 +50,20 @@ The canonical T01–T66 catalog remains NOT_STARTED. A successful Actions job me
 collection completed; phase-result.json remains BLOCKED even if representative
 cases pass because the required unresolved variants are not silently waived.
 
+Authoritative code commit: `2eb5fd0bb6e93921fd3ffdd415990633a79aabc0`.
+Run [38550922299](https://github.com/kurasis/SecureRun/actions/runs/38550922299):
+Server 43 passed / 0 failed / 2 blocked / 1 helper NA; ARM 56 passed / 0 failed /
+2 blocked / 1 helper NA. All declared smoke cases finished; no skip or pending
+case is counted as passed. The manifest preserves 16 original JSON files and
+their exact SHA256/size. Raw CRLF bytes are protected from Git normalization.
+Both remaining per-case blockers are engine log-reader authorization and the
+same-SID second interactive session; additional protocol/race gates are explicit
+in phase-result and the feasibility report, not hidden in those smoke counts.
+
+Publication: [PR #2](https://github.com/kurasis/SecureRun/pull/2). The normal merge
+checks are required; this PR publishes the BLOCKED feasibility result, not a
+release or a claim that P02's security gate passed.
+
 Earlier architecture mislabeling, wrong Win32 alias/calling convention, Boolean
 width, raw config readback, empty-string removal, unboxed mapping and NT relative
 root-name errors were corrected and rerun. They are not supported-engine failures

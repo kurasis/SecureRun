@@ -45,6 +45,14 @@ VBS/code integrity/Defender active and no nested virtualization. P02 records eac
 fresh image's actual state rather than inheriting that observation as an assumption.
 A hardened Secure-Boot-enabled product tuple needs separate evidence.
 
+Final measured ARM tuple is Windows 11 Enterprise 26200.9457: Secure Boot false,
+VBS status 2, code-integrity enforcement 2, Defender real-time protection true.
+Server is Windows Server 2025 Datacenter 26100.33438: Secure Boot false, VBS status
+2, code-integrity enforcement 2, Defender real-time protection false. These are
+unchanged hosted-image states; neither runner establishes the complete hardened
+Windows 11 x64 release environment. All 41 ARM and 40 x64 inventoried components
+report Valid signature and authenticated payload match in this exact run.
+
 Core/Classic GPLv3, Plus/SandMan custom terms and QSbieAPI/MiscHelpers/Qt LGPL
 notices are source-pinned. No upstream implementation is copied and no engine is
 redistributed. The original QSbieAPI runtime cleanup dependency is a concrete

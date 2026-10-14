@@ -23,6 +23,12 @@ Server x64 kernel is not a Windows 11 x64 support claim. The original P01 ARM la
 adjustment remains recorded; adding Server does not waive Windows security gates.
 A candidate support matrix exists in [ENGINE_MATRIX](ENGINE_MATRIX.md).
 
+Final exact-code run: [38550922299](https://github.com/kurasis/SecureRun/actions/runs/38550922299),
+commit `2eb5fd0bb6e93921fd3ffdd415990633a79aabc0`. Server: 43 passed, zero failed,
+two blocked and one helper NA; ARM: 56 passed, zero failed, two blocked and one
+helper NA. The remaining protocol/race gate portions are not included as passing
+smoke cases. All original JSON and hashes are retained in the manifest.
+
 The full installer is checksum/size/signature verified before installation.
 Installed core and DLL dependencies match a separately extracted authenticated
 payload byte-for-byte; individual component Authenticode states are retained.

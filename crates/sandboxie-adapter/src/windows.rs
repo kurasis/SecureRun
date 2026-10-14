@@ -24,6 +24,16 @@ type R<T> = Result<T, &'static str>;
 fn wide(s: &str) -> Vec<u16> {
     s.encode_utf16().chain(Some(0)).collect()
 }
+fn box_wide(name: &str) -> R<[u16; 40]> {
+    if !valid_box(name) {
+        return Err("BOX_NAMESPACE_INVALID");
+    }
+    let mut data = [0u16; 40];
+    for (i, c) in name.encode_utf16().enumerate() {
+        data[i] = c;
+    }
+    Ok(data)
+}
 fn text(data: &[u16]) -> R<String> {
     let end = data
         .iter()
@@ -548,7 +558,7 @@ impl Api {
         }
     }
     fn processes(&self, name: &str) -> R<Vec<ProcessIdentity>> {
-        let b = wide(name);
+        let b = box_wide(name)?;
         let before = self.count(&b)?;
         if before >= MAX_PROCESSES {
             return Err("ENUMERATION_BOUND");
@@ -606,7 +616,7 @@ impl Api {
     }
     fn root(&self, name: &str) -> RootObservation {
         let result = (|| {
-            let b = wide(name);
+            let b = box_wide(name)?;
             let mut bytes = 0;
             if unsafe {
                 (self.roots)(
@@ -763,11 +773,20 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
     report.manager_birth = manager_birth;
     let result = (|| -> R<()> {
         // Retain the actual parent object before trusting any PID-based engine reply.
-        let parent = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, manager_pid) };
+        let parent = unsafe {
+            OpenProcess(
+                PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE,
+                0,
+                manager_pid,
+            )
+        };
         if parent.is_null() {
             return Err("MANAGER_IDENTITY_UNKNOWN");
         }
         let parent = Handle(parent);
+        if unsafe { WaitForSingleObject(parent.0, 0) } != WAIT_TIMEOUT {
+            return Err("MANAGER_NOT_RUNNING");
+        }
         if birth(&parent)? != manager_birth {
             return Err("MANAGER_IDENTITY_CHANGED");
         }
@@ -799,6 +818,9 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
         report.manager_context = api.context(manager_pid);
         if birth(&parent)? != manager_birth {
             return Err("MANAGER_IDENTITY_CHANGED");
+        }
+        if unsafe { WaitForSingleObject(parent.0, 0) } != WAIT_TIMEOUT {
+            return Err("MANAGER_NOT_RUNNING");
         }
         if report.manager_context != Context::Unboxed || report.bridge_context != Context::Unboxed {
             return Err("MANAGER_CONTEXT_UNSAFE");

@@ -68,6 +68,8 @@ bounded to 1,024 entries, with before/returned/after counts. Success at capacity
 changed counts, duplicate PIDs or inaccessible/changed identities is incomplete.
 Each returned identity binds PID, actual held-object creation time, native box,
 owner SID and session. A PID is not durable identity and no PID-kill fallback exists.
+FILETIME creation values serialize as decimal strings so the local JavaScript
+client cannot round identities above its safe-integer range.
 Incomplete enumeration is Unknown, never Idle. Snapshots do not atomically lock
 external engine clients; later mutation phases must revalidate their own dispatch
 preconditions rather than treating a past Idle view as a lock.

@@ -17,6 +17,6 @@ export interface EngineHealth { generation: number; sequence: number; fresh: boo
   production_launch_available: boolean; capabilities: {name: string; availability: string; reason: string; provenance: string}[];
   boxes: {name: string; owned: boolean; read_only: boolean; activity: string; complete: boolean; reason: string;
     root: {path: string | null; identity: string | null; reason: string; scope: string};
-    processes: {pid: number; creation_time: number; session: number; owner_sid: string; box_name: string}[];
+    processes: {pid: number; creation_time: string; session: number; owner_sid: string; box_name: string}[];
     configuration: {key: string; raw: string[]; effective: string[]}[]; configuration_fingerprint: string}[];
 } }

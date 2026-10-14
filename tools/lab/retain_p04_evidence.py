@@ -39,7 +39,7 @@ def check_target(folder, commit, machine):
     if (summary['manager_commit'] != commit or summary['phase'] != 'P04'
             or summary['result'] != 'PASSED' or summary['pe_machine'] != machine
             or not re.fullmatch('[0-9a-f]{64}', summary['manager_binary_sha256'])
-            or summary['adapter_tests_passed'] < 11 or summary['production_target_launches'] != 0
+            or summary['adapter_tests_passed'] < 12 or summary['production_target_launches'] != 0
             or summary['production_mutations'] != 0 or summary['os_security_settings_modified']):
         raise ValueError('P04 native source/architecture/phase boundary invalid')
     if (not REQUIRED.issubset({c['name'] for c in cases}) or any(c['status'] != 'PASSED' for c in cases)

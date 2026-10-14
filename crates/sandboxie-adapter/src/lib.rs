@@ -35,10 +35,24 @@ pub struct Capability {
 #[serde(deny_unknown_fields)]
 pub struct ProcessIdentity {
     pub pid: u32,
+    #[serde(with = "decimal_u64")]
     pub creation_time: u64,
     pub owner_sid: String,
     pub session: u32,
     pub box_name: String,
+}
+mod decimal_u64 {
+    use serde::{Deserialize, Deserializer, Serializer};
+    pub fn serialize<S: Serializer>(value: &u64, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&value.to_string())
+    }
+    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<u64, D::Error> {
+        let value = String::deserialize(deserializer)?;
+        if value.is_empty() || !value.bytes().all(|c| c.is_ascii_digit()) {
+            return Err(serde::de::Error::custom("Invalid identity timestamp"));
+        }
+        value.parse().map_err(serde::de::Error::custom)
+    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -445,5 +459,18 @@ mod tests {
         assert_eq!(view.observation.boxes[0].activity, "UNKNOWN");
         assert!(!view.observation.boxes[0].complete);
         assert_eq!(view.observation.boxes[0].reason, "ROOT_IDENTITY_CHANGED");
+    }
+    #[test]
+    fn filetime_identity_survives_json_beyond_javascript_integer_precision() {
+        let p = ProcessIdentity {
+            pid: 1,
+            creation_time: 134_075_432_123_456_789,
+            owner_sid: "S-1-5-21-SYNTHETIC".into(),
+            session: 2,
+            box_name: "Box".into(),
+        };
+        let json = serde_json::to_value(&p).unwrap();
+        assert_eq!(json["creation_time"], "134075432123456789");
+        assert_eq!(serde_json::from_value::<ProcessIdentity>(json).unwrap(), p);
     }
 }

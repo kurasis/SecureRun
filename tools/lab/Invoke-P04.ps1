@@ -19,7 +19,7 @@ try {
     $unit=& cargo test --locked -p securerun-sandboxie-adapter 2>&1;$unit | Out-Host
     if ($LASTEXITCODE -ne 0) {throw 'ADAPTER_TEST_FAILED'}
     $unitCount=0;foreach($line in $unit){if([string]$line -match 'test result: ok\. (\d+) passed; 0 failed'){$unitCount += [int]$Matches[1]}}
-    if ($unitCount -lt 11) {throw 'ADAPTER_TEST_COVERAGE_MISSING'}
+    if ($unitCount -lt 12) {throw 'ADAPTER_TEST_COVERAGE_MISSING'}
     cargo clippy --locked -p securerun-sandboxie-adapter --all-targets -- -D warnings
     if ($LASTEXITCODE -ne 0) {throw 'ADAPTER_LINT_FAILED'}
     npm run tauri -- build --debug --no-bundle --target $target
@@ -167,7 +167,7 @@ try {
     }
     Case 'T58' 'boxed_normal_desktop_startup_exits_before_metadata' {
         $receipt=$bridge.Launch($box,$app,[string[]]@())
-        try{Require ([P02Bridge]::Completed($receipt,30000) -and [P02Bridge]::ExitCode($receipt) -eq 78) 'BOXED_DESKTOP_STARTUP_NOT_REFUSED';@{actual_normal_desktop_entrypoint=$true;unsafe_context_exit=78;metadata_profile_opened=$false;control_or_elevation_dispatched=$false;self_escape_attempted=$false}}
+        try{$completed=[P02Bridge]::Completed($receipt,30000);$c.observed=@{completed=$completed;exit_code=$(if($completed){[P02Bridge]::ExitCode($receipt)}else{-1})};Require ($completed -and [P02Bridge]::ExitCode($receipt) -eq 78) 'BOXED_DESKTOP_STARTUP_NOT_REFUSED';@{actual_normal_desktop_entrypoint=$true;unsafe_context_exit=78;metadata_profile_opened=$false;control_or_elevation_dispatched=$false;self_escape_attempted=$false}}
         finally{[P02Bridge]::CloseReceipt($receipt)}
     }
     Case 'T07' 'live_process_wrong_birth_cannot_be_attributed' {
@@ -178,9 +178,9 @@ try {
     }
     Case 'T07' 'exited_process_identity_is_not_reused' {
         $p=Start-Process -FilePath (Join-Path $env:SystemRoot 'System32/cmd.exe') -ArgumentList '/c ping -n 3 127.0.0.1 > NUL' -PassThru
-        $id=$p.Id;$birth=$p.StartTime.ToFileTimeUtc();$null=$p.WaitForExit(5000);$p.Dispose()
+        $id=$p.Id;$birth=$p.StartTime.ToFileTimeUtc();Require ($p.WaitForExit(10000)) 'EXIT_FIXTURE_NOT_COMPLETED';$p.Dispose()
         $data=(& $app --engine-worker $id $birth)|ConvertFrom-Json
-        Require ($data.reason -in @('MANAGER_IDENTITY_UNKNOWN','MANAGER_IDENTITY_CHANGED') -and $data.boxes.Count -eq 0) 'EXITED_IDENTITY_ATTRIBUTED'
+        Require ($data.reason -in @('MANAGER_IDENTITY_UNKNOWN','MANAGER_IDENTITY_CHANGED','MANAGER_NOT_RUNNING') -and $data.boxes.Count -eq 0) 'EXITED_IDENTITY_ATTRIBUTED'
         @{completed_process_refused=$true;pid_reuse_not_forced=$true;held_object_birth_required=$true}
     }
     Case 'T36' 'standard_user_same_sid_in_two_actual_sessions' {

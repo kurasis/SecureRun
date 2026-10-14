@@ -2,6 +2,11 @@
 
 Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P02.
 
+P02 continuation is in progress on `p02/complete-feasibility`. The retained
+`2eb5fd0` evidence is historical for interfaces changed by this continuation;
+new ordinary-user, same-SID session and sealed-cleanup results must be retained
+before the gate can change. Every source and Markdown change is published.
+
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |

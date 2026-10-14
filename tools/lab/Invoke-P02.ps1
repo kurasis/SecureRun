@@ -185,7 +185,8 @@ try {
     }
     Invoke-Case 'T16' 'Password-protected engine configuration uses private IPC' { $bridge.ExerciseProtectedConfiguration($boxB) }
     Invoke-Case 'T02' 'Bounded source-backed configuration, entitlement and diagnostic observation' { $bridge.ReadOnlyInventory() }
-    Invoke-Case 'T02' 'Original engine log reader availability' { Require $bridge.DiagnosticsAvailable 'ENGINE_LOG_SIGNED_LEADER_UNAVAILABLE'; @{ engine_log_query_available = $true; raw_text_retained = $false } }
+    Invoke-Case 'T02' 'Manager diagnostics retain safe original engine health observations' { $bridge.ManagerDiagnostics() }
+    if (-not $bridge.DiagnosticsAvailable) { $cases.Add(@{ id = 'T02'; case = 'Optional native engine access-event stream'; status = 'NOT_APPLICABLE'; reason = 'Signed original session leader is required; manager-owned operation/health diagnostics remain available. Engine access events are not synthesized.' }) }
     Invoke-Case 'T25' 'Remove only a fresh never-materialized owned definition' {
         $emptyBox = 'SRP02_EMPTY_' + $run.Substring(0,12)
         $bridge.Register($emptyBox); $bridge.Set($emptyBox,'Enabled','y'); $bridge.Set($emptyBox,'FileRootPath',(Join-Path $fixture "boxes/$emptyBox"))
@@ -209,6 +210,7 @@ try {
         try { Start-Sleep -Milliseconds 500; $stopped = $bridge.StopHeld($boxA); Require ([P02Bridge]::Completed($receipt,5000) -and $bridge.Count($boxA) -eq 0) 'STOP_NOT_COMPLETE'; @{ stopped_objects = $stopped; numeric_pid_kill_fallback = $false; creation_time_matched = $true; completed_wait = $true } }
         finally { [P02Bridge]::CloseReceipt($receipt) }
     }
+    Invoke-Case 'T62' 'Dispatch refuses another live box and reconciles a naturally exited object' { $bridge.ExerciseTerminationBoundaries($boxA,$boxB,$approved[0]) }
     Invoke-Case 'T36' 'Truncated successful native enumeration does not authorize Idle' {
         $receipt = $bridge.Launch($boxA,$approved[0],[string[]]@('hold',$fixture,$boxA,'enum-bound',$engineHome))
         try { Start-Sleep -Milliseconds 750; $result = $bridge.ExerciseTruncatedEnumeration($boxA); $null = $bridge.StopHeld($boxA); $result }

@@ -114,6 +114,7 @@ int wmain(int argc,WCHAR **argv) {
     if(wcscmp(argv[1],L"guard")==0)return context==0 ? 43 : 44; /* boxed control plane refuses all mutation */
     if(host){if((ULONG)context!=0xc000000bUL)return 42;}
     else if(context!=0 || wcscmp(box,argv[3])!=0)return 42; /* check before canary operations */
+    if(wcscmp(argv[1],L"exit-fast")==0)return 0;
     if(wcscmp(argv[1],L"workspace")==0){
         WCHAR exe[1024],descriptor[1024];HANDLE handle,out;DWORD size=0;BOOLEAN boxed=FALSE;ULONG status;
         if(argc!=6||!GetModuleFileNameW(NULL,exe,1024))return 64;

@@ -398,6 +398,38 @@ public sealed class P02Bridge {
     public static uint ExitCode(Receipt receipt) { uint code;if(!GetExitCodeProcess(receipt.process,out code))throw new Win32Exception();return code; }
     public static void CloseReceipt(Receipt receipt) { CloseHandle(receipt.thread);CloseHandle(receipt.process); }
     public static void StopReceipt(Receipt receipt) { TerminateProcess(receipt.process,99);WaitForSingleObject(receipt.process,5000);CloseReceipt(receipt); }
+    bool StopAuthorizedObject(string box,IntPtr handle,uint pid) {
+        Scope(box);
+        long born,exit,kernel,user,engineBorn;uint session;
+        var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);
+        if(!GetProcessTimes(handle,out born,out exit,out kernel,out user))throw new Win32Exception();
+        bool critical;if(!IsProcessCritical(handle,out critical)||critical)throw new InvalidOperationException("CRITICAL_PROCESS_REJECTED");
+        if(WaitForSingleObject(handle,0)==0)return false;
+        int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
+        if(status!=0||actualBox.ToString()!=box||actualSid.ToString()!=sid||born!=engineBorn){
+            if(WaitForSingleObject(handle,1000)==0)return false;
+            throw new InvalidOperationException("PROCESS_SCOPE_REJECTED_"+unchecked((uint)status).ToString("X8"));
+        }
+        TerminateProcess(handle,99);
+        if(WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
+        return true;
+    }
+    public Dictionary<string,object> ExerciseTerminationBoundaries(string box,string sibling,string exe) {
+        Scope(box);Scope(sibling);
+        var other=Launch(sibling,exe,new[]{"hold",Base,sibling,"wrong-scope",Home});
+        bool scopeRejected=false;
+        try {
+            try {StopAuthorizedObject(box,other.process,other.pid);}
+            catch(InvalidOperationException failure){scopeRejected=failure.Message.StartsWith("PROCESS_SCOPE_REJECTED_",StringComparison.Ordinal);}
+            if(!scopeRejected||Completed(other,0))throw new InvalidOperationException("STOP_OTHER_BOX_TOUCHED");
+        } finally {StopHeld(sibling);CloseReceipt(other);}
+        var exited=Launch(box,exe,new[]{"exit-fast",Base,box,"natural-exit",Home});
+        try {
+            if(!Completed(exited,10000)||ExitCode(exited)!=0)throw new InvalidOperationException("EXIT_POSITIVE_CONTROL_UNAVAILABLE");
+            if(StopAuthorizedObject(box,exited.process,exited.pid))throw new InvalidOperationException("EXITED_OBJECT_REDISPATCHED");
+        } finally {CloseReceipt(exited);StopHeld(box);}
+        return new Dictionary<string,object>{{"live_other_box_untouched",true},{"scope_rechecked_at_dispatch",true},{"natural_exit_on_retained_object",true},{"numeric_pid_kill_fallback",false},{"production_dispatch_function_exercised",true}};
+    }
     public int StopHeld(string box) {
         Scope(box);int stopped=0;
         for(int attempt=0;attempt<10;attempt++){
@@ -411,23 +443,7 @@ public sealed class P02Bridge {
                     throw new InvalidOperationException("PROCESS_HANDLE_UNAVAILABLE");
                 }
                 try {
-                    long born,exit,kernel,user,engineBorn;uint session;var actualBox=new StringBuilder(40);var actualSid=new StringBuilder(96);
-                    if(!GetProcessTimes(handle,out born,out exit,out kernel,out user))throw new Win32Exception();
-                    bool critical;if(!IsProcessCritical(handle,out critical) || critical)throw new InvalidOperationException("CRITICAL_PROCESS_REJECTED");
-                    if(WaitForSingleObject(handle,0)==0)continue;
-                    int status=query((IntPtr)pid,0,actualBox,null,actualSid,out session,out engineBorn);
-                    if(status!=0 || actualBox.ToString()!=box || actualSid.ToString()!=sid || born!=engineBorn){
-                        // A scope observation may race an exit. Never terminate on a
-                        // mismatch; only the retained object's completed wait permits
-                        // a fresh membership sweep, without acting on a reused PID.
-                        if(WaitForSingleObject(handle,1000)==0)continue;
-                        throw new InvalidOperationException("PROCESS_SCOPE_REJECTED_"+unchecked((uint)status).ToString("X8"));
-                    }
-                    // An object may naturally exit after authorization. Even if terminate
-                    // reports failure, only a signalled retained handle proves completion.
-                    TerminateProcess(handle,99);
-                    if(WaitForSingleObject(handle,15000)!=0)throw new InvalidOperationException("STOP_INCOMPLETE");
-                    stopped++;
+                    if(StopAuthorizedObject(box,handle,pid))stopped++;
                 } finally { CloseHandle(handle); }
             }
         }

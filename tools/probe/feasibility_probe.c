@@ -15,6 +15,7 @@
 typedef LONG (WINAPI *query_fn)(HANDLE,WCHAR*,WCHAR*,WCHAR*,ULONG*);
 typedef ULONG (WINAPI *map_fn)(HANDLE,WCHAR*,BOOLEAN*);
 typedef BOOL (WINAPI *run_fn)(const WCHAR*,const WCHAR*,const WCHAR*,ULONG,STARTUPINFOW*,PROCESS_INFORMATION*);
+typedef LONG (WINAPI *version_fn)(WCHAR*,ULONG*);
 
 /* Disposable logon harness. Credentials remain in a protected local pipe and
    memory; it creates only this fixed benign manager facade with a standard token. */
@@ -29,10 +30,18 @@ static int logon_fixture(const WCHAR *name) {
     WCHAR pipePath[256],user[64]={0},password[128]={0},sidText[184]={0},base[1024]={0},box[40]={0},exe[1024],home[1024],command[4096];
     HANDLE pipe,token=NULL,currentToken=NULL;BYTE info[256],systemSid[SECURITY_MAX_SID_SIZE];DWORD size=sizeof(systemSid),got=0;
     STARTUPINFOW startup={0};PROCESS_INFORMATION process={0};LPWSTR actualSid=NULL;DWORD error=0;BOOL ok=FALSE;
-    if(wcsncmp(name,L"SecureRunP02Logon_",17)!=0||wcslen(name)>64||wcspbrk(name,L"\\/:.\" ")!=NULL)return 64;
+    if(wcsncmp(name,L"SecureRunP02Logon_",wcslen(L"SecureRunP02Logon_"))!=0||wcslen(name)>64||wcspbrk(name,L"\\/:.\" ")!=NULL)return 64;
     if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&currentToken))return 65;
     ok=GetTokenInformation(currentToken,TokenUser,info,sizeof(info),&got)&&CreateWellKnownSid(WinLocalSystemSid,NULL,systemSid,&size)&&EqualSid(((TOKEN_USER*)info)->User.Sid,systemSid);
     CloseHandle(currentToken);if(!ok)return 66;
+    {
+        WCHAR dll[1024],version[16]={0},selfBox[40]={0};ULONG abi=0,session=0;HMODULE module;query_fn query;version_fn getVersion;
+        if(!GetEnvironmentVariableW(L"ProgramFiles",dll,1024))return 66;
+        wcscat_s(dll,1024,L"\\Sandboxie-Plus\\SbieDll.dll");
+        module=LoadLibraryExW(dll,NULL,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);if(!module)return 66;
+        query=(query_fn)(void*)GetProcAddress(module,"SbieApi_QueryProcess");getVersion=(version_fn)(void*)GetProcAddress(module,"SbieApi_GetVersionEx");
+        if(!query||!getVersion||getVersion(version,&abi)!=0||abi!=0x57230UL||wcscmp(version,L"5.73.6")!=0||(ULONG)query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),selfBox,NULL,NULL,&session)!=0xc000000bUL)return 66;
+    }
     if(swprintf_s(pipePath,256,L"\\\\.\\pipe\\%s",name)<0)return 64;
     pipe=CreateFileW(pipePath,GENERIC_READ,0,NULL,OPEN_EXISTING,0,NULL);if(pipe==INVALID_HANDLE_VALUE)return 67;
     ok=pipe_text(pipe,user,64)&&pipe_text(pipe,password,128)&&pipe_text(pipe,sidText,184)&&pipe_text(pipe,base,1024)&&pipe_text(pipe,box,40);CloseHandle(pipe);

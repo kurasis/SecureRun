@@ -109,7 +109,7 @@ public sealed class P02Bridge {
         if(Count(box)!=0) throw new InvalidOperationException("BOX_BUSY");
         uint status=update('s',null,box,key,value);
         if(status!=0) throw new InvalidOperationException("CONFIG_UPDATE_FAILED_"+status.ToString("x8"));
-        if(value!=null && Read(box,key,0)!=value) throw new InvalidOperationException("CONFIG_READBACK_MISMATCH");
+        if(value!=null && Read(box,key,0x70000000U)!=value) throw new InvalidOperationException("CONFIG_READBACK_MISMATCH_"+key.ToUpperInvariant());
     }
     public void AppendClosed(string box,string path) {
         Scope(box); if(Count(box)!=0) throw new InvalidOperationException("BOX_BUSY");
@@ -117,7 +117,7 @@ public sealed class P02Bridge {
         uint status=update('a',null,box,"ClosedFilePath",path);
         if(status!=0) throw new InvalidOperationException("CONFIG_APPEND_FAILED");
         bool found=false;
-        for(uint index=0;index<64;index++){string value=Read(box,"ClosedFilePath",index);if(value==null)break;if(value==path)found=true;}
+        for(uint index=0;index<64;index++){string value=Read(box,"ClosedFilePath",index|0x70000000U);if(value==null)break;if(value==path)found=true;}
         if(!found)throw new InvalidOperationException("CONFIG_APPEND_READBACK_FAILED");
     }
     public string CleanupReason(string box) {

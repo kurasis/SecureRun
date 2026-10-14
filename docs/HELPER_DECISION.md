@@ -17,6 +17,15 @@ components, running SCM services, original driver responses, unboxed self/parent
 context and OS owner/birth identity before using original service IPC. A failure
 refuses provisioning before metadata access.
 
+Original RpcSs support may use SYSTEM or the interactive session's token according
+to source-reviewed RunSandboxedGetToken behavior. This is a separately installed
+engine dependency, not a product elevation broker. Diagnostic shutdown checks its
+driver box SID, held process birth, critical state and signed protected installed
+image, and derives an allowed session identity from Windows. The manager's root
+and metadata owner always comes from its own original user token. The ordinary
+user test must confirm storage remains in that user's profile even when original
+RPC support uses another session identity.
+
 Administrator actions in `tools/probe/p05_lab.cs` and the Actions provisioning
 scripts are disposable lab fixtures. They require a fresh lab scope and are not
 compiled into the application, exported over Tauri IPC or installed as services.

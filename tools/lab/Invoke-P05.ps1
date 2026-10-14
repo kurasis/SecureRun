@@ -51,7 +51,7 @@ try {
     function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
     function Case([string]$id,[string]$name,[scriptblock]$body){
         $c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save
-        try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.exception_type=$_.Exception.GetBaseException().GetType().FullName;$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}};Save
+        try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.exception_type=$_.Exception.GetBaseException().GetType().FullName;$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}};Save;Write-Host ("P05 "+$id+" "+$name+" "+$c.status+$(if($c.ContainsKey('code')){" "+$c.code}else{''}))
     }
     function Policy($request){
         $start=[Diagnostics.ProcessStartInfo]::new($app);$start.UseShellExecute=$false;$start.WorkingDirectory=$managerHome
@@ -85,9 +85,9 @@ try {
         $r=Policy @{action='CREATE';display_name='Unverified paid profile';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='PRIVACY_HARDENED_OFFLINE';grants=@()}}
         Require ($r.reason -eq 'PAID_PRESET_UNVERIFIED') 'UNVERIFIED_ENTITLEMENT_ACCEPTED';@{paid_features_enabled=0;reason=$r.reason}
     }
-    $script:environment=$null
+    $script:environment=$null;$initialOperation=[Guid]::NewGuid().ToString()
     Case 'T55' 'native_pending_root_and_verified_policy' {
-        $r=Policy @{action='CREATE';display_name='Synthetic P05 offline';policy=(Desired);operation_id=[Guid]::NewGuid().ToString()}
+        $r=Policy @{action='CREATE';display_name='Synthetic P05 offline';policy=(Desired);operation_id=$initialOperation}
         Require ($r.reason -eq 'OBSERVED') $r.reason
         $script:environment=$r.environments[0]
         Require ($environment.stage -eq 'VERIFIED' -and $null -ne $environment.root_identity -and $null -ne $environment.enforcement_evidence -and -not $environment.production_launch_available) 'PROVISIONING_NOT_VERIFIED'
@@ -156,6 +156,17 @@ try {
             $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=$environment.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true;policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@(@{path=$path;permission='READ_ONLY'})}}
             Require ($r.reason -ne 'OBSERVED') 'UNSAFE_GRANT_ACCEPTED'
         };@{percent_comma_crlf_stream_unc_wildcard_rejected=$true;mandatory_root_overlap_rejected=$true;production_target_launches=0}
+    }
+    Case 'T17' 'idempotent_create_does_not_dispatch_and_payload_replay_is_refused' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$before=(Probe-Reports).Count
+        $r=Policy @{action='CREATE';display_name='Synthetic P05 offline';policy=(Desired);operation_id=$initialOperation};Require ($r.reason -eq 'OBSERVED' -and $r.environments.Count -eq 1 -and $r.environments[0].id -eq $environment.id -and (Probe-Reports).Count -eq $before) 'DUPLICATE_CREATE_DISPATCHED'
+        $r=Policy @{action='CREATE';display_name='Different replay payload';policy=(Desired);operation_id=$initialOperation};Require ($r.reason -eq 'OPERATION_CONFLICT' -and (Probe-Reports).Count -eq $before) 'OPERATION_PAYLOAD_REPLAY_ACCEPTED'
+        @{same_operation_returned_existing_root=$true;duplicate_probe_dispatches=0;changed_payload_refused=$true}
+    }
+    Case 'T17' 'stale_revision_cannot_modify_policy' {
+        Require ($null -ne $environment) 'PROVISIONING_REQUIRED';$before=(Probe-Reports).Count
+        $r=Policy @{action='APPLY';environment_id=$environment.id;expected_revision=0;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=(Desired)};Require ($r.reason -eq 'REVISION_CONFLICT' -and (Probe-Reports).Count -eq $before) 'STALE_REVISION_APPLIED'
+        @{reason=$r.reason;mutation_dispatches=0}
     }
     Case 'T13' 'online_policy_keeps_file_and_sibling_protection' {
         Require ($null -ne $environment) 'PROVISIONING_REQUIRED'
@@ -274,7 +285,7 @@ try {
         try{Require ($p.WaitForExit(30000)) 'SECOND_USER_ACL_TIMEOUT';$worker=Get-Content $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $worker.root_denied -and $worker.metadata_denied -and $worker.standard_user) 'SECOND_USER_ACL_BYPASS';$worker}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
     }
     Case 'T15' 'accepted_writes_without_independent_enforcement_remain_conflicted' {
-        $account=New-Standard 'unprove';$probePath=Join-Path $managerHome 'securerun-policy-probe.exe';$probeBackup=Join-Path $managerHome 'probe-normal.bin';Copy-Item $probePath $probeBackup
+        $account=New-Standard 'unpr';$probePath=Join-Path $managerHome 'securerun-policy-probe.exe';$probeBackup=Join-Path $managerHome 'probe-normal.bin';Copy-Item $probePath $probeBackup
         $probeHash=(Get-FileHash $probePath).Hash
         try{
             # A different fixed benign fixture rejects the canary protocol.
@@ -311,7 +322,7 @@ try {
     if($failed -ne 0){throw 'P05_NATIVE_VALIDATION_FAILED'}
 }finally{
     $metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
-    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-','dns-status-','scope-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
+    if(Test-Path $metadata){foreach($prefix in @('probe-status-','probe-evidence-','dns-status-','scope-status-','identity-status-')){Get-ChildItem $metadata -Filter "$prefix*.json"|ForEach-Object {Copy-Item $_.FullName (Join-Path $out $_.Name)}}}
     $events=@(Get-WinEvent -FilterHashtable @{LogName=@('Application','System');StartTime=(Get-Date).AddMinutes(-35)} -MaxEvents 2000 -ErrorAction SilentlyContinue | Where-Object ProviderName -Match 'Sandboxie|Sbie' | ForEach-Object {@{event_id=$_.Id;codes=@([regex]::Matches($_.Message,'SBIE[0-9]{4}|\[[0-9A-Fa-f ,/x]+\]|status=[0-9A-Fa-f]{8}')|ForEach-Object Value)}})
     ConvertTo-Json -InputObject $events -Depth 5|Set-Content (Join-Path $out 'engine-events.json') -Encoding utf8
     Pop-Location

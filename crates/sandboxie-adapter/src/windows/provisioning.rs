@@ -1819,12 +1819,31 @@ impl NativeEngine {
                 let _rpc_helper = if token_owner != self.owner {
                     // Original RunSandboxedGetToken chooses a session token or
                     // SYSTEM for RpcSs. The driver's box SID remains the owner.
-                    // Keep this separate from storage/target user authority.
+                    // Token_RestrictHelper substitutes Anonymous Logon in the
+                    // primary token to prevent impersonation. Preserve it and
+                    // derive ownership from the independent driver box SID.
                     let mut parent_session = 0;
                     if unsafe { ProcessIdToSessionId(self.parent_pid, &mut parent_session) } == 0
                         || (token_owner != "S-1-5-18"
+                            && token_owner != "S-1-5-7"
                             && token_owner != session_owner(parent_session)?)
                     {
+                        let kind = match token_owner.as_str() {
+                            "S-1-5-19" => "LOCAL_SERVICE",
+                            "S-1-5-20" => "NETWORK_SERVICE",
+                            "S-1-5-18" => "SYSTEM",
+                            "S-1-5-7" => "SANDBOXIE_ANONYMOUS_PRIMARY",
+                            _ => "OTHER_TOKEN",
+                        };
+                        let data = serde_json::json!({"schema":1,"token_kind":kind,"box_owner_matches":process.owner_sid==self.owner});
+                        std::fs::write(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("identity-status-{}.json", diagnostic.id.simple())),
+                            serde_json::to_vec(&data)
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                         return Err("DIAGNOSTIC_PROCESS_TOKEN_OWNER_CHANGED");
                     }
                     let mut path = [0u16; 32768];

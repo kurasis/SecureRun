@@ -481,6 +481,10 @@ async fn ci_report(
 
 pub fn run() {
     std::panic::set_hook(Box::new(|_| eprintln!("MANAGER_INTERNAL_ERROR")));
+    if securerun_sandboxie_adapter::windows::has_engine_module() {
+        eprintln!("MANAGER_CONTEXT_UNSAFE");
+        std::process::exit(78);
+    }
     // Missing engine context never opens/migrates the persistent production profile.
     let owner = match native::current_sid() {
         Ok(v) => v,

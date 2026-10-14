@@ -5,7 +5,7 @@ official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasof
 
 P01 and P02 feasibility are complete; P03 adds the native application foundation,
 SQLite persistence and a scoped IPC boundary. The shell currently offers read-only
-setup until trusted engine observation is implemented. Read [STATUS](docs/STATUS.md)
+setup and trusted read-only engine observation. Read [STATUS](docs/STATUS.md)
 for the exact phase evidence. No production user-target launcher exists yet.
 
 The complete, unchanged specification is in
@@ -52,7 +52,7 @@ npm run tauri -- build --debug --no-bundle
 ```
 
 The normal configuration includes only the bundled main-window capability.
-It has no engine execution, generic shell/filesystem API or test-report grant.
+It has no engine mutation/target launch, generic shell/filesystem API or test-report grant.
 The separately compiled foundation test feature is not a release build.
 See [IPC contract](docs/IPC_CONTRACT.md) and [persistence](docs/PERSISTENCE.md).
 
@@ -60,11 +60,16 @@ Portable checks (no Windows driver or native GUI claim):
 
 ```sh
 cargo test --locked -p securerun-foundation
+cargo test --locked -p securerun-sandboxie-adapter
 cargo clippy --locked -p securerun-foundation --all-targets -- -D warnings
+cargo clippy --locked -p securerun-sandboxie-adapter --all-targets -- -D warnings
 npm run build
 npm test
 ```
 
 The Linux cloud uses [setup-cloud.sh](tools/setup-cloud.sh); it pins and verifies
 Rust installation, activates workspace-local caches and executes these checks.
-Native Windows validation is reproduced by the P03 Actions workflow.
+Native Windows validation is reproduced by the P03/P04 Actions workflows.
+The [observation contract](docs/ENGINE_OBSERVATION.md) describes the versioned
+compatibility manifest, trust/context gates, private local diagnostics and bounded
+native worker. P04 does not introduce a production program launcher.

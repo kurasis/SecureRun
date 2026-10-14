@@ -86,6 +86,8 @@ pub struct Observation {
     pub service_running: bool,
     pub driver_running: bool,
     pub service_identity: Option<String>,
+    pub service_identity_complete: bool,
+    pub service_identity_reason: String,
     pub installation_identity: Option<String>,
     pub restart_required: bool,
     pub resume_epoch_ms: u64,
@@ -117,6 +119,8 @@ impl Observation {
             service_running: false,
             driver_running: false,
             service_identity: None,
+            service_identity_complete: false,
+            service_identity_reason: "NOT_OBSERVED".into(),
             installation_identity: None,
             restart_required: false,
             resume_epoch_ms: 0,
@@ -154,6 +158,7 @@ impl Observation {
             && self.bridge_context == Context::Unboxed
             && self.service_running
             && self.driver_running
+            && self.service_identity_complete
             && self.reason == "OBSERVED"
     }
 }
@@ -351,6 +356,7 @@ mod tests {
         o.trust = "VERIFIED".into();
         o.service_running = true;
         o.driver_running = true;
+        o.service_identity_complete = true;
         for c in [Context::Unknown, Context::Boxed] {
             o.manager_context = c;
             o.bridge_context = Context::Unboxed;

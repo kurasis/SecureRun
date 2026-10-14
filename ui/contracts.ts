@@ -13,6 +13,7 @@ export interface EngineHealth { generation: number; sequence: number; fresh: boo
   trust: string; reason: string; manager_context: string; bridge_context: string; observed_unix_ms: number;
   core_version: string | null; architecture: string; service_running: boolean; driver_running: boolean;
   restart_required: boolean; enumeration_complete: boolean; release_evidence: string;
+  service_identity_complete: boolean; service_identity_reason: string;
   production_launch_available: boolean; capabilities: {name: string; availability: string; reason: string; provenance: string}[];
   boxes: {name: string; owned: boolean; read_only: boolean; activity: string; complete: boolean; reason: string;
     root: {path: string | null; identity: string | null; reason: string; scope: string};

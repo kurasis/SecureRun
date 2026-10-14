@@ -1,4 +1,4 @@
-# P03 IPC contract
+# Application IPC contract
 
 The renderer is a lower-trust client. Only bundled local assets in the main
 WebView receive the explicit application permissions. AppManifest command ACLs
@@ -10,6 +10,7 @@ label and current URL in Rust. Renderer-supplied labels/PIDs/SIDs are not eviden
 | Command | Typed request / result | Independent backend constraints |
 |---|---|---|
 | get_snapshot | No input; Snapshot | Main local origin; no private paths/SIDs; actual backend state and generations |
+| get_engine_health | No input; HealthView | Actual main origin; deduplicated bounded production read-only observation; native manager/bridge context, connection generation, sequence and freshness; no path/box/command supplied by renderer |
 | subscribe_state / unsubscribe_state | Native typed Channel and backend-issued subscription ID / initial Snapshot | Actual main WebView, maximum four subscriptions, callback binding registered before snapshot; no renderer emission |
 | create_draft | display_name; EnvironmentView | Valid bounded inert label, metadata gate, generated UUID, Unconfigured/Unknown/Unverified; no engine definition |
 | reserve_operation | environment ID, expected generation/revision, UUID idempotency key, Import/Export kind; OperationView | Owned current environment, revision, per-environment operation lock, persistent reservation; Launch and other kinds unavailable |
@@ -29,11 +30,19 @@ installed. Popup windows and external main-window navigation are denied.
 
 ## Context and phase boundary
 
-The ordinary P03 shell is read-only setup. Trusted engine/self-context observation
-belongs to P04: until it exists, no persistent production profile is opened or
-migrated and metadata mutations are unavailable. A small in-memory store supplies
-static setup state; it does not fake an installed or verified engine. Production
-engine operations, target dispatch, import/export and cleanup are absent.
+P04 adds trusted production observation to the ordinary shell. It remains
+observation-only: no persistent production profile is opened/migrated and metadata
+mutations stay unavailable until provisioning is implemented in P05. A positively
+boxed normal desktop startup exits before metadata/WebView creation. Unknown
+context exposes minimum read-only setup; no control/elevation or self-escape is
+available. A small in-memory store supplies setup state; real engine observations
+come from the isolated backend worker, never mocks. Target dispatch, import/export,
+cleanup and engine writes are absent. See [observation contract](ENGINE_OBSERVATION.md).
+
+HealthView contains private root/configuration/process identity observations for
+the authorized local UI only. These fields do not enter diagnostic_summary or
+shared evidence. Its generation/sequence ordering and 15-second freshness are
+independent from each environment's lifetime generation.
 
 The separate foundation-ci feature/configuration runs an explicitly marked
 synthetic metadata fixture. A fresh private test directory, native Windows standard

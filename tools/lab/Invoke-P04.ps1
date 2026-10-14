@@ -130,6 +130,9 @@ try {
     $box='SRP02_P04_'+$run.Substring(0,12)
     $bridge.Register($box);$bridge.Set($box,'Enabled','y');$bridge.Set($box,'FileRootPath',(Join-Path $fixture "boxes/$box"));$bridge.Set($box,'DropAdminRights','y');$bridge.Set($box,'AutoRecover','n');$bridge.Set($box,'AutoDelete','n');$bridge.Set($box,'UseFileImage','n')
     $root=$bridge.Root($box);$null=New-Item -ItemType Directory -Path $root;$null=$bridge.CaptureRoot($box)
+    $rootAcl=[Security.AccessControl.DirectorySecurity]::new();$rootAcl.SetAccessRuleProtection($true,$false)
+    foreach($sid in @([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))){$rootAcl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))}
+    Set-Acl $root $rootAcl
     $configFiles=@((Join-Path $engine 'Sandboxie.ini'),(Join-Path $env:SystemRoot 'Sandboxie.ini'))|Where-Object {Test-Path $_}
     $beforeConfig=@($configFiles|ForEach-Object {(Get-FileHash $_).Hash})
     Case 'T02' 'unowned_configuration_roots_remain_read_only' {

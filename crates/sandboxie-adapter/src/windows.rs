@@ -208,6 +208,11 @@ pub fn process_birth(pid: u32) -> R<u64> {
     let h = Handle(h);
     birth(&h)
 }
+pub fn has_engine_module() -> bool {
+    // The desktop never loads engine code in-process. Presence conservatively
+    // refuses startup; absence is NOT evidence of an unboxed context.
+    unsafe { !GetModuleHandleW(wide("SbieDll.dll").as_ptr()).is_null() }
+}
 pub fn host_transition_marker() -> String {
     let mut unbiased = 0;
     let epoch = unsafe {
@@ -240,6 +245,7 @@ struct Service {
     path: PathBuf,
     running: bool,
     identity: Option<String>,
+    identity_complete: bool,
 }
 fn service(name: &str) -> R<Service> {
     unsafe {
@@ -252,9 +258,14 @@ fn service(name: &str) -> R<Service> {
             wide(name).as_ptr(),
             SERVICE_QUERY_CONFIG | SERVICE_QUERY_STATUS,
         );
+        let open_error = GetLastError();
         CloseServiceHandle(scm);
         if svc.is_null() {
-            return Err("ENGINE_MISSING");
+            return Err(if open_error == ERROR_SERVICE_DOES_NOT_EXIST {
+                "ENGINE_MISSING"
+            } else {
+                "SERVICE_ACCESS_UNKNOWN"
+            });
         }
         let result = (|| {
             let mut bytes = 0;
@@ -289,21 +300,30 @@ fn service(name: &str) -> R<Service> {
             {
                 return Err("SERVICE_STATUS_UNKNOWN");
             }
+            let mut identity_complete = false;
             let id = if status.dwProcessId != 0 {
                 let process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, status.dwProcessId);
                 if process.is_null() {
-                    return Err("SERVICE_IDENTITY_UNKNOWN");
+                    // Original SbieSvc protects its process object from ordinary
+                    // users. SCM status is still an OS observation, not birth/image
+                    // proof. Permit read-only queries and keep controls unavailable.
+                    Some(format!(
+                        "SCM_PID:{}:PROCESS_IDENTITY_UNKNOWN",
+                        status.dwProcessId
+                    ))
+                } else {
+                    let process = Handle(process);
+                    let mut image = [0u16; 4096];
+                    let mut chars = image.len() as u32;
+                    if QueryFullProcessImageNameW(process.0, 0, image.as_mut_ptr(), &mut chars) == 0
+                        || !text(&image)?
+                            .eq_ignore_ascii_case(path.strip_prefix("\\??\\").unwrap_or(path))
+                    {
+                        return Err("SERVICE_IMAGE_MISMATCH");
+                    }
+                    identity_complete = true;
+                    Some(format!("{}:{}", status.dwProcessId, birth(&process)?))
                 }
-                let process = Handle(process);
-                let mut image = [0u16; 4096];
-                let mut chars = image.len() as u32;
-                if QueryFullProcessImageNameW(process.0, 0, image.as_mut_ptr(), &mut chars) == 0
-                    || !text(&image)?
-                        .eq_ignore_ascii_case(path.strip_prefix("\\??\\").unwrap_or(path))
-                {
-                    return Err("SERVICE_IMAGE_MISMATCH");
-                }
-                Some(format!("{}:{}", status.dwProcessId, birth(&process)?))
             } else {
                 None
             };
@@ -311,6 +331,7 @@ fn service(name: &str) -> R<Service> {
                 path: PathBuf::from(path.strip_prefix("\\??\\").unwrap_or(path)),
                 running: status.dwCurrentState == SERVICE_RUNNING,
                 identity: id,
+                identity_complete,
             })
         })();
         CloseServiceHandle(svc);
@@ -756,6 +777,13 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
         report.service_running = trusted.svc.running;
         report.driver_running = trusted.drv.running;
         report.service_identity = trusted.svc.identity.clone();
+        report.service_identity_complete = trusted.svc.identity_complete;
+        report.service_identity_reason = if trusted.svc.identity_complete {
+            "PROCESS_IMAGE_AND_BIRTH_VERIFIED"
+        } else {
+            "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN"
+        }
+        .into();
         let api = Api::load(&trusted.home)?;
         let mut version = [0u16; 16];
         let mut abi = 0;
@@ -789,6 +817,16 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             report.certificate_state = Some(cert);
         }
         report.capabilities = vec![
+            Capability {
+                name: "service_process_identity".into(),
+                availability: if report.service_identity_complete {
+                    Availability::Available
+                } else {
+                    Availability::Unknown
+                },
+                reason: report.service_identity_reason.clone(),
+                provenance: "OS_SCM_AND_PROCESS_OBJECT_ACCESS".into(),
+            },
             Capability {
                 name: "read_only_observation".into(),
                 availability: Availability::Available,

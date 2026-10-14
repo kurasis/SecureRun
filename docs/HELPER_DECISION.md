@@ -21,8 +21,12 @@ Original RpcSs support may use SYSTEM or the interactive session's token accordi
 to source-reviewed RunSandboxedGetToken behavior. This is a separately installed
 engine dependency, not a product elevation broker. Diagnostic shutdown checks its
 driver box SID, held process birth, critical state and signed protected installed
-image, and derives an allowed session identity from Windows. The manager's root
-and metadata owner always comes from its own original user token. The ordinary
+image, and derives an allowed session identity from Windows. The diagnostic also
+preserves the driver's restricted Anonymous Logon primary token and never disables
+that restriction. Both original RpcSs and DcomLaunch companions
+must match the exact protected signed installed paths. A packet observer uses
+only rights already available to the caller; it cannot request elevation.
+The manager's root and metadata owner always comes from its own original user token. The ordinary
 user test must confirm storage remains in that user's profile even when original
 RPC support uses another session identity.
 

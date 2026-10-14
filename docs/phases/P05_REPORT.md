@@ -121,6 +121,18 @@ activating user-overridable COM registration in the unboxed product. Cached
 verification now also binds the actual Windows kernel/product/architecture tuple.
 The corrected complete native gate and final regressions remain pending.
 
+Run [38643173339](https://github.com/kurasis/SecureRun/actions/runs/38643173339),
+source `9b844cd72bc351a8e814107d87d0f993ba67be2e`, passes all 45 applicable Server
+cases and 43 ARM cases, with one accurate helper exclusion on each platform.
+Both platforms pass the independent offline/socket/DNS/tagged ICMP/raw/BITS,
+ordinary-user/second-user ACL, forged-metadata, real cross-session mutation,
+future-sibling, populated-overlay and seven interruption gates. The ARM online
+child misses one 750 ms IPv4 TCP exchange; the subsequent WFP case lacks a
+reconciled baseline. The failed exchange is retained, not changed to a passing
+result. Online controlled TCP availability now has a bounded retry window;
+offline uses one attempt and independent observations still reject any traffic.
+Both-platform final proof remains pending after that runtime correction.
+
 The lab now builds actual x86 probes alongside the native binary, plus emulated
 x64 probes on ARM. Each architecture gets a fresh diagnostic box. Controlled
 checks include IPv4/IPv6 TCP/UDP, DNS API/broker requests with distinct cached

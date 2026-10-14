@@ -207,8 +207,7 @@ public sealed class P02Bridge {
             sessions.Add(session);count++;
         }
         uint current=0;if(enumerate(BoxBuffer(box),false,CurrentSession,null,ref current)!=0)throw new InvalidOperationException("ENUMERATION_UNKNOWN");
-        if(sessions.Count<2||!sessions.Contains(CurrentSession)||current==0||count<=current)throw new InvalidOperationException("SAME_SID_SECOND_SESSION_UNAVAILABLE");
-        return new Dictionary<string,object>{{"same_owner_verified",true},{"simultaneous_session_count",sessions.Count},{"all_session_process_count",count},{"current_session_process_count",current},{"runner_session",CurrentSession},{"real_windows_sessions",true},{"terminal_desktop_ui_tested",false}};
+        return new Dictionary<string,object>{{"same_owner_verified",true},{"simultaneous_session_count",sessions.Count},{"all_session_process_count",count},{"current_session_process_count",current},{"runner_session",CurrentSession},{"observed_session_ids",new List<uint>(sessions).ToArray()},{"current_session_observed",sessions.Contains(CurrentSession)},{"real_windows_sessions",true},{"terminal_desktop_ui_tested",false}};
     }
     public Dictionary<string,object> ManagerDiagnostics() {
         RequireUnboxed();var v=new StringBuilder(16);uint abi;

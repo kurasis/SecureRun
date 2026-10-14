@@ -336,7 +336,7 @@ try {
             if (Test-Path $ready) { Start-ScheduledTask -TaskName $taskName }
             Require ($process.WaitForExit(45000)) 'STANDARD_USER_PROBE_OUTCOME_UNKNOWN'
             $result = Get-Content (Join-Path $userFixture 'results/standard-user-result.json') -Raw | ConvertFrom-Json
-            $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
+            @{ worker = $result; scheduled_task_result = (Get-ScheduledTaskInfo -TaskName $taskName).LastTaskResult } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'standard-user-result.json') -Encoding utf8
             if ($result.status -ne 'PASSED') { throw $result.diagnostic_code }
             Require ($process.ExitCode -eq 0 -and $result.sessions.same_owner_verified -and $result.sessions.simultaneous_session_count -ge 2) 'SAME_SID_SESSION_PROOF_FAILED'
             $result

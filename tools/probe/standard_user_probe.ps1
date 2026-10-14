@@ -8,6 +8,7 @@ try {
     if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'STANDARD_USER_REQUIRED' }
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
     $bridge = [P02Bridge]::new($EngineHome,$Fixture,[string[]]@($Probe))
+    $result.current_session = $bridge.CurrentSession
     $bridge.Register($Box)
     $bridge.Set($Box,'Enabled','n')
     $bridge.Set($Box,'FileRootPath',(Join-Path $Fixture "boxes/$Box"))
@@ -30,8 +31,12 @@ try {
     try {
         @{ initialized = $true; standard_user = $true; current_session = $bridge.CurrentSession } | ConvertTo-Json | Set-Content (Join-Path $Fixture 'results/standard-user-ready.json') -Encoding utf8
         $clock = [Diagnostics.Stopwatch]::StartNew()
-        while ($bridge.Count($Box) -lt 2 -and $clock.ElapsedMilliseconds -lt 18000) { Start-Sleep -Milliseconds 100 }
-        $result.sessions = $bridge.ObserveSameOwnerSessions($Box)
+        do {
+            $result.sessions = $bridge.ObserveSameOwnerSessions($Box)
+            if ($result.sessions.simultaneous_session_count -ge 2) { break }
+            Start-Sleep -Milliseconds 100
+        } while ($clock.ElapsedMilliseconds -lt 18000)
+        if ($result.sessions.simultaneous_session_count -lt 2 -or -not $result.sessions.current_session_observed -or $result.sessions.current_session_process_count -lt 1) { throw 'SAME_SID_SECOND_SESSION_UNAVAILABLE' }
         $result.completed_objects = $bridge.StopHeld($Box)
         if (-not [P02Bridge]::Completed($receipt,5000) -or $bridge.Count($Box) -ne 0) { throw 'STANDARD_USER_STOP_INCOMPLETE' }
     } finally { [P02Bridge]::CloseReceipt($receipt) }

@@ -1,14 +1,15 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P04.
+Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P05.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | DONE — current native regression | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
-| P04 | DONE — trusted read-only observation gate | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
-| P05–P12 | NOT_STARTED | No later phase is implemented here |
+| P03 | BLOCKED — current regression pending after P05 runtime edits | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
+| P04 | BLOCKED — current regression pending after P05 runtime edits | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
+| P05 | IN_PROGRESS | [P05 report](phases/P05_REPORT.md); production implementation and Windows verification underway |
+| P06–P12 | NOT_STARTED | Production target launch remains unavailable |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected
@@ -54,3 +55,6 @@ The same source passes full P03 regression in [run 38586144696](https://github.c
 The ordinary desktop observes verified installed components and unowned boxes; it
 exits before metadata when boxed, retains explicit Unknown service-process identity
 for ordinary users, and exposes no product mutation or target launch. P05 is eligible.
+
+P05 preserves historical P03/P04 proof and marks their current source bindings stale.
+Both native regressions must pass on the final P05 source before completion.

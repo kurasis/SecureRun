@@ -3095,9 +3095,12 @@ dependencies = [
 name = "securerun-sandboxie-adapter"
 version = "0.3.0"
 dependencies = [
+ "rusqlite",
  "serde",
  "serde_json",
  "sha2",
+ "tempfile",
+ "uuid",
  "windows-sys 0.61.2",
 ]
 

@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "682c3a346a46bca4fb4dfbbe07cf538d2afa8adb",
   "run_id": 38586140093,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38586140093",
@@ -234,5 +234,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 produces synthetic fixtures, no product launch or mutation."
+  "note": "Historical evidence preserved; P05 changes require native regression on current runtime sources."
 }

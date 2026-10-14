@@ -1,0 +1,1312 @@
+//! User-privilege provisioning. No helper, arbitrary target, global write or raw INI API.
+use super::*;
+use crate::{policy::*, provision::*};
+use std::{io::Write, os::windows::io::FromRawHandle};
+use uuid::Uuid;
+use windows_sys::Win32::{
+    System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
+    UI::Shell::*,
+};
+
+type Update = unsafe extern "system" fn(u16, *const u16, *const u16, *const u16, *const u16) -> u32;
+type Reload = unsafe extern "system" fn(u32, u32) -> i32;
+type Run = unsafe extern "system" fn(
+    *const u16,
+    *const u16,
+    *const u16,
+    u32,
+    *mut STARTUPINFOW,
+    *mut PROCESS_INFORMATION,
+) -> i32;
+unsafe fn bind<T: Copy>(api: &Api, name: &'static [u8]) -> R<T> {
+    let address =
+        unsafe { GetProcAddress(api.module, name.as_ptr()) }.ok_or("ABI_EXPORT_MISSING")?;
+    if std::mem::size_of::<T>() != std::mem::size_of_val(&address) {
+        return Err("ABI_EXPORT_MISSING");
+    }
+    Ok(unsafe { std::mem::transmute_copy(&address) })
+}
+fn current_sid() -> R<String> {
+    unsafe {
+        let mut raw = ptr::null_mut();
+        if OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw) == 0 {
+            return Err("OWNER_IDENTITY_UNKNOWN");
+        }
+        let token = Handle(raw);
+        let mut count = 0;
+        GetTokenInformation(token.0, TokenUser, ptr::null_mut(), 0, &mut count);
+        if count == 0 || count > 16384 {
+            return Err("OWNER_IDENTITY_UNKNOWN");
+        }
+        let mut data = vec![0u8; count as usize];
+        if GetTokenInformation(
+            token.0,
+            TokenUser,
+            data.as_mut_ptr() as _,
+            count,
+            &mut count,
+        ) == 0
+        {
+            return Err("OWNER_IDENTITY_UNKNOWN");
+        }
+        let user = ptr::read_unaligned(data.as_ptr() as *const TOKEN_USER);
+        sid_string(user.User.Sid)
+    }
+}
+pub fn profile_path() -> R<PathBuf> {
+    let mut raw = ptr::null_mut();
+    if unsafe { SHGetKnownFolderPath(&FOLDERID_LocalAppData, 0, ptr::null_mut(), &mut raw) } != 0 {
+        return Err("KNOWN_FOLDER_UNAVAILABLE");
+    }
+    let value = unsafe { pointer_text(raw, 1024) };
+    unsafe { CoTaskMemFree(raw as _) };
+    Ok(PathBuf::from(literal_path(&value?)?).join("SecureRun"))
+}
+fn fixed_ntfs(path: &Path) -> R<()> {
+    let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
+    literal_path(value)?;
+    let volume = wide(&value[..3]);
+    let mut fs = [0u16; 32];
+    if unsafe { GetDriveTypeW(volume.as_ptr()) } != DRIVE_FIXED
+        || unsafe {
+            GetVolumeInformationW(
+                volume.as_ptr(),
+                ptr::null_mut(),
+                0,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                ptr::null_mut(),
+                fs.as_mut_ptr(),
+                32,
+            )
+        } == 0
+        || text(&fs)? != "NTFS"
+    {
+        return Err("FIXED_NTFS_REQUIRED");
+    }
+    Ok(())
+}
+fn canonical(path: &Path) -> R<Vec<File>> {
+    fixed_ntfs(path)?;
+    let held = ancestry(path)?;
+    let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
+    let mut long = [0u16; 1024];
+    let n = unsafe { GetLongPathNameW(wide(value).as_ptr(), long.as_mut_ptr(), 1024) };
+    if n == 0 || n >= 1024 || !text(&long)?.eq_ignore_ascii_case(value) {
+        return Err("PATH_ALIAS_UNSUPPORTED");
+    }
+    for file in &held {
+        let mut info = std::mem::MaybeUninit::<BY_HANDLE_FILE_INFORMATION>::zeroed();
+        if unsafe { GetFileInformationByHandle(file.as_raw_handle(), info.as_mut_ptr()) } == 0 {
+            return Err("PATH_IDENTITY_UNKNOWN");
+        }
+        if unsafe { info.assume_init() }.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0 {
+            let mut flags = 0u32;
+            if unsafe {
+                GetFileInformationByHandleEx(
+                    file.as_raw_handle(),
+                    FileCaseSensitiveInfo,
+                    &mut flags as *mut _ as _,
+                    4,
+                )
+            } == 0
+                || flags != 0
+            {
+                return Err("CASE_SENSITIVE_PATH_UNSUPPORTED");
+            }
+        }
+    }
+    Ok(held)
+}
+fn private(file: &File, owner_sid: &str) -> R<()> {
+    unsafe {
+        let mut owner = ptr::null_mut();
+        let mut dacl = ptr::null_mut();
+        let mut sd = ptr::null_mut();
+        if GetSecurityInfo(
+            file.as_raw_handle(),
+            SE_FILE_OBJECT,
+            OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+            &mut owner,
+            ptr::null_mut(),
+            &mut dacl,
+            ptr::null_mut(),
+            &mut sd,
+        ) != 0
+        {
+            return Err("ROOT_ACL_UNKNOWN");
+        }
+        let result = (|| {
+            let mut control = 0u16;
+            let mut revision = 0u32;
+            if sid_string(owner)? != owner_sid
+                || dacl.is_null()
+                || GetSecurityDescriptorControl(sd, &mut control, &mut revision) == 0
+                || control & SE_DACL_PROTECTED == 0
+            {
+                return Err("ROOT_ACL_UNSAFE");
+            }
+            if (*dacl).AceCount > 16 {
+                return Err("ROOT_ACL_UNSAFE");
+            }
+            let mut owner_allowed = false;
+            let mut system_allowed = false;
+            for i in 0..(*dacl).AceCount as u32 {
+                let mut ace = ptr::null_mut();
+                if GetAce(dacl, i, &mut ace) == 0 {
+                    return Err("ROOT_ACL_UNKNOWN");
+                }
+                let head = &*(ace as *const ACE_HEADER);
+                if head.AceType != 0 {
+                    return Err("ROOT_ACL_UNSAFE");
+                }
+                let allow = &*(ace as *const ACCESS_ALLOWED_ACE);
+                let sid = sid_string(&allow.SidStart as *const _ as _)?;
+                if ![owner_sid, "S-1-5-18", "S-1-5-32-544"].contains(&sid.as_str()) {
+                    return Err("ROOT_ACL_UNSAFE");
+                }
+                if allow.Mask & FILE_ALL_ACCESS != FILE_ALL_ACCESS || head.AceFlags & 3 != 3 {
+                    return Err("ROOT_ACL_UNSAFE");
+                }
+                owner_allowed |= sid == owner_sid;
+                system_allowed |= sid == "S-1-5-18";
+            }
+            if !owner_allowed || !system_allowed {
+                return Err("ROOT_ACL_UNSAFE");
+            }
+            Ok(())
+        })();
+        LocalFree(sd as _);
+        result
+    }
+}
+#[repr(C)]
+struct NtName {
+    length: u16,
+    maximum: u16,
+    buffer: *const u16,
+}
+#[repr(C)]
+struct NtAttributes {
+    length: u32,
+    root: HANDLE,
+    name: *const NtName,
+    flags: u32,
+    security: *mut c_void,
+    qos: *mut c_void,
+}
+#[repr(C)]
+struct IoStatus {
+    status: usize,
+    information: usize,
+}
+#[link(name = "ntdll")]
+unsafe extern "system" {
+    fn NtCreateFile(
+        handle: *mut HANDLE,
+        access: u32,
+        attributes: *const NtAttributes,
+        status: *mut IoStatus,
+        allocation: *const i64,
+        file_attributes: u32,
+        share: u32,
+        disposition: u32,
+        options: u32,
+        ea: *const c_void,
+        ea_size: u32,
+    ) -> i32;
+}
+fn fresh_directory(path: &Path, owner: &str) -> R<File> {
+    fixed_ntfs(path)?;
+    let parent = path.parent().ok_or("ROOT_PARENT_UNSAFE")?;
+    let held = canonical(parent)?;
+    let leaf = path
+        .file_name()
+        .and_then(|s| s.to_str())
+        .ok_or("ROOT_LEAF_UNSAFE")?;
+    if leaf.contains(['\\', '/', ':']) || leaf.len() > 64 {
+        return Err("ROOT_LEAF_UNSAFE");
+    }
+    let leaf = wide(leaf);
+    let name = NtName {
+        length: ((leaf.len() - 1) * 2) as u16,
+        maximum: (leaf.len() * 2) as u16,
+        buffer: leaf.as_ptr(),
+    };
+    let mut descriptor = ptr::null_mut();
+    let sddl = wide(&format!(
+        "O:{owner}D:P(A;OICI;FA;;;{owner})(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)"
+    ));
+    if unsafe {
+        ConvertStringSecurityDescriptorToSecurityDescriptorW(
+            sddl.as_ptr(),
+            1,
+            &mut descriptor,
+            ptr::null_mut(),
+        )
+    } == 0
+    {
+        return Err("ROOT_ACL_CREATE_FAILED");
+    }
+    let attr = NtAttributes {
+        length: std::mem::size_of::<NtAttributes>() as u32,
+        root: held.last().ok_or("ROOT_PARENT_UNSAFE")?.as_raw_handle(),
+        name: &name,
+        flags: 0x40,
+        security: descriptor,
+        qos: ptr::null_mut(),
+    };
+    let mut status = IoStatus {
+        status: 0,
+        information: 0,
+    };
+    let mut raw = ptr::null_mut();
+    let rc = unsafe {
+        NtCreateFile(
+            &mut raw,
+            0x120081,
+            &attr,
+            &mut status,
+            ptr::null(),
+            FILE_ATTRIBUTE_DIRECTORY,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            2,
+            0x00200021,
+            ptr::null(),
+            0,
+        )
+    };
+    unsafe { LocalFree(descriptor as _) };
+    if rc != 0 {
+        return Err(if rc as u32 == 0xc0000035 {
+            "PREEXISTING_ROOT_NOT_ADOPTED"
+        } else {
+            "ROOT_NATIVE_CREATE_FAILED"
+        });
+    }
+    let file = unsafe { File::from_raw_handle(raw) };
+    identity(&file)?;
+    private(&file, owner)?;
+    Ok(file)
+}
+fn ensure_private(path: &Path, owner: &str) -> R<Vec<File>> {
+    match std::fs::symlink_metadata(path) {
+        Ok(_) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            drop(fresh_directory(path, owner)?);
+        }
+        Err(_) => return Err("PROFILE_UNAVAILABLE"),
+    }
+    let held = canonical(path)?;
+    private(held.last().ok_or("PROFILE_UNAVAILABLE")?, owner)?;
+    Ok(held)
+}
+fn read_section(api: &Api, name: &str, effective: bool) -> R<Section> {
+    let mut keys = std::collections::BTreeSet::new();
+    let mut ended = false;
+    for i in 0..128 {
+        match api.conf(Some(name), None, i | 0x60000000)? {
+            Some(key) => {
+                if key.len() > 64 || !key.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_') {
+                    return Err("CONFIGURATION_KEY_UNSUPPORTED");
+                }
+                keys.insert(key);
+            }
+            None => {
+                ended = true;
+                break;
+            }
+        }
+    }
+    if !ended {
+        return Err("CONFIGURATION_KEY_BOUND");
+    }
+    // Effective inherited globals must be inspected even if absent in the local section.
+    if effective {
+        for key in read_section(api, "GlobalSettings", false)?.keys() {
+            keys.insert(key.clone());
+        }
+    }
+    let mut section = Section::new();
+    for key in keys {
+        // Never read configuration credential contents.
+        if key.eq_ignore_ascii_case("EditPassword") {
+            return Err("PASSWORD_PROTECTED_CONFIGURATION");
+        }
+        let values = api.values(name, &key, if effective { 0 } else { RAW_FLAGS })?;
+        if !values.is_empty() {
+            section.insert(key, values);
+        }
+    }
+    if serde_json::to_vec(&section)
+        .map_err(|_| "CONFIGURATION_UNKNOWN")?
+        .len()
+        > 65536
+    {
+        return Err("CONFIGURATION_BOUND");
+    }
+    Ok(section)
+}
+struct NativeEngine {
+    api: Api,
+    trusted: Trusted,
+    owner: String,
+    profile: PathBuf,
+    image: PathBuf,
+    probe: PathBuf,
+    probe_hash: String,
+    _leases: Vec<File>,
+}
+impl NativeEngine {
+    fn new(manager_pid: u32, manager_birth: u64) -> R<Self> {
+        // This checks held OS identities, protected SCM/component configuration and
+        // the actual driver response. It does not invent a service process birth.
+        let observed = observe(manager_pid, manager_birth);
+        if observed.trust != "VERIFIED"
+            || observed.reason != "OBSERVED"
+            || observed.manager_context != Context::Unboxed
+            || observed.bridge_context != Context::Unboxed
+        {
+            return Err("MANAGER_CONTEXT_UNSAFE");
+        }
+        let trusted = discover()?;
+        let api = Api::load(&trusted.home)?;
+        if api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed
+            || api.context(manager_pid) != Context::Unboxed
+        {
+            return Err("MANAGER_CONTEXT_UNSAFE");
+        }
+        let owner = current_sid()?;
+        let profile = profile_path()?;
+        let image = std::env::current_exe().map_err(|_| "MANAGER_IMAGE_UNKNOWN")?;
+        let probe = image
+            .parent()
+            .ok_or("MANAGER_IMAGE_UNKNOWN")?
+            .join("securerun-policy-probe.exe");
+        let mut leases = canonical(image.parent().unwrap())?;
+        let mut file = lease(&probe, false)?;
+        protected(&file)?;
+        let mut bytes = vec![];
+        Read::by_ref(&mut file)
+            .take(32 * 1024 * 1024 + 1)
+            .read_to_end(&mut bytes)
+            .map_err(|_| "PROBE_IMAGE_UNAVAILABLE")?;
+        if bytes.len() > 32 * 1024 * 1024 || bytes.get(..2) != Some(b"MZ") {
+            return Err("PROBE_IMAGE_INVALID");
+        }
+        let probe_hash = format!("{:x}", Sha256::digest(bytes));
+        leases.push(file);
+        leases.extend(ensure_private(&profile, &owner)?);
+        for leaf in ["metadata", "boxes", "canaries"] {
+            leases.extend(ensure_private(&profile.join(leaf), &owner)?);
+        }
+        Ok(Self {
+            api,
+            trusted,
+            owner,
+            profile,
+            image,
+            probe,
+            probe_hash,
+            _leases: leases,
+        })
+    }
+    fn mutation_context(&self) -> R<()> {
+        if self.api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed {
+            return Err("MANAGER_CONTEXT_UNSAFE");
+        }
+        if !service("SbieSvc")?.running || !service("SbieDrv")?.running {
+            return Err("ENGINE_SERVICE_STOPPED");
+        }
+        Ok(())
+    }
+    fn set(&self, name: &str, key: &str, values: &[String]) -> R<()> {
+        self.mutation_context()?;
+        box_wide(name)?;
+        let call: Update = unsafe { bind(&self.api, b"SbieDll_UpdateConf\0")? };
+        if !values.is_empty() && values.iter().any(|v| v.contains(['\r', '\n', '\0'])) {
+            return Err("INI_VALUE_UNSUPPORTED");
+        }
+        let section = wide(name);
+        let key = wide(key);
+        let value = values.first().map(|v| wide(v));
+        if unsafe {
+            call(
+                's' as u16,
+                ptr::null(),
+                section.as_ptr(),
+                key.as_ptr(),
+                value.as_ref().map_or(ptr::null(), |v| v.as_ptr()),
+            )
+        } != 0
+        {
+            return Err("CONFIGURATION_WRITE_REFUSED");
+        }
+        for v in values.iter().skip(1) {
+            if unsafe {
+                call(
+                    'a' as u16,
+                    ptr::null(),
+                    section.as_ptr(),
+                    key.as_ptr(),
+                    wide(v).as_ptr(),
+                )
+            } != 0
+            {
+                return Err("CONFIGURATION_APPEND_REFUSED");
+            }
+        }
+        if self.api.values(name, &text(&key)?, RAW_FLAGS)? != values {
+            return Err("CONFIGURATION_WRITE_CONFLICT");
+        }
+        Ok(())
+    }
+    fn reload(&self) -> R<()> {
+        let call: Reload = unsafe { bind(&self.api, b"SbieApi_ReloadConf\0")? };
+        let mut session = 0;
+        if unsafe { ProcessIdToSessionId(GetCurrentProcessId(), &mut session) } == 0
+            || unsafe { call(session, 0) } != 0
+        {
+            return Err("CONFIGURATION_RELOAD_FAILED");
+        }
+        Ok(())
+    }
+    fn validate_grants(&self, desired: &DesiredPolicy) -> R<Vec<File>> {
+        let mut held = vec![];
+        for grant in &desired.grants {
+            literal_path(&grant.path)?;
+            held.extend(canonical(Path::new(&grant.path))?);
+        }
+        Ok(held)
+    }
+}
+impl Engine for NativeEngine {
+    fn root_for(&self, id: Uuid) -> String {
+        self.profile
+            .join("boxes")
+            .join(id.simple().to_string())
+            .to_string_lossy()
+            .into()
+    }
+    fn metadata(&self) -> String {
+        self.profile.join("metadata").to_string_lossy().into()
+    }
+    fn code(&self) -> String {
+        self.image.to_string_lossy().into()
+    }
+    fn engine_identity(&self) -> String {
+        self.trusted.identity.clone()
+    }
+    fn global(&self) -> R<Section> {
+        let s = read_section(&self.api, "GlobalSettings", false)?;
+        validate_inheritance(&s, &[])?;
+        Ok(s)
+    }
+    fn section(&self, name: &str, effective: bool) -> R<Section> {
+        read_section(&self.api, name, effective)
+    }
+    fn idle(&self, name: &str) -> R<()> {
+        if !self.api.processes(name)?.is_empty() {
+            return Err("STOP_REQUIRED_ALL_SESSIONS");
+        }
+        Ok(())
+    }
+    fn fence(&self, e: &OwnedEnvironment) -> R<()> {
+        self.mutation_context()?;
+        self.idle(&e.name())?;
+        let raw = self.section(&e.name(), false)?;
+        if raw.get("SecureRunOwner") != Some(&vec![e.marker()])
+            || raw.get("FileRootPath") != Some(&vec![self.root_for(e.id)])
+        {
+            return Err("OWNERSHIP_BINDING_CHANGED");
+        }
+        self.set(&e.name(), "Enabled", &["n".into()])?;
+        self.reload()?;
+        self.idle(&e.name())
+    }
+    fn write(&self, e: &OwnedEnvironment, baseline: &Section) -> R<()> {
+        let _grants = self.validate_grants(&e.desired)?;
+        self.mutation_context()?;
+        self.idle(&e.name())?;
+        let mut expected = baseline.clone();
+        if !expected.is_empty() {
+            expected.insert("Enabled".into(), vec!["n".into()]);
+        }
+        if self.section(&e.name(), false)? != expected {
+            return Err("CONFIGURATION_CONFLICT");
+        }
+        // Every write checks the complete prior section; no optimistic overwrite.
+        self.set(&e.name(), "Enabled", &["n".into()])?;
+        expected.insert("Enabled".into(), vec!["n".into()]);
+        let keys = baseline
+            .keys()
+            .chain(e.compiled.section.keys())
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>();
+        for key in keys {
+            if key == "Enabled" {
+                continue;
+            }
+            if self.section(&e.name(), false)? != expected {
+                return Err("CONFIGURATION_CONFLICT");
+            }
+            self.idle(&e.name())?;
+            let values = e.compiled.section.get(&key).cloned().unwrap_or_default();
+            self.set(&e.name(), &key, &values)?;
+            if values.is_empty() {
+                expected.remove(&key);
+            } else {
+                expected.insert(key, values);
+            }
+        }
+        self.reload()?;
+        if self.section(&e.name(), false)? != e.compiled.section {
+            return Err("CONFIGURATION_CONFLICT");
+        }
+        Ok(())
+    }
+    fn create_root(&self, e: &OwnedEnvironment) -> R<String> {
+        self.idle(&e.name())?;
+        let observed = self.api.root(&e.name());
+        if observed.reason != "PENDING_ROOT"
+            || observed.path.as_deref() != Some(self.root_for(e.id).as_str())
+        {
+            return Err("PENDING_ROOT_BINDING_CHANGED");
+        }
+        let f = fresh_directory(Path::new(observed.path.as_ref().unwrap()), &self.owner)?;
+        identity(&f)
+    }
+    fn validate_root(&self, e: &OwnedEnvironment) -> R<()> {
+        let root = self.api.root(&e.name());
+        if root.path.as_ref() != Some(&self.root_for(e.id))
+            || root.identity != e.root_identity
+            || root.identity.is_none()
+        {
+            return Err("ROOT_IDENTITY_CHANGED");
+        }
+        let leases = canonical(Path::new(root.path.as_ref().unwrap()))?;
+        private(leases.last().ok_or("ROOT_IDENTITY_UNKNOWN")?, &self.owner)?;
+        Ok(())
+    }
+    fn verify_enforcement(&self, e: &OwnedEnvironment) -> R<String> {
+        self.diagnostic(e)
+    }
+}
+
+pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply {
+    let mut environments = vec![];
+    let result = (|| -> R<()> {
+        let engine = NativeEngine::new(manager_pid, manager_birth)?;
+        // Namespace lock is held across every read/write and fresh probe.
+        let lock_path = engine.profile.join("metadata").join("policy-writer.lock");
+        let _lock = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .share_mode(0)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(&lock_path)
+            .map_err(|_| "NAMESPACE_OPERATION_BUSY")?;
+        identity(&_lock)?;
+        let db_path = engine.profile.join("metadata").join("policy.sqlite");
+        if db_path.exists() {
+            let _ = lease(&db_path, true)?;
+        }
+        let mut journal = Journal::open(&db_path, &engine.owner)?;
+        journal.recover()?;
+        match request {
+            Request::List => {
+                for mut e in journal.list()? {
+                    if e.stage == Stage::Verified
+                        && let Err(reason) = validate_owned(&engine, &e)
+                    {
+                        e.stage = Stage::Conflict;
+                        e.reason = reason.into();
+                        e.fingerprint = None;
+                        e.enforcement_evidence = None;
+                        journal.save(&e)?;
+                    }
+                }
+            }
+            Request::Create {
+                display_name,
+                policy,
+                operation_id,
+            } => {
+                engine.validate_grants(&policy)?;
+                create(
+                    &mut journal,
+                    &engine,
+                    &engine.owner,
+                    &display_name,
+                    policy,
+                    operation_id,
+                )?;
+            }
+            Request::Apply {
+                environment_id,
+                expected_revision,
+                policy,
+                operation_id,
+                acknowledge_view_change,
+            } => {
+                engine.validate_grants(&policy)?;
+                apply(
+                    &mut journal,
+                    &engine,
+                    environment_id,
+                    expected_revision,
+                    policy,
+                    operation_id,
+                    acknowledge_view_change,
+                    None,
+                )?;
+            }
+            Request::Inspect { environment_id } => {
+                let mut e = journal.get(environment_id)?;
+                let raw = engine.section(&e.name(), false)?;
+                e.reason = format!("INSPECTED_BASELINE:{}", fingerprint(&raw));
+                if e.stage != Stage::Verified {
+                    e.stage = Stage::Conflict;
+                }
+                journal.save(&e)?;
+            }
+            Request::Repair {
+                environment_id,
+                expected_revision,
+                observed_fingerprint,
+                operation_id,
+                acknowledge_view_change,
+            } => {
+                let e = journal.get(environment_id)?;
+                apply(
+                    &mut journal,
+                    &engine,
+                    environment_id,
+                    expected_revision,
+                    e.desired,
+                    operation_id,
+                    acknowledge_view_change,
+                    Some(&observed_fingerprint),
+                )?;
+            }
+        }
+        environments = journal.list()?;
+        Ok(())
+    })();
+    Reply {
+        protocol: 1,
+        reason: result.err().unwrap_or("OBSERVED").into(),
+        environments,
+        production_launch_available: false,
+        elevated_helper: false,
+    }
+}
+
+/// Fixed worker schema over a private inherited pipe; no command/password/path arguments.
+pub fn bounded_request(request: &Request) -> Reply {
+    let result = (|| -> R<Reply> {
+        let pid = unsafe { GetCurrentProcessId() };
+        let created = process_birth(pid)?;
+        let executable = std::env::current_exe().map_err(|_| "MANAGER_IMAGE_UNKNOWN")?;
+        let _parents = ancestry(executable.parent().ok_or("MANAGER_IMAGE_UNKNOWN")?)?;
+        let _image = lease(&executable, false)?;
+        let data = serde_json::to_vec(request).map_err(|_| "POLICY_REQUEST_INVALID")?;
+        if data.len() > 16384 {
+            return Err("POLICY_REQUEST_BOUND");
+        }
+        let windows = system_directory()?;
+        let mut command = Command::new(executable);
+        command
+            .args([
+                "--policy-worker".into(),
+                pid.to_string(),
+                created.to_string(),
+            ])
+            .current_dir(&windows)
+            .env_clear()
+            .env("SystemRoot", windows.parent().ok_or("SYSTEM_PATH_UNKNOWN")?)
+            .env("WINDIR", windows.parent().unwrap())
+            .env("PATH", &windows)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .creation_flags(CREATE_NO_WINDOW);
+        // The request is bounded before dispatch; the same job/output/timeout
+        // machinery as observation kills the narrow worker on failure.
+        let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+        child
+            .stdin
+            .take()
+            .ok_or("BRIDGE_PIPE_FAILED")?
+            .write_all(&data)
+            .map_err(|_| "BRIDGE_PIPE_FAILED")?;
+        let bytes = capture_child(child, Duration::from_secs(45))?;
+        let reply: Reply = serde_json::from_slice(&bytes).map_err(|_| "POLICY_RESPONSE_INVALID")?;
+        if reply.protocol != 1
+            || reply.production_launch_available
+            || reply.elevated_helper
+            || reply.environments.len() > 12
+        {
+            return Err("POLICY_RESPONSE_INVALID");
+        }
+        Ok(reply)
+    })();
+    result.unwrap_or_else(Reply::failure)
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Canary {
+    box_name: String,
+    write: String,
+    blocked: String,
+    read_only: String,
+    metadata: String,
+    sibling: Option<String>,
+    output: String,
+    registry_leaf: String,
+    ports: [u16; 4],
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CanaryReport {
+    member: bool,
+    virtualized_write: bool,
+    blocked_read: bool,
+    read_only_read: bool,
+    read_only_write_denied: bool,
+    metadata_denied: bool,
+    sibling_denied: bool,
+    standard_read_visible: bool,
+    registry_virtualized: bool,
+    sockets: [bool; 4],
+}
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+fn unhex(value: &str) -> R<Vec<u8>> {
+    if value.is_empty()
+        || value.len() > 16384
+        || !value.len().is_multiple_of(2)
+        || !value.bytes().all(|b| b.is_ascii_hexdigit())
+    {
+        return Err("PROBE_REQUEST_INVALID");
+    }
+    (0..value.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&value[i..i + 2], 16).map_err(|_| "PROBE_REQUEST_INVALID"))
+        .collect()
+}
+fn registry_value(leaf: &str, write: Option<u32>) -> R<u32> {
+    use windows_sys::Win32::System::Registry::*;
+    if leaf.len() != 32 || !leaf.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err("CANARY_SCOPE_INVALID");
+    }
+    unsafe {
+        let mut key = ptr::null_mut();
+        let mut disposition = 0;
+        let path = wide(&format!("Software\\SecureRunPolicyDiagnostics\\{leaf}"));
+        if RegCreateKeyExW(
+            HKEY_CURRENT_USER,
+            path.as_ptr(),
+            0,
+            ptr::null(),
+            0,
+            KEY_READ | KEY_WRITE,
+            ptr::null(),
+            &mut key,
+            &mut disposition,
+        ) != 0
+        {
+            return Err("CANARY_REGISTRY_UNAVAILABLE");
+        }
+        let result = (|| {
+            let name = wide("Canary");
+            if let Some(value) = write
+                && RegSetValueExW(key, name.as_ptr(), 0, REG_DWORD, &value as *const _ as _, 4) != 0
+            {
+                return Err("CANARY_REGISTRY_WRITE_FAILED");
+            }
+            let mut value = 0u32;
+            let mut size = 4;
+            let mut kind = 0;
+            if RegQueryValueExW(
+                key,
+                name.as_ptr(),
+                ptr::null(),
+                &mut kind,
+                &mut value as *mut _ as _,
+                &mut size,
+            ) != 0
+                || kind != REG_DWORD
+                || size != 4
+            {
+                return Err("CANARY_REGISTRY_READ_FAILED");
+            }
+            Ok(value)
+        })();
+        RegCloseKey(key);
+        result
+    }
+}
+pub fn run_canary(encoded: &str) -> i32 {
+    let result = (|| -> R<()> {
+        // This executable cannot read metadata or perform controls, even if unboxed.
+        let module = unsafe { GetModuleHandleW(wide("SbieDll.dll").as_ptr()) };
+        if module.is_null() {
+            return Err("PROBE_NOT_BOXED");
+        }
+        let address = unsafe { GetProcAddress(module, c"SbieApi_QueryProcessEx2".as_ptr().cast()) }
+            .ok_or("PROBE_NOT_BOXED")?;
+        let query: Query = unsafe { std::mem::transmute(address) };
+        let mut name = [0u16; 40];
+        let mut session = 0;
+        if unsafe {
+            query(
+                GetCurrentProcessId() as usize as _,
+                0,
+                name.as_mut_ptr(),
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut session,
+                ptr::null_mut(),
+            )
+        } != 0
+        {
+            return Err("PROBE_NOT_BOXED");
+        }
+        let canary: Canary =
+            serde_json::from_slice(&unhex(encoded)?).map_err(|_| "PROBE_REQUEST_INVALID")?;
+        if text(&name)? != canary.box_name || !valid_box(&canary.box_name) {
+            return Err("PROBE_CONTEXT_MISMATCH");
+        }
+        for p in [
+            &canary.write,
+            &canary.blocked,
+            &canary.read_only,
+            &canary.metadata,
+            &canary.output,
+        ] {
+            literal_path(p)?;
+        }
+        let original = std::fs::read(&canary.write).map_err(|_| "CANARY_READ_FAILED")?;
+        let virtualized_write = original == b"SYNTHETIC_HOST_CANARY"
+            && std::fs::write(&canary.write, b"SYNTHETIC_BOX_CHANGE").is_ok()
+            && std::fs::read(&canary.write).is_ok_and(|v| v == b"SYNTHETIC_BOX_CHANGE");
+        let denied = |p: &str| {
+            std::fs::read(p)
+                .err()
+                .is_some_and(|e| e.raw_os_error() == Some(5))
+        };
+        let read_only_read =
+            std::fs::read(&canary.read_only).is_ok_and(|v| v == b"SYNTHETIC_HOST_CANARY");
+        let read_only_write_denied = std::fs::OpenOptions::new()
+            .write(true)
+            .open(&canary.read_only)
+            .err()
+            .is_some_and(|e| e.raw_os_error() == Some(5));
+        let mut sockets = [false; 4];
+        for (i, port) in canary.ports.iter().enumerate() {
+            let address: std::net::SocketAddr = if i % 2 == 0 {
+                std::net::SocketAddr::from(([127, 0, 0, 1], *port))
+            } else {
+                std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], *port))
+            };
+            if i < 2 {
+                if let Ok(mut socket) =
+                    std::net::TcpStream::connect_timeout(&address, Duration::from_millis(750))
+                {
+                    let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
+                    let mut reply = [0u8; 1];
+                    sockets[i] = socket.write_all(b"P").is_ok()
+                        && socket.read_exact(&mut reply).is_ok()
+                        && reply == *b"R";
+                }
+            } else {
+                let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+                if let Ok(socket) = std::net::UdpSocket::bind(bind) {
+                    let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
+                    let mut reply = [0u8; 1];
+                    sockets[i] = socket.connect(address).is_ok()
+                        && socket.send(b"P").is_ok()
+                        && socket.recv(&mut reply).is_ok_and(|n| n == 1)
+                        && reply == *b"R";
+                }
+            }
+        }
+        let report = CanaryReport {
+            member: true,
+            virtualized_write,
+            blocked_read: denied(&canary.blocked),
+            read_only_read,
+            read_only_write_denied,
+            metadata_denied: denied(&canary.metadata),
+            sibling_denied: canary.sibling.as_ref().is_none_or(|p| denied(p)),
+            standard_read_visible: original == b"SYNTHETIC_HOST_CANARY",
+            registry_virtualized: registry_value(&canary.registry_leaf, Some(2)) == Ok(2),
+            sockets,
+        };
+        let data = serde_json::to_vec(&report).map_err(|_| "CANARY_REPORT_INVALID")?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&canary.output)
+            .map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
+        file.write_all(&data)
+            .map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
+        file.sync_all().map_err(|_| "CANARY_REPORT_UNAVAILABLE")?;
+        Ok(())
+    })();
+    if result.is_ok() { 0 } else { 78 }
+}
+
+struct Endpoints {
+    ports: [u16; 4],
+    counts: std::sync::Arc<[std::sync::atomic::AtomicUsize; 4]>,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    threads: Vec<std::thread::JoinHandle<()>>,
+}
+impl Endpoints {
+    fn new() -> R<Self> {
+        use std::sync::{
+            Arc,
+            atomic::{AtomicBool, AtomicUsize, Ordering},
+        };
+        let counts = Arc::new(std::array::from_fn(|_| AtomicUsize::new(0)));
+        let stop = Arc::new(AtomicBool::new(false));
+        let mut ports = [0u16; 4];
+        let mut threads = vec![];
+        for (i, port) in ports.iter_mut().enumerate() {
+            let address = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+            let counter = counts.clone();
+            let stopped = stop.clone();
+            if i < 2 {
+                let listener = std::net::TcpListener::bind(address)
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
+                *port = listener
+                    .local_addr()
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?
+                    .port();
+                listener
+                    .set_nonblocking(true)
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
+                threads.push(std::thread::spawn(move || {
+                    let deadline = Instant::now() + Duration::from_secs(20);
+                    while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
+                        if let Ok((mut socket, _)) = listener.accept() {
+                            let _ = socket.set_read_timeout(Some(Duration::from_secs(1)));
+                            let mut b = [0u8; 1];
+                            if socket.read_exact(&mut b).is_ok()
+                                && b == *b"P"
+                                && socket.write_all(b"R").is_ok()
+                            {
+                                counter[i].fetch_add(1, Ordering::SeqCst);
+                            }
+                        }
+                        std::thread::sleep(Duration::from_millis(10));
+                    }
+                }));
+            } else {
+                let socket = std::net::UdpSocket::bind(address)
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
+                *port = socket
+                    .local_addr()
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?
+                    .port();
+                socket
+                    .set_read_timeout(Some(Duration::from_millis(50)))
+                    .map_err(|_| "CONTROLLED_ENDPOINT_UNAVAILABLE")?;
+                threads.push(std::thread::spawn(move || {
+                    let deadline = Instant::now() + Duration::from_secs(20);
+                    while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
+                        let mut b = [0u8; 1];
+                        if let Ok((1, peer)) = socket.recv_from(&mut b)
+                            && b == *b"P"
+                            && socket.send_to(b"R", peer).is_ok_and(|n| n == 1)
+                        {
+                            counter[i].fetch_add(1, Ordering::SeqCst);
+                        }
+                    }
+                }));
+            }
+        }
+        let endpoints = Self {
+            ports,
+            counts,
+            stop,
+            threads,
+        };
+        // Independent unboxed positive control for every live server, before the
+        // blocked canary: a failed connection to a dead service is not evidence.
+        for (i, port) in endpoints.ports.iter().enumerate() {
+            let address = if i % 2 == 0 {
+                format!("127.0.0.1:{port}")
+            } else {
+                format!("[::1]:{port}")
+            };
+            let mut answer = [0u8; 1];
+            if i < 2 {
+                let mut socket = std::net::TcpStream::connect(&address)
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                socket
+                    .set_read_timeout(Some(Duration::from_secs(1)))
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                socket
+                    .write_all(b"P")
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                socket
+                    .read_exact(&mut answer)
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+            } else {
+                let socket =
+                    std::net::UdpSocket::bind(if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" })
+                        .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                socket
+                    .set_read_timeout(Some(Duration::from_secs(1)))
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                socket
+                    .send_to(b"P", &address)
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
+                if socket
+                    .recv_from(&mut answer)
+                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?
+                    .0
+                    != 1
+                {
+                    return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
+                }
+            }
+            if answer != *b"R" {
+                return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
+            }
+        }
+        Ok(endpoints)
+    }
+    fn observed(mut self) -> [bool; 4] {
+        use std::sync::atomic::Ordering;
+        std::thread::sleep(Duration::from_millis(100));
+        self.stop.store(true, Ordering::SeqCst);
+        for thread in self.threads.drain(..) {
+            let _ = thread.join();
+        }
+        std::array::from_fn(|i| self.counts[i].load(Ordering::SeqCst) > 1)
+    }
+}
+impl Drop for Endpoints {
+    fn drop(&mut self) {
+        self.stop.store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+fn locate_report(root: &Path, leaf: &str) -> R<PathBuf> {
+    fn visit(root: &Path, leaf: &str, depth: usize, count: &mut usize) -> R<Option<PathBuf>> {
+        if depth > 32 {
+            return Err("DIAGNOSTIC_STORAGE_BOUND");
+        }
+        for item in std::fs::read_dir(root).map_err(|_| "DIAGNOSTIC_STORAGE_UNAVAILABLE")? {
+            *count += 1;
+            if *count > 512 {
+                return Err("DIAGNOSTIC_STORAGE_BOUND");
+            }
+            let p = item.map_err(|_| "DIAGNOSTIC_STORAGE_UNAVAILABLE")?.path();
+            let _held = ancestry(&p)?;
+            if p.file_name().and_then(|s| s.to_str()) == Some(leaf) {
+                return Ok(Some(p));
+            }
+            if p.is_dir()
+                && let Some(result) = visit(&p, leaf, depth + 1, count)?
+            {
+                return Ok(Some(result));
+            }
+        }
+        Ok(None)
+    }
+    visit(root, leaf, 0, &mut 0)?.ok_or("DIAGNOSTIC_REPORT_MISSING")
+}
+impl NativeEngine {
+    fn diagnostic(&self, owned: &OwnedEnvironment) -> R<String> {
+        self.mutation_context()?;
+        let global = self.global()?;
+        if owned.compiled.offline {
+            let mut flags = 0u32;
+            if global.get("NetworkEnableWFP") != Some(&vec!["y".into()])
+                || unsafe { (self.api.info)(0, &mut flags as *mut _ as _, 4) } != 0
+                || flags & 0x00000001 == 0
+            {
+                return Err("WFP_ENFORCEMENT_UNAVAILABLE");
+            }
+        }
+        let id = Uuid::new_v4();
+        let nonce = id.simple().to_string();
+        let canary_base = self.profile.join("canaries").join(&nonce);
+        let _canary_pin = fresh_directory(&canary_base, &self.owner)?;
+        let write = canary_base.join("write.txt");
+        let blocked = canary_base.join("blocked.txt");
+        let readonly = canary_base.join("readonly.txt");
+        for p in [&write, &blocked, &readonly] {
+            let mut f = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(p)
+                .map_err(|_| "CANARY_CREATE_FAILED")?;
+            f.write_all(b"SYNTHETIC_HOST_CANARY")
+                .map_err(|_| "CANARY_CREATE_FAILED")?;
+            f.sync_all().map_err(|_| "CANARY_CREATE_FAILED")?;
+        }
+        let metadata = self
+            .profile
+            .join("metadata")
+            .join(format!("canary-{nonce}.txt"));
+        std::fs::write(&metadata, b"SYNTHETIC_MANAGER_CANARY")
+            .map_err(|_| "CANARY_CREATE_FAILED")?;
+        let sibling = PathBuf::from(self.root_for(owned.id)).join(format!("canary-{nonce}.txt"));
+        std::fs::write(&sibling, b"SYNTHETIC_SIBLING_CANARY")
+            .map_err(|_| "CANARY_CREATE_FAILED")?;
+        let mut desired = owned.desired.clone();
+        desired.grants.push(Grant {
+            path: blocked.to_string_lossy().into(),
+            permission: Permission::Block,
+        });
+        desired.grants.push(Grant {
+            path: readonly.to_string_lossy().into(),
+            permission: Permission::ReadOnly,
+        });
+        let mandatory = Mandatory {
+            root: self.root_for(id),
+            metadata: self.metadata(),
+            code: self.code(),
+            siblings: vec![self.root_for(owned.id)],
+            marker: format!("v1:{}:{nonce}", self.owner),
+        };
+        let compiled = compile(&desired, &mandatory)?;
+        let mut diagnostic = OwnedEnvironment {
+            id,
+            display_name: "Fresh synthetic diagnostic".into(),
+            owner_sid: self.owner.clone(),
+            engine_identity: self.engine_identity(),
+            root_identity: None,
+            revision: 0,
+            stage: Stage::PendingRoot,
+            desired,
+            compiled,
+            fingerprint: None,
+            enforcement_evidence: None,
+            reason: "DIAGNOSTIC_ONLY".into(),
+            operation_id: id,
+            baseline: None,
+            production_launch_available: false,
+        };
+        // Persist the exact generated scope before engine effects. Failed diagnostics
+        // remain disabled and visible; there is no generic recursive cleanup.
+        let record = self
+            .profile
+            .join("metadata")
+            .join(format!("diagnostic-{nonce}.json"));
+        let mut f = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&record)
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        f.write_all(
+            &serde_json::to_vec(&diagnostic).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+        )
+        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        f.sync_all().map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        self.write(&diagnostic, &Section::new())?;
+        verify_readback(
+            &diagnostic.compiled,
+            &self.section(&diagnostic.name(), false)?,
+            &self.section(&diagnostic.name(), true)?,
+            &global,
+        )?;
+        diagnostic.root_identity = Some(self.create_root(&diagnostic)?);
+        self.validate_root(&diagnostic)?;
+        registry_value(&nonce, Some(1))?;
+        let endpoints = Endpoints::new()?;
+        let output = canary_base.join(format!("report-{nonce}.json"));
+        let canary = Canary {
+            box_name: diagnostic.name(),
+            write: write.to_string_lossy().into(),
+            blocked: blocked.to_string_lossy().into(),
+            read_only: readonly.to_string_lossy().into(),
+            metadata: metadata.to_string_lossy().into(),
+            sibling: Some(sibling.to_string_lossy().into()),
+            output: output.to_string_lossy().into(),
+            registry_leaf: nonce.clone(),
+            ports: endpoints.ports,
+        };
+        let encoded = hex(&serde_json::to_vec(&canary).map_err(|_| "PROBE_REQUEST_INVALID")?);
+        let command = wide(&format!("\"{}\" {encoded}", self.probe.to_string_lossy()));
+        let run: Run = unsafe { bind(&self.api, b"SbieDll_RunSandboxed\0")? };
+        self.set(&diagnostic.name(), "Enabled", &["y".into()])?;
+        let result = (|| -> R<CanaryReport> {
+            let mut startup = unsafe { std::mem::zeroed::<STARTUPINFOW>() };
+            startup.cb = std::mem::size_of_val(&startup) as u32;
+            let mut receipt = unsafe { std::mem::zeroed::<PROCESS_INFORMATION>() };
+            let dir = wide(&system_directory()?.to_string_lossy());
+            if unsafe {
+                run(
+                    wide(&diagnostic.name()).as_ptr(),
+                    command.as_ptr(),
+                    dir.as_ptr(),
+                    CREATE_NO_WINDOW,
+                    &mut startup,
+                    &mut receipt,
+                )
+            } == 0
+            {
+                return Err("DIAGNOSTIC_DISPATCH_REFUSED");
+            }
+            let process = Handle(receipt.hProcess);
+            let _thread = Handle(receipt.hThread);
+            if unsafe { WaitForSingleObject(process.0, 15000) } != WAIT_OBJECT_0 {
+                return Err("DIAGNOSTIC_OUTCOME_UNKNOWN");
+            }
+            let mut code = 0;
+            if unsafe { GetExitCodeProcess(process.0, &mut code) } == 0 || code != 0 {
+                return Err("DIAGNOSTIC_EXECUTION_FAILED");
+            }
+            self.idle(&diagnostic.name())?;
+            let p = locate_report(
+                Path::new(&self.root_for(id)),
+                output.file_name().unwrap().to_str().unwrap(),
+            )?;
+            let mut f = lease(&p, false)?;
+            let mut data = vec![];
+            Read::by_ref(&mut f)
+                .take(4097)
+                .read_to_end(&mut data)
+                .map_err(|_| "DIAGNOSTIC_REPORT_INVALID")?;
+            if data.len() > 4096 {
+                return Err("DIAGNOSTIC_REPORT_INVALID");
+            }
+            serde_json::from_slice(&data).map_err(|_| "DIAGNOSTIC_REPORT_INVALID")
+        })();
+        let fenced = self.set(&diagnostic.name(), "Enabled", &["n".into()]);
+        let observed = endpoints.observed();
+        fenced?;
+        let report = result?;
+        if !report.member
+            || !report.virtualized_write
+            || !report.blocked_read
+            || !report.read_only_read
+            || !report.read_only_write_denied
+            || !report.metadata_denied
+            || !report.sibling_denied
+            || !report.standard_read_visible
+            || !report.registry_virtualized
+            || std::fs::read(&write).map_err(|_| "CANARY_READ_FAILED")? != b"SYNTHETIC_HOST_CANARY"
+            || std::fs::read(&readonly).map_err(|_| "CANARY_READ_FAILED")?
+                != b"SYNTHETIC_HOST_CANARY"
+            || registry_value(&nonce, None) != Ok(1)
+        {
+            return Err("POLICY_ENFORCEMENT_FAILED");
+        }
+        let expected = [!owned.compiled.offline; 4];
+        if report.sockets != expected || observed != expected {
+            return Err("NETWORK_ENFORCEMENT_FAILED");
+        }
+        Ok(fingerprint(&(FAMILY, &self.probe_hash, &report, observed)))
+    }
+}

@@ -1,4 +1,5 @@
 //! Independently declared read-only ABI for the source-pinned native 64-bit engine.
+pub mod provisioning;
 use crate::*;
 use sha2::{Digest, Sha256};
 use std::{
@@ -968,7 +969,10 @@ pub fn bounded_observe() -> Observation {
     })
 }
 fn bounded_capture(command: &mut Command, timeout: Duration) -> R<Vec<u8>> {
-    let mut child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+    let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
+    capture_child(child, timeout)
+}
+fn capture_child(mut child: std::process::Child, timeout: Duration) -> R<Vec<u8>> {
     let job = unsafe { Handle(CreateJobObjectW(ptr::null(), ptr::null())) };
     let mut limits = unsafe { std::mem::zeroed::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() };
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE

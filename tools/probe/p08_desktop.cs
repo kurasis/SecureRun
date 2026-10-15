@@ -14,15 +14,16 @@ public static class P08Desktop {
     [DllImport("user32.dll")] static extern IntPtr GetDlgItem(IntPtr window,int id);
     [DllImport("user32.dll",SetLastError=true)] static extern bool PostMessage(IntPtr window,uint message,IntPtr first,IntPtr second);
     [DllImport("user32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern IntPtr SendMessageTimeout(IntPtr window,uint message,UIntPtr capacity,StringBuilder value,uint flags,uint timeout,out UIntPtr result);
+    [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+    static extern bool QueryFullProcessImageName(Microsoft.Win32.SafeHandles.SafeProcessHandle process,uint flags,StringBuilder image,ref uint length);
     static void Scope(Process process,string executable) {
         if(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true" || Path.GetFileName(executable)!="securerun.exe" || !Path.GetFullPath(executable).StartsWith(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"SecureRun-P08-"),StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("P08_DESKTOP_SCOPE_REJECTED");
-        var clock=Stopwatch.StartNew();
-        while(clock.ElapsedMilliseconds<5000){
-            if(process.HasExited)throw new InvalidOperationException("P08_DESKTOP_PROCESS_EXITED");
-            try{using(var module=process.MainModule){if(module!=null){if(!String.Equals(module.FileName,executable,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("P08_DESKTOP_SCOPE_REJECTED");return;}}}
-            catch(System.ComponentModel.Win32Exception error) when(error.NativeErrorCode==299||error.NativeErrorCode==24){}
-            Thread.Sleep(50);
-        }throw new InvalidOperationException("P08_DESKTOP_IMAGE_NOT_OBSERVED");
+        if(process.HasExited)throw new InvalidOperationException("P08_DESKTOP_PROCESS_EXITED");
+        // Query the held process object, not its not-yet-initialized module list.
+        // This also works across the Windows ARM64/x64 emulation boundary.
+        var image=new StringBuilder(32768);uint length=32768;
+        if(!QueryFullProcessImageName(process.SafeHandle,0,image,ref length))throw new InvalidOperationException("P08_DESKTOP_IMAGE_QUERY_FAILED_"+Marshal.GetLastWin32Error());
+        if(!String.Equals(image.ToString(),executable,StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("P08_DESKTOP_SCOPE_REJECTED");
     }
     static IntPtr Window(Process process,string title,int milliseconds) {
         var clock=Stopwatch.StartNew();IntPtr found=IntPtr.Zero;

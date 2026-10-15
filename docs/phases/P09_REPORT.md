@@ -203,3 +203,11 @@ are historical after the cleanup/UI changes. P03 passed at `8398582` in run
 `38800451929`, with unchanged current production sources. P04 `38800456163` passed
 Server but ARM timed out in both actual boxed-manager checks. No boxed control
 or metadata success is claimed; a fresh full P04 run is `38802021230`.
+
+Focused Server run `38801426429` at `d2b138a` verified standard-user access to all
+five restricted display events and completed twenty private diagnostics. Native
+UIA preparation exceeded its 20-second fixture-ready bound before the manager
+started. The next watcher initializes only the desktop provider, without querying
+all desktop windows, and has a 60-second preparation bound. The product timer
+still starts afterwards and the 3000 ms budget is unchanged. A failed startup
+measurement does not prevent independent UI scenarios in diagnostic mode.

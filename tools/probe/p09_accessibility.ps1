@@ -68,7 +68,7 @@ function Set-ActualDisplayScale([int]$Scale){
 try{
  if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}
  if($Mode -eq 'READY'){
-  $stage='PREWARMING_NATIVE_PROVIDER';$desktop=[Windows.Automation.AutomationElement]::RootElement;$null=$desktop.FindAll([Windows.Automation.TreeScope]::Children,[Windows.Automation.Condition]::TrueCondition)
+  $stage='PREWARMING_NATIVE_PROVIDER';$null=[Windows.Automation.AutomationElement]::RootElement
   $stage='WAITING_FOR_COORDINATION';[IO.File]::WriteAllText($Coordination+'.ready','READY')
   $clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path -LiteralPath $Coordination) -and $clock.ElapsedMilliseconds -lt 45000){Start-Sleep -Milliseconds 50};Need (Test-Path -LiteralPath $Coordination)
   $start=Get-Content -LiteralPath $Coordination -Raw|ConvertFrom-Json;$ManagerPid=[int]$start.pid

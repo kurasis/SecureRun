@@ -46,10 +46,10 @@ jobs:
             $resolution=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Resolution_ComboBox'))
             $resolution.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
             $items=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem))
-            $best=$null;$area=0
+            $best=$null;$area=0;$bestHeight=0
             foreach($item in $items){if($item.Current.Name.Length -lt 80 -and $item.Current.Name -match '[0-9]'){$report.option_name_codepoints+=,@($item.Current.Name.ToCharArray()|ForEach-Object {[int]$_})};if($item.Current.Name -match '([0-9]{3,4})\D{1,8}([0-9]{3,4})'){
               $width=[int]$Matches[1];$height=[int]$Matches[2];$report.resolution_options+=@{width=$width;height=$height}
-              if($width*$height -gt $area){$area=$width*$height;$best=$item}
+              if($height -gt $bestHeight -or ($height -eq $bestHeight -and $width*$height -gt $area)){$area=$width*$height;$bestHeight=$height;$best=$item}
             }}
             if($null -eq $best){throw 'DISPLAY_RESOLUTION_OPTIONS_UNAVAILABLE'}
             $best.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select();$report.display_settings_modified=$true;Start-Sleep -Seconds 2

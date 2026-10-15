@@ -315,3 +315,13 @@ tracing at `9daaf46` attributed 83 ms to observation and 4167 ms through WebView
 construction. The next normal product tries fixed software composition using
 only `--disable-gpu`; no sandbox or security-disable browser argument is added.
 This change requires measured native validation and makes no performance claim.
+
+
+The `c20c7e9` focused Server job stopped before actor startup because the retained
+display server did not signal readiness. Its official-package/stage evidence
+does not establish any product scenario. A short standalone two-target fixture
+now exercises exactly the five restricted events, server readiness and four
+fixed scale requests, without building/installing the product or engine. The
+controller retains only typed initialization stage, exception class and source
+line on failure, never raw exceptions or private paths. It cannot replace real
+standard-user product-window DPI proof.

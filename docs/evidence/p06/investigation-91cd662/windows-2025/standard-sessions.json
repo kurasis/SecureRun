@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {
+      "id": "T36",
+      "line": 5,
+      "code": "REAL_MULTISESSION_PROCESSES_NOT_OBSERVED",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "status": "FAILED",
+      "name": "production_stop_covers_two_actual_windows_sessions"
+    }
+  ],
+  "status": "FAILED",
+  "mode": "sessions",
+  "standard_user": true
+}

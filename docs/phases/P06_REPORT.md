@@ -30,3 +30,32 @@ launch on both targets. Most other cases were refused because the PowerShell
 client serialized its absent optional CWD as an empty string; the unmanaged
 fixture also enabled its root before creating it. Those client/setup defects
 were corrected, preserving minimized raw failures as historical evidence.
+
+Server investigation 91cd662 / run 38698529104 passed actual child/grandchild
+membership, background activity, duplicate suppression, safe Stop with ineligible
+launch, real changed-scope refusal after retaining handles, serialization,
+service/component refusal, hostile CWD and stale revision checks. UTF-8 pipe
+encoding, a PowerShell scenario/operation variable collision, the fixture's
+absolute PowerShell path and enabling its deliberate other-session probe were
+corrected. The complete gate remains pending on both platforms.
+
+## Scope and interpretation
+
+- PR-03 through PR-06 are implemented through the normal production adapter and
+  scoped main-window command. The normal CLI framing exercises the same service.
+- P06 owns T01–T07, T19, T26, T36, T50, T54, T56, T61 and T62. The retainer refuses
+  completion unless every applicable named production case passes on both
+  owner-selected targets, including actual native/x86 and ARM x64 emulation.
+- T26 import/export/reset subcases belong to P07/P08 and are not claimed here.
+  P06 covers rapid launch/Stop, duplicate/conflicting operations and competing
+  manager processes through the real namespace lock.
+- T54 covers baseline Stop while current launch eligibility fails. Actual paid
+  certificate expiry is Not applicable: no paid preset or entitlement-dependent
+  route is enabled. No replacement certificate, grace period or expiry bypass
+  is fabricated. Stop has no optional-entitlement dependency.
+- Target CWD is independently selected and identity-bound; host workers remain
+  in System32. Native protocol input is UTF-8, distinct from Windows target argv.
+- Retained scoped receipts are historical dispatch facts; current activity comes
+  from complete engine membership. Empty enumeration never proves nonexecution.
+- All T01–T66 final installed-candidate acceptance entries remain NOT_STARTED.
+  P07 mapping/transfer and P08 cleanup/recovery are not implemented by P06.

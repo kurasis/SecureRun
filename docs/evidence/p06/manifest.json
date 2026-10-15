@@ -90,6 +90,46 @@
       "path": "investigation-572592d/windows-11-arm/stage.json",
       "sha256": "325e0a02764f7098c3f02edcd493d3afdbeddf54e25a25fa40d454e5a1301152",
       "size": 112
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/standard-sessions.json",
+      "sha256": "f88259bf36e29e1cb7977891367a5b34162a4a88f9b430d5ae1611b4b8017186",
+      "size": 377
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/standard-scope.json",
+      "sha256": "09f24b4077ab31186c4781bec31f3a676ea4b6857bfb4a334edf74cd45d5668c",
+      "size": 787
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/standard-reserved.json",
+      "sha256": "83759ccca4cec205071e8bd3bc4f0476766b090ec783bd8c824e1ddeef6e3c08",
+      "size": 353
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/standard-normal.json",
+      "sha256": "43ca636c0a889850a1e34b970c12f98078aa5f5351e4b30702d3adc8c74d6133",
+      "size": 4286
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/stage.json",
+      "sha256": "9a2b736479f49b31000546c6840d385d496638c922781235081e855b7e9b7670",
+      "size": 112
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/run-summary.json",
+      "sha256": "a2e5d03cb94c54786a5a7d9619e8c9c2495aa63c893c164ea9d4bfbecd9977be",
+      "size": 536
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/control-cases.json",
+      "sha256": "f326aedc544f637c0cb4099ccec17ab537c70ba9a53089d1af824eadf6d0eb96",
+      "size": 5312
+    },
+    {
+      "path": "investigation-91cd662/windows-2025/standard-accepted.json",
+      "sha256": "62a1c76c54fb3b8e34d674038b2a58cd10fdd396821079451c9eb6b84ccecdfe",
+      "size": 353
     }
   ],
   "tested_sources": [],
@@ -101,6 +141,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38697466505",
       "result": "BLOCKED",
       "note": "Synthetic client serialized absent CWD as empty string, and unmanaged fixture enabled its root too early. Actual custom-CWD production launch passed on both targets."
+    },
+    {
+      "tested_commit": "91cd66256930d035895bbdb17ae94ed56c7b8ec0",
+      "run_id": 38698529104,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38698529104",
+      "result": "BLOCKED",
+      "note": "Server proved production descendants, background activity, duplicate suppression, independent Stop, changed-scope refusal and stale-revision refusal. Remaining minimized failures concern UTF-8/dynamic-scope/PATH/session fixture preparation; no completion claimed."
     }
   ]
 }

@@ -17,7 +17,7 @@ window.__p09_run=async function(stage,config={}) {
   switch(stage){
    case 'OVERVIEW':{
     await nav();const r=await readyPolicy();check('T32','real_owned_environment_views',r.reason==='OBSERVED'&&r.environments.length===config.environment_count&&document.querySelectorAll('.cards article').length===config.environment_count);
-    const input=document.querySelector('input[type=search]');set(input,'P09 reference 03');await wait(()=>document.querySelectorAll('.cards article').length===1);check('T32','search_uses_real_owned_names',document.querySelector('.cards article').textContent.includes('P09 reference 03'));set(input,'');break;
+    const input=document.querySelector('input[type=search]');set(input,config.search_name);await wait(()=>document.querySelectorAll('.cards article').length===1);check('T32','search_uses_real_owned_names',document.querySelector('.cards article').textContent.includes(config.search_name));set(input,'');break;
    }
    case 'RENAME':{
     await open();const before=(await readyPolicy()).environments.find(e=>e.id===config.environment_id);await click('Rename environment');let dialog=await wait(()=>document.querySelector('dialog[open]'));set(dialog.querySelector('input'),config.environment_name+' renamed');dialog.querySelector('form').requestSubmit();await wait(()=>!document.querySelector('dialog[open]'));await wait(()=>document.querySelector('main h1').textContent===config.environment_name+' renamed');

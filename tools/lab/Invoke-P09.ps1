@@ -1,5 +1,6 @@
 [CmdletBinding()]
-param([switch]$Focused)
+param([switch]$Focused,[switch]$LayoutOnly)
+if($LayoutOnly){$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim()
@@ -38,11 +39,13 @@ try {
  Copy-Item ("target/$target/release/securerun-box-launcher.exe") $productHome
  & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
  & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
+ if(-not $LayoutOnly){
  $protocolBuild=Join-Path $repo 'artifacts/p05-build/p09-protocol-probe.exe'
  & cl.exe /nologo /W4 /WX /wd4055 /wd4054 /O2 /MT /DUNICODE /D_UNICODE (Join-Path $repo 'tools/probe/p09_protocol_probe.c') ("/Fe:"+$protocolBuild)
  if($LASTEXITCODE -ne 0){throw 'P09_PROTOCOL_FIXTURE_BUILD_FAILED'}
  Copy-Item -LiteralPath $protocolBuild -Destination $productHome
  $executables=& (Join-Path $PSScriptRoot 'Initialize-P09-Applications.ps1') -ProductHome $productHome -Out $out
+ }
  $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p09-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
  foreach($file in @('p09_standard.ps1','p09_accessibility.ps1','p09_desktop.cs','p09_browser.cs','p09_cdp.ps1','p09_ui.js','p05_lab.cs','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") $productHome}
  $setup=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$setup.UseShellExecute=$false;$setup.WorkingDirectory=$engine
@@ -67,6 +70,7 @@ try {
  $start.Environment['SECURERUN_P09_DISPLAY_EVENTS']=$displayPrefix
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p09_standard.ps1'),'-Manager',$app,'-Fixture',$owned,'-EngineHome',$engine,'-Commit',$commit)){$start.ArgumentList.Add($arg)}
  if($Focused){$start.ArgumentList.Add('-Focused')}
+ if($LayoutOnly){$start.ArgumentList.Add('-LayoutOnly')}
  $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew();$displayRequests=0
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}

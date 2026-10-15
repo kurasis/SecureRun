@@ -65,3 +65,9 @@ scaling values. Owner-restricted named events carry these requests without paths
 commands or payload text. The normal application receives no controller names
 and uses no elevated product helper. The standard-user checker independently
 measures the actual manager-window DPI and the real WebView layouts.
+
+A separate single-environment layout diagnostic checks the initial real product
+views, rename, keyboard, themes, content zoom and Windows DPI. It omits official
+application downloads and stops before application/file/retention workflows. Its
+summary and artifacts are diagnostic only; the full gate still requires every
+application, scenario, architecture and ten-environment performance workload.

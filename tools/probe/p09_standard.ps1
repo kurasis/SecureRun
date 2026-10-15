@@ -1,4 +1,4 @@
-param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused)
+param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Generic.List[object]]::new();$script:lastUi=$null;$script:stage='INITIALIZING';$script:capturesClean=$true;$script:failureCode=$null;$script:browserGuiPid=0;$script:browserReceipt=$null
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
@@ -59,14 +59,14 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
 user_pref("network.protocol-handler.warn-external.securerun-p09", false);
 '@
  [IO.File]::WriteAllText((Join-Path $hostProfile 'user.js'),$prefs);[IO.File]::WriteAllText((Join-Path $boxedProfile 'user.js'),$prefs)
- $all=@();$environmentCount=if($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
+ $all=@();$environmentCount=if($LayoutOnly){1}elseif($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
  for($i=1;$i -le $environmentCount;$i++){
   $script:stage=('SEEDING_ENVIRONMENT_{0:00}' -f $i)
   $grants=@();if($i -eq 3){$grants=@(@{path=$hostProfile;permission='BLOCK'})};$preset=if($i -eq 3){'STANDARD_ONLINE'}else{'STANDARD_OFFLINE'}
   $r=Native @{action='CREATE';display_name=('P09 reference {0:00}' -f $i);operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset=$preset;grants=$grants}}
   $e=@($r.environments|Where-Object display_name -eq ('P09 reference {0:00}' -f $i))[0];Require ($e.stage -eq 'VERIFIED') 'P09_VERIFIED_SEED_REQUIRED';$all+=,$e;$lab.Register(('SR_'+$e.id.Replace('-','')))
  }
- $script:stage='SEEDING_COMPLETE';$current=Native @{action='LIST'};$all=@($current.environments|Sort-Object display_name);$first=$all[0];$apps=$all[1];$web=$all[2];$seed=Join-Path $Fixture 'seed.txt';[IO.File]::WriteAllText($seed,'P09_SYNTHETIC_SEED');$null=Native @{action='IMPORT';environment_id=$first.id;expected_revision=$first.revision;operation_id=[Guid]::NewGuid().ToString();source=$seed;name='file-00000.txt'} 'files'
+ $script:stage='SEEDING_COMPLETE';$current=Native @{action='LIST'};$all=@($current.environments|Sort-Object display_name);$first=$all[0];$apps=$all[[Math]::Min(1,$all.Count-1)];$web=$all[[Math]::Min(2,$all.Count-1)];$seed=Join-Path $Fixture 'seed.txt';[IO.File]::WriteAllText($seed,'P09_SYNTHETIC_SEED');$null=Native @{action='IMPORT';environment_id=$first.id;expected_revision=$first.revision;operation_id=[Guid]::NewGuid().ToString();source=$seed;name='file-00000.txt'} 'files'
  $workspace=(Find-BoxFile $first 'file-00000.txt').DirectoryName
  for($i=1;$i -lt 9999;$i++){[IO.File]::WriteAllText((Join-Path $workspace ('file-{0:00000}.txt' -f $i)),'x')};[IO.File]::WriteAllText((Join-Path $workspace ("00000-report"+[char]0x202e+'fdp.exe')),'INERT_FILENAME_ONLY')
  Require (@(Get-ChildItem -LiteralPath $workspace -File).Count -eq 10000) 'P09_TEN_THOUSAND_FILE_FIXTURE_FAILED'
@@ -102,7 +102,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  # Normal product, real backend and real WebView. Inspector access exists only in this lab launch environment.
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()
  $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'inspected-manager.log'),$port);Connect-P09Cdp $port;Wait-P09Document;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))
- Case 'T32' 'actual_normal_webview_environment_navigation' {$null=Invoke-P09Stage 'OVERVIEW' @{environment_count=$environmentCount};@{normal_production_binary=$true;real_backend=$true;mock_state=$false;ten_owned_environments=($environmentCount -eq 10)}}
+ Case 'T32' 'actual_normal_webview_environment_navigation' {$null=Invoke-P09Stage 'OVERVIEW' @{environment_count=$environmentCount;search_name=$all[-1].display_name};@{normal_production_binary=$true;real_backend=$true;mock_state=$false;ten_owned_environments=($environmentCount -eq 10)}}
  Case 'T32' 'metadata_rename_preserves_identity_and_never_replays' {$null=Invoke-P09Stage 'RENAME' @{environment_id=$first.id;environment_name=$first.display_name};@{actual_product_ui=$true;metadata_only=$true;permanent_replay_tombstone=$true;policy_and_generation_unchanged=$true}}
  Case 'T32' 'real_keyboard_and_windows_screen_reader_provider' {$r=Access 'KEYBOARD' $gui.ProcessId;@{real_windows_uia=$r.real_windows_uia;native_window_dpi=$r.native_window_dpi;tab_order_actual=$r.tab_order_actual;f6_navigation_actual=$r.f6_navigation_actual;accessible_labels_and_roles=$r.accessible_label_and_role;native_invoke_changed_page=$r.native_invoke_changed_real_page}}
  Case 'T32' 'english_russian_themes_and_native_webview_scaling' {
@@ -121,6 +121,11 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
    $shot=Send-P09Cdp 'Page.captureScreenshot' @{format='png';captureBeyondViewport=$false};[IO.File]::WriteAllBytes((Join-Path $results ("windows-dpi-$percent.png")),[Convert]::FromBase64String($shot.data))
   };@{actual_windows_display_changes=$true;production_manager_window_measured=$true;native_dpi_observations=$observed;content_scale_percent=100;os_security_settings_modified=$false}}
   finally{$null=Access 'DISPLAY_SCALE' $gui.ProcessId -Scale 100;$null=Invoke-P09Stage 'RESET_PRESENTATION'}
+ }
+ if($LayoutOnly){
+  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count
+  @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){'DIAGNOSTIC_ONLY'}else{'FAILED'});workload_mode='DIAGNOSTIC_ONLY';layout_only=$true;reference_environments=1;standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
+  Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1};exit 0
  }
  Case 'T32' 'real_process_activity_update_latency' {
   $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))

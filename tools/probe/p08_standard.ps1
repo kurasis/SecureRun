@@ -26,6 +26,7 @@ function Register-Host([string]$output){$q=@{action='REGISTER';environment_id=$e
 function Launch($app){$id=[Guid]::NewGuid().ToString();$r=Call @{action='LAUNCH';environment_id=$e.id;expected_revision=$e.revision;application_id=$app.id;operation_id=$id} 'control';return ($r.receipts|Where-Object operation_id -eq $id)}
 function Stop-Owned {$id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';environment_id=$e.id;operation_id=$id} 'control';Require (($r.receipts|Where-Object operation_id -eq $id).state -eq 'STOPPED') 'STOP_NOT_COMPLETE'}
 function Empty-Root {Require (@(Get-ChildItem -LiteralPath $script:root -Force).Count -eq 0) 'ROOT_NOT_EMPTY'}
+function Coordinate([string]$action){[IO.File]::WriteAllText((Join-Path $Fixture 'lab-request.txt'),$action);$clock=[Diagnostics.Stopwatch]::StartNew();do{if((Test-Path (Join-Path $Fixture 'lab-ack.txt')) -and [IO.File]::ReadAllText((Join-Path $Fixture 'lab-ack.txt')) -eq $action){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 120000);throw 'P08_LAB_COORDINATION_TIMEOUT'}
 function Register-Probe([string]$mode,[string]$leaf){$id=[Guid]::NewGuid().ToString();$q=@{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$id;display_name='P08 workload';executable=(Join-Path (Split-Path $script:active) 'securerun-launch-probe.exe');arguments=@($mode,(Join-Path $Fixture $leaf));working_directory=$null};$r=Call $q 'control';Require (($r.receipts|Where-Object operation_id -eq $id).state -eq 'REGISTERED') 'WORKLOAD_REGISTER_FAILED';return ($r.applications|Where-Object environment_id -eq $e.id)[-1]}
 function Start-Normal-Desktop {$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$p=[Diagnostics.Process]::Start($s);$null=$p.StandardOutput.ReadToEndAsync();$null=$p.StandardError.ReadToEndAsync();return $p}
 function Native-Confirm([string]$intent,[bool]$accept){
@@ -38,7 +39,19 @@ try{
  $userTemp=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Temp';$null=New-Item -ItemType Directory -Path $userTemp -Force;$env:TEMP=$userTemp;$env:TMP=$userTemp
  $script:source=Join-Path $Fixture 'synthetic.txt';[IO.File]::WriteAllText($source,'SYNTHETIC_P08_RETAINED_CONTENT');$hash=(Get-FileHash -LiteralPath $source).Hash
  New-Environment
- if($Mode -eq 'normal'){
+ if($Mode -eq 'sessions'){
+  Case 'T36' 'cleanup_requires_complete_idle_across_actual_windows_sessions' {
+   $probe=Register-Probe 'hold' 'session-actor.jsonl';$receipt=Launch $probe;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
+   $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results
+   @{box=('SR_'+$e.id.Replace('-',''));owner_sid=$who.User.Value}|ConvertTo-Json|Set-Content (Join-Path $results 'session-ready.json')
+   $actor=[Diagnostics.Process]::GetCurrentProcess().SessionId;$clock=[Diagnostics.Stopwatch]::StartNew()
+   do{$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;if($view.complete -and @($view.processes|Where-Object session -eq 0).Count -ge 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 60000)
+   Require ($actor -ne 0 -and $view.complete -and @($view.processes|Where-Object session -eq 0).Count -ge 1 -and @($view.processes|Where-Object session -eq $actor).Count -ge 1) 'P08_ACTUAL_SESSION_MEMBERS_MISSING'
+   $r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $r.reason
+   Stop-Owned;$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.complete -and $view.activity -eq 'IDLE' -and $view.processes.Count -eq 0) 'ALL_SESSION_STOP_NOT_COMPLETE';$null=Act 'RESET';Empty-Root
+   @{real_windows_sessions=@(0,$actor);same_owner_members_observed=$true;cleanup_refused_while_other_session_running=$true;complete_idle_before_actual_cleanup=$true;original_native_cleanup_after_stop=$true;product_privileged_helper=$false;os_logon_policy_changed=$false}
+  }
+ }elseif($Mode -eq 'normal'){
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p08_desktop.cs')))
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')))
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
@@ -128,6 +141,21 @@ try{
    try{$r=Call @{action='LIST'};Require ($r.environments.Count -eq 0) 'MISSING_METADATA_ADOPTED_ENGINE_BOX';$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='REMOVE'} 'lifecycle' $true;Require ($r.reason -eq 'OWNERSHIP_NOT_FOUND') $r.reason}finally{if(Test-Path -LiteralPath $path){Move-Item -LiteralPath $path -Destination $empty};Move-Item -LiteralPath $saved -Destination $path}
    Refresh-Environment;Require ($e.stage -eq 'VERIFIED') 'EXACT_METADATA_RESTORE_FAILED'
    @{fresh_process_reopened_sqlite=$true;existing_engine_box_not_adopted=$true;remove_without_ownership_refused=$true;original_database_not_overwritten=$true;data_preserved=$true}
+  }
+  Case 'T33' 'missing_service_and_changed_original_cleanup_component_fail_closed' {
+   $null=Import 'engine-change.txt';$plan=Prepare 'RESET';Coordinate 'service-off'
+   try{$r=Commit $plan $true;Require ($r.reason -eq 'MANAGER_CONTEXT_UNSAFE') $r.reason}finally{Coordinate 'service-on'}
+   Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'engine-change.txt').Count -eq 1) 'MISSING_SERVICE_DELETED_DATA';$null=Call @{action='RECOVER';operation_id=$plan.operation_id}
+   $plan=Prepare 'RESET';Coordinate 'cleanup-impostor'
+   try{$r=Commit $plan $true;Require ($r.reason -eq 'CLEANUP_COMPONENT_CHANGED') $r.reason}finally{Coordinate 'cleanup-restore'}
+   Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'engine-change.txt').Count -eq 1) 'CHANGED_COMPONENT_DELETED_DATA';$r=Call @{action='RECOVER';operation_id=$plan.operation_id};Refresh-Environment
+   Require ($e.lifecycle -eq 'ARCHIVED') 'FAILED_COMPONENT_NOT_RETAINED';$null=Act 'UNARCHIVE'
+   @{actual_service_stopped=$true;missing_context_refused=$true;actual_signed_dependency_substituted=$true;pinned_hash_refused_before_load=$true;data_retained=$true;unknown_operation_not_replayed=$true;security_checks_disabled=$false}
+  }
+  Case 'T42' 'original_sandman_coexists_without_automatic_recovery_or_deletion' {
+   $null=Import 'sandman-keep.txt';$start=[Diagnostics.ProcessStartInfo]::new((Join-Path $EngineHome 'SandMan.exe'));$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$gui=[Diagnostics.Process]::Start($start)
+   try{$null=$gui.WaitForInputIdle(15000);Require (-not $gui.HasExited) 'ORIGINAL_SANDMAN_NOT_RUNNING';$null=Act 'ARCHIVE';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'sandman-keep.txt').Count -eq 1) 'SANDMAN_AUTO_RECOVERED_OR_DELETED';$null=Act 'RESET';Empty-Root;$null=Act 'UNARCHIVE'}finally{if(-not $gui.HasExited){$gui.Kill();$null=$gui.WaitForExit(10000)};$gui.Dispose()}
+   @{original_gui_running=$true;auto_recovery_and_delete_disabled=$true;archive_retained_data=$true;original_native_cleanup_completed=$true;host_auto_recovery=$false}
   }
   Case 'T25' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
    $old=$e.id;$savedRoot=$root;$r=Act 'REMOVE';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'

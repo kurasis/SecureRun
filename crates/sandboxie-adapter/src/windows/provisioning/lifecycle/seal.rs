@@ -283,7 +283,15 @@ impl Seal {
         crate::files::local_path(path.to_str().ok_or("CLEANUP_PATH_INVALID")?)?;
         let file = open(
             &path,
-            READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,
+            READ_CONTROL
+                | WRITE_DAC
+                | FILE_READ_ATTRIBUTES
+                | FILE_WRITE_ATTRIBUTES
+                | if relative.as_os_str().is_empty() {
+                    FILE_LIST_DIRECTORY
+                } else {
+                    0
+                },
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         )?;
         let info = checked(&file)?;
@@ -419,6 +427,17 @@ impl Seal {
                         node.relative.is_empty(),
                         code
                     );
+                    #[cfg(test)]
+                    if let Ok(read) = open(&path, READ_CONTROL | FILE_READ_ATTRIBUTES, 7)
+                        && let Ok(descriptor) = descriptor(&read)
+                    {
+                        eprintln!(
+                            "CLEANUP_RESTORE_ACL inherited_only={:?} protected={:?}",
+                            inherited_only(&descriptor),
+                            acl_bytes(&descriptor).map(|a| a.1)
+                        );
+                    }
+
                     if !path.try_exists().map_err(|_| "CLEANUP_RESTORE_UNKNOWN")? {
                         continue;
                     };

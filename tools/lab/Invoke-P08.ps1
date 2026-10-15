@@ -40,6 +40,8 @@ try {
     $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault;Copy-Item (Join-Path $code 'securerun-box-launcher.exe') $fault
     $allCases=[Collections.Generic.List[object]]::new()
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
+    & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
+    Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-session-probe.exe') $code
     Get-ChildItem (Join-Path $repo 'artifacts/p02') -Filter 'feasibility_probe_*.exe'|Copy-Item -Destination $code
     $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p08-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
@@ -58,7 +60,7 @@ try {
     if(Test-Path 'Q:/'){throw 'PREEXISTING_DRIVE_NOT_CHANGED'};$null=New-PSDrive -Name Q -PSProvider FileSystem -Root ('\\127.0.0.1\'+$shareName) -Persist -Scope Global
     foreach($file in @('p08_standard.ps1','p08_desktop.cs','p05_lab.cs','engine_bridge.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") $code}
     $failedModes=0
-    foreach($mode in @('normal','fault')) {
+    foreach($mode in @('normal','fault','sessions')) {
     $name=if($mode -eq 'sessions'){'SRP02S_'+$run.Substring(0,10)}else{'SRP08_'+$mode.Substring(0,3)+'_'+$run.Substring(0,7)};$password=ConvertTo-SecureString ('P08aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
     $user=New-LocalUser -Name $name -Password $password -AccountNeverExpires
     $group=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
@@ -70,9 +72,32 @@ try {
     $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
     foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $code 'p08_standard.ps1'),'-Manager',$app,'-Fixture',$modeFixture,'-Mode',$mode,'-EngineHome',$engine,'-FaultManager',(Join-Path $fault 'securerun.exe'))){$start.ArgumentList.Add($arg)}
     $p=[Diagnostics.Process]::Start($start);$collected=$false
+    $sessionTask='SRP08_SESSION_'+$run;$sessionStarted=$false;$lastAction='';$changedCleanup=$false
+    $cleanupPath=Join-Path $engine 'QSbieAPI.dll';$savedCleanup=Join-Path $code 'original-cleanup.bin';Copy-Item $cleanupPath $savedCleanup -Force;$savedCleanupHash=(Get-FileHash -LiteralPath $savedCleanup).Hash
     try{
-        if(-not $p.WaitForExit(900000)){throw 'STANDARD_FILES_TIMEOUT'}
-        if(-not $p.HasExited){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'lifecycle-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'lifecycle-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};$collected=$true;if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};if(-not $collected -and (Test-Path (Join-Path $modeFixture 'lifecycle-cases.json'))){Copy-Item (Join-Path $modeFixture 'lifecycle-cases.json') (Join-Path $out ('partial-'+$mode+'.json'))};$p.Dispose();$password.Dispose()}
+        $clock=[Diagnostics.Stopwatch]::StartNew()
+        while(-not $p.HasExited -and $clock.ElapsedMilliseconds -lt 900000){
+            if($mode -eq 'sessions' -and -not $sessionStarted -and (Test-Path (Join-Path $modeFixture 'results/session-ready.json'))){
+                $ready=Get-Content (Join-Path $modeFixture 'results/session-ready.json') -Raw|ConvertFrom-Json;$sessionProbe=Join-Path $code 'p05-session-probe.exe';$pipe='SecureRunP02Logon_'+$run
+                $action=New-ScheduledTaskAction -Execute $sessionProbe -Argument ('logon-fixture '+$pipe) -WorkingDirectory $engine;$principal=New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest;$settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::FromMinutes(2));$null=Register-ScheduledTask -TaskName $sessionTask -Action $action -Principal $principal -Settings $settings
+                $transport=[P02Bridge]::new($engine,$modeFixture,[string[]]@($sessionProbe));$plain=([pscredential]::new($name,$password)).GetNetworkCredential().Password
+                try{$null=$transport.SendFixtureLogon([Action]{Start-ScheduledTask -TaskName $sessionTask},$pipe,$name,$plain,$ready.owner_sid,$modeFixture,$ready.box,$sessionProbe)}finally{$plain=$null};$sessionStarted=$true
+            }
+            $requestFile=Join-Path $modeFixture 'lab-request.txt'
+            if(Test-Path -LiteralPath $requestFile){$action=[IO.File]::ReadAllText($requestFile);if($action -ne $lastAction){
+                switch -Exact ($action){
+                    'service-off' {Stop-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Stopped',[TimeSpan]::FromSeconds(20))}
+                    'service-on' {Start-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+                    'cleanup-impostor' {Copy-Item (Join-Path $engine 'SbieMsg.dll') $cleanupPath -Force;$changedCleanup=$true}
+                    'cleanup-restore' {if((Get-FileHash -LiteralPath $savedCleanup).Hash -ne $savedCleanupHash){throw 'CLEANUP_BACKUP_IDENTITY_CHANGED'};Copy-Item $savedCleanup $cleanupPath -Force;$changedCleanup=$false}
+                    default {throw 'UNKNOWN_P08_LAB_COORDINATION'}
+                }
+                $lastAction=$action;[IO.File]::WriteAllText((Join-Path $modeFixture 'lab-ack.txt'),$action)
+            }}
+            Start-Sleep -Milliseconds 100
+        }
+        if(-not $p.HasExited){throw 'STANDARD_LIFECYCLE_TIMEOUT'}
+        if(-not $p.HasExited){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'lifecycle-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'lifecycle-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};$collected=$true;if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};if(-not $collected -and (Test-Path (Join-Path $modeFixture 'lifecycle-cases.json'))){Copy-Item (Join-Path $modeFixture 'lifecycle-cases.json') (Join-Path $out ('partial-'+$mode+'.json'))};$p.Dispose();$password.Dispose();if($mode -eq 'sessions'){Unregister-ScheduledTask -TaskName $sessionTask -Confirm:$false -ErrorAction SilentlyContinue};if($changedCleanup){if((Get-FileHash -LiteralPath $savedCleanup).Hash -ne $savedCleanupHash){throw 'CLEANUP_BACKUP_IDENTITY_CHANGED'};Copy-Item $savedCleanup $cleanupPath -Force};if((Get-Service SbieSvc).Status -ne 'Running'){Start-Service SbieSvc}}
 
     }
     ConvertTo-Json -InputObject @($allCases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'lifecycle-cases.json') -Encoding utf8

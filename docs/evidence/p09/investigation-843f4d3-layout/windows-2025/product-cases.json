@@ -1,0 +1,105 @@
+[
+  {
+    "evidence": {
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "synthetic_reports_unchanged": true,
+      "retained_diagnostics": 2,
+      "root_data_retained": true,
+      "all_successful_definitions_retired": true,
+      "no_recursive_data_deletion": true
+    },
+    "status": "PASSED",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "id": "T32"
+  },
+  {
+    "evidence": {
+      "environment_count": 1,
+      "performance_exit_gate_claimed": false,
+      "inspector_enabled": false,
+      "native_window_present_ms": 6656.2388,
+      "native_startup": {
+        "completed_observer_frames": 0,
+        "native_observation_ms": 126,
+        "completed_observer_cpu_seconds": 0.0,
+        "completed_observer_streams": 0,
+        "observer_cpu_attribution_complete": false,
+        "webview_memory_target_low": true,
+        "native_window_created_ms": 13912,
+        "native_before_webview_ms": 138
+      },
+      "startup_interactive_upper_bound_ms": 14783.7738
+    },
+    "status": "PASSED",
+    "name": "normal_manager_startup_diagnostic_only",
+    "id": "T32"
+  },
+  {
+    "evidence": {
+      "real_backend": true,
+      "normal_production_binary": true,
+      "mock_state": false,
+      "ten_owned_environments": false
+    },
+    "status": "PASSED",
+    "name": "actual_normal_webview_environment_navigation",
+    "id": "T32"
+  },
+  {
+    "evidence": {
+      "permanent_replay_tombstone": true,
+      "actual_product_ui": true,
+      "policy_and_generation_unchanged": true,
+      "metadata_only": true
+    },
+    "status": "PASSED",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "id": "T32"
+  },
+  {
+    "evidence": {
+      "tab_order_actual": true,
+      "real_windows_uia": true,
+      "native_window_dpi": 96,
+      "native_invoke_changed_page": true,
+      "accessible_labels_and_roles": true,
+      "f6_navigation_actual": true
+    },
+    "status": "PASSED",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "id": "T32"
+  },
+  {
+    "evidence": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "os_display_setting_modified": false,
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "labeled_comboboxes": 3,
+      "real_chromium_accessibility_tree": true,
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "actual_native_webview_zoom": true
+    },
+    "status": "PASSED",
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "id": "T32"
+  },
+  {
+    "line": 14,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "id": "T32"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "manager_cpu_seconds": 0.15625,
+  "children_cpu_seconds": 2.21875,
+  "live_webview_cpu_delta_seconds": 0.484375,
+  "webview_cpu_attribution_complete": false,
+  "duration_ms": 60221,
+  "cpu_percent": 0.985937680867673,
+  "cpu_denominator_logical_processors": 4,
+  "average_working_set_bytes": 224065273,
+  "peak_working_set_bytes": 386736128,
+  "samples": 234,
+  "webview_processes": 7,
+  "peak_process_count": 9,
+  "includes_exited_child_cpu": true,
+  "job_group_complete": true,
+  "target_and_engine_processes_excluded": true,
+  "reference_environments": 4,
+  "product_performance_gate_claimed": false,
+  "native_startup": {
+    "native_before_webview_ms": 134,
+    "completed_observer_frames": 60,
+    "native_observation_ms": 125,
+    "native_window_created_ms": 10866,
+    "completed_observer_cpu_seconds": 0.390625,
+    "observer_cpu_attribution_complete": false,
+    "completed_observer_streams": 1,
+    "webview_memory_target_low": true
+  }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED",
+    "id": "T32",
+    "evidence": {
+      "root_data_retained": true,
+      "retained_diagnostics": 165,
+      "all_successful_definitions_retired": true,
+      "no_recursive_data_deletion": true,
+      "retention_limit": 256,
+      "synthetic_reports_unchanged": true,
+      "completed_definition_count": 0
+    }
+  },
+  {
+    "name": "ten_real_idle_environments_and_populated_box",
+    "status": "PASSED",
+    "id": "T32",
+    "evidence": {
+      "all_idle": true,
+      "actual_environments": 10,
+      "actual_files": 10000,
+      "synthetic_only": true
+    }
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T32",
+    "line": 5,
+    "code": "P09_ENGINEERING_BUDGET_EXCEEDED",
+    "name": "normal_manager_startup_and_complete_process_group_idle_budget",
+    "status": "FAILED"
+  },
+  {
+    "name": "actual_normal_webview_environment_navigation",
+    "status": "PASSED",
+    "id": "T32",
+    "evidence": {
+      "ten_owned_environments": true,
+      "real_backend": true,
+      "mock_state": false,
+      "normal_production_binary": true
+    }
+  },
+  {
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "status": "PASSED",
+    "id": "T32",
+    "evidence": {
+      "metadata_only": true,
+      "actual_product_ui": true,
+      "policy_and_generation_unchanged": true,
+      "permanent_replay_tombstone": true
+    }
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T32",
+    "line": 5,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "status": "FAILED"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "status": "FAILED",
+  "cases": [],
+  "code": "P09_UI_WAIT_EXPIRED",
+  "stage": "PERMISSION_PICK",
+  "exception_type": "Error",
+  "diagnostic": {
+    "document_complete": true,
+    "setup": "setup-ready",
+    "card_count": 0,
+    "has_selected_tabs": true,
+    "health_fresh": true,
+    "control_plane_safe": false,
+    "service_identity_complete": false,
+    "service_identity_reason": "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN",
+    "manager_unboxed": true,
+    "bridge_unboxed": true,
+    "health_reason": "OBSERVED",
+    "policy_reason": "OBSERVED",
+    "owned_environment_count": 10
+  }
+}

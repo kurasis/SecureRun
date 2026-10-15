@@ -10,7 +10,8 @@ permissions:
   contents: read
 concurrency:
   group: p07-${{ github.ref }}
-  cancel-in-progress: true
+  # Preserve in-flight crash/large-file evidence; replace only a pending run.
+  cancel-in-progress: false
 jobs:
   native-control:
     strategy:

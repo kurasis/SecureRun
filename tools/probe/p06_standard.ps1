@@ -15,7 +15,7 @@ function Coordinate([string]$action){
     throw 'LAB_COORDINATION_TIMEOUT'
 }
 function New-App([string]$exe,[string[]]$arguments,[string]$cwd=$null){
-    $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$script:e.id;expected_revision=$script:e.revision;operation_id=$id;display_name='Synthetic launch fixture';executable=$exe;arguments=$arguments;working_directory=$cwd}
+    $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$script:e.id;expected_revision=$script:e.revision;operation_id=$id;display_name='Synthetic launch fixture';executable=$exe;arguments=$arguments;working_directory=$(if([string]::IsNullOrEmpty($cwd)){$null}else{$cwd})}
     $receipt=$r.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'REGISTERED') $receipt.reason
     return @($r.applications|Where-Object {$_.environment_id -eq $script:e.id})[-1]
 }
@@ -50,10 +50,10 @@ try {
             $p=[Diagnostics.Process]::Start($s);$other=Join-Path $Fixture 'unrelated-root';$null=New-Item -ItemType Directory -Path $other
             try {
                 $line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP';environment_id=$e.id;operation_id=$id} -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'STOP_HELD_CHECKPOINT_TIMEOUT';Require ($line.Result -eq 'CHECKPOINT_StopHeld') 'STOP_HELD_CHECKPOINT_NOT_REACHED'
-                $lab.Set($box,'FileRootPath',$other);$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'STOP_SCOPE_CHANGE_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
+                $competing=Call @{action='LIST'} 'control' $Manager $true;Require ($competing.reason -eq 'NAMESPACE_OPERATION_BUSY') 'SECOND_MANAGER_BYPASSED_WRITER';$lab.Set($box,'FileRootPath',$other);$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'STOP_SCOPE_CHANGE_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
                 Require ($stopped.state -eq 'UNKNOWN' -and $stopped.reason -eq 'STOP_SCOPE_CHANGED') 'CHANGED_SCOPE_TERMINATED'
                 $targetProcess=[Diagnostics.Process]::GetProcessById([int]$receipt.process.pid);try{Require (-not $targetProcess.HasExited -and [string]$targetProcess.StartTime.ToFileTimeUtc() -eq $receipt.process.creation_time) 'HELD_PROCESS_WAS_TERMINATED'}finally{$targetProcess.Dispose()}
-                @{real_held_handles=$true;scope_changed_before_dispatch=$true;target_survives=$true;numeric_pid_fallback=$false;unknown_completion_preserved=$true}
+                @{real_held_handles=$true;scope_changed_before_dispatch=$true;target_survives=$true;numeric_pid_fallback=$false;unknown_completion_preserved=$true;concurrent_second_manager_refused=$true}
             }finally{Remove-Item Env:/SECURERUN_P06_PAUSE_STAGE -ErrorAction SilentlyContinue;$lab.Set($box,'FileRootPath',$root);if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$null=Stop-Owned}
         }
         Case 'T07' 'exited_retained_object_does_not_retarget_unrelated_process' {
@@ -61,8 +61,8 @@ try {
             $hostStart=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh).Source);$hostStart.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$hostStart.ArgumentList.Add($arg)};$other=[Diagnostics.Process]::Start($hostStart)
             $env:SECURERUN_P06_PAUSE_STAGE='StopHeld';$id=[Guid]::NewGuid().ToString();$s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true
             foreach($arg in @('--control-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)};$p=[Diagnostics.Process]::Start($s)
-            try{$line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP';environment_id=$e.id;operation_id=$id} -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'EXIT_RACE_CHECKPOINT_TIMEOUT';Require ($line.Result -eq 'CHECKPOINT_StopHeld') 'EXIT_RACE_NOT_REACHED';$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'EXIT_RACE_STOP_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
-                Require ($stopped.state -eq 'STOPPED' -and -not $other.HasExited) 'EXITED_HANDLE_RETARGETED'
+            try{$line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP';environment_id=$e.id;operation_id=$id} -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'EXIT_RACE_CHECKPOINT_TIMEOUT';Require ($line.Result -eq 'CHECKPOINT_StopHeld') 'EXIT_RACE_NOT_REACHED';$original=[Diagnostics.Process]::GetProcessById([int]$receipt.process.pid);Require (-not $original.HasExited -and [string]$original.StartTime.ToFileTimeUtc() -eq $receipt.process.creation_time) 'PRIMARY_NOT_ALIVE_AT_HELD_CHECKPOINT';$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'EXIT_RACE_STOP_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
+                Require ($stopped.state -eq 'STOPPED' -and -not $other.HasExited -and $original.HasExited) 'EXITED_HANDLE_RETARGETED';$original.Dispose()
                 @{actual_primary_exit_while_held=$true;unrelated_process_survives=$true;retained_handle_prevents_pid_reuse_until_close=$true;numeric_pid_fallback=$false;completion_waited=$true}
             }finally{Remove-Item Env:/SECURERUN_P06_PAUSE_STAGE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();if(-not $other.HasExited){$other.Kill();$other.WaitForExit()};$other.Dispose()}
         }
@@ -78,9 +78,10 @@ try {
             Remove-Item Env:/SECURERUN_P06_PAUSE_STAGE
             $before=if($Mode -eq 'accepted'){@(Reports $leaf).Count}else{0}
             foreach($n in 1..3){$retry=Call $request;$receipt=$retry.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'UNKNOWN') 'UNCERTAIN_LAUNCH_REPLAYED'}
+            $newAttempt=Launch $a;Require ($newAttempt.state -eq 'REFUSED' -and $newAttempt.reason -eq 'UNCERTAIN_LAUNCH_RECONCILIATION_REQUIRED') 'NEW_OPERATION_BYPASSED_UNCERTAINTY'
             $after=if($Mode -eq 'accepted'){@(Reports $leaf).Count}else{@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $leaf).Count}
             Require ($before -eq $after -and $before -eq $(if($Mode -eq 'accepted'){1}else{0})) 'TARGET_EXECUTED_MORE_THAN_ONCE'
-            $null=Call @{action='RECONCILE';operation_id=$id};$null=Stop-Owned
+            $null=Call @{action='RECONCILE';operation_id=$id};$retry=Call $request;$receipt=$retry.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'UNKNOWN') 'RECONCILIATION_ERASED_UNCERTAINTY';$null=Stop-Owned
             @{real_worker_killed=$true;checkpoint=$stage;duplicate_deliveries=3;target_executions=$after;automatic_replay=$false;receipt_state='UNKNOWN';standard_user=$true}
         }
     }else{
@@ -88,7 +89,7 @@ try {
         foreach($probe in $probes){
             Case 'T04' ('exact_arguments_'+$probe.BaseName) {
                 $leaf='args-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$output=Join-Path $Fixture $leaf
-                $a=New-App $probe.FullName @('arguments',$output,'','Unicode Привет 🧪','spaces in argument','a"quote','trailing\','/terminate_all','& echo SHOULD_NOT_EXECUTE','\"tail\')
+                $unicodeExe=Join-Path $Fixture ($probe.BaseName+' Программа 🧪.exe');Copy-Item $probe.FullName $unicodeExe;$a=New-App $unicodeExe @('arguments',$output,'','Unicode Привет 🧪','spaces in argument','a"quote','trailing\','/terminate_all','& echo SHOULD_NOT_EXECUTE','\"tail\')
                 $receipt=Launch $a;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason
                 $reports=Reports $leaf;Require ($reports.Count -eq 1 -and $reports[0].boxed -and $reports[0].arguments_exact -and -not(Test-Path $output)) 'ARGUMENT_OR_HOST_BOUNDARY_FAILED';$null=Stop-Owned
                 @{boxed=$true;exact_target_argv=$true;host_output_absent=$true;actual_pe=$probe.BaseName;receipt=$receipt.state}
@@ -121,7 +122,7 @@ try {
         Case 'T19' 'stop_managed_preserves_unmanaged_box_and_host_process' {
             Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
             $b=[P02Bridge]::new($EngineHome,$Fixture,[string[]]@($probe.FullName));$unowned='SRP02_P06_'+[Guid]::NewGuid().ToString('N').Substring(0,12);$b.Register($unowned)
-            foreach($pair in @(@('Enabled','y'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$b.Set($unowned,$pair[0],$pair[1])};$b.Set($unowned,'FileRootPath',(Join-Path $Fixture "boxes/$unowned"));$null=$b.ProvisionFreshRoot($unowned)
+            foreach($pair in @(@('Enabled','n'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$b.Set($unowned,$pair[0],$pair[1])};$b.Set($unowned,'FileRootPath',(Join-Path $Fixture "boxes/$unowned"));$null=$b.ProvisionFreshRoot($unowned);$b.Set($unowned,'Enabled','y')
             $unownedReceipt=$b.Launch($unowned,$probe.FullName,[string[]]@('hold',(Join-Path $Fixture 'unmanaged.jsonl')))
             $outside=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh).Source);$outside.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$outside.ArgumentList.Add($arg)};$hostProcess=[Diagnostics.Process]::Start($outside)
             try{$owned=Launch $treeApp;$id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP_MANAGED';operation_id=$id};$receipt=$r.receipts|Where-Object operation_id -eq $id
@@ -157,8 +158,8 @@ try {
         }
         Case 'T50' 'target_cwd_is_separate_from_host_worker_cwd' {
             $cwd=Join-Path $Fixture 'hostile cwd';$null=New-Item -ItemType Directory -Path $cwd;[IO.File]::WriteAllText((Join-Path $cwd 'SbieDll.dll'),'SYNTHETIC_INVALID_DLL');[IO.File]::WriteAllText((Join-Path $cwd 'Start.exe'),'SYNTHETIC_INVALID_EXE')
-            $leaf='cwd-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('cwd',(Join-Path $Fixture $leaf),$cwd) $cwd;$receipt=Launch $a;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason;Require ((Reports $leaf)[0].boxed -and (Reports $leaf)[0].cwd_exact) 'HOSTILE_CWD_ESCAPED';$null=Stop-Owned
-            @{hostile_target_directory_accepted_separately=$true;trusted_host_worker_cwd=$true;impostor_dependencies_unused=$true}
+            $leaf='cwd-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('cwd',(Join-Path $Fixture $leaf),$cwd) $cwd;$oldPath=$env:PATH;$env:PATH=$cwd+';'+$oldPath;$env:SECURERUN_P06_SECRET='SYNTHETIC_ENVIRONMENT_CANARY';try{$receipt=Launch $a}finally{$env:PATH=$oldPath;Remove-Item Env:/SECURERUN_P06_SECRET};Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason;Require ((Reports $leaf)[0].boxed -and (Reports $leaf)[0].cwd_exact -and (Reports $leaf)[0].environment_clean) 'HOSTILE_CWD_ESCAPED';$null=Stop-Owned
+            @{hostile_target_directory_accepted_separately=$true;trusted_host_worker_cwd=$true;impostor_dependencies_unused=$true;hostile_path_scrubbed=$true;secret_environment_absent=$true}
         }
         Case 'T56' 'stale_application_revision_cannot_dispatch_after_policy_change' {
             $r=Call @{action='APPLY';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=$e.desired} 'policy';$updated=$r.environments|Where-Object id -eq $e.id;Require ($updated.revision -gt $e.revision) 'REVISION_NOT_ADVANCED'

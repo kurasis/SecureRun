@@ -23,7 +23,7 @@ export function Controls({ language }: { language: Language }) {
   useEffect(() => { let inflight = false; let disposed = false;
     const run = async () => { if (inflight || disposed) return; inflight = true; try { await refresh(); } finally { inflight = false; } };
     void run(); const timer = window.setInterval(() => { if (Date.now() - updated.current >= 15000) setFresh(false); if (!busy) void run(); }, 5000);
-    const resume = () => { setFresh(false); setSelection(null); setCwdSelection(null); ++sequence.current; void run(); }; window.addEventListener('focus', resume); document.addEventListener('visibilitychange', resume);
+    const resume = () => { setFresh(false); ++sequence.current; void run(); }; window.addEventListener('focus', resume); document.addEventListener('visibilitychange', resume);
     return () => { disposed = true; ++sequence.current; window.clearInterval(timer); window.removeEventListener('focus', resume); document.removeEventListener('visibilitychange', resume); };
   }, [busy]);
   async function action(value: Record<string, unknown>) {

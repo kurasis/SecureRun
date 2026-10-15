@@ -13,7 +13,14 @@ observation, independent held-object Stop/Stop managed, basic English/Russian UI
 Custom target CWD is carried separately by the SDK; host workers use System32.
 No shell, imported/boxed EXE mapping, target elevation or host launch fallback.
 
-Local checks: 19 foundation, 27 adapter, 8 tooling and 3 UI tests pass; UI build
+Local checks: 19 foundation, 28 adapter, 9 tooling and 3 UI tests pass; UI build
 passes; i686 Windows metadata-only strict clippy passes (not Windows execution).
 Native production-path proof is in progress on both owner-selected laboratories.
 Phase completion, P07 eligibility and release acceptance are not claimed yet.
+
+
+Initial investigation run 38696611210 (3822c22) failed in the new harness before
+launch: its mandatory synthetic SMB positive control was missing and a later
+account name exceeded Windows' 20-character limit. Both setup defects were fixed;
+reviewed minimized reports remain under `docs/evidence/p06/investigation-3822c22`.
+No test exclusion or product security relaxation was used to bypass these failures.

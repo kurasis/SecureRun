@@ -20,7 +20,10 @@ struct Selection {
     issued: Instant,
 }
 #[derive(Default)]
-pub struct PolicyState(Mutex<HashMap<Uuid, Selection>>);
+pub struct PolicyState(
+    Mutex<HashMap<Uuid, Selection>>,
+    std::sync::atomic::AtomicU64,
+);
 fn authorize(window: &WebviewWindow) -> Result<()> {
     let url = window
         .url()
@@ -307,13 +310,29 @@ pub enum UiControlRequest {
         operation_id: Uuid,
     },
 }
+#[derive(Serialize)]
+pub struct ControlReply {
+    #[serde(flatten)]
+    reply: securerun_sandboxie_adapter::control::Reply,
+    engine_generation: u64,
+    sequence: u64,
+}
 #[tauri::command]
 pub async fn control_request(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiControlRequest,
-) -> Result<securerun_sandboxie_adapter::control::Reply> {
+    backend: State<'_, crate::app::AppState>,
+) -> Result<ControlReply> {
     authorize(&window)?;
+    let ticket = state.1.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1;
+    let engine_generation = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
     use securerun_sandboxie_adapter::control::Request as Control;
     let mut held = vec![];
     let request = match request {
@@ -376,10 +395,25 @@ pub async fn control_request(
         UiControlRequest::StopManaged { operation_id } => Control::StopManaged { operation_id },
         UiControlRequest::Reconcile { operation_id } => Control::Reconcile { operation_id },
     };
-    tauri::async_runtime::spawn_blocking(move || {
+    let reply = tauri::async_runtime::spawn_blocking(move || {
         let _held = held;
         securerun_sandboxie_adapter::windows::provisioning::control::bounded_request(&request)
     })
     .await
-    .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))
+    .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))?;
+    let current = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    if ticket != state.1.load(std::sync::atomic::Ordering::SeqCst) || current != engine_generation {
+        return err(ErrorCode::StaleOperation);
+    }
+    Ok(ControlReply {
+        reply,
+        engine_generation,
+        sequence: ticket,
+    })
 }

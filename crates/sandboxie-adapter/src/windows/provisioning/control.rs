@@ -10,7 +10,7 @@ fn checkpoint(stage: &str) {
         println!("CHECKPOINT_{stage}");
         let _ = std::io::stdout().flush();
         if stage == "StopHeld" {
-            std::thread::sleep(Duration::from_secs(6));
+            std::thread::sleep(Duration::from_secs(12));
         } else {
             loop {
                 std::thread::park();
@@ -370,7 +370,10 @@ pub fn execute(
                         contract::command(executable, arguments)?;
                         if display_name.trim().is_empty()
                             || display_name.chars().count() > 80
-                            || display_name.chars().any(char::is_control)
+                            || display_name.chars().any(|c| {
+                                c.is_control()
+                                    || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}')
+                            })
                         {
                             return Err("APPLICATION_NAME_INVALID");
                         }

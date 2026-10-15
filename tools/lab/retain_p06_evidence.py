@@ -115,7 +115,8 @@ def retain(download, commit, run_id):
                 'url': f'https://github.com/kurasis/SecureRun/actions/runs/{run_id}',
                 'targets': targets, 'files': list(known.values()), 'tested_sources': sources,
                 'production_acceptance_scenarios_passed': 0,
-                'note': 'Production phase paths; final installed-candidate acceptance remains P12.'}
+                'note': 'Production phase paths; final installed-candidate acceptance remains P12.',
+                'historical_runs': old.get('historical_runs', []) + ([{key: old[key] for key in ('tested_commit', 'run_id', 'url', 'result', 'note') if key in old}] if old.get('tested_commit') and old['tested_commit'] != commit else [])}
     (evidence / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print(json.dumps(targets, indent=2))
 

@@ -76,4 +76,5 @@ It passes P04 regression in
 [run 38649290153](https://github.com/kurasis/SecureRun/actions/runs/38649290153):
 28 adapter tests and 19 production read-only observation cases per target.
 Historical evidence remains immutable; all three current manifests bind the same
-runtime sources. P06 is eligible and remains NOT_STARTED.
+runtime sources. P06 implementation is now in progress. Its native gate and matching P03–P05
+regressions must complete before P07 becomes eligible.

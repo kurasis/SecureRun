@@ -1,5 +1,5 @@
 # Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100)
+param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase,System.Windows.Forms
@@ -41,7 +41,32 @@ function Picker([int]$id,[string]$path){
  if($AllowOverwrite){Start-Sleep -Milliseconds 300;$confirm=Window $id $true;if($confirm -ne [IntPtr]::Zero){$confirmRoot=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($confirmRoot.Current.Name -eq 'Confirm Save As');Click (Find $confirmRoot ([Windows.Automation.ControlType]::Button) 'Yes')}}
  return @{real_native_picker=$true;value_pattern_used=$true;explicit_button_invoked=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
+function Set-ActualDisplayScale([int]$Scale){
+   $script:stage='OPENING_WINDOWS_DISPLAY_SETTINGS';Start-Process 'ms-settings:display';$clock=[Diagnostics.Stopwatch]::StartNew();$settingsRoot=$null
+   do{
+    $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object MainWindowHandle -ne 0|Select-Object -First 1
+    if($null -ne $settings){$candidate=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$combo=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $combo){$settingsRoot=$candidate;break}}
+    Start-Sleep -Milliseconds 100
+   }while($clock.ElapsedMilliseconds -lt 45000)
+   Need ($null -ne $settingsRoot)
+   $script:stage='SELECTING_ADVERTISED_DISPLAY_HEIGHT';$resolution=$settingsRoot.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Resolution_ComboBox'))
+   Need ($null -ne $resolution -and $resolution.Current.IsEnabled);$resolution.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
+   $items=$settingsRoot.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem));$best=$null;$height=0;$area=0
+   foreach($item in $items){if($item.Current.Name -match '([0-9]{3,4})\D{1,8}([0-9]{3,4})'){$w=[int]$Matches[1];$h=[int]$Matches[2];if($h -gt $height -or ($h -eq $height -and $w*$h -gt $area)){$best=$item;$height=$h;$area=$w*$h}}}
+   Need ($null -ne $best -and $height -ge 1200);$best.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select();Start-Sleep -Seconds 1
+   $keep=Find $settingsRoot ([Windows.Automation.ControlType]::Button) 'Keep changes';if($null -ne $keep){Click $keep}
+   $script:stage='SELECTING_REAL_WINDOWS_SCALE';$combo=$settingsRoot.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'))
+   Need ($null -ne $combo -and $combo.Current.IsEnabled);$combo.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
+   $choice=$null;$choices=$settingsRoot.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem))
+   foreach($item in $choices){if($item.Current.Name -match '^([0-9]{2,3})\s*%' -and [int]$Matches[1] -eq $Scale){$choice=$item;break}}
+   if($null -eq $choice){$container=$combo.GetCurrentPattern([Windows.Automation.ItemContainerPattern]::Pattern);foreach($label in @("$Scale%","$Scale% (Recommended)")){$candidate=$container.FindItemByProperty($null,[Windows.Automation.AutomationElement]::NameProperty,$label);if($null -ne $candidate){$choice=$candidate;break}};if($null -ne $choice){$virtual=$null;if($choice.TryGetCurrentPattern([Windows.Automation.VirtualizedItemPattern]::Pattern,[ref]$virtual)){$virtual.Realize()};$scroll=$null;if($choice.TryGetCurrentPattern([Windows.Automation.ScrollItemPattern]::Pattern,[ref]$scroll)){$scroll.ScrollIntoView()}}}
+   Need ($null -ne $choice);$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()
+
+ $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($settings.MainWindowHandle);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
+ $window=$null;if($settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close()}
+}
 try{
+ if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}
  if($Mode -eq 'READY'){
   $stage='PREWARMING_NATIVE_PROVIDER';$desktop=[Windows.Automation.AutomationElement]::RootElement;$null=$desktop.FindAll([Windows.Automation.TreeScope]::Children,[Windows.Automation.Condition]::TrueCondition)
   $stage='WAITING_FOR_COORDINATION';[IO.File]::WriteAllText($Coordination+'.ready','READY')
@@ -53,28 +78,14 @@ try{
  Need ($hwnd -ne [IntPtr]::Zero);if($Mode -eq 'READY'){$result.native_window_present_ms=([Diagnostics.Stopwatch]::GetTimestamp()-[long]$start.ticks)*1000.0/[Diagnostics.Stopwatch]::Frequency};$result.native_window_dpi=[P09Access]::GetDpiForWindow($hwnd);$root=[Windows.Automation.AutomationElement]::FromHandle($hwnd)
  switch($Mode){
   'DISPLAY_SCALE' {
-   $stage='OPENING_WINDOWS_DISPLAY_SETTINGS';Start-Process 'ms-settings:display';$clock=[Diagnostics.Stopwatch]::StartNew();$settingsRoot=$null
-   do{
-    $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object MainWindowHandle -ne 0|Select-Object -First 1
-    if($null -ne $settings){$candidate=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$combo=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $combo){$settingsRoot=$candidate;break}}
-    Start-Sleep -Milliseconds 100
-   }while($clock.ElapsedMilliseconds -lt 45000)
-   Need ($null -ne $settingsRoot)
-   $stage='SELECTING_ADVERTISED_DISPLAY_HEIGHT';$resolution=$settingsRoot.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Resolution_ComboBox'))
-   Need ($null -ne $resolution -and $resolution.Current.IsEnabled);$resolution.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
-   $items=$settingsRoot.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem));$best=$null;$height=0;$area=0
-   foreach($item in $items){if($item.Current.Name -match '([0-9]{3,4})\D{1,8}([0-9]{3,4})'){$w=[int]$Matches[1];$h=[int]$Matches[2];if($h -gt $height -or ($h -eq $height -and $w*$h -gt $area)){$best=$item;$height=$h;$area=$w*$h}}}
-   Need ($null -ne $best -and $height -ge 1200);$best.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select();Start-Sleep -Seconds 1
-   $keep=Find $settingsRoot ([Windows.Automation.ControlType]::Button) 'Keep changes';if($null -ne $keep){Click $keep}
-   $stage='SELECTING_REAL_WINDOWS_SCALE';$combo=$settingsRoot.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'))
-   Need ($null -ne $combo -and $combo.Current.IsEnabled);$combo.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
-   $choice=$null;$choices=$settingsRoot.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem))
-   foreach($item in $choices){if($item.Current.Name -match '^([0-9]{2,3})\s*%' -and [int]$Matches[1] -eq $Scale){$choice=$item;break}}
-   if($null -eq $choice){$container=$combo.GetCurrentPattern([Windows.Automation.ItemContainerPattern]::Pattern);foreach($label in @("$Scale%","$Scale% (Recommended)")){$candidate=$container.FindItemByProperty($null,[Windows.Automation.AutomationElement]::NameProperty,$label);if($null -ne $candidate){$choice=$candidate;break}};if($null -ne $choice){$virtual=$null;if($choice.TryGetCurrentPattern([Windows.Automation.VirtualizedItemPattern]::Pattern,[ref]$virtual)){$virtual.Realize()};$scroll=$null;if($choice.TryGetCurrentPattern([Windows.Automation.ScrollItemPattern]::Pattern,[ref]$scroll)){$scroll.ScrollIntoView()}}}
-   Need ($null -ne $choice);$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()
+   $stage='REQUESTING_LAB_DISPLAY_CONTROLLER';$prefix=$env:SECURERUN_P09_DISPLAY_EVENTS
+   Need ($prefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$')
+   $request=$null;$done=$null;$failed=$null
+   try{$rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify;$request=[Threading.EventWaitHandle]::OpenExisting($prefix+'-'+$Scale,$rights);$done=[Threading.EventWaitHandle]::OpenExisting($prefix+'-done',$rights);$failed=[Threading.EventWaitHandle]::OpenExisting($prefix+'-failed',$rights);$null=$request.Set();$index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]@($done,$failed),120000);Need ($index -eq 0)}
+   finally{foreach($event in @($request,$done,$failed)){if($null -ne $event){$event.Dispose()}}}
    $stage='VERIFYING_ACTUAL_MANAGER_WINDOW_DPI';$clock.Restart()
    do{$dpi=[P09Access]::GetDpiForWindow($hwnd);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
-   Need ($dpi -eq 96*$Scale/100);$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Maximized);Need ([P09Access]::SetForegroundWindow($hwnd))
+   Need ($dpi -eq 96*$Scale/100);$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Maximized);$null=[P09Access]::SetForegroundWindow($hwnd)
    $result.requested_windows_scale=$Scale;$result.native_window_dpi=$dpi;$result.actual_windows_display_change=$true;$result.production_manager_window_measured=$true;$result.os_security_settings_modified=$false
   }
   'CONFIRM' {
@@ -118,5 +129,5 @@ try{
  }
  $result.status='PASSED'
 }catch{$result.status='FAILED';$result.code='P09_NATIVE_ACCESSIBILITY_FAILED';$result.stage=$stage;$result.exception_type=$_.Exception.GetBaseException().GetType().FullName}
-$result|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $ResultFile -Encoding UTF8
+if($ResultFile){$result|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $ResultFile -Encoding UTF8}else{Write-Host ('P09_NATIVE_ACCESSIBILITY_FAILED '+$script:stage)}
 if($result.status -ne 'PASSED'){exit 1}

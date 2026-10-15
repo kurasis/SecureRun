@@ -5,7 +5,7 @@ if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim()
 @{phase='P09';stage='STARTED';manager_commit=$commit}|ConvertTo-Json|Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 $target=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aarch64-pc-windows-msvc'}else{'x86_64-pc-windows-msvc'};$env:RUSTUP_TOOLCHAIN="1.90.0-$target"
-$actor=$null;$password=$null;$name=$null;$owned=$null;$shareCreated=$false
+$actor=$null;$password=$null;$name=$null;$owned=$null;$shareCreated=$false;$displayEvents=@()
 Push-Location $repo
 try {
  rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal --component rustfmt,clippy
@@ -56,11 +56,30 @@ try {
  $name='SRP09_'+$run.Substring(0,10);$password=ConvertTo-SecureString ('P09aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force;$user=New-LocalUser -Name $name -Password $password -AccountNeverExpires;$group=$users.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
  $owned=Join-Path $fixture 'owner';$null=New-Item -ItemType Directory -Path $owned;$acl=[Security.AccessControl.DirectorySecurity]::new();$acl.SetAccessRuleProtection($true,$false)
  foreach($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))){$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))};Set-Acl $owned $acl
+ # Lab-only fixed display actions. No actor-supplied paths, scripts or data cross
+ # this boundary. The normal product never receives these event names.
+ $displayPrefix='Local\SecureRunP09Display-'+$run;$eventAcl=[Security.AccessControl.EventWaitHandleSecurity]::new()
+ $eventAcl.AddAccessRule([Security.AccessControl.EventWaitHandleAccessRule]::new([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.AccessControl.EventWaitHandleRights]::FullControl,[Security.AccessControl.AccessControlType]::Allow))
+ $eventAcl.AddAccessRule([Security.AccessControl.EventWaitHandleAccessRule]::new($user.SID,([Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify),[Security.AccessControl.AccessControlType]::Allow))
+ foreach($suffix in @('100','150','200','done','failed')){$created=$false;$event=[Threading.EventWaitHandleAcl]::Create($false,[Threading.EventResetMode]::AutoReset,$displayPrefix+'-'+$suffix,[ref]$created,$eventAcl);if(-not $created){$event.Dispose();throw 'P09_PREEXISTING_DISPLAY_EVENT'};$displayEvents+=,$event}
  $start=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.UserName=$name;$start.Domain=[Environment]::MachineName;$start.Password=$password;$start.LoadUserProfile=$true
  $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
+ $start.Environment['SECURERUN_P09_DISPLAY_EVENTS']=$displayPrefix
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p09_standard.ps1'),'-Manager',$app,'-Fixture',$owned,'-EngineHome',$engine,'-Commit',$commit)){$start.ArgumentList.Add($arg)}
  if($Focused){$start.ArgumentList.Add('-Focused')}
- $actor=[Diagnostics.Process]::Start($start);if(-not $actor.WaitForExit(2700000)){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}
+ $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew();$displayRequests=0
+ while(-not $actor.WaitForExit(250)){
+  if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}
+  $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[0..2],0)
+  if($index -lt 3){
+   $displayRequests++;if($displayRequests -gt 8){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_REQUEST_BOUND'}
+   $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
+   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_CONTROLLER','-Scale',[string]@(100,150,200)[$index])){$display.ArgumentList.Add($arg)}
+   $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
+   $controller=[Diagnostics.Process]::Start($display)
+   try{$completed=$controller.WaitForExit(90000);if($completed -and $controller.ExitCode -eq 0){$null=$displayEvents[3].Set()}else{$null=$displayEvents[4].Set()}}finally{if(-not $controller.HasExited){$controller.Kill($true)};$controller.Dispose()}
+  }
+ }
  $resultHome=Join-Path $owned 'results';if(Test-Path -LiteralPath $resultHome){Get-ChildItem -LiteralPath $resultHome -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}
  if(-not(Test-Path -LiteralPath (Join-Path $out 'standard-product.json'))){throw 'P09_ACTOR_REPORT_MISSING'}
  $result=Get-Content (Join-Path $out 'standard-product.json') -Raw|ConvertFrom-Json
@@ -74,6 +93,7 @@ try {
  @{phase='P09';stage='COMPLETE';manager_commit=$commit}|ConvertTo-Json|Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 }finally{
  if($null -ne $actor){if(-not $actor.HasExited){$actor.Kill($true);$null=$actor.WaitForExit(10000)};$actor.Dispose()}
+ foreach($event in $displayEvents){$event.Dispose()}
  if($owned){$partial=Join-Path $owned 'results';if(Test-Path -LiteralPath $partial){Get-ChildItem -LiteralPath $partial -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}}
  if($null -ne $password){$password.Dispose()};if($name){Disable-LocalUser -Name $name -ErrorAction SilentlyContinue};if($shareCreated){Remove-SmbShare -Name 'SecureRunP05Synthetic' -Force -Confirm:$false};Pop-Location
 }

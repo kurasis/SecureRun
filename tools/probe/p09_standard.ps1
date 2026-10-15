@@ -28,7 +28,7 @@ function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',
  if($Path){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-EnvironmentId'}else{'-SelectedPath'}));$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-Intent'}else{'-ProtocolUri'}));$ps.ArgumentList.Add($Uri)}
  if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
- try{Require ($p.WaitForExit(90000)) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+ try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
 function Complete-Access($Pending){try{Require ($Pending.process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($Pending.process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}finally{if(-not $Pending.process.HasExited){$Pending.process.Kill($true)};$Pending.process.Dispose()}}
 function Find-BoxFile($Environment,[string]$Name){$root=$Environment.compiled.section.FileRootPath[0];$found=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $Name);Require ($found.Count -eq 1 -and $found[0].FullName.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) 'P09_BOXED_FILE_NOT_UNIQUE';return $found[0]}
@@ -37,6 +37,10 @@ $gui=$null;$hostBrowser=$null;$browserProof=$null;$held=$null;$lab=$null;$regist
 try{
  $identity=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($identity);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'P09_STANDARD_USER_REQUIRED'
  $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData');$env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
+ $displayPrefix=$env:SECURERUN_P09_DISPLAY_EVENTS;Require ($displayPrefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$') 'P09_LAB_DISPLAY_CHANNEL_MISSING'
+ $displayRights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
+ foreach($suffix in @('100','150','200','done','failed')){$event=[Threading.EventWaitHandle]::OpenExisting($displayPrefix+'-'+$suffix,$displayRights);$event.Dispose()}
+ @{schema=1;standard_user_event_access_verified=$true;fixed_display_actions_only=$true;event_count=5;normal_product_receives_channel=$false}|ConvertTo-Json|Set-Content (Join-Path $results 'lab-display-channel.json') -Encoding utf8
  foreach($name in @('p05_lab.cs','p09_desktop.cs','p09_browser.cs')){Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)))}
  . (Join-Path $PSScriptRoot 'p09_cdp.ps1')
  $productHome=Split-Path $Manager;$lab=[P05Lab]::new($EngineHome,$Fixture,$productHome)
@@ -97,7 +101,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  # Normal product, real backend and real WebView. Inspector access exists only in this lab launch environment.
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()
- $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'inspected-manager.log'),$port);Connect-P09Cdp $port;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))
+ $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'inspected-manager.log'),$port);Connect-P09Cdp $port;Wait-P09Document;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))
  Case 'T32' 'actual_normal_webview_environment_navigation' {$null=Invoke-P09Stage 'OVERVIEW' @{environment_count=$environmentCount};@{normal_production_binary=$true;real_backend=$true;mock_state=$false;ten_owned_environments=($environmentCount -eq 10)}}
  Case 'T32' 'metadata_rename_preserves_identity_and_never_replays' {$null=Invoke-P09Stage 'RENAME' @{environment_id=$first.id;environment_name=$first.display_name};@{actual_product_ui=$true;metadata_only=$true;permanent_replay_tombstone=$true;policy_and_generation_unchanged=$true}}
  Case 'T32' 'real_keyboard_and_windows_screen_reader_provider' {$r=Access 'KEYBOARD' $gui.ProcessId;@{real_windows_uia=$r.real_windows_uia;native_window_dpi=$r.native_window_dpi;tab_order_actual=$r.tab_order_actual;f6_navigation_actual=$r.f6_navigation_actual;accessible_labels_and_roles=$r.accessible_label_and_role;native_invoke_changed_page=$r.native_invoke_changed_real_page}}
@@ -231,6 +235,6 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
 }catch{
  @{status='FAILED';standard_user=$true;stage=$script:stage;code=$(if($script:failureCode){$script:failureCode}else{'P09_ACTOR_FAILED'});exception_type=$_.Exception.GetBaseException().GetType().FullName;line=$_.InvocationInfo.ScriptLineNumber;manager_commit=$Commit}|ConvertTo-Json|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8;Save;exit 1
 }finally{
- $metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';if(Test-Path -LiteralPath $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','raw-status-','endpoint-status-')){Get-ChildItem -LiteralPath $metadata -Filter ($prefix+'*.json') -File|Where-Object Length -LE 8192|Copy-Item -Destination $results}}
+ $metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';if(Test-Path -LiteralPath $metadata){foreach($prefix in @('probe-status-','probe-result-','probe-evidence-','raw-status-','endpoint-status-','scope-status-','identity-status-','image-status-','dns-status-')){Get-ChildItem -LiteralPath $metadata -Filter ($prefix+'*.json') -File|Where-Object Length -LE 8192|Copy-Item -Destination $results}}
  if($null -ne $gui){$gui.Dispose()};if($null -ne $held){[P05Lab]::Stop($held)};if($null -ne $hostBrowser){$hostBrowser.Dispose()};if($null -ne $browserProof){$browserProof.Dispose()};if($registryCreated){Remove-Item -LiteralPath 'HKCU:\Software\Classes\securerun-p09' -Recurse -Force}
 }

@@ -2,7 +2,7 @@ name: P09 native product build
 on:
   push:
     branches: ['p09/**']
-    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tests/product_ui.test.ts', '.github/workflows/p09-build.yml']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tests/product_ui.test.ts', 'tools/lab/Test-P09-Measurement.ps1', 'tools/probe/p09_desktop.cs', '.github/workflows/p09-build.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -50,3 +50,13 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'PRODUCT_LINT_FAILED'}
           npm run tauri -- build --debug --no-bundle
           if($LASTEXITCODE -ne 0){throw 'PRODUCT_BUILD_FAILED'}
+      - name: Exercise actual kernel job measurement API (fixture only)
+        shell: pwsh
+        run: ./tools/lab/Test-P09-Measurement.ps1 -Manager target/debug/securerun.exe
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p09-measurement-fixture-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p09-build/*.json
+          if-no-files-found: warn
+          retention-days: 14

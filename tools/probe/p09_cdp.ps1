@@ -25,8 +25,23 @@ function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{}){
 }
 function Evaluate-P09([string]$Expression){
  $result=Send-P09Cdp 'Runtime.evaluate' @{expression=$Expression;awaitPromise=$true;returnByValue=$true}
- if($result.PSObject.Properties['exceptionDetails'] -or -not $result.result.PSObject.Properties['value']){throw 'P09_INSPECTOR_EVALUATION_FAILED'}
+ if($result.PSObject.Properties['exceptionDetails']){
+  $detail=$result.exceptionDetails;$code='P09_INSPECTOR_EVALUATION_FAILED'
+  if($detail.PSObject.Properties['exception'] -and $detail.exception.PSObject.Properties['description']){
+   $description=[string]$detail.exception.description
+   if($description.Contains('window.__p09_run is not a function')){$code='P09_BOOTSTRAP_FUNCTION_MISSING'}
+   elseif($description.Contains('unsafe-eval')){$code='P09_INSPECTOR_EVALUATION_CSP_REFUSED'}
+  }
+  if(Get-Variable results -ErrorAction SilentlyContinue){@{code=$code;line=$detail.lineNumber;column=$detail.columnNumber;raw_exception_withheld=$true}|ConvertTo-Json|Set-Content (Join-Path $results 'inspector-evaluation.json') -Encoding utf8}
+  throw $code
+ }
+ if(-not $result.PSObject.Properties['result'] -or -not $result.result.PSObject.Properties['value']){throw 'P09_INSPECTOR_RESULT_VALUE_MISSING'}
  return $result.result.value
+}
+function Wait-P09Document {
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do{if(Evaluate-P09 "document.readyState==='complete' && !!document.querySelector('nav button') && typeof window.__TAURI_INTERNALS__?.invoke==='function'"){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+ throw 'P09_NORMAL_DOCUMENT_NOT_READY'
 }
 function Invoke-P09Stage([string]$Stage,[hashtable]$Config=@{}){
  $stageJson=ConvertTo-Json -InputObject $Stage -Compress;$configJson=ConvertTo-Json -InputObject $Config -Depth 8 -Compress

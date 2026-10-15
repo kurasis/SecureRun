@@ -49,7 +49,7 @@ public sealed class P09Desktop : IDisposable {
   if(!AssignProcessToJobObject(job,process)){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_JOB_ASSIGN_FAILED");}
   if(ResumeThread(info.thread)==uint.MaxValue){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_GUI_RESUME_FAILED");}CloseHandle(info.thread);
  }
- long Cpu() {IntPtr data=Marshal.AllocHGlobal(64);try{uint count;if(!QueryInformationJobObject(job,1,data,64,out count))throw new InvalidOperationException("P09_ACCOUNTING_FAILED");var value=Marshal.PtrToStructure<Accounting>(data);return value.user+value.kernel;}finally{Marshal.FreeHGlobal(data);}}
+ long Cpu() {uint size=(uint)Marshal.SizeOf<Accounting>();IntPtr data=Marshal.AllocHGlobal((int)size);try{uint count;if(!QueryInformationJobObject(job,1,data,size,out count))throw new InvalidOperationException("P09_ACCOUNTING_FAILED");var value=Marshal.PtrToStructure<Accounting>(data);return value.user+value.kernel;}finally{Marshal.FreeHGlobal(data);}}
  public Dictionary<string,object> Sample() {
   IntPtr data=Marshal.AllocHGlobal(8+256*IntPtr.Size);try{uint returned;if(!QueryInformationJobObject(job,3,data,(uint)(8+256*IntPtr.Size),out returned))throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");
    int assigned=Marshal.ReadInt32(data),count=Marshal.ReadInt32(data,4);if(assigned!=count||count>256)throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");long memory=0;int webviews=0,observed=0;

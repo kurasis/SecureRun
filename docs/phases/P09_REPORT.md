@@ -157,3 +157,27 @@ baseline so retries cannot masquerade as offline target traffic. Offline attempt
 and all independent containment checks remain mandatory. A native regression
 covers each endpoint after one to four completed controls. Endpoint failures are
 now retained by P05/P06 as minimized numeric/typed records.
+
+Focused ARM run `38796850868` at `bf116dc` refused environment 04 with
+DIAGNOSTIC_PROCESS_SCOPE_CHANGED. The next cleanup waits up to one second only
+for the same retained kernel object to signal completion when driver membership
+disappears. An unknown live process still refuses termination. Failure evidence
+contains only numeric query/wait status and comparison booleans, never identity
+values. Unknown changed INI key names are withheld before local diagnostics.
+
+The product cards now explicitly distinguish configured presets from last-checked
+network policy and expose exact current launch-block reasons. A separate native
+build fixture exercises the real measurement API for 60 seconds with the normal
+GUI, no engine targets and no performance-budget claim. Job accounting uses the
+exact marshaled Windows structure size. Only the full seeded workload can meet
+the P09 performance gate.
+
+Focused Server run `38796850868` proved real keyboard Tab/F6 and native UIA
+names/invoke behavior. CDP stage calls failed after bootstrap, so document-ready
+and actual React navigation readiness are now required before injection; safe
+fixed classifications replace raw JavaScript exceptions in investigation output.
+Fresh standard-user Settings activation failed. Display changes now use only
+three fixed actions in the lab controller via owner-restricted named events. No
+paths, code or arbitrary payload cross that boundary; the normal product receives
+no event names. The standard user still independently checks actual manager DPI.
+A parent-controller result alone cannot satisfy the product DPI gate.

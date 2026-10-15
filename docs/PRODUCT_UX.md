@@ -12,7 +12,10 @@ Display-name changes preserve the UUID, generation, applied policy and data.
 Concurrent stale renames fail, and permanent operation tombstones prevent replay.
 
 Activity uses fresh original-driver observations, independently from current
-launch prerequisites. An unavailable or incomplete observation is Unknown, never
+launch prerequisites. Cards and the selected summary show the configured preset
+separately from the last verified network policy. Stale/unverified policy data
+shows Unknown. A blocked launch exposes its exact backend reason, including stale
+control observations and inactive environments. An unavailable or incomplete observation is Unknown, never
 an empty process list authorizing cleanup. Engine onboarding distinguishes
 missing, untrusted, unavailable, restart-required, untested and verified states.
 Standard read-access limitations appear at policy selection. Mandatory protection
@@ -56,3 +59,9 @@ A four-environment focused diagnostic mode skips the performance gate. Its
 artifacts and summary are explicitly DIAGNOSTIC_ONLY. The evidence retainer
 rejects it even if another field is changed to PASSED. Only the full ten-box
 reference workload can close P09. Native product DPI execution remains pending.
+
+On disposable CI VMs the lab controller changes only the three fixed Windows
+scaling values. Owner-restricted named events carry these requests without paths,
+commands or payload text. The normal application receives no controller names
+and uses no elevated product helper. The standard-user checker independently
+measures the actual manager-window DPI and the real WebView layouts.

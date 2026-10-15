@@ -1927,7 +1927,13 @@ impl NativeEngine {
                 .keys()
                 .chain(expected.keys())
                 .filter(|key| section.get(*key) != expected.get(*key))
-                .cloned()
+                .map(|key| {
+                    if expected.contains_key(key) {
+                        key.clone()
+                    } else {
+                        "UNREVIEWED_KEY_WITHHELD".into()
+                    }
+                })
                 .collect::<std::collections::BTreeSet<_>>()
                 .into_iter()
                 .collect();
@@ -2097,7 +2103,7 @@ impl NativeEngine {
                 let mut sid = [0u16; 96];
                 let mut session = 0;
                 let mut observed_birth = 0;
-                if unsafe {
+                let query_status = unsafe {
                     (self.api.query)(
                         process.pid as usize as _,
                         0,
@@ -2107,14 +2113,36 @@ impl NativeEngine {
                         &mut session,
                         &mut observed_birth,
                     )
-                } != 0
-                    || text(&name)? != diagnostic.name()
-                    || text(&sid)? != self.owner
-                    || observed_birth != created
-                {
-                    if unsafe { WaitForSingleObject(held.0, 0) } == WAIT_OBJECT_0 {
+                };
+                let same_box = query_status == 0 && text(&name)? == diagnostic.name();
+                let same_owner = query_status == 0 && text(&sid)? == self.owner;
+                let same_birth = query_status == 0 && observed_birth == created;
+                if !same_box || !same_owner || !same_birth {
+                    // Driver membership can disappear before the same retained
+                    // kernel object signals exit. Wait only for that object;
+                    // an unknown live process never authorizes termination.
+                    let waited = unsafe { WaitForSingleObject(held.0, 1000) };
+                    if waited == WAIT_OBJECT_0 {
                         continue;
                     }
+                    let status = serde_json::json!({"schema":1,"operation":"DIAGNOSTIC_MEMBERSHIP","query_status":query_status,"same_box":same_box,"same_owner":same_owner,"same_birth":same_birth,"wait_status":waited,"termination_dispatched":false});
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                        .open(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("scope-status-{}.json", diagnostic.id.simple())),
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                    file.write_all(
+                        &serde_json::to_vec(&status)
+                            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                    )
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                    file.sync_all()
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                     return Err("DIAGNOSTIC_PROCESS_SCOPE_CHANGED");
                 }
                 // A process can finish after membership validation. Windows

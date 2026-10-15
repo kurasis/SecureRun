@@ -45,6 +45,7 @@ export const productText = {
     diff:'Review effective permission changes', diffDetail:'Applying replaces editable rules with the list shown here. Any reduction of a previous exclusion can expose host reads. Desired changes to a running box remain unapplied until the whole box stops.',
     confirmDiff:'I reviewed this replacement and its host-read implications', mode:'Retention mode', persistent:'Persistent — keep data', disposable:'Disposable — explicit leftover decision',
     stopAll:'Stop managed environments…', stopTitle:'Stop exactly these managed environments', stopDetail:'Only the listed identities are requested. Each scope is independently rechecked; unrelated or newly created environments are not added.', stopAccept:'Stop listed environments',
+    configuredPreset:'Configured preset', networkPolicy:'Network policy at last check', offlineVerified:'Offline — verified for this configuration', onlineVerified:'Online — verified for this configuration',
     observed:'Observed', refused:'Refused', uncertain:'Outcome unknown', scale:'Content scale', technical:'Read-only engine details',
   },
   ru: {
@@ -75,6 +76,7 @@ export const productText = {
     diff:'Проверьте изменения разрешений', diffDetail:'Применение заменит личные правила показанным списком. Ослабление прежнего запрета может раскрыть чтение хоста. Изменения работающего бокса не применяются до его полной остановки.',
     confirmDiff:'Я проверил замену правил и её влияние на чтение хоста', mode:'Режим хранения', persistent:'Persistent — сохранять данные', disposable:'Disposable — явное решение об остатках',
     stopAll:'Остановить управляемые окружения…', stopTitle:'Остановить именно эти окружения', stopDetail:'Запрашиваются только показанные идентичности. Каждый контекст перепроверяется; чужие и новые окружения не добавляются.', stopAccept:'Остановить показанные окружения',
+    configuredPreset:'Заданный профиль', networkPolicy:'Сетевая политика при последней проверке', offlineVerified:'Без сети — проверено для этой конфигурации', onlineVerified:'С сетью — проверено для этой конфигурации',
     observed:'Наблюдалось', refused:'Отклонено', uncertain:'Результат неизвестен', scale:'Масштаб содержимого', technical:'Подробности движка для чтения',
   },
 } as const;

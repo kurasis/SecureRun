@@ -136,3 +136,12 @@ The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this p
 laboratories in [run 38763953821](https://github.com/kurasis/SecureRun/actions/runs/38763953821): 19 foundation, 2 normal native, 3 UI and 29 actual command-boundary cases passed.
 The [manifest](../evidence/p03/manifest.json) binds the current source and
 original structured evidence; earlier results above remain historical.
+
+## P09 product regression
+
+Both Windows Server 2025 x64 and Windows 11 ARM64 passed the production regression
+on `ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae`. The immutable structured results
+are retained in the phase manifest. This confirms this phase only; the P09
+product exit gate remains pending.
+
+Run: https://github.com/kurasis/SecureRun/actions/runs/38793638963

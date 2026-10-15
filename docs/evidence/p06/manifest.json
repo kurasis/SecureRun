@@ -25,8 +25,82 @@
       "path": "investigation-3822c22/windows-11-arm/stage.json",
       "sha256": "170d460597b0d31b872bd8a7240f7ce6c2e341feb0e7ab32e8b82e73c71b21d7",
       "size": 112
+    },
+    {
+      "path": "investigation-572592d/windows-2025/standard-sessions.json",
+      "sha256": "5b1a99327535646c2a135664e5adb3be0f01cc9cc81561e218d00cf201d8d34c",
+      "size": 361
+    },
+    {
+      "path": "investigation-572592d/windows-2025/standard-reserved.json",
+      "sha256": "3d47020a1282e8ace598d5cbdee0e52411e101282761b887f6455ce97972a6ba",
+      "size": 333
+    },
+    {
+      "path": "investigation-572592d/windows-2025/standard-scope.json",
+      "sha256": "ce7a3ab52ee2a7b86f396bf20d4c759bf45443a5f04926729006a415c8d181c9",
+      "size": 330
+    },
+    {
+      "path": "investigation-572592d/windows-2025/standard-normal.json",
+      "sha256": "b34d266cb241a4c92174dd5310e616e3bb66a62559024dbc524d0a9692215de3",
+      "size": 3794
+    },
+    {
+      "path": "investigation-572592d/windows-2025/stage.json",
+      "sha256": "1fa5161cda2a97ad1d7f589a49d7f28f3f9bbd056cb7cec3281dea5c9304ea4a",
+      "size": 112
+    },
+    {
+      "path": "investigation-572592d/windows-2025/standard-accepted.json",
+      "sha256": "7f6828941591dfdc3f1d27c2673bc050dafab5e43cdbc73447e420c322099716",
+      "size": 333
+    },
+    {
+      "path": "investigation-572592d/windows-2025/run-summary.json",
+      "sha256": "10db3e26617bfec28dad8b346ad33bffc78b95db62a8e1aca32fadd76d9a96a2",
+      "size": 536
+    },
+    {
+      "path": "investigation-572592d/windows-2025/control-cases.json",
+      "sha256": "6cc9237fa73a0bc833f831752ce955d4afc6e8630eb3c6445314466101cb27e3",
+      "size": 4385
+    },
+    {
+      "path": "investigation-572592d/windows-11-arm/standard-scope.json",
+      "sha256": "388444bb7b25be8e1b269820970f498c42a2f57bdce74cc898ee87c912527580",
+      "size": 330
+    },
+    {
+      "path": "investigation-572592d/windows-11-arm/standard-reserved.json",
+      "sha256": "6a38b3cff2aabaa438814564d42e9d29ef221ee267ad06e4af13d53a084bb0e1",
+      "size": 333
+    },
+    {
+      "path": "investigation-572592d/windows-11-arm/standard-normal.json",
+      "sha256": "e5a565e56646eac0a0d0aacec1c13437834646e2495adfd4c305e998e25d1f57",
+      "size": 4001
+    },
+    {
+      "path": "investigation-572592d/windows-11-arm/standard-accepted.json",
+      "sha256": "1fbb56387791e34a9863e58299bc92f71372ad5a5eb952c92a9e4d0cd681865d",
+      "size": 333
+    },
+    {
+      "path": "investigation-572592d/windows-11-arm/stage.json",
+      "sha256": "325e0a02764f7098c3f02edcd493d3afdbeddf54e25a25fa40d454e5a1301152",
+      "size": 112
     }
   ],
   "tested_sources": [],
-  "note": "First investigation: mandatory SMB positive control missing in new harness; reserved account name exceeded Windows length. Neither run closes any P06 gate."
+  "note": "First investigation: mandatory SMB positive control missing in new harness; reserved account name exceeded Windows length. Neither run closes any P06 gate.",
+  "historical_runs": [
+    {
+      "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",
+      "run_id": 38697466505,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38697466505",
+      "result": "BLOCKED",
+      "note": "Synthetic client serialized absent CWD as empty string, and unmanaged fixture enabled its root too early. Actual custom-CWD production launch passed on both targets."
+    }
+  ]
 }

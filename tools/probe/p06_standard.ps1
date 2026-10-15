@@ -3,9 +3,9 @@ $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new()
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 10|Set-Content (Join-Path $Fixture 'control-cases.json') -Encoding utf8}
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
-function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CONTROL_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.exception_type=$_.Exception.GetBaseException().GetType().FullName};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
+function Case([string]$scenarioId,[string]$name,[scriptblock]$body){$c=@{id=$scenarioId;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CONTROL_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.exception_type=$_.Exception.GetBaseException().GetType().FullName};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
 function Call($request,[string]$kind='control',[string]$image=$Manager,[bool]$allowFailure=$false){
-    $s=[Diagnostics.ProcessStartInfo]::new($image);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
+    $s=[Diagnostics.ProcessStartInfo]::new($image);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
     $p=[Diagnostics.Process]::Start($s)
     try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(150000)) 'CONTROL_TIMEOUT';Require ($p.ExitCode -eq 0) 'CONTROL_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
@@ -31,6 +31,7 @@ try {
         Case 'T36' 'production_stop_covers_two_actual_windows_sessions' {
             $actor=[Diagnostics.Process]::GetCurrentProcess().SessionId;Require ($actor -ne 0) 'INDEPENDENT_ACTOR_SESSION_REQUIRED'
             $probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe';$a=New-App $probe @('hold',(Join-Path $Fixture 'session-actor.jsonl'));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
+            Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$sessionLab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$sessionLab.Register('SR_'+$e.id.Replace('-',''));$sessionLab.Set(('SR_'+$e.id.Replace('-','')),'Enabled','y')
             $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
             @{box=('SR_'+$e.id.Replace('-',''));owner_sid=$who.User.Value}|ConvertTo-Json|Set-Content (Join-Path $results 'session-ready.json') -Encoding utf8
             $clock=[Diagnostics.Stopwatch]::StartNew()
@@ -45,7 +46,7 @@ try {
         Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box)
         Case 'T62' 'actual_scope_change_after_process_handles_retained' {
             $env:SECURERUN_P06_PAUSE_STAGE='StopHeld';$id=[Guid]::NewGuid().ToString()
-            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true
+            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
             foreach($arg in @('--control-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
             $p=[Diagnostics.Process]::Start($s);$other=Join-Path $Fixture 'unrelated-root';$null=New-Item -ItemType Directory -Path $other
             try {
@@ -58,8 +59,8 @@ try {
         }
         Case 'T07' 'exited_retained_object_does_not_retarget_unrelated_process' {
             $a=New-App $probe @('exit-during-stop',(Join-Path $Fixture 'exit-during-stop.jsonl'));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
-            $hostStart=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh).Source);$hostStart.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$hostStart.ArgumentList.Add($arg)};$other=[Diagnostics.Process]::Start($hostStart)
-            $env:SECURERUN_P06_PAUSE_STAGE='StopHeld';$id=[Guid]::NewGuid().ToString();$s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true
+            $hostStart=[Diagnostics.ProcessStartInfo]::new((Join-Path $PSHOME 'pwsh.exe'));$hostStart.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$hostStart.ArgumentList.Add($arg)};$other=[Diagnostics.Process]::Start($hostStart)
+            $env:SECURERUN_P06_PAUSE_STAGE='StopHeld';$id=[Guid]::NewGuid().ToString();$s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
             foreach($arg in @('--control-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)};$p=[Diagnostics.Process]::Start($s)
             try{$line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP';environment_id=$e.id;operation_id=$id} -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'EXIT_RACE_CHECKPOINT_TIMEOUT';Require ($line.Result -eq 'CHECKPOINT_StopHeld') 'EXIT_RACE_NOT_REACHED';$original=[Diagnostics.Process]::GetProcessById([int]$receipt.process.pid);Require (-not $original.HasExited -and [string]$original.StartTime.ToFileTimeUtc() -eq $receipt.process.creation_time) 'PRIMARY_NOT_ALIVE_AT_HELD_CHECKPOINT';$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'EXIT_RACE_STOP_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
                 Require ($stopped.state -eq 'STOPPED' -and -not $other.HasExited -and $original.HasExited) 'EXITED_HANDLE_RETARGETED';$original.Dispose()
@@ -71,7 +72,7 @@ try {
         $stage=if($Mode -eq 'reserved'){'Reserved'}else{'Accepted'};$id=[Guid]::NewGuid().ToString();$request=@{action='LAUNCH';application_id=$a.id;environment_id=$a.environment_id;expected_revision=$a.revision;operation_id=$id}
         $env:SECURERUN_P06_PAUSE_STAGE=$stage
         Case 'T61' ('actual_dispatch_interruption_'+$Mode) {
-            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true
+            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
             foreach($arg in @('--control-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
             $p=[Diagnostics.Process]::Start($s)
             try{$line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'CHECKPOINT_TIMEOUT';Require ($line.Result -eq "CHECKPOINT_$stage") 'CHECKPOINT_NOT_REACHED';if($Mode -eq 'accepted'){Start-Sleep -Milliseconds 500};$p.Kill($true);Require ($p.WaitForExit(10000)) 'KILLED_WORKER_NOT_EXITED'}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
@@ -122,9 +123,9 @@ try {
         Case 'T19' 'stop_managed_preserves_unmanaged_box_and_host_process' {
             Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
             $b=[P02Bridge]::new($EngineHome,$Fixture,[string[]]@($probe.FullName));$unowned='SRP02_P06_'+[Guid]::NewGuid().ToString('N').Substring(0,12);$b.Register($unowned)
-            foreach($pair in @(@('Enabled','n'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$b.Set($unowned,$pair[0],$pair[1])};$b.Set($unowned,'FileRootPath',(Join-Path $Fixture "boxes/$unowned"));$null=$b.ProvisionFreshRoot($unowned);$b.Set($unowned,'Enabled','y')
+            foreach($pair in @(@('Enabled','n'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$b.Set($unowned,$pair[0],$pair[1])};$b.Set($unowned,'FileRootPath',(Join-Path $Fixture "boxes/$unowned"));$null=New-Item -ItemType Directory -Path (Join-Path $Fixture 'boxes') -Force;$null=$b.ProvisionFreshRoot($unowned);$b.Set($unowned,'Enabled','y')
             $unownedReceipt=$b.Launch($unowned,$probe.FullName,[string[]]@('hold',(Join-Path $Fixture 'unmanaged.jsonl')))
-            $outside=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh).Source);$outside.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$outside.ArgumentList.Add($arg)};$hostProcess=[Diagnostics.Process]::Start($outside)
+            $outside=[Diagnostics.ProcessStartInfo]::new((Join-Path $PSHOME 'pwsh.exe'));$outside.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$outside.ArgumentList.Add($arg)};$hostProcess=[Diagnostics.Process]::Start($outside)
             try{$owned=Launch $treeApp;$id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP_MANAGED';operation_id=$id};$receipt=$r.receipts|Where-Object operation_id -eq $id
                 Require ($receipt.state -eq 'STOPPED' -and $b.Count($unowned) -gt 0 -and -not $hostProcess.HasExited) 'UNMANAGED_WORKLOAD_TERMINATED';@{managed_empty=$true;unmanaged_box_survives=$true;unboxed_process_survives=$true;prefix_authority=$false}
             }finally{[P02Bridge]::StopReceipt($unownedReceipt);$null=$b.StopHeld($unowned);if(-not $hostProcess.HasExited){$hostProcess.Kill();$hostProcess.WaitForExit()};$hostProcess.Dispose()}
@@ -132,7 +133,7 @@ try {
         Case 'T26' 'rapid_launch_stop_serializes_and_duplicate_scope_conflicts' {
             foreach($n in 1..3){$receipt=Launch $treeApp;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason;$null=Stop-Owned}
             $id=[Guid]::NewGuid().ToString();$null=Call @{action='STOP';environment_id=$e.id;operation_id=$id}
-            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.ArgumentList.Add('--control-once');$p=[Diagnostics.Process]::Start($s)
+            $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.ArgumentList.Add('--control-once');$p=[Diagnostics.Process]::Start($s)
             try{$read=$p.StandardOutput.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP_MANAGED';operation_id=$id} -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(45000)) 'CONFLICT_TIMEOUT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OPERATION_CONFLICT') 'OPERATION_SCOPE_REUSED'}finally{$p.Dispose()}
             @{rapid_cycles=3;conflicting_operation_refused=$true;all_waits_completed=$true}
         }
@@ -140,6 +141,11 @@ try {
             Coordinate 'service-off'
             try{$r=Call @{action='LAUNCH';environment_id=$treeApp.environment_id;application_id=$treeApp.id;expected_revision=$treeApp.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'STOPPED_ENGINE_ACCEPTED_TARGET'}finally{Coordinate 'service-on'}
             @{service_actually_stopped=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
+        }
+        Case 'T01' 'unloaded_original_driver_refuses_production_launch' {
+            Coordinate 'driver-off'
+            try{$r=Call @{action='LAUNCH';environment_id=$treeApp.environment_id;application_id=$treeApp.id;expected_revision=$treeApp.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'UNLOADED_DRIVER_ACCEPTED_TARGET'}finally{Coordinate 'driver-on'}
+            @{driver_actually_unloaded=$true;original_authenticated_kmdutil=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
         }
         Case 'T02' 'changed_original_component_refuses_launch' {
             Coordinate 'start-impostor'

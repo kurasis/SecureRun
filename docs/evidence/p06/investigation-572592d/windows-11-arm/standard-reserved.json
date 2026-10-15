@@ -1,0 +1,15 @@
+{
+  "status": "FAILED",
+  "standard_user": true,
+  "cases": [
+    {
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "status": "FAILED",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "id": "T01",
+      "line": 5,
+      "name": "required_prerequisites"
+    }
+  ],
+  "mode": "reserved"
+}

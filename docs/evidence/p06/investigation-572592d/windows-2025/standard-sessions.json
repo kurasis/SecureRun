@@ -1,0 +1,15 @@
+{
+  "standard_user": true,
+  "mode": "sessions",
+  "status": "FAILED",
+  "cases": [
+    {
+      "id": "T36",
+      "name": "production_stop_covers_two_actual_windows_sessions",
+      "line": 5,
+      "status": "FAILED",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "code": "PATH_GRAMMAR_UNSUPPORTED"
+    }
+  ]
+}

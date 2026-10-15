@@ -37,6 +37,9 @@ try {
     npm run tauri -- build --debug --no-bundle --target $target --features policy-ci
     if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
     $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault
+    $allCases=[Collections.Generic.List[object]]::new()
+    $missing=[Diagnostics.ProcessStartInfo]::new($app);$missing.UseShellExecute=$false;$missing.RedirectStandardInput=$true;$missing.RedirectStandardOutput=$true;$missing.RedirectStandardError=$true;$missing.ArgumentList.Add('--control-once');$missing.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$missingProcess=[Diagnostics.Process]::Start($missing)
+    try{$read=$missingProcess.StandardOutput.ReadToEndAsync();$errors=$missingProcess.StandardError.ReadToEndAsync();$missingProcess.StandardInput.Write((ConvertTo-Json -InputObject @{action='LAUNCH';environment_id=[Guid]::NewGuid().ToString();application_id=[Guid]::NewGuid().ToString();expected_revision=1;operation_id=[Guid]::NewGuid().ToString()} -Compress));$missingProcess.StandardInput.Close();if(-not $missingProcess.WaitForExit(45000)){throw 'MISSING_ENGINE_CONTROL_TIMEOUT'};$r=$read.Result|ConvertFrom-Json;if($r.reason -ne 'MANAGER_CONTEXT_UNSAFE' -or $r.environments.Count -ne 0 -or $r.receipts.Count -ne 0){throw 'MISSING_ENGINE_LAUNCH_ACCEPTED'};$allCases.Add(@{id='T01';name='missing_engine_production_launch_is_refused';status='PASSED';evidence=@{production_route=$true;no_dispatch_reservation=$true;host_fallback=$false;engine_installed=$false}})}finally{if(-not $missingProcess.HasExited){$missingProcess.Kill($true)};$missingProcess.Dispose()}
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
     & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
     Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-session-probe.exe') $code
@@ -51,7 +54,7 @@ try {
     $null=New-SmbShare -Name $shareName -Path $shareRoot -ReadAccess $users -FullAccess $admins
     if(Test-Path 'Q:/'){throw 'PREEXISTING_DRIVE_NOT_CHANGED'};$null=New-PSDrive -Name Q -PSProvider FileSystem -Root ('\\127.0.0.1\'+$shareName) -Persist -Scope Global
     foreach($file in @('p06_standard.ps1','p05_lab.cs','engine_bridge.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") $code}
-    $allCases=[Collections.Generic.List[object]]::new();$failedModes=0
+    $failedModes=0
     foreach($mode in @('normal','reserved','accepted','scope','sessions')) {
     $name=if($mode -eq 'sessions'){'SRP02S_'+$run.Substring(0,10)}else{'SRP06_'+$mode.Substring(0,3)+'_'+$run.Substring(0,7)};$password=ConvertTo-SecureString ('P06aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
     $user=New-LocalUser -Name $name -Password $password -AccountNeverExpires
@@ -79,6 +82,16 @@ try {
                 switch -Exact ($action){
                     'service-off' {Stop-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Stopped',[TimeSpan]::FromSeconds(20))}
                     'service-on' {Start-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+                    'driver-off' {
+                        Stop-Service SbieSvc
+                        $utilityPath=Join-Path $engine 'KmdUtil.exe';if((Get-AuthenticodeSignature $utilityPath).Status -ne 'Valid'){throw 'ORIGINAL_DRIVER_UTILITY_UNTRUSTED'}
+                        $utilityStart=[Diagnostics.ProcessStartInfo]::new($utilityPath);$utilityStart.UseShellExecute=$false;$utilityStart.WorkingDirectory=$engine;$utilityStart.ArgumentList.Add('stop');$utilityStart.ArgumentList.Add('SbieDrv');$utilityStart.Environment.Clear()
+                        foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$utilityStart.Environment[$key]=$value}};$utilityStart.Environment['PATH']=Join-Path $env:SystemRoot 'System32'
+                        $utilityProcess=[Diagnostics.Process]::Start($utilityStart);try{if(-not $utilityProcess.WaitForExit(30000) -or $utilityProcess.ExitCode -ne 0){throw 'ORIGINAL_DRIVER_UNLOAD_FAILED'}}finally{if(-not $utilityProcess.HasExited){$utilityProcess.Kill()};$utilityProcess.Dispose()}
+                        if((Get-Service SbieDrv).Status -ne 'Stopped'){throw 'DRIVER_STILL_RUNNING'}
+                    }
+                    'driver-on' {Start-Service SbieDrv;Start-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+
                     'start-impostor' {Copy-Item (Join-Path $code 'securerun-launch-probe.exe') $startPath -Force}
                     'start-restore' {Copy-Item $savedStart $startPath -Force;if((Get-FileHash $startPath).Hash -ne $savedHash){throw 'ORIGINAL_COMPONENT_RESTORE_FAILED'}}
                     default {throw 'UNKNOWN_LAB_COORDINATION'}
@@ -87,7 +100,7 @@ try {
             }}
             Start-Sleep -Milliseconds 100
         }
-        if(-not $p.HasExited){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'control-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'control-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$password.Dispose();if($mode -eq 'sessions'){Unregister-ScheduledTask -TaskName $sessionTask -Confirm:$false -ErrorAction SilentlyContinue};if(Test-Path $savedStart){Copy-Item $savedStart $startPath -Force};Start-Service SbieSvc}
+        if(-not $p.HasExited){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'control-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'control-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$password.Dispose();if($mode -eq 'sessions'){Unregister-ScheduledTask -TaskName $sessionTask -Confirm:$false -ErrorAction SilentlyContinue};if(Test-Path $savedStart){Copy-Item $savedStart $startPath -Force};if((Get-Service SbieDrv).Status -ne 'Running'){Start-Service SbieDrv};Start-Service SbieSvc}
     }
     ConvertTo-Json -InputObject @($allCases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'control-cases.json') -Encoding utf8
     $cases=@(Get-Content (Join-Path $out 'control-cases.json') -Raw|ConvertFrom-Json)

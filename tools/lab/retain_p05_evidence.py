@@ -115,7 +115,7 @@ def retain(download, commit, run_id):
                 'url': f'https://github.com/kurasis/SecureRun/actions/runs/{run_id}',
                 'targets': targets, 'files': list(known.values()), 'tested_sources': sources,
                 'production_acceptance_scenarios_passed': 0,
-                'note': 'P05 production policy/provisioning paths and fixed synthetic diagnostics only; user-target launch remains unavailable until P06.'}
+                'note': 'P05 production policy/provisioning paths and fixed synthetic diagnostics only; this regression executes no P06 user-target launch.'}
     (evidence / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print('Complete P05 proof retained for both Windows laboratories')
 

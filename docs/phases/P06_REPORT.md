@@ -24,3 +24,9 @@ launch: its mandatory synthetic SMB positive control was missing and a later
 account name exceeded Windows' 20-character limit. Both setup defects were fixed;
 reviewed minimized reports remain under `docs/evidence/p06/investigation-3822c22`.
 No test exclusion or product security relaxation was used to bypass these failures.
+
+The next investigation (572592d, run 38697466505) proved actual custom-CWD boxed
+launch on both targets. Most other cases were refused because the PowerShell
+client serialized its absent optional CWD as an empty string; the unmanaged
+fixture also enabled its root before creating it. Those client/setup defects
+were corrected, preserving minimized raw failures as historical evidence.

@@ -10,6 +10,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 IDS = {f'T{i:02}' for i in (*range(1, 8), 19, 26, 36, 50, 54, 56, 61, 62)}
 REQUIRED = {
+    'missing_engine_production_launch_is_refused',
+    'unloaded_original_driver_refuses_production_launch',
     'production_child_and_grandchild_membership',
     'background_child_keeps_environment_running',
     'stop_survives_launch_policy_ineligibility_without_entitlement',

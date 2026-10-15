@@ -1,0 +1,150 @@
+[
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "exact_arguments_securerun-launch-probe-x86",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T04"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "exact_arguments_securerun-launch-probe",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T04"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "production_child_and_grandchild_membership",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T05"
+  },
+  {
+    "code": "LAUNCH_NOT_BLOCKED",
+    "name": "stop_survives_launch_policy_ineligibility_without_entitlement",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T54"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "background_child_keeps_environment_running",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T06"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "duplicate_completed_launch_is_never_dispatched_twice",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T61"
+  },
+  {
+    "code": "PENDING_ROOT_PRECONDITION_FAILED",
+    "name": "stop_managed_preserves_unmanaged_box_and_host_process",
+    "exception_type": "System.InvalidOperationException",
+    "status": "FAILED",
+    "line": 124,
+    "id": "T19"
+  },
+  {
+    "code": "CONTROL_CASE_FAILED",
+    "name": "rapid_launch_stop_serializes_and_duplicate_scope_conflicts",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 132,
+    "id": "T26"
+  },
+  {
+    "code": "CONTROL_CASE_FAILED",
+    "name": "stopped_engine_service_never_dispatches_target",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 140,
+    "id": "T01"
+  },
+  {
+    "code": "CONTROL_CASE_FAILED",
+    "name": "changed_original_component_refuses_launch",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 145,
+    "id": "T02"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "name": "registered_target_replacement_is_refused",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "id": "T03"
+  },
+  {
+    "name": "invalid_exe_and_control_characters_are_refused",
+    "evidence": {
+      "controls_refused": true,
+      "invalid_exe_refused": true,
+      "shell_used": false
+    },
+    "status": "PASSED",
+    "id": "T03"
+  },
+  {
+    "name": "target_cwd_is_separate_from_host_worker_cwd",
+    "evidence": {
+      "impostor_dependencies_unused": true,
+      "hostile_target_directory_accepted_separately": true,
+      "trusted_host_worker_cwd": true
+    },
+    "status": "PASSED",
+    "id": "T50"
+  },
+  {
+    "code": "CONTROL_CASE_FAILED",
+    "name": "stale_application_revision_cannot_dispatch_after_policy_change",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 165,
+    "id": "T56"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "status": "FAILED",
+    "name": "required_prerequisites",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "line": 5,
+    "id": "T01"
+  },
+  {
+    "id": "T01",
+    "status": "FAILED",
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "line": 5,
+    "name": "required_prerequisites",
+    "exception_type": "System.Management.Automation.RuntimeException"
+  },
+  {
+    "code": "PATH_GRAMMAR_UNSUPPORTED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "required_prerequisites",
+    "line": 5,
+    "status": "FAILED",
+    "id": "T01"
+  },
+  {
+    "id": "T36",
+    "name": "production_stop_covers_two_actual_windows_sessions",
+    "line": 5,
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "PATH_GRAMMAR_UNSUPPORTED"
+  }
+]

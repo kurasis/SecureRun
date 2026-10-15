@@ -101,7 +101,7 @@ def retain(download, commit, run_id):
                 'url': f'https://github.com/kurasis/SecureRun/actions/runs/{run_id}',
                 'targets': targets, 'files': list(known.values()), 'tested_sources': sources,
                 'production_acceptance_scenarios_passed': 0,
-                'note': 'Production read-only observation paths only; P02 produces synthetic fixtures, no product launch or mutation.'}
+                'note': 'Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.'}
     (evidence / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print('P04 production evidence retained for both Windows targets')
 

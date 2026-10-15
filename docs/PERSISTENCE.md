@@ -63,3 +63,19 @@ The Windows test creates an actual operation-owned file, records its NTFS identi
 replaces the path with a different object, checks refusal and confirms the
 replacement canary still exists. A generation change also rejects the old record.
 No real host files, generic staging-prefix sweep or sandbox-root cleanup are used.
+
+## P07 transfer and file-reference journal
+
+The private per-user `transfers.sqlite` journal has version 1, WAL/FULL writes,
+foreign/future-schema rejection and an integrity check. File nodes contain
+current environment/root/engine/revision generation, canonical physical object
+identity and optional constrained logical workspace mapping. Their IDs bind
+all fields. Persisted paths remain observations, not privileged authority.
+
+Transfer records retain permanent request signatures, source/parent/staging/
+payload identities, bounded normalized MOTW, logical size, digest, stage and
+allowlisted reason. Payload, arguments and environment variables are not logged.
+Recovery inspects actual current identities and exact provenance; it never
+replays a copy or publishes a partial file. Explicit Discard can remove only
+identity-verified staging in the current generation. See
+[safe file workflows](SAFE_FILE_WORKFLOWS.md) for crash windows and limits.

@@ -3,12 +3,13 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01–P05 have retained native phase evidence. P06 adds registered host-EXE
+P01–P06 have retained historical native phase evidence. P06 supplies registered host-EXE
 launch, durable receipts, current process views and scoped Stop. Its current
 validation status and exact source provenance are in [STATUS](docs/STATUS.md).
 See [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md) and
 [policy/provisioning](docs/POLICY_PROVISIONING.md) for action prerequisites.
-Final release acceptance, safe file workflows, cleanup and packaging remain
+P07 implements [safe file workflows](docs/SAFE_FILE_WORKFLOWS.md); its native
+verification is in progress. Final acceptance, cleanup and packaging remain
 later phases.
 
 The complete, unchanged specification is in

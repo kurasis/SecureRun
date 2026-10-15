@@ -34,27 +34,58 @@ pub fn display(value: &str) -> String {
     value.chars().flat_map(|c| if c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'|'\u{200e}'|'\u{200f}'|'\u{061c}') { format!("\\u{{{:04x}}}",c as u32).chars().collect::<Vec<_>>() } else {vec![c]}).collect()
 }
 pub fn marker(input: &[u8]) -> Vec<u8> {
-    // Preserve only a valid, bounded zone; never propagate URLs or arbitrary ADS.
-    let zone = std::str::from_utf8(input)
-        .ok()
-        .filter(|s| s.len() <= 4096 && !s.contains('\0'))
-        .and_then(|s| {
-            let lines = s.lines().collect::<Vec<_>>();
-            if lines.first().copied() != Some("[ZoneTransfer]") {
-                return None;
+    // INI section/key names are case insensitive. Decode the usual BOM forms,
+    // retain the most restrictive valid zone across repeated keys/sections,
+    // and discard every source URL and unknown field.
+    let decoded = if input.len() > 4096 {
+        None
+    } else if input.starts_with(&[0xff, 0xfe]) || input.starts_with(&[0xfe, 0xff]) {
+        let little = input[0] == 0xff;
+        if !input.len().is_multiple_of(2) {
+            None
+        } else {
+            String::from_utf16(
+                &input[2..]
+                    .chunks_exact(2)
+                    .map(|p| {
+                        if little {
+                            u16::from_le_bytes([p[0], p[1]])
+                        } else {
+                            u16::from_be_bytes([p[0], p[1]])
+                        }
+                    })
+                    .collect::<Vec<_>>(),
+            )
+            .ok()
+        }
+    } else {
+        std::str::from_utf8(input)
+            .ok()
+            .map(|s| s.trim_start_matches('\u{feff}').to_owned())
+    };
+    let mut zone = 3u8;
+    let mut in_zone = false;
+    if let Some(text) = decoded.filter(|s| !s.contains('\0')) {
+        for line in text.lines().map(str::trim) {
+            if line.starts_with('[') {
+                in_zone = line.eq_ignore_ascii_case("[ZoneTransfer]");
+                continue;
             }
-            let values = lines
-                .iter()
-                .filter_map(|l| l.strip_prefix("ZoneId="))
-                .collect::<Vec<_>>();
-            if values.len() == 1 && ["0", "1", "2", "3", "4"].contains(&values[0]) {
-                values[0].parse::<u8>().ok()
-            } else {
-                None
+            if !in_zone {
+                continue;
             }
-        })
-        .unwrap_or(3)
-        .max(3);
+            if let Some((key, value)) = line.split_once('=')
+                && key.trim().eq_ignore_ascii_case("ZoneId")
+            {
+                let value = value.trim().trim_matches(['\"', '\'']);
+                if let Ok(value) = value.parse::<u8>()
+                    && value <= 4
+                {
+                    zone = zone.max(value);
+                }
+            }
+        }
+    }
     format!("[ZoneTransfer]\r\nZoneId={zone}\r\n").into_bytes()
 }
 pub fn copy_stream<R: Read, W: Write>(
@@ -224,7 +255,37 @@ pub struct Journal {
 impl Journal {
     pub fn open(path: &Path) -> PolicyResult<Self> {
         let db = Connection::open(path).map_err(db_error)?;
-        db.execute_batch("PRAGMA trusted_schema=OFF; PRAGMA synchronous=FULL; PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS transfers(id TEXT PRIMARY KEY,document TEXT NOT NULL); CREATE TABLE IF NOT EXISTS nodes(id TEXT PRIMARY KEY,document TEXT NOT NULL);").map_err(db_error)?;
+        db.busy_timeout(std::time::Duration::from_secs(2))
+            .map_err(db_error)?;
+        db.execute_batch("PRAGMA trusted_schema=OFF; PRAGMA synchronous=FULL;")
+            .map_err(db_error)?;
+        let version: u32 = db
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .map_err(db_error)?;
+        if version > 1 {
+            return Err("TRANSFER_SCHEMA_UNSUPPORTED");
+        }
+        if version == 0 {
+            let count: u32 = db
+                .query_row(
+                    "SELECT count(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'",
+                    [],
+                    |r| r.get(0),
+                )
+                .map_err(db_error)?;
+            if count != 0 {
+                return Err("TRANSFER_FOREIGN_DATABASE");
+            }
+            db.execute_batch("BEGIN IMMEDIATE; CREATE TABLE transfers(id TEXT PRIMARY KEY,document TEXT NOT NULL); CREATE TABLE nodes(id TEXT PRIMARY KEY,document TEXT NOT NULL); PRAGMA user_version=1; COMMIT;").map_err(db_error)?;
+        }
+        let check: String = db
+            .query_row("PRAGMA quick_check(1)", [], |r| r.get(0))
+            .map_err(db_error)?;
+        if check != "ok" {
+            return Err("TRANSFER_JOURNAL_CORRUPT");
+        }
+        db.execute_batch("PRAGMA journal_mode=WAL;")
+            .map_err(db_error)?;
         Ok(Self { db })
     }
     pub fn save(&self, r: &Record) -> PolicyResult<()> {
@@ -242,7 +303,13 @@ impl Journal {
             .optional()
             .map_err(db_error)?;
         value
-            .map(|s| serde_json::from_str(&s).map_err(|_| "TRANSFER_RECORD_INVALID"))
+            .map(|s| {
+                let r: Record = serde_json::from_str(&s).map_err(|_| "TRANSFER_RECORD_INVALID")?;
+                if r.operation_id != id {
+                    return Err("TRANSFER_RECORD_INVALID");
+                }
+                Ok(r)
+            })
             .transpose()
     }
     pub fn views(&self, environment: Uuid) -> PolicyResult<Vec<TransferView>> {
@@ -294,7 +361,10 @@ impl Journal {
             )
             .map_err(|_| "FILE_REFERENCE_NOT_FOUND")?;
         let n: Node = serde_json::from_str(&text).map_err(|_| "FILE_REFERENCE_INVALID")?;
-        if n.environment_id != environment || n.generation != generation {
+        if n.environment_id != environment
+            || n.generation != generation
+            || Uuid::from_bytes(sha256_id(&n)) != id
+        {
             return Err("FILE_REFERENCE_GENERATION_CHANGED");
         }
         Ok(n)
@@ -303,6 +373,46 @@ impl Journal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn journal_nodes_are_generation_bound_and_foreign_schema_is_refused() {
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("transfers.sqlite");
+        let environment = Uuid::new_v4();
+        let n = Node {
+            environment_id: environment,
+            generation: "A".into(),
+            path: "synthetic".into(),
+            identity: "volume:file".into(),
+            directory: false,
+            logical: None,
+        };
+        let id = {
+            let journal = Journal::open(&path).unwrap();
+            journal.node(&n).unwrap()
+        };
+        let journal = Journal::open(&path).unwrap();
+        assert_eq!(
+            journal.resolve(id, environment, "A").unwrap().identity,
+            "volume:file"
+        );
+        assert_eq!(
+            journal.resolve(id, environment, "B").unwrap_err(),
+            "FILE_REFERENCE_GENERATION_CHANGED"
+        );
+        assert_eq!(
+            journal.resolve(id, Uuid::new_v4(), "A").unwrap_err(),
+            "FILE_REFERENCE_GENERATION_CHANGED"
+        );
+        let foreign = temp.path().join("foreign.sqlite");
+        Connection::open(&foreign)
+            .unwrap()
+            .execute_batch("CREATE TABLE unknown(id)")
+            .unwrap();
+        assert!(matches!(
+            Journal::open(&foreign),
+            Err("TRANSFER_FOREIGN_DATABASE")
+        ));
+    }
     #[test]
     fn adversarial_leaf_names_and_visible_suffix() {
         for n in [
@@ -349,6 +459,18 @@ mod tests {
     }
     #[test]
     fn provenance_is_bounded_and_never_copies_urls() {
+        let lower = b"[zonetransfer]\nzoneid = 4\nZoneId=0";
+        assert_eq!(marker(lower), b"[ZoneTransfer]\r\nZoneId=4\r\n");
+        let utf16 = [
+            vec![0xff, 0xfe],
+            "[ZoneTransfer]\r\nZoneId=4"
+                .encode_utf16()
+                .flat_map(u16::to_le_bytes)
+                .collect(),
+        ]
+        .concat();
+        assert_eq!(marker(&utf16), b"[ZoneTransfer]\r\nZoneId=4\r\n");
+
         assert_eq!(
             marker(b"[ZoneTransfer]\nZoneId=4\nHostUrl=secret"),
             b"[ZoneTransfer]\r\nZoneId=4\r\n"

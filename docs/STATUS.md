@@ -13,8 +13,9 @@ Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P07.
 | P07 | IN_PROGRESS | Safe file workflows; native implementation and verification in progress |
 | P08–P12 | NOT_STARTED | Depend on P07 |
 
-Final checked runtime: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
-All current phase gates must bind that same source and runtime-file hashes.
+Last completed P06 baseline runtime: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
+P07 changes invalidate current source bindings; matching regressions are pending.
+A completed P07 gate must bind all phases to the same source and runtime-file hashes.
 Historical raw evidence is immutable and remains separately retained.
 
 ## Current verification
@@ -48,3 +49,7 @@ Import/boxed-EXE mapping belongs to P07; lifecycle/recovery belongs to P08.
 The owner authorizes publication of every project change, including Markdown and
 reviewed JSON evidence, followed by normal merge after validation. Credentials,
 private inventories and generated binaries remain excluded.
+
+P07 is in progress. [Safe file workflows](SAFE_FILE_WORKFLOWS.md) and
+[the P07 report](phases/P07_REPORT.md) document the current implementation and
+native investigations. No P07 DONE claim is made before its exit gate passes.

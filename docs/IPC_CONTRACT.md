@@ -120,3 +120,18 @@ increasing control request sequence. A response from an old engine generation
 or superseded request is rejected before returning to the renderer; its durable
 operation receipt remains available for reconciliation. The UI additionally
 ignores older local request tickets and expires runtime views after 15 seconds.
+
+## P07 file commands
+
+`files_request` is separately ACL-scoped to the trusted main WebView, with
+exact native label/origin authorization. Import/Export renderer schemas accept
+one-use source/destination selection IDs; List/Register/Export use opaque
+backend file IDs. Native paths exist only in the internal worker request, never
+as a renderer override. Cancel, Recover and Discard are explicit operation-ID
+actions. Current environment/revision and worker root/engine generation are
+revalidated before mutation; a stale result cannot replace current UI state.
+
+The native file worker uses bounded JSON (16 KiB request, 2 MiB reply), a 128 MiB
+OS job memory ceiling and a one-hour cancellable transfer bound. It cannot launch
+content. Boxed registration creates a typed reference consumed by the existing
+launch-reservation path. See [safe file workflows](SAFE_FILE_WORKFLOWS.md).

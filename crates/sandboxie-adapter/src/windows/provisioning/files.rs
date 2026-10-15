@@ -2,6 +2,29 @@
 use super::*;
 use crate::files::{self as contract, Entry, Node, Record};
 
+fn transfer_canonical(path: &Path) -> R<Vec<File>> {
+    super::canonical_sharing(path, FILE_SHARE_READ | FILE_SHARE_WRITE)
+}
+fn rename_directory(path: &Path) -> R<File> {
+    let file = OpenOptions::new()
+        .access_mode(FILE_TRAVERSE | FILE_READ_ATTRIBUTES | READ_CONTROL)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(path)
+        .map_err(|_| "DESTINATION_HANDLE_UNAVAILABLE")?;
+    identity(&file)?;
+    Ok(file)
+}
+#[link(name = "ntdll")]
+unsafe extern "system" {
+    fn NtSetInformationFile(
+        file: HANDLE,
+        status: *mut IoStatus,
+        information: *const c_void,
+        length: u32,
+        class: u32,
+    ) -> i32;
+}
 fn generation(e: &OwnedEnvironment) -> String {
     fingerprint(&(
         &e.id,
@@ -31,7 +54,7 @@ fn contained(engine: &NativeEngine, e: &OwnedEnvironment, path: &Path) -> R<Vec<
     if !s.eq_ignore_ascii_case(&root) && !s.to_lowercase().starts_with(&prefix.to_lowercase()) {
         return Err("SOURCE_OUTSIDE_OWNED_ROOT");
     }
-    let held = canonical(path)?;
+    let held = transfer_canonical(path)?;
     let root_file = held
         .iter()
         .find(|f| identity(f).ok().as_ref() == e.root_identity.as_ref())
@@ -119,7 +142,7 @@ fn known(id: &windows_sys::core::GUID) -> R<PathBuf> {
     Ok(PathBuf::from(value?))
 }
 fn destination(engine: &NativeEngine, path: &str, all: &[OwnedEnvironment]) -> R<Vec<File>> {
-    let held = canonical(Path::new(path))?;
+    let held = transfer_canonical(Path::new(path))?;
     if !held
         .last()
         .ok_or("DESTINATION_INVALID")?
@@ -269,20 +292,25 @@ fn publish(file: &File, parent: &File, name: &str) -> R<()> {
     for (i, c) in name.encode_utf16().enumerate() {
         info.name[i] = c;
     }
-    if unsafe {
-        SetFileInformationByHandle(
+    let mut status = IoStatus {
+        status: 0,
+        information: 0,
+    };
+    let result = unsafe {
+        NtSetInformationFile(
             file.as_raw_handle(),
-            FileRenameInfo,
+            &mut status,
             &info as *const _ as _,
             (std::mem::offset_of!(Rename, name) + info.length as usize) as u32,
+            10,
         )
-    } == 0
-    {
-        return Err(match unsafe { GetLastError() } {
-            ERROR_ALREADY_EXISTS | ERROR_FILE_EXISTS => "DESTINATION_COLLISION_RENAME_OR_SKIP",
-            ERROR_ACCESS_DENIED => "PUBLISH_ACCESS_DENIED",
-            ERROR_INVALID_PARAMETER => "PUBLISH_HANDLE_PROTOCOL_INVALID",
-            ERROR_SHARING_VIOLATION => "PUBLISH_SHARING_CONFLICT",
+    };
+    if result != 0 {
+        return Err(match result as u32 {
+            0xc0000035 => "DESTINATION_COLLISION_RENAME_OR_SKIP",
+            0xc0000022 => "PUBLISH_ACCESS_DENIED",
+            0xc000000d => "PUBLISH_HANDLE_PROTOCOL_INVALID",
+            0xc0000043 => "PUBLISH_SHARING_CONFLICT",
             _ => "PUBLISH_NO_REPLACE_FAILED",
         });
     }
@@ -350,7 +378,7 @@ fn transfer(
     let _source_parents = if direction == "EXPORT" {
         contained(engine, e, source)?
     } else {
-        let held = canonical(source)?;
+        let held = transfer_canonical(source)?;
         let source_lower = source.to_string_lossy().to_lowercase();
         if source_lower.starts_with(&engine.profile.to_string_lossy().to_lowercase()) {
             return Err("IMPORT_BOXED_SOURCE_USE_FILE_VIEW");
@@ -373,7 +401,7 @@ fn transfer(
     } else {
         contained(engine, e, parent)?
     };
-    let parent_file = lease(parent, true)?;
+    let parent_file = rename_directory(parent)?;
     let parent_identity = identity(&parent_file)?;
     let mut free = 0;
     if unsafe {
@@ -600,7 +628,7 @@ fn recover(
     {
         final_path
     } else {
-        let held = canonical(Path::new(&r.staging_directory))?;
+        let held = transfer_canonical(Path::new(&r.staging_directory))?;
         if identity(held.last().ok_or("ARTIFACT_STATE_UNKNOWN")?).ok()
             != r.staging_directory_identity
         {
@@ -608,7 +636,7 @@ fn recover(
         }
         PathBuf::from(&r.staging_directory).join("payload.part")
     };
-    let _held = canonical(&candidate)?;
+    let _held = transfer_canonical(&candidate)?;
     let mut file = lease(&candidate, false)?;
     if identity(&file).ok() != r.artifact_identity {
         return Err("ARTIFACT_IDENTITY_CHANGED");
@@ -671,7 +699,7 @@ fn discard(
         return Err("ARTIFACT_PARENT_CHANGED");
     }
     {
-        let held = canonical(&expected)?;
+        let held = transfer_canonical(&expected)?;
         if identity(held.last().ok_or("ARTIFACT_DIRECTORY_CHANGED")?).ok()
             != r.staging_directory_identity
         {
@@ -757,7 +785,7 @@ pub fn execute(
                     identity(&file)?;
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                    let _held = canonical(&p)?;
+                    let _held = transfer_canonical(&p)?;
                 }
                 Err(_) => return Err("CANCELLATION_RECORD_FAILED"),
             }
@@ -825,15 +853,14 @@ pub fn execute(
         // current generation before its permanent operation binding is checked.
         if let contract::Request::Import { operation_id, .. }
         | contract::Request::Export { operation_id, .. } = &request
+            && let Some(record) = journal.get(*operation_id)?
         {
-            if let Some(record) = journal.get(*operation_id)? {
-                reply.transfers = journal.views(e.id)?;
-                return if record.signature == fingerprint(&(&request, generation(e))) {
-                    Ok(())
-                } else {
-                    Err("TRANSFER_OPERATION_CONFLICT")
-                };
-            }
+            reply.transfers = journal.views(e.id)?;
+            return if record.signature == fingerprint(&(&request, generation(e))) {
+                Ok(())
+            } else {
+                Err("TRANSFER_OPERATION_CONFLICT")
+            };
         }
         let action = (|| match &request {
             contract::Request::List {
@@ -1022,7 +1049,7 @@ mod tests {
         let _marker = write_marker(&stage.join("payload.part"), &provenance).unwrap();
         payload.write_all(b"SYNTHETIC").unwrap();
         payload.sync_all().unwrap();
-        let parent = lease(temp.path(), true).unwrap();
+        let parent = rename_directory(temp.path()).unwrap();
         let existing = temp.path().join("existing.txt");
         std::fs::write(&existing, b"CANARY").unwrap();
         assert!(publish(&payload, &parent, "existing.txt").is_err());

@@ -180,6 +180,12 @@ fn fixed_ntfs(path: &Path) -> R<()> {
     Ok(())
 }
 fn canonical(path: &Path) -> R<Vec<File>> {
+    canonical_sharing(path, FILE_SHARE_READ)
+}
+// Transfer directory leases exclude DELETE while permitting the kernel's
+// rename-target directory open. Existing provisioning callers keep their
+// original stricter sharing mode.
+fn canonical_sharing(path: &Path, sharing: u32) -> R<Vec<File>> {
     fixed_ntfs(path)?;
     let mut paths = path.ancestors().collect::<Vec<_>>();
     paths.reverse();
@@ -188,7 +194,7 @@ fn canonical(path: &Path) -> R<Vec<File>> {
         .map(|p| {
             let f = OpenOptions::new()
                 .access_mode(FILE_READ_ATTRIBUTES | READ_CONTROL)
-                .share_mode(FILE_SHARE_READ)
+                .share_mode(sharing)
                 .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
                 .open(p)
                 .map_err(|_| "PATH_LEASE_UNAVAILABLE")?;

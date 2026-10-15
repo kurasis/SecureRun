@@ -21,7 +21,11 @@ fn checkpoint(stage: &str) {
     let _ = stage;
 }
 pub(super) fn target(engine: &NativeEngine, path: &str, boxed: bool) -> R<(String, Vec<File>)> {
-    literal_path(path)?;
+    if boxed {
+        crate::files::local_path(path)?;
+    } else {
+        literal_path(path)?;
+    }
     let lower = path.to_lowercase();
     for private in [
         engine.profile.to_string_lossy().to_lowercase(),
@@ -34,7 +38,11 @@ pub(super) fn target(engine: &NativeEngine, path: &str, boxed: bool) -> R<(Strin
     if !lower.ends_with(".exe") {
         return Err("HOST_EXE_REQUIRED");
     }
-    let mut held = canonical(Path::new(path))?;
+    let mut held = if boxed {
+        super::canonical_validated(Path::new(path), FILE_SHARE_READ | FILE_SHARE_WRITE, true)?
+    } else {
+        canonical(Path::new(path))?
+    };
     let mut file = lease(Path::new(path), false)?;
     let mut bytes = vec![];
     Read::by_ref(&mut file)
@@ -174,13 +182,21 @@ impl NativeEngine {
         if a.working_directory.is_some() && a.directory_identity.as_ref() != Some(&cwd_id) {
             return Err("TARGET_CWD_CHANGED");
         }
-        let command = if a.boxed.is_some() {
-            let mut args = vec!["/wait".to_string(), a.executable.clone()];
+        let stage = a
+            .boxed
+            .as_ref()
+            .map(|b| -> R<(String, String, Vec<File>)> {
+                let stage = super::files::launch_stage(self)?;
+                if stage.1 != b.stage_identity {
+                    return Err("BOX_STAGE_IDENTITY_CHANGED");
+                }
+                Ok(stage)
+            })
+            .transpose()?;
+        let command = if let Some(stage) = &stage {
+            let mut args = vec![a.executable.clone()];
             args.extend(a.arguments.clone());
-            wide(&contract::command(
-                &self.trusted.home.join("Start.exe").to_string_lossy(),
-                &args,
-            )?)
+            wide(&contract::command(&stage.0, &args)?)
         } else {
             wide(&contract::command(&a.executable, &a.arguments)?)
         };

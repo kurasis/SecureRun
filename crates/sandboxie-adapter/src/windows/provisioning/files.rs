@@ -3,7 +3,7 @@ use super::*;
 use crate::files::{self as contract, Entry, Node, Record};
 
 fn transfer_canonical(path: &Path) -> R<Vec<File>> {
-    super::canonical_sharing(path, FILE_SHARE_READ | FILE_SHARE_WRITE)
+    super::canonical_validated(path, FILE_SHARE_READ | FILE_SHARE_WRITE, true)
 }
 fn rename_directory(path: &Path) -> R<File> {
     let file = OpenOptions::new()
@@ -83,7 +83,9 @@ fn streams(path: &Path) -> R<Vec<u8>> {
                 return Err("SOURCE_STREAM_UNSUPPORTED");
             }
             let name = text(&data.cStreamName)?;
-            if name != "::$DATA" && name != ":Zone.Identifier:$DATA" {
+            if !name.eq_ignore_ascii_case("::$DATA")
+                && !name.eq_ignore_ascii_case(":Zone.Identifier:$DATA")
+            {
                 return Err("SOURCE_STREAM_UNSUPPORTED");
             }
             if unsafe { FindNextStreamW(handle, &mut data as *mut _ as _) } == 0 {
@@ -441,7 +443,7 @@ fn transfer(
     };
     journal.save(&r)?;
     let result = (|| {
-        let stage_dir = fresh_directory(&staging, &engine.owner)?;
+        let stage_dir = fresh_directory_validated(&staging, &engine.owner, true)?;
         r.staging_directory_identity = Some(identity(&stage_dir)?);
         journal.save(&r)?;
         let mut payload = fresh_payload(&staging)?;
@@ -464,9 +466,8 @@ fn transfer(
                 return Err("TRANSFER_CANCELLED");
             }
             if checked.elapsed() >= Duration::from_millis(250) {
-                engine.mutation_context()?;
+                let _current_scope = engine.control_scope(e)?;
                 engine.idle(&e.name())?;
-                engine.validate_root(e)?;
                 checked = Instant::now();
             }
             Ok(())
@@ -952,6 +953,7 @@ pub fn execute(
                     working_directory: None,
                     directory_identity: None,
                     boxed: Some(crate::control::BoxExecutableRef {
+                        stage_identity: launch_stage(&engine)?.1,
                         generation: generation(e),
                         physical: n.path.clone(),
                         logical: logical.clone(),
@@ -971,6 +973,18 @@ pub fn execute(
     })();
     reply.reason = result.err().unwrap_or("OBSERVED").into();
     reply
+}
+pub(super) fn launch_stage(engine: &NativeEngine) -> R<(String, String, Vec<File>)> {
+    let path = engine
+        .image
+        .parent()
+        .ok_or("MANAGER_IMAGE_UNKNOWN")?
+        .join("securerun-box-launcher.exe");
+    let held = canonical(&path)?;
+    protected(held.last().ok_or("BOX_STAGE_UNAVAILABLE")?)?;
+    let (id, mut target) = super::control::target(engine, &path.to_string_lossy(), false)?;
+    target.extend(held);
+    Ok((path.to_string_lossy().into(), id, target))
 }
 pub(super) fn validate_executable(
     engine: &NativeEngine,

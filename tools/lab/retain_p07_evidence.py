@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 IDS = {f'T{i:02}' for i in (20,21,22,23,42,43,44,45,49,63,64,65)}
 REQUIRED = {
  'production_export_correct_bytes_and_motw',
+ 'boxed_stage_refuses_unboxed_execution',
  'import_collision_duplicate_operation_and_regular_file_only',
  'unsafe_names_and_extensions',
  'hardlinks_streams_reparse_and_sensitive_destinations_rejected',
@@ -45,7 +46,7 @@ def check_target(folder,commit,machine):
      or summary['pe_machine']!=machine or summary['failed']!=0 or summary['actor_failures']!=0
      or not summary['standard_user'] or summary['elevated_helper'] or summary['fault_feature_release_enabled'] or summary['os_security_settings_modified']):
   raise ValueError('P07 native source/result invalid')
- for key in ('manager_binary_sha256','fault_binary_sha256'):
+ for key in ('manager_binary_sha256','fault_binary_sha256','boxed_stage_sha256'):
   if not re.fullmatch('[0-9a-f]{64}',summary[key]):raise ValueError('P07 binary provenance missing')
  names=[c['name'] for c in cases]
  if (len(set(names))!=len(names) or not REQUIRED.issubset(names) or not IDS.issubset({c['id'] for c in cases})
@@ -57,6 +58,7 @@ def check_target(folder,commit,machine):
  for architecture in architectures:
   proof=by_name[f'imported_boxed_exe_{architecture}']
   if (not proof['boxed'] or not proof['logical_launch'] or not proof['original_get_handle_path_verified']
+      or not proof['literal_percent_environment_name'] or not proof['no_shell_associations']
       or proof['physical_host_fallback'] or not proof['host_report_absent']):raise ValueError('P07 original engine boxed mapping/launch absent')
  for stage in ('BeforeMark','AfterMark','MidCopy','BeforeRename','AfterRename'):
   proof=by_name[f'real_crash_{stage}']

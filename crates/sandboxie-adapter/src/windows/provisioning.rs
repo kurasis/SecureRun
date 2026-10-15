@@ -146,6 +146,10 @@ pub fn profile_path() -> R<PathBuf> {
 fn fixed_ntfs(path: &Path) -> R<()> {
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     literal_path(value)?;
+    fixed_ntfs_volume(path)
+}
+fn fixed_ntfs_volume(path: &Path) -> R<()> {
+    let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     let volume = wide(&value[..3]);
     let drive = wide(&value[..2]);
     let mut mapping = [0u16; 1024];
@@ -186,7 +190,15 @@ fn canonical(path: &Path) -> R<Vec<File>> {
 // rename-target directory open. Existing provisioning callers keep their
 // original stricter sharing mode.
 fn canonical_sharing(path: &Path, sharing: u32) -> R<Vec<File>> {
-    fixed_ntfs(path)?;
+    canonical_validated(path, sharing, false)
+}
+fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<File>> {
+    if file_names {
+        crate::files::local_path(path.to_str().ok_or("FILE_PATH_GRAMMAR_UNSUPPORTED")?)?;
+        fixed_ntfs_volume(path)?;
+    } else {
+        fixed_ntfs(path)?;
+    }
     let mut paths = path.ancestors().collect::<Vec<_>>();
     paths.reverse();
     let held = paths
@@ -347,9 +359,25 @@ unsafe extern "system" {
     ) -> i32;
 }
 fn fresh_directory(path: &Path, owner: &str) -> R<File> {
-    fixed_ntfs(path)?;
+    fresh_directory_validated(path, owner, false)
+}
+fn fresh_directory_validated(path: &Path, owner: &str, file_names: bool) -> R<File> {
+    if file_names {
+        crate::files::local_path(path.to_str().ok_or("FILE_PATH_GRAMMAR_UNSUPPORTED")?)?;
+        fixed_ntfs_volume(path)?;
+    } else {
+        fixed_ntfs(path)?;
+    }
     let parent = path.parent().ok_or("ROOT_PARENT_UNSAFE")?;
-    let held = canonical(parent)?;
+    let held = canonical_validated(
+        parent,
+        if file_names {
+            FILE_SHARE_READ | FILE_SHARE_WRITE
+        } else {
+            FILE_SHARE_READ
+        },
+        file_names,
+    )?;
     let leaf = path
         .file_name()
         .and_then(|s| s.to_str())

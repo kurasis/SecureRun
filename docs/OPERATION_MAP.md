@@ -131,3 +131,18 @@ Automation consumers: [Start DeleteCommand](https://github.com/sandboxie-plus/Sa
 [AutoDelete](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/SandboxiePlus/SandMan/SandMan.cpp#L2803),
 [OnFileRecovery](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/SandboxiePlus/SandMan/SandManRecovery.cpp#L117).
 These are source review anchors only; no SandMan implementation is copied.
+
+## P07 production boxed executable stage
+
+The P02 `Start.exe` prototype remains historical feasibility only. Source review
+of pinned `apps/start/start.cpp:1925–2092` confirms `ShellExecuteEx` and environment
+expansion, unsuitable for exact production argv. P07 instead creates the
+independently written protected `securerun-box-launcher.exe` through the same
+original suspended `SbieDll_RunSandboxed` route. The backend verifies stage
+membership before resume. The boxed stage uses explicit `CreateProcessW`, with
+no inherited handles/shell/associations/expansion, and verifies its suspended
+child's box/session before resume. It refuses any unboxed invocation and any
+logical namespace not matching its actual `SR_<environment UUID>` membership.
+Only the boxed stage resolves the imported logical EXE. Hash/file identities
+and native/emulated mapping proof are retained by P07; no P02 prototype is
+relabelled production evidence. See [safe files](SAFE_FILE_WORKFLOWS.md).

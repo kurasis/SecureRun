@@ -34,9 +34,10 @@ try {
         if($LASTEXITCODE -ne 0){throw 'PROBE_BUILD_FAILED'}
         foreach($name in @('securerun-policy-probe','securerun-launch-probe')){Copy-Item ("target/"+$item.target+"/debug/$name.exe") (Join-Path $code ($name+$item.suffix+'.exe'))}
     }
+    Copy-Item ("target/"+$target+"/debug/securerun-box-launcher.exe") (Join-Path $code 'securerun-box-launcher.exe')
     npm run tauri -- build --debug --no-bundle --target $target --features policy-ci
     if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
-    $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault
+    $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault;Copy-Item (Join-Path $code 'securerun-box-launcher.exe') $fault
     $allCases=[Collections.Generic.List[object]]::new()
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
     Get-ChildItem (Join-Path $repo 'artifacts/p02') -Filter 'feasibility_probe_*.exe'|Copy-Item -Destination $code
@@ -83,6 +84,6 @@ try {
     ConvertTo-Json -InputObject @($allCases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'file-cases.json') -Encoding utf8
     $cases=@(Get-Content (Join-Path $out 'file-cases.json') -Raw|ConvertFrom-Json)
     $data=[IO.File]::ReadAllBytes($app);$pe=[BitConverter]::ToInt32($data,0x3c)
-    @{actor_failures=$failedModes;phase='P07';result=$(if($failedModes -eq 0){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$normalHash;fault_binary_sha256=(Get-FileHash (Join-Path $fault 'securerun.exe')).Hash.ToLowerInvariant();pe_machine=[BitConverter]::ToUInt16($data,$pe+4).ToString('x4');os_build=[Environment]::OSVersion.Version.Build;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=@($cases|Where-Object status -eq 'FAILED').Count;standard_user=$true;elevated_helper=$false;fault_feature_release_enabled=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
+    @{actor_failures=$failedModes;phase='P07';result=$(if($failedModes -eq 0){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$normalHash;boxed_stage_sha256=(Get-FileHash (Join-Path $code 'securerun-box-launcher.exe')).Hash.ToLowerInvariant();fault_binary_sha256=(Get-FileHash (Join-Path $fault 'securerun.exe')).Hash.ToLowerInvariant();pe_machine=[BitConverter]::ToUInt16($data,$pe+4).ToString('x4');os_build=[Environment]::OSVersion.Version.Build;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=@($cases|Where-Object status -eq 'FAILED').Count;standard_user=$true;elevated_helper=$false;fault_feature_release_enabled=$false;os_security_settings_modified=$false}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
     if($failedModes -ne 0){throw 'NATIVE_CONTROL_FAILED'}
 }finally{Pop-Location}

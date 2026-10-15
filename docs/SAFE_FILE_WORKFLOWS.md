@@ -40,6 +40,8 @@ the host. The adapter supports neither user-folder remapping, UNC/substituted
 volumes, volume-serial layout, snapshots nor images for this workspace. It
 checks the current setting, root/owner/ACL, NTFS volume and canonical held
 ancestry each time; new directories receive protected owner/SYSTEM/admin ACLs.
+Ordinary data filenames may contain literal percent/comma and Unicode; file I/O
+grammar is independent of INI grammar. Output names still reject bidi and controls.
 Production-path probes verify the actual mapping through original
 `SbieDll_GetHandlePath(HANDLE,WCHAR[4096],BOOLEAN*)` and
 `SbieDll_TranslateNtToDosPath`, rather than treating the source-derived layout
@@ -85,6 +87,8 @@ Source ACLs and arbitrary alternate streams are never exported.
    includes case/short-name aliases. Rename or Skip are the only collision actions.
 7. Commit completion only after successful publication. No output is opened.
 
+Debug builds optimize the pinned SHA-256 implementation for large transfers;
+the algorithm, copy bounds and cancellation checks are identical.
 The worker has a 128 MiB OS job memory ceiling, bounded 16 KiB input/2 MiB output
 and one-hour transfer timeout. A size above 4 GiB is handled with 64-bit counters,
 never whole-file allocation. PE registration retains the existing bounded PE
@@ -122,9 +126,14 @@ A boxed executable registration stores environment ID, current generation,
 logical path, physical volume/file identity and content hash. Its view explicitly
 identifies it as boxed. Launch re-resolves the private mapping, rejects a host
 shadow or changed identity/generation, retains physical safe handles, and runs
-the original protected `Start.exe /wait <logical EXE>` stage through
-`SbieDll_RunSandboxed`. That stage is created suspended, driver membership is
-verified before resume, and only its boxed view resolves the target. Physical
+the protected `securerun-box-launcher.exe` stage through
+`SbieDll_RunSandboxed`. Its protected file identity and hash are bound into the
+reference and held through dispatch. The stage is created suspended, driver
+membership is verified before resume, and it creates the exact logical EXE
+using `CreateProcessW` with explicit application name, separately quoted argv,
+no inherited handles and no shell, associations or environment expansion.
+It verifies the suspended child's box/session before resuming target code.
+The stage has no host manager commands or elevation route. Physical
 sandbox storage never becomes a host executable. The same policy, architecture,
 argv, dispatch-reservation and safe Stop gates as P06 remain applicable.
 

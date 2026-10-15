@@ -12,21 +12,47 @@ pub const MAX_BYTES: u64 = 1024 * 1024 * 1024 * 1024;
 pub const PAGE: usize = 128;
 
 pub fn leaf(value: &str) -> PolicyResult<()> {
-    if value.is_empty() || value.encode_utf16().count() > 180 || value.ends_with([' ', '.'])
-        || value.chars().any(|c| c.is_control() || matches!(c, '\\'|'/'|':'|'<'|'>'|'"'|'|'|'?'|'*'|'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'|'\u{200e}'|'\u{200f}'|'\u{061c}'))
+    component(value, false, 180)
+}
+fn component(value: &str, source: bool, limit: usize) -> PolicyResult<()> {
+    if value.is_empty() || value.encode_utf16().count() > limit || value.ends_with([' ', '.'])
+        || value.chars().any(|c| c.is_control() || matches!(c, '\\'|'/'|':'|'<'|'>'|'"'|'|'|'?'|'*') || (!source && matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'|'\u{200e}'|'\u{200f}'|'\u{061c}')))
         || value == "." || value == ".." { return Err("OUTPUT_LEAF_UNSAFE"); }
     let stem = value.split('.').next().unwrap().trim_end().to_uppercase();
-    if ["CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"].contains(&stem.as_str())
+    if ["CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$", "CLOCK$"].contains(&stem.as_str())
         || ["COM", "LPT"].iter().any(|p| {
             stem.strip_prefix(p).is_some_and(|s| {
                 matches!(
                     s,
-                    "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "¹" | "²" | "³"
+                    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "¹" | "²" | "³"
                 )
             })
         })
     {
         return Err("OUTPUT_LEAF_RESERVED");
+    }
+    Ok(())
+}
+/// Local DOS path grammar for inert file I/O, independent of INI grammar.
+/// Percent, comma and Unicode are literal; device/stream/traversal forms are not.
+pub fn local_path(value: &str) -> PolicyResult<()> {
+    let bytes = value.as_bytes();
+    if bytes.len() < 3
+        || !bytes[0].is_ascii_alphabetic()
+        || &bytes[1..3] != b":\\"
+        || value.encode_utf16().count() > 1000
+    {
+        return Err("FILE_PATH_GRAMMAR_UNSUPPORTED");
+    }
+    if bytes.len() == 3 {
+        return Ok(());
+    }
+    let parts = value[3..].split('\\').collect::<Vec<_>>();
+    if parts.len() > 64 {
+        return Err("FILE_PATH_DEPTH_BOUND");
+    }
+    for part in parts {
+        component(part, true, 255).map_err(|_| "FILE_PATH_GRAMMAR_UNSUPPORTED")?;
     }
     Ok(())
 }
@@ -415,6 +441,18 @@ mod tests {
     }
     #[test]
     fn adversarial_leaf_names_and_visible_suffix() {
+        assert!(local_path("C:\\Папка 10%, данные\\name.txt").is_ok());
+        assert!(local_path("C:\\evil\u{202e}exe.txt").is_ok());
+        for path in [
+            "C:\\..\\escape",
+            "C:\\NUL.txt",
+            "C:\\x:stream",
+            "\\\\server\\share",
+            "C:\\trailing.\\x",
+        ] {
+            assert!(local_path(path).is_err());
+        }
+
         for n in [
             "",
             ".",

@@ -40,6 +40,8 @@ pub struct PickerRequest {
     environment_id: Option<Uuid>,
     expected_revision: u64,
     directory: bool,
+    #[serde(default)]
+    file_transfer: bool,
 }
 #[derive(Serialize)]
 pub struct PickerReply {
@@ -89,7 +91,12 @@ pub async fn select_policy_path(
         .to_str()
         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?
         .to_owned();
-    literal_path(&path).map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    if request.file_transfer {
+        securerun_sandboxie_adapter::files::local_path(&path)
+            .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    } else {
+        literal_path(&path).map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    }
     let lease = native::capture(&selected)?;
     let selection_id = Uuid::new_v4();
     let display_name = selected

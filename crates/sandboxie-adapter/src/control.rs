@@ -11,6 +11,7 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct BoxExecutableRef {
+    pub stage_identity: String,
     pub generation: String,
     pub physical: String,
     pub logical: String,

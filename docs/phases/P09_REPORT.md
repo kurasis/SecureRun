@@ -290,3 +290,17 @@ Normal startup now emits only fixed numeric stage durations for initial engine
 observation, before WebView construction and after window construction. The lab
 retains these allowlisted numbers and the low-memory marker without raw captures.
 No budget, required startup check or measurement denominator changed.
+
+
+Full Server `38811627938` measured 238777613-byte average working set (passes
+250 MB), 1.594772336% CPU and 4567.2086 ms startup (both fail). The four-box
+Server diagnostic `38813487866` passed real external activity latency, then
+could not open the policy editor. Its external fixture had left Enabled=y; the
+fixture now restores only the managed Enabled=n dispatch fence and independently
+verifies the held process remains alive. No production conflict rule changed.
+ARM UIA now uses a real click at the navigation provider's clickable point after
+verifying the hit window belongs to the actual manager. No global foreground
+permission or Windows security setting is changed. CPU diagnostics separate the
+held manager's CPU and child remainder; live WebView attribution is explicitly
+incomplete. The original complete kernel-job CPU and elapsed interval remain
+the sole authoritative budget measurement.

@@ -137,7 +137,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  Case 'T32' 'real_process_activity_update_latency' {
   $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name;environment_count=$environmentCount};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))
-  Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_ACTIVITY_MEMBER_NOT_ALIVE';$r=Invoke-P09Stage 'ACTIVITY_END' @{environment_name=$first.display_name};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'process-update.json') -Encoding utf8;Require ($r.metrics.update_upper_bound_ms -le 2000) 'P09_PROCESS_UPDATE_BUDGET_EXCEEDED';$r.metrics
+  Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_ACTIVITY_MEMBER_NOT_ALIVE';$r=Invoke-P09Stage 'ACTIVITY_END' @{environment_name=$first.display_name};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'process-update.json') -Encoding utf8;Require ($r.metrics.update_upper_bound_ms -le 2000) 'P09_PROCESS_UPDATE_BUDGET_EXCEEDED';$lab.FenceNewFixtureDispatch(('SR_'+$first.id.Replace('-','')));Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_EXTERNAL_MEMBER_STOPPED_BY_FENCE';$r.metrics
  }
 
  Case 'T32' 'running_policy_diff_queue_requires_explicit_stopped_apply' {

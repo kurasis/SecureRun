@@ -118,6 +118,11 @@ public sealed class P05Lab {
         return "\""+value+"\"";
     }
     public static void Stop(Receipt receipt) {if(WaitForSingleObject(receipt.process,0)==258){if(!TerminateProcess(receipt.process,99)||WaitForSingleObject(receipt.process,10000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");}CloseHandle(receipt.thread);CloseHandle(receipt.process);}
+    // Restore the managed dispatch fence without stopping the held test member.
+    public void FenceNewFixtureDispatch(string box) {
+        Register(box);Set(box,"Enabled","n");
+        if(reload((uint)Process.GetCurrentProcess().SessionId,0)!=0||Read(box,"Enabled",0x70000000U)!="n")throw new InvalidOperationException("LAB_FENCE_FAILED");
+    }
     public void FenceFixture(string box) {
         // Lab-owned synthetic targets may leave original service companions.
         // This fixture has no product command and never stops a numeric PID.

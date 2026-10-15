@@ -17,6 +17,7 @@ public sealed class P09Desktop : IDisposable {
  [DllImport("kernel32.dll",SetLastError=true)] static extern bool QueryInformationJobObject(IntPtr job,int kind,IntPtr data,uint size,out uint returned);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcess(string application,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string cwd,ref Startup startup,out Info info);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern IntPtr CreateFile(string path,uint access,uint sharing,ref Security security,uint creation,uint flags,IntPtr template);
+ [DllImport("kernel32.dll")] static extern bool GetProcessTimes(IntPtr handle,out long created,out long exited,out long kernel,out long user);
  [DllImport("kernel32.dll")] static extern uint ResumeThread(IntPtr thread);
  [DllImport("kernel32.dll")] static extern bool TerminateJobObject(IntPtr job,uint code);
  [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
@@ -49,23 +50,24 @@ public sealed class P09Desktop : IDisposable {
   if(!AssignProcessToJobObject(job,process)){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_JOB_ASSIGN_FAILED");}
   if(ResumeThread(info.thread)==uint.MaxValue){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_GUI_RESUME_FAILED");}CloseHandle(info.thread);
  }
+ long ManagerCpu(){long created,exited,kernel,user;if(!GetProcessTimes(process,out created,out exited,out kernel,out user))throw new InvalidOperationException("P09_MANAGER_CPU_FAILED");return kernel+user;}
  long Cpu() {uint size=(uint)Marshal.SizeOf<Accounting>();IntPtr data=Marshal.AllocHGlobal((int)size);try{uint count;if(!QueryInformationJobObject(job,1,data,size,out count))throw new InvalidOperationException("P09_ACCOUNTING_FAILED");var value=Marshal.PtrToStructure<Accounting>(data);return value.user+value.kernel;}finally{Marshal.FreeHGlobal(data);}}
  public Dictionary<string,object> Sample() {
   IntPtr data=Marshal.AllocHGlobal(8+256*IntPtr.Size);try{uint returned;if(!QueryInformationJobObject(job,3,data,(uint)(8+256*IntPtr.Size),out returned))throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");
-   int assigned=Marshal.ReadInt32(data),count=Marshal.ReadInt32(data,4);if(assigned!=count||count>256)throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");long memory=0;int webviews=0,observed=0;
+   int assigned=Marshal.ReadInt32(data),count=Marshal.ReadInt32(data,4);if(assigned!=count||count>256)throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");long memory=0,webviewCpu=0;int webviews=0,observed=0;
    for(int i=0;i<count;i++){long pid=IntPtr.Size==8?Marshal.ReadInt64(data,8+i*IntPtr.Size):Marshal.ReadInt32(data,8+i*IntPtr.Size);try{using(var p=Process.GetProcessById((int)pid)){
-    try{if(p.HasExited)continue;long workingSet=p.WorkingSet64;bool webview=p.ProcessName.Equals("msedgewebview2",StringComparison.OrdinalIgnoreCase);memory+=workingSet;observed++;if(webview)webviews++;}
+    try{if(p.HasExited)continue;long workingSet=p.WorkingSet64;bool webview=p.ProcessName.Equals("msedgewebview2",StringComparison.OrdinalIgnoreCase);memory+=workingSet;observed++;if(webview){webviews++;webviewCpu+=p.TotalProcessorTime.Ticks;}}
     catch(InvalidOperationException){if(!p.HasExited)throw new InvalidOperationException("P09_LIVE_PROCESS_MEASUREMENT_FAILED");}
     catch(System.ComponentModel.Win32Exception){if(!p.HasExited)throw new InvalidOperationException("P09_LIVE_PROCESS_MEASUREMENT_FAILED");}
    }}catch(ArgumentException){}}
-   return new Dictionary<string,object>{{"working_set_bytes",memory},{"process_count",observed},{"webview_processes",webviews},{"job_group_complete",true}};
+   return new Dictionary<string,object>{{"live_webview_cpu_ticks",webviewCpu},{"working_set_bytes",memory},{"process_count",observed},{"webview_processes",webviews},{"job_group_complete",true}};
   }finally{Marshal.FreeHGlobal(data);}
  }
  public Dictionary<string,object> MeasureIdle() {
   if(hostFixture)throw new InvalidOperationException("P09_MEASUREMENT_SCOPE_REJECTED");
-  long begin=Cpu(),total=0,peak=0;int samples=0,webviews=0,processes=0;var clock=Stopwatch.StartNew();
+  long begin=Cpu(),managerBegin=ManagerCpu(),webviewBegin=(long)Sample()["live_webview_cpu_ticks"],total=0,peak=0;int samples=0,webviews=0,processes=0;var clock=Stopwatch.StartNew();
   while(clock.Elapsed.TotalSeconds<60){var s=Sample();long memory=(long)s["working_set_bytes"];total+=memory;peak=Math.Max(peak,memory);webviews=Math.Max(webviews,(int)s["webview_processes"]);processes=Math.Max(processes,(int)s["process_count"]);samples++;Thread.Sleep(250);}
-  long cpu=Cpu()-begin;return new Dictionary<string,object>{{"duration_ms",clock.ElapsedMilliseconds},{"cpu_percent",100.0*cpu/10000000.0/clock.Elapsed.TotalSeconds/Environment.ProcessorCount},{"cpu_denominator_logical_processors",Environment.ProcessorCount},{"average_working_set_bytes",total/samples},{"peak_working_set_bytes",peak},{"samples",samples},{"webview_processes",webviews},{"peak_process_count",processes},{"includes_exited_child_cpu",true},{"job_group_complete",true},{"target_and_engine_processes_excluded",true}};
+  long cpu=Cpu()-begin;double elapsed=clock.Elapsed.TotalSeconds;long duration=clock.ElapsedMilliseconds;long managerCpu=ManagerCpu()-managerBegin,webviewCpu=(long)Sample()["live_webview_cpu_ticks"]-webviewBegin;return new Dictionary<string,object>{{"manager_cpu_seconds",managerCpu/10000000.0},{"children_cpu_seconds",(cpu-managerCpu)/10000000.0},{"live_webview_cpu_delta_seconds",webviewCpu/10000000.0},{"webview_cpu_attribution_complete",false},{"duration_ms",duration},{"cpu_percent",100.0*cpu/10000000.0/elapsed/Environment.ProcessorCount},{"cpu_denominator_logical_processors",Environment.ProcessorCount},{"average_working_set_bytes",total/samples},{"peak_working_set_bytes",peak},{"samples",samples},{"webview_processes",webviews},{"peak_process_count",processes},{"includes_exited_child_cpu",true},{"job_group_complete",true},{"target_and_engine_processes_excluded",true}};
  }
  public void Dispose(){
   if(hostFixture){TerminateJobObject(job,99);WaitForSingleObject(process,10000);CloseHandle(process);CloseHandle(job);return;}

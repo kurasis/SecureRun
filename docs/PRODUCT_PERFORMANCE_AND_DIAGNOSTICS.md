@@ -1,6 +1,12 @@
 # P09 performance and minimized diagnostics
 
-The full workload has not passed its budgets. Run `38804430207` measured
+The full workload has not passed its budgets. Run `38811627938` at `eaab83c`
+measured 4567.2086 ms startup, 1.594772336% complete-job idle CPU and
+238777613 bytes average working set on Server. Memory passed the strict decimal
+250 MB target; CPU and startup failed. The low-memory API was observed active.
+This is improvement evidence, not a completed gate.
+
+Earlier run `38804430207` measured
 4973.6882 ms startup, 4.790866449% complete-job idle CPU and 380194586 bytes
 average working set on Server. These are failed measurements, not release proof.
 Compilation and the separate zero-environment measurement fixture cannot satisfy

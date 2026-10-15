@@ -1,0 +1,26 @@
+{
+  "fixture_only": true,
+  "schema": 1,
+  "status": "PASSED",
+  "controller_completed": false,
+  "product_dpi_gate_claimed": false,
+  "requests": [
+    {
+      "requested_percent": 100,
+      "controller_passed": true
+    },
+    {
+      "requested_percent": 150,
+      "controller_passed": true
+    },
+    {
+      "requested_percent": 200,
+      "controller_passed": true
+    },
+    {
+      "requested_percent": 100,
+      "controller_passed": true
+    }
+  ],
+  "controller_exit_code": null
+}

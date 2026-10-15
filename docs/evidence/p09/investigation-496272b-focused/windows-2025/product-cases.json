@@ -1,0 +1,81 @@
+[
+  {
+    "evidence": {
+      "synthetic_reports_unchanged": true,
+      "completed_definition_count": 0,
+      "no_recursive_data_deletion": true,
+      "retained_diagnostics": 20,
+      "all_successful_definitions_retired": true,
+      "root_data_retained": true,
+      "retention_limit": 256
+    },
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "native_window_present_ms": 1238.9199,
+      "performance_exit_gate_claimed": false,
+      "inspector_enabled": false,
+      "startup_interactive_upper_bound_ms": 9591.0011,
+      "native_startup": {
+        "webview_memory_target_low": true,
+        "completed_observer_cpu_seconds": 0.203125,
+        "native_window_created_ms": 8907,
+        "observer_cpu_attribution_complete": false,
+        "native_observation_ms": 104,
+        "completed_observer_frames": 36,
+        "native_before_webview_ms": 112,
+        "completed_observer_streams": 1
+      },
+      "environment_count": 4
+    },
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_backend": true,
+      "mock_state": false,
+      "ten_owned_environments": false,
+      "normal_production_binary": true
+    },
+    "id": "T32",
+    "name": "actual_normal_webview_environment_navigation",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "actual_product_ui": true,
+      "policy_and_generation_unchanged": true,
+      "metadata_only": true,
+      "permanent_replay_tombstone": true
+    },
+    "id": "T32",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "tab_order_actual": true,
+      "f6_navigation_actual": true,
+      "native_invoke_changed_page": true,
+      "accessible_labels_and_roles": true,
+      "native_window_dpi": 96,
+      "real_windows_uia": true
+    },
+    "id": "T32",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "status": "PASSED"
+  },
+  {
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "line": 13,
+    "status": "FAILED",
+    "id": "T32",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "P09_CASE_FAILED"
+  }
+]

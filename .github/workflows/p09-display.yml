@@ -1,5 +1,8 @@
 name: P09 Windows display scaling discovery
 on:
+  push:
+    branches: ['p09/**']
+    paths: ['.github/workflows/p09-display.yml']
   workflow_dispatch:
 permissions:
   contents: read

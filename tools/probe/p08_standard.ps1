@@ -119,8 +119,17 @@ try{
    $r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.complete -and $view.activity -eq 'RUNNING' -and $view.processes.pid -contains $receipt.process.pid) 'UI_EXIT_TERMINATED_PERSISTENT_WORKLOAD';Stop-Owned
    @{normal_desktop_window_opened_and_closed=$true;protected_normal_binary=$true;actual_boxed_process_survived=$true;complete_all_session_observation=$true;auto_cleanup=$false}
   }
+  Case 'T25' 'disposable_import_and_independent_activity_remain_visible_after_restart' {
+   $null=Act 'DISPOSABLE';$null=Act 'RESET';$null=Import 'disposable-import-only.txt'
+   $r=Call @{action='LIST'};$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.disposable_pending) 'DISPOSABLE_IMPORT_NOT_DURABLE'
+   $receipt=Launch $script:registeredHost;Require ($receipt.state -eq 'REFUSED' -and $receipt.reason -eq 'DISPOSABLE_LEFTOVER_RESUME_EXPORT_OR_DELETE') $receipt.reason
+   $null=Act 'RESUME';$box='SR_'+$e.id.Replace('-','');$lab.Register($box);$external=$null
+   try{$external=$lab.HoldProductionProbe($box);Require ($lab.HeldMemberAlive($external,$box)) 'INDEPENDENT_DISPOSABLE_TARGET_MISSING';$r=Call @{action='LIST'};$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.disposable_pending -and $view.activity -eq 'RUNNING') 'INDEPENDENT_DISPOSABLE_ACTIVITY_NOT_RECORDED'}finally{if($null -ne $external){[P05Lab]::Stop($external)};$lab.FenceFixture($box)}
+   $r=Call @{action='LIST'};$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.disposable_pending -and $view.activity -eq 'IDLE') 'INDEPENDENT_LEFTOVER_NOT_DURABLE';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'disposable-import-only.txt').Count -eq 1) 'DISPOSABLE_IMPORT_AUTO_CLEANED';$null=Act 'PERSISTENT'
+   @{import_pending_before_first_target=$true;fresh_process_reopened_state=$true;launch_waited_for_explicit_resume=$true;independent_original_client_observed=$true;leftover_durable_after_independent_exit=$true;data_preserved=$true;automatic_cleanup=$false}
+  }
   Case 'T06' 'disposable_waits_for_background_descendants_and_survives_manager_crash' {
-   $null=Act 'DISPOSABLE';$background=Register-Probe 'background' ('disposable-'+[Guid]::NewGuid().ToString('N')+'.jsonl');$receipt=Launch $background
+   $null=Act 'DISPOSABLE';if($e.disposable_pending){$null=Act 'RESUME'};$background=Register-Probe 'background' ('disposable-'+[Guid]::NewGuid().ToString('N')+'.jsonl');$receipt=Launch $background
    $clock=[Diagnostics.Stopwatch]::StartNew();do{$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;if($view.complete -and $view.processes.Count -ge 2){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
    Require ($view.complete -and $view.processes.Count -ge 2 -and $view.activity -eq 'RUNNING') 'DISPOSABLE_DESCENDANTS_NOT_OBSERVED'
    $r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $r.reason
@@ -160,8 +169,11 @@ try{
     Require ($lab.Read($box,'OnBoxDelete',0x20000000) -eq $hook) 'INHERITED_HOOK_FIXTURE_NOT_EFFECTIVE';$r=Commit $confirmedBeforeDrift $true;Require ($r.reason -ne 'OBSERVED') 'INHERITED_HOOK_ACCEPTED';Require (-not(Test-Path -LiteralPath $marker)) 'INHERITED_HOST_HOOK_EXECUTED'
    }finally{$lab.LifecycleHookTemplate($box,$false)}
    $null=Call @{action='RECOVER';operation_id=$confirmedBeforeDrift.operation_id}
+   $running=Register-Probe 'hold' 'stop-hook-held.jsonl';$receipt=Launch $running;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason;$lab.Set($box,'OnBoxTerminate',$hook)
+   try{$id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';environment_id=$e.id;operation_id=$id} 'control' $true;$stopped=$r.receipts|Where-Object operation_id -eq $id;Require (($r.reason -eq 'STOP_AUTOMATION_UNAPPROVED') -or ($stopped.state -eq 'REFUSED' -and $stopped.reason -eq 'STOP_AUTOMATION_UNAPPROVED')) 'STOP_TRIGGERED_UNAPPROVED_AUTOMATION';$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.processes.pid -contains $receipt.process.pid) 'STOP_TERMINATED_BEFORE_AUTOMATION_AUDIT';Require (-not(Test-Path -LiteralPath $marker)) 'STOP_EXECUTED_HOST_HOOK'}finally{$lab.Set($box,'OnBoxTerminate',$null)}
+   Stop-Owned
    Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'hooks-canary.txt').Count -eq 1) 'HOOK_REFUSAL_DELETED_DATA'
-   @{current_hook_rejected=$true;direct_delete_command_rejected=$true;effective_inherited_hook_rejected=$true;real_host_marker_fixture=$true;confirmed_plan_revalidated_after_hook_drift=$true;automatic_recovery_and_delete_drift_rejected=$true;unapproved_values_not_silently_removed=$true;data_retained=$true;host_hook_executed=$false}
+   @{stop_refused_unapproved_termination_hook=$true;safe_stop_after_reviewed_hook_removal=$true;current_hook_rejected=$true;direct_delete_command_rejected=$true;effective_inherited_hook_rejected=$true;real_host_marker_fixture=$true;confirmed_plan_revalidated_after_hook_drift=$true;automatic_recovery_and_delete_drift_rejected=$true;unapproved_values_not_silently_removed=$true;data_retained=$true;host_hook_executed=$false}
   }
   Case 'T34' 'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup' {
    $box='SR_'+$e.id.Replace('-','');$lab.Register($box);$backup=$root+'.p08-original';$replacement=$root+'.p08-replacement';Move-Item -LiteralPath $root -Destination $backup

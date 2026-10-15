@@ -71,3 +71,16 @@ Stop its entire box, including other relevant sessions, then choose Unarchive an
 review the native dialog's name and UUID. Current ownership, roots and policy must
 validate before managed launch becomes available. Use Files for an explicit export
 while the archive is retained; the manager performs no automatic host recovery.
+
+Disposable imports record pending state before materializing workspace data.
+Selecting Disposable for existing contents preserves them and offers the same
+explicit choice. Complete independently observed box activity also persists the
+pending flag, so it remains visible after that client exits. Resume is always
+available for an active disposable environment; it retains data without replay.
+
+Scoped Stop audits current automation immediately before termination, independently
+of cached policy eligibility, certificates and WFP readiness. Unapproved box or
+inherited hooks, automatic recovery/deletion and unknown templates block it.
+Remove unexpected automation through reviewed original-engine configuration repair,
+then Recheck and Stop; the manager does not silently remove external settings or
+execute a custom delete/termination command.

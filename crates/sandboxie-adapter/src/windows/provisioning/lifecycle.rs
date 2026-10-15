@@ -230,7 +230,10 @@ fn finish_simple(
         }
         Action::Disposable => {
             e.mode = Mode::Disposable;
-            e.disposable_pending = false
+            e.disposable_pending = std::fs::read_dir(engine.root_for(e.id))
+                .map_err(|_| "DISPOSABLE_CONTENTS_UNKNOWN")?
+                .next()
+                .is_some()
         }
         Action::Resume => {
             if e.lifecycle != State::Active {
@@ -740,10 +743,19 @@ pub fn execute(
                 }
             }
         }
-        for e in j.list()? {
+        for mut e in j.list()? {
             let observation = engine
                 .control_scope(&e)
                 .and_then(|_scope| engine.api.processes(&e.name()));
+            if e.mode == Mode::Disposable
+                && !e.disposable_pending
+                && observation
+                    .as_ref()
+                    .is_ok_and(|processes| !processes.is_empty())
+            {
+                e.disposable_pending = true;
+                j.save(&e)?;
+            }
             let (activity, complete, reason) = match observation {
                 Ok(p) => (
                     if e.lifecycle_operation.is_some() {

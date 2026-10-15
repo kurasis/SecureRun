@@ -48,7 +48,7 @@ public sealed class P05Lab {
         if(marker!="v1:"+sid+":"+box.Substring(3))throw new InvalidOperationException("LAB_OWNER_MISMATCH");boxes.Add(box);
     }
     public void Set(string box,string key,string value) {
-        if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(Enabled|AutoDelete|AutoRecover|OnBoxDelete|DeleteCommand|ClosedFilePath|ReadFilePath|OpenFilePath|FileRootPath|Template)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(Enabled|AutoDelete|AutoRecover|OnBoxDelete|OnBoxTerminate|DeleteCommand|ClosedFilePath|ReadFilePath|OpenFilePath|FileRootPath|Template)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("LAB_WRITE_REFUSED");
     }
     // P08 disposable fixtures only; current owned marker remains mandatory.
@@ -93,7 +93,7 @@ public sealed class P05Lab {
         string command=Quote(probe)+" hold-session "+Quote(fixture)+" "+box+" p05-hold "+Quote(engine);
         if(!run(box,command,engine,0,ref startup,out receipt))throw new InvalidOperationException("LAB_HOLD_REFUSED");return receipt;
     }
-    // P07-only synthetic external actor. The P02 fixture requires inherited
+    // P07/P08 synthetic external actor. The P02 fixture requires inherited
     // ProgramData; this fixed production probe establishes membership itself
     // and uses only the explicitly supplied synthetic report path.
     public Receipt HoldProductionProbe(string box) {

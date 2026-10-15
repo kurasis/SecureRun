@@ -311,7 +311,15 @@ impl NativeEngine {
             Err(code) => Err(code),
         }
     }
+    fn stop_automation(&self, e: &OwnedEnvironment) -> R<()> {
+        crate::policy::validate_automation(
+            &self.section(&e.name(), false)?,
+            &self.section(&e.name(), true)?,
+            &self.global()?,
+        )
+    }
     pub(super) fn stop_environment(&self, e: &OwnedEnvironment) -> R<()> {
+        self.stop_automation(e)?;
         let _root = self.control_scope(e)?;
         if self
             .api
@@ -377,6 +385,7 @@ impl NativeEngine {
                     }
                     return Err("STOP_CRITICAL_STATE_UNSAFE");
                 }
+                self.stop_automation(e)?;
                 let dispatched = unsafe { TerminateProcess(handle.0, 79) } != 0;
                 if unsafe { WaitForSingleObject(handle.0, 5000) } != WAIT_OBJECT_0 {
                     return Err(if dispatched {

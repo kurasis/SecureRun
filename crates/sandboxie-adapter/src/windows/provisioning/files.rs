@@ -811,7 +811,7 @@ pub fn execute(
             .open(meta.join("policy-writer.lock"))
             .map_err(|_| "NAMESPACE_OPERATION_BUSY")?;
         identity(&_lock)?;
-        let policy = Journal::open(&meta.join("policy.sqlite"), &engine.owner)?;
+        let mut policy = Journal::open(&meta.join("policy.sqlite"), &engine.owner)?;
         let all = policy.list()?;
         let path = meta.join("transfers.sqlite");
         if path.exists() {
@@ -890,6 +890,11 @@ pub fn execute(
                 ..
             } => {
                 engine.idle(&e.name())?;
+                if e.mode == crate::lifecycle::Mode::Disposable && !e.disposable_pending {
+                    let mut dirty = e.clone();
+                    dirty.disposable_pending = true;
+                    policy.save(&dirty)?;
+                }
                 let (physical, _) = workspace(&engine, e)?;
                 let _held = materialize(&engine, e, &physical)?;
                 transfer(

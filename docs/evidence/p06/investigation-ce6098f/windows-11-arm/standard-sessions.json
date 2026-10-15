@@ -1,0 +1,16 @@
+{
+  "mode": "sessions",
+  "standard_user": true,
+  "status": "FAILED",
+  "cases": [
+    {
+      "id": "T01",
+      "native_stage": "CASE",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "code": "ENDPOINT_POSITIVE_CONTROL_FAILED",
+      "name": "required_prerequisites",
+      "status": "FAILED",
+      "line": 5
+    }
+  ]
+}

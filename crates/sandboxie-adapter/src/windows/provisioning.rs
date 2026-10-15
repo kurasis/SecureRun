@@ -1474,11 +1474,22 @@ fn exercise_network(canary: &Canary) -> ChildNetwork {
             };
             if let Ok(socket) = std::net::UdpSocket::bind(bind) {
                 let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
-                let mut reply = [0u8; 1];
-                sockets[i] = socket.connect(address).is_ok()
-                    && socket.send(b"P").is_ok()
-                    && socket.recv(&mut reply).is_ok_and(|n| n == 1)
-                    && reply == *b"R";
+                if socket.connect(address).is_ok() {
+                    let deadline = Instant::now() + Duration::from_secs(4);
+                    loop {
+                        let mut reply = [0u8; 1];
+                        sockets[i] = socket.send(b"P").is_ok()
+                            && socket.recv(&mut reply).is_ok_and(|n| n == 1)
+                            && reply == *b"R";
+                        // Availability may repeat this fixed benign online probe.
+                        // Offline sends once; independent server observations still
+                        // reject any target traffic, including a lost reply.
+                        if sockets[i] || canary.offline || Instant::now() >= deadline {
+                            break;
+                        }
+                        std::thread::sleep(Duration::from_millis(50));
+                    }
+                }
             }
         }
     }
@@ -1667,6 +1678,7 @@ struct Endpoints {
     lan_address: [u8; 4],
     ports: [u16; 6],
     counts: std::sync::Arc<[std::sync::atomic::AtomicUsize; 6]>,
+    control_counts: [usize; 6],
     stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
     threads: Vec<std::thread::JoinHandle<()>>,
 }
@@ -1708,11 +1720,9 @@ impl Endpoints {
                         if let Ok((mut socket, _)) = listener.accept() {
                             let _ = socket.set_read_timeout(Some(Duration::from_secs(3)));
                             let mut b = [0u8; 1];
-                            if socket.read_exact(&mut b).is_ok()
-                                && b == *b"P"
-                                && socket.write_all(b"R").is_ok()
-                            {
+                            if socket.read_exact(&mut b).is_ok() && b == *b"P" {
                                 counter[i].fetch_add(1, Ordering::SeqCst);
+                                let _ = socket.write_all(b"R");
                             }
                         }
                         std::thread::sleep(Duration::from_millis(10));
@@ -1734,18 +1744,19 @@ impl Endpoints {
                         let mut b = [0u8; 1];
                         if let Ok((1, peer)) = socket.recv_from(&mut b)
                             && b == *b"P"
-                            && socket.send_to(b"R", peer).is_ok_and(|n| n == 1)
                         {
                             counter[i].fetch_add(1, Ordering::SeqCst);
+                            let _ = socket.send_to(b"R", peer);
                         }
                     }
                 }));
             }
         }
-        let endpoints = Self {
+        let mut endpoints = Self {
             lan_address,
             ports,
             counts,
+            control_counts: [0; 6],
             stop,
             threads,
         };
@@ -1760,48 +1771,57 @@ impl Endpoints {
                 format!("[::1]:{port}")
             };
             let mut stage = "ADDRESS";
-            let result = (|| -> std::io::Result<()> {
-                let mut answer = [0u8; 1];
-                if i < 2 || i == 4 {
-                    let address: std::net::SocketAddr = address
-                        .parse()
-                        .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidInput))?;
-                    stage = "TCP_CONNECT";
-                    let mut socket =
-                        std::net::TcpStream::connect_timeout(&address, Duration::from_secs(3))?;
-                    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
-                    socket.set_write_timeout(Some(Duration::from_secs(3)))?;
-                    stage = "TCP_WRITE";
-                    socket.write_all(b"P")?;
-                    stage = "TCP_READ";
-                    socket.read_exact(&mut answer)?;
-                } else {
-                    stage = "UDP_BIND";
-                    let socket = std::net::UdpSocket::bind(if i >= 4 {
-                        format!("{lan}:0")
-                    } else if i % 2 == 0 {
-                        "127.0.0.1:0".into()
+            let deadline = Instant::now() + Duration::from_secs(4);
+            let mut attempts = 0;
+            let result = loop {
+                attempts += 1;
+                let result = (|| -> std::io::Result<()> {
+                    let mut answer = [0u8; 1];
+                    if i < 2 || i == 4 {
+                        let address: std::net::SocketAddr = address
+                            .parse()
+                            .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidInput))?;
+                        stage = "TCP_CONNECT";
+                        let mut socket =
+                            std::net::TcpStream::connect_timeout(&address, Duration::from_secs(1))?;
+                        socket.set_read_timeout(Some(Duration::from_secs(1)))?;
+                        socket.set_write_timeout(Some(Duration::from_secs(1)))?;
+                        stage = "TCP_WRITE";
+                        socket.write_all(b"P")?;
+                        stage = "TCP_READ";
+                        socket.read_exact(&mut answer)?;
                     } else {
-                        "[::1]:0".into()
-                    })?;
-                    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
-                    stage = "UDP_SEND";
-                    socket.send_to(b"P", &address)?;
-                    stage = "UDP_READ";
-                    if socket.recv_from(&mut answer)?.0 != 1 {
+                        stage = "UDP_BIND";
+                        let socket = std::net::UdpSocket::bind(if i >= 4 {
+                            format!("{lan}:0")
+                        } else if i % 2 == 0 {
+                            "127.0.0.1:0".into()
+                        } else {
+                            "[::1]:0".into()
+                        })?;
+                        socket.set_read_timeout(Some(Duration::from_millis(750)))?;
+                        stage = "UDP_SEND";
+                        socket.send_to(b"P", &address)?;
+                        stage = "UDP_READ";
+                        if socket.recv_from(&mut answer)?.0 != 1 {
+                            return Err(std::io::ErrorKind::InvalidData.into());
+                        }
+                    }
+                    stage = "ANSWER";
+                    if answer != *b"R" {
                         return Err(std::io::ErrorKind::InvalidData.into());
                     }
+                    Ok(())
+                })();
+                if result.is_ok() || Instant::now() >= deadline {
+                    break result;
                 }
-                stage = "ANSWER";
-                if answer != *b"R" {
-                    return Err(std::io::ErrorKind::InvalidData.into());
-                }
-                Ok(())
-            })();
+                std::thread::sleep(Duration::from_millis(50));
+            };
             if let Err(error) = result {
                 // Only endpoint kind, fixed phase and numeric status are retained;
                 // no IP, port, user path or OS error text enters diagnostics.
-                let report = serde_json::json!({"schema":1,"endpoint_index":i,"stage":stage,"os_error":error.raw_os_error(),"timed_out":matches!(error.kind(),std::io::ErrorKind::TimedOut|std::io::ErrorKind::WouldBlock),"positive_control":true,"target_dispatched":false});
+                let report = serde_json::json!({"schema":1,"endpoint_index":i,"stage":stage,"attempts":attempts,"os_error":error.raw_os_error(),"timed_out":matches!(error.kind(),std::io::ErrorKind::TimedOut|std::io::ErrorKind::WouldBlock),"positive_control":true,"target_dispatched":false});
                 let mut file = OpenOptions::new()
                     .write(true)
                     .create_new(true)
@@ -1817,6 +1837,12 @@ impl Endpoints {
                 return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
             }
         }
+        // Every server increments before replying. A successful final handshake
+        // therefore includes all earlier control attempts in this baseline.
+        // No canary has been dispatched yet. Any later packet counts as target
+        // activity; retries must never be mistaken for offline target traffic.
+        endpoints.control_counts =
+            std::array::from_fn(|i| endpoints.counts[i].load(Ordering::SeqCst));
         Ok(endpoints)
     }
     fn observed(mut self) -> [bool; 6] {
@@ -1826,12 +1852,37 @@ impl Endpoints {
         for thread in self.threads.drain(..) {
             let _ = thread.join();
         }
-        std::array::from_fn(|i| self.counts[i].load(Ordering::SeqCst) > 1)
+        std::array::from_fn(|i| self.counts[i].load(Ordering::SeqCst) > self.control_counts[i])
     }
 }
 impl Drop for Endpoints {
     fn drop(&mut self) {
         self.stop.store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+#[test]
+fn completed_control_attempts_never_hide_later_endpoint_traffic() {
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, AtomicUsize},
+    };
+    for controls in 1..=4 {
+        for target in [None, Some(0), Some(1), Some(2), Some(3), Some(4), Some(5)] {
+            let endpoint = Endpoints {
+                lan_address: [127, 0, 0, 1],
+                ports: [0; 6],
+                counts: Arc::new(std::array::from_fn(|i| {
+                    AtomicUsize::new(controls + usize::from(target == Some(i)))
+                })),
+                control_counts: [controls; 6],
+                stop: Arc::new(AtomicBool::new(false)),
+                threads: Vec::new(),
+            };
+            assert_eq!(
+                endpoint.observed(),
+                std::array::from_fn(|i| target == Some(i))
+            );
+        }
     }
 }
 fn locate_report(root: &Path, leaf: &str) -> R<PathBuf> {
@@ -2390,6 +2441,7 @@ impl NativeEngine {
             serde_json::from_slice(&data).map_err(|_| "DIAGNOSTIC_REPORT_INVALID")
         })();
         let fenced = self.set(&diagnostic.name(), "Enabled", &["n".into()]);
+        let endpoint_control_counts = endpoints.control_counts;
         let observed = endpoints.observed();
         fenced?;
         let report = result?;
@@ -2402,7 +2454,7 @@ impl NativeEngine {
             self.profile
                 .join("metadata")
                 .join(format!("probe-result-{nonce}.json")),
-            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"server_observed":observed,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
+            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"server_observed":observed,"endpoint_control_counts":endpoint_control_counts,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
                 .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
@@ -2490,7 +2542,7 @@ impl NativeEngine {
         {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"endpoint_control_counts":endpoint_control_counts,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")

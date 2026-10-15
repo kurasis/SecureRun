@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38793638963,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38793638963",
   "tested_commit": "ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae",
@@ -1108,5 +1108,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close."
 }

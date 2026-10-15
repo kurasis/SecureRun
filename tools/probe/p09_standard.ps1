@@ -4,7 +4,7 @@ $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Ge
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
 function Require([bool]$Ok,[string]$Code){if(-not $Ok){$script:failureCode=$Code;throw $Code}}
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 20|Set-Content (Join-Path $results 'product-cases.json') -Encoding utf8;ConvertTo-Json -InputObject @($script:uiCases.ToArray()) -Depth 10|Set-Content (Join-Path $results 'ui-cases.json') -Encoding utf8}
-function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;$message=$_.Exception.GetBaseException().Message;if($message -cmatch '^P09_[A-Z0-9_]{1,100}$'){$record.code=$message};if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}))}
+function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;$message=$_.Exception.GetBaseException().Message;if($message -cmatch '^P09_[A-Z0-9_]{1,100}$'){$record.code=$message};if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}));if($Focused -and $record.status -eq 'FAILED'){$script:failureCode=$record.code;throw 'P09_FOCUSED_CASE_FAILED'}}
 function Clean([string]$Text){foreach($canary in @('P09_ARGV_SECRET_CANARY','P09_ENV_SECRET_CANARY','FORGED_EVENT')){if($Text.Contains($canary)){$script:capturesClean=$false;return $false}};return $true}
 function Native([hashtable]$Request,[string]$Kind='policy',[switch]$AllowFailure){
  $start=[Diagnostics.ProcessStartInfo]::new($Manager);$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add(('--'+$Kind+'-once'))
@@ -76,14 +76,17 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  if(-not $Focused){
  Case 'T32' 'ten_real_idle_environments_and_populated_box' { $r=Native @{action='LIST'} 'control';Require (@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0) 'P09_IDLE_SEED_SCOPE_INCOMPLETE';@{actual_environments=$all.Count;actual_files=10000;all_idle=(@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0);synthetic_only=$true} }
+ }
  # Prewarm the UIA provider before timing the normal manager, without an inspector.
- Case 'T32' 'normal_manager_startup_and_complete_process_group_idle_budget' {
+ $startupCase=if($Focused){'normal_manager_startup_diagnostic_only'}else{'normal_manager_startup_and_complete_process_group_idle_budget'}
+ Case 'T32' $startupCase {
   $coord=Join-Path $Fixture 'startup-coordinate.json';$accessResult=Join-Path $results 'startup-accessibility.json';$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false
   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode','READY','-Coordination',$coord,'-ResultFile',$accessResult)){$ps.ArgumentList.Add($arg)}
   $watcher=[Diagnostics.Process]::Start($ps)
   try{$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path ($coord+'.ready')) -and -not $watcher.HasExited -and $clock.ElapsedMilliseconds -lt 20000){Start-Sleep -Milliseconds 100};Require (Test-Path ($coord+'.ready')) 'P09_ACCESSIBILITY_WATCHER_NOT_READY'
    $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'normal-manager.log'),0);$body=@{pid=$gui.ProcessId;ticks=$gui.StartedTicks}|ConvertTo-Json -Compress;[IO.File]::WriteAllText($coord+'.tmp',$body);[IO.File]::Move($coord+'.tmp',$coord)
    Require ($watcher.WaitForExit(60000)) 'P09_STARTUP_INTERACTIVE_TIMEOUT';$access=Get-Content -LiteralPath $accessResult -Raw|ConvertFrom-Json;Require ($watcher.ExitCode -eq 0 -and $access.status -eq 'PASSED') 'P09_STARTUP_ACCESSIBILITY_FAILED'
+   if($Focused){$diagnostic=@{startup_interactive_upper_bound_ms=$access.startup_interactive_upper_bound_ms;native_window_present_ms=$access.native_window_present_ms;environment_count=$environmentCount;inspector_enabled=$false;performance_exit_gate_claimed=$false};$diagnostic|ConvertTo-Json|Set-Content (Join-Path $results 'startup-diagnostic.json') -Encoding utf8;return $diagnostic}
    Start-Sleep -Seconds 5;$metrics=$gui.MeasureIdle();$metrics.startup_interactive_upper_bound_ms=$access.startup_interactive_upper_bound_ms;$metrics.idle_environments=10;$metrics.populated_box_files=10000;$metrics.inspector_enabled=$false;$metrics.reference='GitHub hosted owner-selected runner; normal release binary'
    $metrics.startup_target_met=($access.startup_interactive_upper_bound_ms -le 3000);$metrics.idle_cpu_target_met=($metrics.cpu_percent -lt 1);$metrics.idle_working_set_target_met=($metrics.average_working_set_bytes -lt 250*1024*1024)
    Require ($metrics.webview_processes -ge 2 -and $metrics.duration_ms -ge 60000 -and $metrics.samples -ge 200) 'P09_PROCESS_GROUP_MEASUREMENT_INCOMPLETE'
@@ -91,7 +94,6 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
    Require ($metrics.startup_target_met -and $metrics.idle_cpu_target_met -and $metrics.idle_working_set_target_met) 'P09_ENGINEERING_BUDGET_EXCEEDED'
    $metrics
   }finally{if($null -ne $gui){$gui.Dispose();$gui=$null};if(-not $watcher.HasExited){$watcher.Kill($true)};$watcher.Dispose()}
- }
  }
  # Normal product, real backend and real WebView. Inspector access exists only in this lab launch environment.
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()

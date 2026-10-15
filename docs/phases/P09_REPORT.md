@@ -139,3 +139,21 @@ from content zoom. Four-box focused diagnostics cannot be retained as DONE.
 P07 regression `38793653374` passed both targets. P06 `38793649785` passed Server
 but ARM sessions prerequisites failed with ENDPOINT_POSITIVE_CONTROL_FAILED.
 Full matching dependency evidence therefore remains blocked.
+
+ARM product run `38792629133` also completed all ten verified idle environments,
+165 retired diagnostics and 10,000 files. Its UIA startup upper bound was
+4689.8484 ms. It encountered the same sampler/CDP failures, so P09 remains blocked.
+
+Display discovery run `38796851020` passed the complete 100/150/200/100 sequence
+with native DPI 96/144/192/96 on both runners. This demonstrates the provider and
+display capacity; only actual product-window checks can establish UX coverage.
+
+P05 ARM regression `38793646388` failed online availability: the parent UDP IPv4
+loopback reply was missing while its child and independent server observations
+passed. The subsequent WFP test inherited reconciliation-required state. The
+next implementation bounds online UDP availability retries consistently with
+existing online TCP retries. Unboxed controls use a frozen pre-dispatch counter
+baseline so retries cannot masquerade as offline target traffic. Offline attempts
+and all independent containment checks remain mandatory. A native regression
+covers each endpoint after one to four completed controls. Endpoint failures are
+now retained by P05/P06 as minimized numeric/typed records.

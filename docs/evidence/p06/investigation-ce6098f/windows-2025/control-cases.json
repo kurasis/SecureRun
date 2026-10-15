@@ -1,0 +1,251 @@
+[
+  {
+    "evidence": {
+      "engine_installed": false,
+      "host_fallback": false,
+      "no_dispatch_reservation": true,
+      "production_route": true
+    },
+    "name": "missing_engine_production_launch_is_refused",
+    "status": "PASSED",
+    "id": "T01"
+  },
+  {
+    "evidence": {
+      "dispatch_reservation_created": false,
+      "bootstrap_before_provisioning": true,
+      "refusal_reason": "MANAGER_CONTEXT_UNSAFE",
+      "original_authenticated_kmdutil": true,
+      "os_security_settings_modified": false,
+      "production_launch_refused": true,
+      "host_fallback": false,
+      "driver_actually_unloaded": true
+    },
+    "id": "T01",
+    "status": "PASSED",
+    "name": "unloaded_original_driver_refuses_production_launch"
+  },
+  {
+    "evidence": {
+      "actual_pe": "securerun-launch-probe-x86",
+      "exact_target_argv": true,
+      "receipt": "RUNNING_BOXED",
+      "host_output_absent": true,
+      "boxed": true
+    },
+    "id": "T04",
+    "status": "PASSED",
+    "name": "exact_arguments_securerun-launch-probe-x86"
+  },
+  {
+    "evidence": {
+      "actual_pe": "securerun-launch-probe",
+      "exact_target_argv": true,
+      "receipt": "RUNNING_BOXED",
+      "host_output_absent": true,
+      "boxed": true
+    },
+    "id": "T04",
+    "status": "PASSED",
+    "name": "exact_arguments_securerun-launch-probe"
+  },
+  {
+    "evidence": {
+      "process_count": 5,
+      "complete": true,
+      "births_present": true,
+      "actual_boxed_tree": 3
+    },
+    "id": "T05",
+    "status": "PASSED",
+    "name": "production_child_and_grandchild_membership"
+  },
+  {
+    "evidence": {
+      "optional_paid_expiry": "NOT_APPLICABLE_BASELINE_HAS_NO_PAID_DEPENDENCY",
+      "launch_blocked": true,
+      "stop_completed": true,
+      "paid_entitlement_required": false
+    },
+    "id": "T54",
+    "status": "PASSED",
+    "name": "stop_survives_launch_policy_ineligibility_without_entitlement"
+  },
+  {
+    "evidence": {
+      "cleanup_dispatched": false,
+      "environment_running": true,
+      "primary_may_exit": true,
+      "remaining_descendants": 4
+    },
+    "id": "T06",
+    "status": "PASSED",
+    "name": "background_child_keeps_environment_running"
+  },
+  {
+    "evidence": {
+      "new_manager_process_per_delivery": true,
+      "deliveries": 5,
+      "target_executions": 1
+    },
+    "id": "T61",
+    "status": "PASSED",
+    "name": "duplicate_completed_launch_is_never_dispatched_twice"
+  },
+  {
+    "evidence": {
+      "managed_empty": true,
+      "unmanaged_box_survives": true,
+      "prefix_authority": false,
+      "unboxed_process_survives": true
+    },
+    "id": "T19",
+    "status": "PASSED",
+    "name": "stop_managed_preserves_unmanaged_box_and_host_process"
+  },
+  {
+    "evidence": {
+      "all_waits_completed": true,
+      "rapid_cycles": 3,
+      "conflicting_operation_refused": true
+    },
+    "id": "T26",
+    "status": "PASSED",
+    "name": "rapid_launch_stop_serializes_and_duplicate_scope_conflicts"
+  },
+  {
+    "evidence": {
+      "os_security_settings_modified": false,
+      "host_fallback": false,
+      "production_launch_refused": true,
+      "service_actually_stopped": true
+    },
+    "id": "T01",
+    "status": "PASSED",
+    "name": "stopped_engine_service_never_dispatches_target"
+  },
+  {
+    "evidence": {
+      "original_signature_restored": true,
+      "verification_disabled": false,
+      "component_replaced_on_disposable_vm": true,
+      "launch_refused": true
+    },
+    "id": "T02",
+    "status": "PASSED",
+    "name": "changed_original_component_refuses_launch"
+  },
+  {
+    "evidence": {
+      "target_not_dispatched": true,
+      "host_fallback": false,
+      "registered_identity_changed": true
+    },
+    "id": "T03",
+    "status": "PASSED",
+    "name": "registered_target_replacement_is_refused"
+  },
+  {
+    "evidence": {
+      "invalid_exe_refused": true,
+      "shell_used": false,
+      "controls_refused": true
+    },
+    "id": "T03",
+    "status": "PASSED",
+    "name": "invalid_exe_and_control_characters_are_refused"
+  },
+  {
+    "evidence": {
+      "hostile_target_directory_accepted_separately": true,
+      "impostor_dependencies_unused": true,
+      "hostile_path_scrubbed": true,
+      "trusted_host_worker_cwd": true,
+      "secret_environment_absent": true
+    },
+    "id": "T50",
+    "status": "PASSED",
+    "name": "target_cwd_is_separate_from_host_worker_cwd"
+  },
+  {
+    "evidence": {
+      "stale_registration_refused": true,
+      "old_response_does_not_authorize_dispatch": true,
+      "fresh_worker_prerequisites": true,
+      "new_revision_observed": true
+    },
+    "id": "T56",
+    "status": "PASSED",
+    "name": "stale_application_revision_cannot_dispatch_after_policy_change"
+  },
+  {
+    "id": "T61",
+    "status": "PASSED",
+    "name": "actual_dispatch_interruption_reserved",
+    "evidence": {
+      "receipt_state": "UNKNOWN",
+      "duplicate_deliveries": 3,
+      "checkpoint": "Reserved",
+      "target_executions": 0,
+      "real_worker_killed": true,
+      "standard_user": true,
+      "automatic_replay": false
+    }
+  },
+  {
+    "name": "actual_dispatch_interruption_accepted",
+    "evidence": {
+      "receipt_state": "UNKNOWN",
+      "automatic_replay": false,
+      "real_worker_killed": true,
+      "target_executions": 1,
+      "checkpoint": "Accepted",
+      "duplicate_deliveries": 3,
+      "standard_user": true
+    },
+    "id": "T61",
+    "status": "PASSED"
+  },
+  {
+    "status": "PASSED",
+    "name": "actual_scope_change_after_process_handles_retained",
+    "id": "T62",
+    "evidence": {
+      "numeric_pid_fallback": false,
+      "concurrent_second_manager_refused": true,
+      "target_survives": true,
+      "scope_changed_before_dispatch": true,
+      "real_held_handles": true,
+      "unknown_completion_preserved": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "exited_retained_object_does_not_retarget_unrelated_process",
+    "id": "T07",
+    "evidence": {
+      "actual_primary_exit_while_held": true,
+      "numeric_pid_fallback": false,
+      "retained_handle_prevents_pid_reuse_until_close": true,
+      "completion_waited": true,
+      "unrelated_process_survives": true
+    }
+  },
+  {
+    "id": "T36",
+    "evidence": {
+      "stop_waits_completed": true,
+      "processes_before": 4,
+      "same_owner_verified": true,
+      "real_windows_sessions": [
+        0,
+        2
+      ],
+      "processes_after": 0,
+      "product_helper": false,
+      "os_logon_policy_modified": false
+    },
+    "name": "production_stop_covers_two_actual_windows_sessions",
+    "status": "PASSED"
+  }
+]

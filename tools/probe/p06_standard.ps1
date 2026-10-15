@@ -199,6 +199,8 @@ try {
     }
 }catch{Case 'T01' 'required_prerequisites' {throw $_}}
 finally{
+    $endpointMetadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+    if(Test-Path -LiteralPath $endpointMetadata){Get-ChildItem -LiteralPath $endpointMetadata -Filter 'endpoint-status-*.json' -File|Where-Object Length -LE 8192|Copy-Item -Destination $Fixture}
     Save
     @{status=$(if(@($cases|Where-Object status -eq 'FAILED').Count -eq 0){'PASSED'}else{'FAILED'});standard_user=$true;mode=$Mode;cases=@($cases.ToArray())}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $Fixture ('standard-'+$Mode+'.json')) -Encoding utf8
 }

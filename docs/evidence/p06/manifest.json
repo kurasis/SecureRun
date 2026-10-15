@@ -714,6 +714,96 @@
       "path": "completion-74d86db/windows-11-arm/standard-sessions.json",
       "size": 549,
       "sha256": "d9b5baaa85ca95834755926009f678d9237e3f57d2f502455462d43aacffc05e"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/standard-sessions.json",
+      "size": 372,
+      "sha256": "f67f7a7ff6bbab6f69a0e7f59ef38a8ee2a13dfa00e9ff4b48a6c9ca01ee4b7a"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/standard-scope.json",
+      "size": 913,
+      "sha256": "e06629d1a31c4db57aa6441b3111e1da4a013299cbac134264f90ef177cd89dd"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/standard-normal.json",
+      "size": 5363,
+      "sha256": "032f3cfe301c54e0398e4d1c3f0d47f6446589ba647c3cc14e5e25de9f5679c1"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/standard-reserved.json",
+      "size": 489,
+      "sha256": "5220deffa902556b142728f84371d977ff6ba68c5a418af1959e9e7dcf8184e6"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/standard-accepted.json",
+      "size": 489,
+      "sha256": "dc18a754185f0158ff7f54ac68dd33166f8aefacb96caf0fca27454fb5258cbb"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "603d99e2d5dfa33fbfd1234adf38b2c14fb1465f643f0ff1ea64a2223205feea"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/run-summary.json",
+      "size": 536,
+      "sha256": "56fe4bb054c3994ea8d2ffbcc71ebcde0308d3648c7cc1858883dbf239f90dcc"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/driver-unload.json",
+      "size": 120,
+      "sha256": "2c9c535d5d5d1016b61cca6b5352c7c028214c43ac44871a53ee6035578c1bf7"
+    },
+    {
+      "path": "investigation-ce6098f/windows-11-arm/control-cases.json",
+      "size": 6949,
+      "sha256": "ff7bfbef86197e1896d4f2d5e1cad3c83c9928a23dde5a9142a13a40e4efeb71"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/standard-sessions.json",
+      "size": 549,
+      "sha256": "53dbadc98bf88e142c853b029ca0f29d5519397a55ca98339c738a907859be2d"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/standard-scope.json",
+      "size": 913,
+      "sha256": "19cca88338e0d857c2c7e7f263c187cc0738efce68f8702970d81fef59c83004"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/standard-reserved.json",
+      "size": 489,
+      "sha256": "3db1a325df2ff83df85e44462e7b80f45bda6a1ff9efecbd567b00798d7ba2ff"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/standard-normal.json",
+      "size": 5025,
+      "sha256": "19fddb31fcfca31c2e4a936d1bea0c2f92dd2e5bf3d2ef344d881cc83fb88c43"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/standard-accepted.json",
+      "size": 489,
+      "sha256": "6277d67c1c944860cb3e07d0cede60946399c91f115779989042a292b06f3c04"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "bda98ea67e0d76f5eef5e7d8c7b634d686d7d065c2ca135d525749d6b9ac79be"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/run-summary.json",
+      "size": 536,
+      "sha256": "3f2cf971271231f5766d487abcb028087237d0e0ce9f51418c11868853ed5d1c"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/driver-unload.json",
+      "size": 120,
+      "sha256": "8ce9ec302828097d3a9a54047417adc385782f73cba888e29c02db8ee7983880"
+    },
+    {
+      "path": "investigation-ce6098f/windows-2025/control-cases.json",
+      "size": 6796,
+      "sha256": "00e5f4fccb64aea1a771705a2871da6a771ac6c66bb93a1f9dfa70779e19753a"
     }
   ],
   "tested_sources": [
@@ -1266,6 +1356,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38729083037",
       "result": "BLOCKED",
       "note": "P08 lifecycle implementation changed current runtime sources. Matching exact-source regressions are required; historical proof is retained."
+    },
+    {
+      "tested_commit": "ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae",
+      "run_id": 38793649785,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38793649785",
+      "result": "FAILED",
+      "note": "Server passed all 21 cases. ARM sessions prerequisites failed an unboxed endpoint positive control; no passing regression claim."
     }
   ]
 }

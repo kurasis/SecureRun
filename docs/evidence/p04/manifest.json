@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae",
   "run_id": 38793642900,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38793642900",
@@ -839,5 +839,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close."
 }

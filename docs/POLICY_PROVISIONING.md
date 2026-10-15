@@ -134,6 +134,16 @@ No SandMan implementation or engine binary is copied or bundled.
 A full policy namespace rollout has a finite 600-second worker deadline. Up to
 12 owned environments and all required native/x86/x64 fixed diagnostics are
 verified; shortening a rollout by omitting enforcement checks is not permitted.
-The unboxed endpoint positive-control handshake has a three-second read/connect
-bound and records only endpoint index, fixed stage and numeric status on failure.
-There is one control request per endpoint, with no retry inflating traffic counts.
+Unboxed endpoint positive controls may repeat a fixed benign handshake in a
+bounded four-second availability window. Server counters increment before reply;
+the completed control-count baseline is frozen before dispatching any canary.
+Every subsequent matching request counts as target traffic, including requests
+whose replies are lost. Native regression tests cover one to four control attempts
+and a later packet on each of all six endpoints. Numeric control baselines are
+retained with probe proof; failure records contain only endpoint index, fixed stage,
+attempt count and numeric status. No IP, port or private path is exported.
+
+Online TCP and UDP availability probes may repeat only their exact fixed benign
+request within a bounded four-second window. Offline probes retain one attempt
+and any independent server-observed traffic still rejects verification. This does
+not retry user applications or discard failed enforcement results.

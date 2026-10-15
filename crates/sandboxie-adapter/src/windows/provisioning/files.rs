@@ -589,6 +589,11 @@ fn list(
         })?;
         reply.entries.push(Entry {
             id,
+            relative_location: contract::display(
+                &p.strip_prefix(&root)
+                    .map_err(|_| "SOURCE_OUTSIDE_OWNED_ROOT")?
+                    .to_string_lossy(),
+            ),
             name: contract::display(&raw),
             directory: m.is_dir(),
             size: m.len().to_string(),

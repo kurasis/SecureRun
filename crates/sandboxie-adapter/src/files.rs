@@ -200,6 +200,7 @@ pub enum Request {
 #[serde(deny_unknown_fields)]
 pub struct Entry {
     pub id: Uuid,
+    pub relative_location: String,
     pub name: String,
     pub directory: bool,
     pub size: String,

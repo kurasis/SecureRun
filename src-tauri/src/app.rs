@@ -447,7 +447,17 @@ async fn ci_report(
     }
 }
 
+fn startup_mark(name: &str, began: Instant) {
+    use std::io::Write;
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "{name}={}",
+        began.elapsed().as_millis()
+    );
+}
+
 pub fn run() {
+    let startup = Instant::now();
     std::panic::set_hook(Box::new(|_| eprintln!("MANAGER_INTERNAL_ERROR")));
     if securerun_sandboxie_adapter::windows::has_engine_module() {
         eprintln!("MANAGER_CONTEXT_UNSAFE");
@@ -481,7 +491,9 @@ pub fn run() {
         (None, false, None);
     let mut health = Health::default();
     if !fixture {
+        let observing = Instant::now();
         let observation = securerun_sandboxie_adapter::windows::bounded_observe();
+        startup_mark("MANAGER_STARTUP_OBSERVATION_MS", observing);
         if observation.manager_context == securerun_sandboxie_adapter::Context::Boxed
             || observation.bridge_context == securerun_sandboxie_adapter::Context::Boxed
         {
@@ -565,12 +577,14 @@ pub fn run() {
             if fixture {
                 config.url = tauri::WebviewUrl::App("index.html?foundation-ci".into());
             }
+            startup_mark("MANAGER_STARTUP_BEFORE_WEBVIEW_MS", startup);
             let window = tauri::WebviewWindowBuilder::from_config(app, &config)?
                 .on_navigation(|url| {
                     authorized_origin("main", url.as_str(), cfg!(debug_assertions))
                 })
                 .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
                 .build()?;
+            startup_mark("MANAGER_STARTUP_WINDOW_CREATED_MS", startup);
             // The supported WebView2 resource policy keeps its sandbox and CSP.
             // It reduces caches rather than omitting processes from measurement.
             let _ = window.with_webview(|view| unsafe {

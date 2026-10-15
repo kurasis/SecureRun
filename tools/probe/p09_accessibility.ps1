@@ -1,5 +1,5 @@
 # Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings)
+param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase,System.Windows.Forms
@@ -15,6 +15,7 @@ public static class P09Access {
  [DllImport("user32.dll")]public static extern IntPtr GetForegroundWindow();
 }
 '@
+$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero
 $result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true};$stage='INITIALIZED'
 function Need([bool]$ok){if(-not $ok){throw 'P09_NATIVE_ACCESSIBILITY_FAILED'}}
 function Window([int]$id,[bool]$dialog=$false){
@@ -43,20 +44,19 @@ function Picker([int]$id,[string]$path){
  return @{real_native_picker=$true;value_pattern_used=$true;explicit_button_invoked=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
 function Set-ActualDisplayScale([int]$Scale){
-   $script:stage='OPENING_WINDOWS_DISPLAY_SETTINGS';$settingsRoot=$null
-   $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object {$_.MainWindowHandle -ne 0 -and $_.SessionId -eq (Get-Process -Id $PID).SessionId}|Select-Object -First 1
-   if($null -ne $settings){
-    $existing=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$pattern=$null
-    if($existing.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal)}
-    $null=[P09Access]::SetForegroundWindow($settings.MainWindowHandle)
-   }else{Start-Process 'ms-settings:display'}
+   $script:stage='OPENING_WINDOWS_DISPLAY_SETTINGS';$settingsRoot=$script:displayRoot
    $clock=[Diagnostics.Stopwatch]::StartNew()
-   do{
-    $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object MainWindowHandle -ne 0|Select-Object -First 1
-    if($null -ne $settings){$candidate=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$combo=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $combo){$settingsRoot=$candidate;break}}
-    Start-Sleep -Milliseconds 100
-   }while($clock.ElapsedMilliseconds -lt 45000)
+   if($null -eq $settingsRoot){
+    Start-Process 'ms-settings:display'
+    do{
+     $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object MainWindowHandle -ne 0|Select-Object -First 1
+     if($null -ne $settings){$candidate=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$combo=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $combo){$settingsRoot=$candidate;$script:displayRoot=$candidate;$script:displayWindow=$settings.MainWindowHandle;break}}
+     Start-Sleep -Milliseconds 100
+    }while($clock.ElapsedMilliseconds -lt 45000)
+   }
    Need ($null -ne $settingsRoot)
+   $pattern=$null;if($settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal)}
+   $null=[P09Access]::SetForegroundWindow($script:displayWindow)
    $script:stage='SELECTING_ADVERTISED_DISPLAY_HEIGHT';$resolution=$settingsRoot.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Resolution_ComboBox'))
    Need ($null -ne $resolution -and $resolution.Current.IsEnabled);$resolution.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
    $items=$settingsRoot.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem));$best=$null;$height=0;$area=0
@@ -70,8 +70,28 @@ function Set-ActualDisplayScale([int]$Scale){
    if($null -eq $choice){$container=$combo.GetCurrentPattern([Windows.Automation.ItemContainerPattern]::Pattern);foreach($label in @("$Scale%","$Scale% (Recommended)")){$candidate=$container.FindItemByProperty($null,[Windows.Automation.AutomationElement]::NameProperty,$label);if($null -ne $candidate){$choice=$candidate;break}};if($null -ne $choice){$virtual=$null;if($choice.TryGetCurrentPattern([Windows.Automation.VirtualizedItemPattern]::Pattern,[ref]$virtual)){$virtual.Realize()};$scroll=$null;if($choice.TryGetCurrentPattern([Windows.Automation.ScrollItemPattern]::Pattern,[ref]$scroll)){$scroll.ScrollIntoView()}}}
    Need ($null -ne $choice);$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()
 
- $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($settings.MainWindowHandle);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
- $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close()}
+ $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($script:displayWindow);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
+ $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close();$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero}
+}
+if($Mode -eq 'DISPLAY_SERVER'){
+ Need ($DisplayEvents -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$' -and [IO.Path]::IsPathRooted($ResultFile))
+ $events=@();$serverClock=[Diagnostics.Stopwatch]::StartNew();$requests=0
+ try{
+  $rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
+  foreach($suffix in @('100','150','200','done','failed')){$events+=,[Threading.EventWaitHandle]::OpenExisting($DisplayEvents+'-'+$suffix,$rights)}
+  $null=$events[3].Set() # Parent consumes readiness before starting the actor.
+  while($serverClock.ElapsedMilliseconds -lt 3000000){
+   $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$events[0..2],1000)
+   if($index -ge 3){continue}
+   $requests++;if($requests -gt 8){$null=$events[4].Set();break}
+   $record=@{mode='DISPLAY_CONTROLLER';requested_windows_scale=@(100,150,200)[$index];status='FAILED';real_windows_uia=$true;synthetic_fixture_only=$true;os_security_settings_modified=$false}
+   try{$script:CloseSettings=($index -eq 0 -and $requests -gt 1);Set-ActualDisplayScale $record.requested_windows_scale;$record.status='PASSED'}
+   catch{$record.code='P09_NATIVE_ACCESSIBILITY_FAILED';$record.stage=$script:stage;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName}
+   $record|ConvertTo-Json|Set-Content -LiteralPath ($ResultFile+'.'+$requests+'.json') -Encoding UTF8
+   if($record.status -eq 'PASSED'){$null=$events[3].Set()}else{$null=$events[4].Set()}
+  }
+ }finally{foreach($event in $events){$event.Dispose()}}
+ exit 0
 }
 try{
  if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;$result.status='PASSED';$result.requested_windows_scale=$Scale;$result.os_security_settings_modified=$false;if($ResultFile){$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8};Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}

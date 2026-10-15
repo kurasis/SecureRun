@@ -83,6 +83,13 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  # Prewarm the UIA provider before timing the normal manager, without an inspector.
  $startupCase=if($Focused){'normal_manager_startup_diagnostic_only'}else{'normal_manager_startup_and_complete_process_group_idle_budget'}
+ function Startup-Trace {
+  $trace=[IO.FileStream]::new((Join-Path $Fixture 'normal-manager.log'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
+  try{$buffer=[byte[]]::new(8192);$length=$trace.Read($buffer,0,$buffer.Length);$text=[Text.Encoding]::UTF8.GetString($buffer,0,$length)}finally{$trace.Dispose()}
+  $value=@{webview_memory_target_low=$text.Contains('WEBVIEW_MEMORY_TARGET_LOW')}
+  foreach($name in @('OBSERVATION','BEFORE_WEBVIEW','WINDOW_CREATED')){if($text -match ('(?m)^MANAGER_STARTUP_'+$name+'_MS=([0-9]{1,8})\r?$')){$value['native_'+$name.ToLower()+'_ms']=[long]$Matches[1]}}
+  return $value
+ }
  Case 'T32' $startupCase {
   $coord=Join-Path $Fixture 'startup-coordinate.json';$accessResult=Join-Path $results 'startup-accessibility.json';$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false
   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode','READY','-Coordination',$coord,'-ResultFile',$accessResult)){$ps.ArgumentList.Add($arg)}
@@ -90,10 +97,9 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   try{$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path ($coord+'.ready')) -and -not $watcher.HasExited -and $clock.ElapsedMilliseconds -lt 60000){Start-Sleep -Milliseconds 100};Require (Test-Path ($coord+'.ready')) 'P09_ACCESSIBILITY_WATCHER_NOT_READY'
    $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'normal-manager.log'),0);$body=@{pid=$gui.ProcessId;ticks=$gui.StartedTicks}|ConvertTo-Json -Compress;[IO.File]::WriteAllText($coord+'.tmp',$body);[IO.File]::Move($coord+'.tmp',$coord)
    Require ($watcher.WaitForExit(60000)) 'P09_STARTUP_INTERACTIVE_TIMEOUT';$access=Get-Content -LiteralPath $accessResult -Raw|ConvertFrom-Json;Require ($watcher.ExitCode -eq 0 -and $access.status -eq 'PASSED') 'P09_STARTUP_ACCESSIBILITY_FAILED'
-   if($Focused){$diagnostic=@{startup_interactive_upper_bound_ms=$access.startup_interactive_upper_bound_ms;native_window_present_ms=$access.native_window_present_ms;environment_count=$environmentCount;inspector_enabled=$false;performance_exit_gate_claimed=$false};$diagnostic|ConvertTo-Json|Set-Content (Join-Path $results 'startup-diagnostic.json') -Encoding utf8;return $diagnostic}
+   if($Focused){$diagnostic=@{startup_interactive_upper_bound_ms=$access.startup_interactive_upper_bound_ms;native_window_present_ms=$access.native_window_present_ms;environment_count=$environmentCount;inspector_enabled=$false;performance_exit_gate_claimed=$false;native_startup=(Startup-Trace)};$diagnostic|ConvertTo-Json|Set-Content (Join-Path $results 'startup-diagnostic.json') -Encoding utf8;return $diagnostic}
    Start-Sleep -Seconds 5;$metrics=$gui.MeasureIdle();$metrics.startup_interactive_upper_bound_ms=$access.startup_interactive_upper_bound_ms;$metrics.idle_environments=10;$metrics.populated_box_files=10000;$metrics.inspector_enabled=$false;$metrics.reference='GitHub hosted owner-selected runner; normal release binary'
-   $trace=[IO.FileStream]::new((Join-Path $Fixture 'normal-manager.log'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
-   try{$buffer=[byte[]]::new(8192);$length=$trace.Read($buffer,0,$buffer.Length);$metrics.webview_memory_target_low=[Text.Encoding]::UTF8.GetString($buffer,0,$length).Contains('WEBVIEW_MEMORY_TARGET_LOW')}finally{$trace.Dispose()}
+   $metrics.native_startup=Startup-Trace;$metrics.webview_memory_target_low=$metrics.native_startup.webview_memory_target_low
    $metrics.startup_target_met=($access.startup_interactive_upper_bound_ms -le 3000);$metrics.idle_cpu_target_met=($metrics.cpu_percent -lt 1);$metrics.idle_working_set_target_met=($metrics.average_working_set_bytes -lt 250000000)
    Require ($metrics.webview_processes -ge 2 -and $metrics.duration_ms -ge 60000 -and $metrics.samples -ge 200) 'P09_PROCESS_GROUP_MEASUREMENT_INCOMPLETE'
    $metrics|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'performance.json') -Encoding utf8

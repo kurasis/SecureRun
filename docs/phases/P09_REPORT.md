@@ -274,3 +274,19 @@ makes previous P03/P04 proof historical until a matching regression passes.
 ARM's layout diagnostic passed overview/rename, then failed keyboard setup.
 The next UIA fixture records separate foreground/Tab/F6 stages, verifies actual
 foreground ownership and waits for actual focus instead of fixed 100 ms sleeps.
+
+
+Layout diagnostic `38813731246` at `237696a` passed forty Server UI cases and
+keyboard, but repeated Settings discovery still failed. Native window appearance
+was 4746.4687 ms; UIA navigation lookup 2915.5984 ms, invoke 114.2283 ms and
+language lookup 166.1787 ms; total external bound 8261.5406 ms. The next revision
+keeps one bounded lab controller and retained Settings provider across fixed
+scale requests, matching the successful standalone discovery sequence. It accepts
+no actor paths/code/payload and retains eight-request and fifty-minute bounds.
+The parent consumes readiness before actor startup and terminates only its own
+held controller during teardown. Standard-user manager DPI checks remain required.
+
+Normal startup now emits only fixed numeric stage durations for initial engine
+observation, before WebView construction and after window construction. The lab
+retains these allowlisted numbers and the low-memory marker without raw captures.
+No budget, required startup check or measurement denominator changed.

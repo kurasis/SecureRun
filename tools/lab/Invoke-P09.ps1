@@ -6,7 +6,7 @@ if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim()
 @{phase='P09';stage='STARTED';manager_commit=$commit}|ConvertTo-Json|Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 $target=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aarch64-pc-windows-msvc'}else{'x86_64-pc-windows-msvc'};$env:RUSTUP_TOOLCHAIN="1.90.0-$target"
-$actor=$null;$password=$null;$name=$null;$owned=$null;$shareCreated=$false;$displayEvents=@()
+$controller=$null;$actor=$null;$password=$null;$name=$null;$owned=$null;$shareCreated=$false;$displayEvents=@()
 Push-Location $repo
 try {
  rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal --component rustfmt,clippy
@@ -70,19 +70,15 @@ try {
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p09_standard.ps1'),'-Manager',$app,'-Fixture',$owned,'-EngineHome',$engine,'-Commit',$commit)){$start.ArgumentList.Add($arg)}
  if($Focused){$start.ArgumentList.Add('-Focused')}
  if($LayoutOnly){$start.ArgumentList.Add('-LayoutOnly')}
- $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew();$displayRequests=0
+ $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
+ foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
+ $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
+ $controller=[Diagnostics.Process]::Start($display)
+ if(-not $displayEvents[3].WaitOne(60000) -or $controller.HasExited){throw 'P09_DISPLAY_SERVER_NOT_READY'}
+ $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew()
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}
-  $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[0..2],0)
-  if($index -lt 3){
-   $displayRequests++;if($displayRequests -gt 8){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_REQUEST_BOUND'}
-   $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
-   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_CONTROLLER','-Scale',[string]@(100,150,200)[$index],'-ResultFile',(Join-Path $out ("display-controller-$displayRequests.json")))){$display.ArgumentList.Add($arg)}
-   if($index -eq 0 -and $displayRequests -gt 1){$display.ArgumentList.Add('-CloseSettings')}
-   $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
-   $controller=[Diagnostics.Process]::Start($display)
-   try{$completed=$controller.WaitForExit(90000);if($completed -and $controller.ExitCode -eq 0){$null=$displayEvents[3].Set()}else{$null=$displayEvents[4].Set()}}finally{if(-not $controller.HasExited){$controller.Kill($true)};$controller.Dispose()}
-  }
+  if($controller.HasExited){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_SERVER_EXITED'}
  }
  $resultHome=Join-Path $owned 'results';if(Test-Path -LiteralPath $resultHome){Get-ChildItem -LiteralPath $resultHome -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}
  if(-not(Test-Path -LiteralPath (Join-Path $out 'standard-product.json'))){throw 'P09_ACTOR_REPORT_MISSING'}
@@ -97,6 +93,7 @@ try {
  @{phase='P09';stage='COMPLETE';manager_commit=$commit}|ConvertTo-Json|Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 }finally{
  if($null -ne $actor){if(-not $actor.HasExited){$actor.Kill($true);$null=$actor.WaitForExit(10000)};$actor.Dispose()}
+ if($null -ne $controller){if(-not $controller.HasExited){$controller.Kill($true);$null=$controller.WaitForExit(10000)};$controller.Dispose()}
  foreach($event in $displayEvents){$event.Dispose()}
  if($owned){$partial=Join-Path $owned 'results';if(Test-Path -LiteralPath $partial){Get-ChildItem -LiteralPath $partial -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}}
  if($null -ne $password){$password.Dispose()};if($name){Disable-LocalUser -Name $name -ErrorAction SilentlyContinue};if($shareCreated){Remove-SmbShare -Name 'SecureRunP05Synthetic' -Force -Confirm:$false};Pop-Location

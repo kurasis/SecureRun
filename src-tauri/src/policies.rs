@@ -41,6 +41,7 @@ pub struct QueuedView {
 }
 #[derive(Serialize)]
 pub struct PolicyReply {
+    diagnostic_id: Uuid,
     #[serde(flatten)]
     reply: Reply,
     queued_policies: Vec<QueuedView>,
@@ -407,6 +408,7 @@ pub enum UiControlRequest {
 }
 #[derive(Serialize)]
 pub struct ControlReply {
+    diagnostic_id: Uuid,
     #[serde(flatten)]
     reply: securerun_sandboxie_adapter::control::Reply,
     engine_generation: u64,
@@ -507,6 +509,7 @@ async fn control_request_inner(
         return err(ErrorCode::StaleOperation);
     }
     Ok(ControlReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation,
         sequence: ticket,
@@ -564,6 +567,7 @@ pub enum UiFilesRequest {
 }
 #[derive(Serialize)]
 pub struct FilesReply {
+    diagnostic_id: Uuid,
     #[serde(flatten)]
     reply: securerun_sandboxie_adapter::files::Reply,
     engine_generation: u64,
@@ -702,6 +706,7 @@ async fn files_request_inner(
         return err(ErrorCode::StaleOperation);
     }
     Ok(FilesReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation: generation,
     })
@@ -729,6 +734,7 @@ pub enum UiLifecycleRequest {
 }
 #[derive(Serialize)]
 pub struct LifecycleReply {
+    diagnostic_id: Uuid,
     reply: securerun_sandboxie_adapter::lifecycle::Reply,
     engine_generation: u64,
 }
@@ -862,6 +868,7 @@ async fn lifecycle_request_inner(
         return err(ErrorCode::CapabilityUnavailable);
     }
     Ok(LifecycleReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation: generation,
     })
@@ -1029,6 +1036,10 @@ pub async fn policy_request(
         }
         other => policy_request_inner(window, state.clone(), other).await,
     };
+    let diagnostic_id = result
+        .as_ref()
+        .err()
+        .map_or_else(Uuid::new_v4, |e| e.diagnostic_id);
     if let Some(action) = action {
         crate::product::record(
             &product,
@@ -1036,6 +1047,7 @@ pub async fn policy_request(
             action,
             event_outcome(result.as_ref().ok().map(|r| r.reason.as_str())),
             environment_id,
+            Some(diagnostic_id),
         )
         .await;
     }
@@ -1067,6 +1079,7 @@ pub async fn policy_request(
             .collect()
     };
     Ok(PolicyReply {
+        diagnostic_id,
         reply,
         queued_policies,
     })
@@ -1103,6 +1116,10 @@ pub async fn control_request(
             action,
             event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
             environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
         )
         .await;
     }
@@ -1143,6 +1160,10 @@ pub async fn files_request(
             action,
             event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
             environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
         )
         .await;
     }
@@ -1174,6 +1195,10 @@ pub async fn lifecycle_request(
             action,
             event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
             environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
         )
         .await;
     }

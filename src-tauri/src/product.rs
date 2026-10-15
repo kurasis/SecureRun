@@ -42,9 +42,13 @@ pub async fn record(
     action: Action,
     outcome: Outcome,
     environment_id: Option<Uuid>,
+    diagnostic_id: Option<Uuid>,
 ) {
     let mut event = Event::new(action, outcome);
     event.environment_id = environment_id;
+    if let Some(id) = diagnostic_id {
+        event.diagnostic_id = id;
+    }
     if let Ok(mut events) = state.events.lock() {
         events.push_front(event.clone());
         events.truncate(contract::HISTORY_LIMIT);
@@ -190,6 +194,7 @@ pub async fn product_request(
                 Action::DiagnosticPreview,
                 Outcome::Observed,
                 None,
+                None,
             )
             .await;
         }
@@ -278,6 +283,7 @@ pub async fn product_request(
                 } else {
                     Outcome::Refused
                 },
+                None,
                 None,
             )
             .await;

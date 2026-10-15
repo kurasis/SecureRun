@@ -83,3 +83,16 @@ export function errorText(code:string,language:Language) {
   const group=/UNKNOWN|OUTCOME|NOT_CONFIRMED/.test(code)?'unknown':/EXPIRED|STALE|REVISION/.test(code)?'stale':/BUSY|STOP_REQUIRED|NAMESPACE/.test(code)?'busy':/PATH|LEAF|FILE_|ROOT|COLLISION|SELECTION/.test(code)?'path':/POLICY|HOOK|AUTOMATION|TEMPLATE|ENTITLE|CAPABILITY/.test(code)?'policy':/ENGINE|SERVICE|CONTEXT|BRIDGE|TRUST|PROBE/.test(code)?'engine':'generic';
   return {cause:t[`${group}Cause`],next:t[`${group}Next`]};
 }
+
+export function statusName(value:string,language:Language):string {
+ const pairs:Record<string,[string,string]>={
+  ACTIVE:['Active','Активно'],ARCHIVED:['Archived','Архив'],PERSISTENT:['Persistent','Постоянное'],DISPOSABLE:['Disposable','Одноразовое'],
+  RUNNING:['Running','Работает'],IDLE:['Idle','Простой'],UNKNOWN:['Unknown','Неизвестно'],UNVERIFIED:['Needs verification','Нужна проверка'],VERIFIED:['Verified for this configuration','Проверено для этой конфигурации'],CONFLICT:['Configuration changed','Конфигурация изменена'],
+  INTENT:['Intent recorded','Намерение сохранено'],FENCED:['Launches fenced','Новые запуски заблокированы'],WRITING:['Writing reviewed policy','Применяется проверенная политика'],READBACK:['Reading back effective state','Перечитывается фактическое состояние'],PENDING_ROOT:['Storage not yet bound','Хранилище ещё не привязано'],ROOT_BOUND:['Storage identity bound','Хранилище привязано'],VERIFYING:['Verifying restrictions','Проверяются ограничения'],
+  RESET:['Reset contents','Сброс содержимого'],REMOVE:['Remove environment','Удаление окружения'],ARCHIVE:['Archive','Архивирование'],UNARCHIVE:['Unarchive','Возврат из архива'],RESUME:['Keep and resume','Сохранение и продолжение'],
+  RESERVED:['Dispatch reserved','Отправка зарезервирована'],ACCEPTED:['Engine accepted dispatch','Движок принял отправку'],COMPLETED:['Manager operation completed','Операция менеджера завершена'],REFUSED:['Refused','Отклонено'],COMPLETE:['Complete','Завершено'],COMPLETE_RECOVERED:['Reconciled complete','Завершение сверено'],DISCARDED:['Verified staging discarded','Проверенный остаток удалён'],
+  COPYING:['Copying','Копирование'],MARKED:['Provenance recorded','Происхождение отмечено'],READY:['Ready for explicit action','Готово к явному действию'],PUBLISHED:['Published without replacement','Опубликовано без замены'],INCOMPLETE:['Incomplete','Не завершено'],CANCELLED:['Cancelled','Отменено'],
+  SNAPSHOT_CAPTURED:['Restoration authority captured','Полномочия восстановления сохранены'],SEALED:['Namespace sealed','Пространство имён закрыто'],DISPATCH_RESERVED:['Cleanup dispatch reserved','Очистка зарезервирована'],NATIVE_RETURNED:['Native call returned','Нативная операция вернулась'],CLEARED:['Verified empty contents','Пустое содержимое проверено'],DEFINITION_REMOVED:['Definition absent','Определение удалено'],METADATA_COMMITTED:['Metadata reconciled','Метаданные сверены'],AWAITING_CONTROLLER_RESTORE:['Restoring surviving ACLs','Восстанавливаются права оставшихся объектов'],
+ };
+ const entry=pairs[value];return entry?entry[language==='ru'?1:0]:(language==='ru'?'Требуется проверка — код в подробностях':'Inspection required — see technical code');
+}

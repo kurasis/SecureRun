@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react';
-import {invoke} from '@tauri-apps/api/core';
+import {invoke} from './backend';
 import type {Language} from './strings';
 import {ErrorView} from './error';
 import {escaped,productText} from './product';

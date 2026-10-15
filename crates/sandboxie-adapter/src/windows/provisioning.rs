@@ -5,6 +5,7 @@ use std::{io::Write, os::windows::io::FromRawHandle};
 use uuid::Uuid;
 mod aliases;
 pub mod control;
+pub mod files;
 mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},

@@ -10,6 +10,14 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct BoxExecutableRef {
+    pub generation: String,
+    pub physical: String,
+    pub logical: String,
+    pub identity: String,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Application {
     pub id: Uuid,
     pub environment_id: Uuid,
@@ -20,6 +28,8 @@ pub struct Application {
     pub arguments: Vec<String>,
     pub working_directory: Option<String>,
     pub directory_identity: Option<String>,
+    #[serde(default)]
+    pub boxed: Option<BoxExecutableRef>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -28,6 +38,7 @@ pub struct ApplicationView {
     pub environment_id: Uuid,
     pub revision: u64,
     pub display_name: String,
+    pub boxed: bool,
 }
 impl From<Application> for ApplicationView {
     fn from(a: Application) -> Self {
@@ -36,6 +47,7 @@ impl From<Application> for ApplicationView {
             environment_id: a.environment_id,
             revision: a.revision,
             display_name: a.display_name,
+            boxed: a.boxed.is_some(),
         }
     }
 }

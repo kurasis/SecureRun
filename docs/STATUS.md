@@ -1,16 +1,17 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P06.
+Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P07.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE — owner-selected Windows 11 ARM64 lab | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | DONE — current P06 regression verified | [P03 report](phases/P03_REPORT.md), [current evidence](evidence/p03/manifest.json) |
-| P04 | DONE — current P06 regression verified | [P04 report](phases/P04_REPORT.md), [current evidence](evidence/p04/manifest.json) |
-| P05 | DONE — current P06 regression verified | [P05 report](phases/P05_REPORT.md), [evidence](evidence/p05/manifest.json) |
-| P06 | DONE | [P06 report](phases/P06_REPORT.md), [raw evidence](evidence/p06/manifest.json) |
-| P07–P12 | NOT_STARTED | P07 is the next eligible phase; requested P06 scope is complete |
+| P03 | BLOCKED — P07 regression pending | [P03 report](phases/P03_REPORT.md), [current evidence](evidence/p03/manifest.json) |
+| P04 | BLOCKED — P07 regression pending | [P04 report](phases/P04_REPORT.md), [current evidence](evidence/p04/manifest.json) |
+| P05 | BLOCKED — P07 regression pending | [P05 report](phases/P05_REPORT.md), [evidence](evidence/p05/manifest.json) |
+| P06 | BLOCKED — P07 regression pending | [P06 report](phases/P06_REPORT.md), [raw evidence](evidence/p06/manifest.json) |
+| P07 | IN_PROGRESS | Safe file workflows; native implementation and verification in progress |
+| P08–P12 | NOT_STARTED | Depend on P07 |
 
 Final checked runtime: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
 All current phase gates must bind that same source and runtime-file hashes.

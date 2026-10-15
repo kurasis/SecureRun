@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "c8d135da5ce403148e3e903036951ab9c947d8c1",
   "run_id": 38705479692,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38705479692",
@@ -459,5 +459,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.",
+  "stale_reason": "P07 runtime and tooling changed; matching native regression pending"
 }

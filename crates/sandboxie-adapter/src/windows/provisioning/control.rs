@@ -20,14 +20,14 @@ fn checkpoint(stage: &str) {
     #[cfg(not(feature = "policy-ci"))]
     let _ = stage;
 }
-fn target(engine: &NativeEngine, path: &str) -> R<(String, Vec<File>)> {
+pub(super) fn target(engine: &NativeEngine, path: &str, boxed: bool) -> R<(String, Vec<File>)> {
     literal_path(path)?;
     let lower = path.to_lowercase();
     for private in [
         engine.profile.to_string_lossy().to_lowercase(),
         engine.trusted.home.to_string_lossy().to_lowercase(),
     ] {
-        if lower == private || lower.starts_with(&(private + "\\")) {
+        if !boxed && (lower == private || lower.starts_with(&(private + "\\"))) {
             return Err("HOST_EXE_SCOPE_INVALID");
         }
     }
@@ -75,7 +75,7 @@ fn directory(path: &str) -> R<(String, Vec<File>)> {
 impl NativeEngine {
     /// Stop deliberately does not depend on effective network policy, release
     /// enforcement proof, paid entitlement, target registration or path grants.
-    fn control_scope(&self, e: &OwnedEnvironment) -> R<Vec<File>> {
+    pub(super) fn control_scope(&self, e: &OwnedEnvironment) -> R<Vec<File>> {
         self.mutation_context()?;
         if e.owner_sid != self.owner || e.engine_identity != self.engine_identity() {
             return Err("STOP_OWNERSHIP_CHANGED");
@@ -150,7 +150,19 @@ impl NativeEngine {
         if self.os_identity != fingerprint(&tuple) || a.environment_id != e.id {
             return Err("RELEASE_TUPLE_UNTESTED");
         }
-        let (id, _exe) = target(self, &a.executable)?;
+        let _boxed = a
+            .boxed
+            .as_ref()
+            .map(|b| super::files::validate_executable(self, e, b))
+            .transpose()?;
+        let (id, _exe) = if let Some(b) = &a.boxed {
+            if a.executable != b.logical {
+                return Err("BOX_EXECUTABLE_INVALID");
+            }
+            target(self, &b.physical, true)?
+        } else {
+            target(self, &a.executable, false)?
+        };
         if id != a.identity {
             return Err("TARGET_IDENTITY_CHANGED");
         }
@@ -162,7 +174,16 @@ impl NativeEngine {
         if a.working_directory.is_some() && a.directory_identity.as_ref() != Some(&cwd_id) {
             return Err("TARGET_CWD_CHANGED");
         }
-        let command = wide(&contract::command(&a.executable, &a.arguments)?);
+        let command = if a.boxed.is_some() {
+            let mut args = vec!["/wait".to_string(), a.executable.clone()];
+            args.extend(a.arguments.clone());
+            wide(&contract::command(
+                &self.trusted.home.join("Start.exe").to_string_lossy(),
+                &args,
+            )?)
+        } else {
+            wide(&contract::command(&a.executable, &a.arguments)?)
+        };
         let run: Run = unsafe { bind(&self.api, b"SbieDll_RunSandboxed\0")? };
         self.mutation_context()?;
         let _scope = self.control_scope(e)?;
@@ -423,7 +444,7 @@ pub fn execute(
                         {
                             return Err("APPLICATION_NAME_INVALID");
                         }
-                        let (identity, _held) = target(&engine, executable)?;
+                        let (identity, _held) = target(&engine, executable, false)?;
                         let directory_identity = working_directory
                             .as_ref()
                             .map(|p| directory(p).map(|(id, _)| id))
@@ -438,6 +459,7 @@ pub fn execute(
                             arguments: arguments.clone(),
                             working_directory: working_directory.clone(),
                             directory_identity,
+                            boxed: None,
                         })
                     })();
                     let (state, reason) = match registration {

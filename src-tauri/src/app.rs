@@ -560,6 +560,7 @@ pub fn run() {
             diagnostic_summary,
             crate::policies::policy_request,
             crate::policies::control_request,
+            crate::policies::files_request,
             crate::policies::select_policy_path,
             ci_report
         ])

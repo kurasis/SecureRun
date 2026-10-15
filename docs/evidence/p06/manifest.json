@@ -1,6 +1,6 @@
 {
   "phase": "P06",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "c8d135da5ce403148e3e903036951ab9c947d8c1",
   "run_id": 38705476091,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38705476091",
@@ -806,5 +806,6 @@
       "result": "BLOCKED",
       "note": "Both native P06 targets passed all required production cases. Matching final-source P05 regression is still pending; DONE is not claimed."
     }
-  ]
+  ],
+  "stale_reason": "P07 runtime and tooling changed; matching native regression pending"
 }

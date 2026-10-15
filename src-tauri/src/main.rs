@@ -11,6 +11,36 @@ mod policies;
 #[cfg(windows)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("--files-worker")
+        || (args.len() == 2 && args[1] == "--files-once")
+    {
+        use std::io::Read;
+        std::panic::set_hook(Box::new(|_| {}));
+        let mut data = Vec::new();
+        if std::io::stdin().take(16385).read_to_end(&mut data).is_err() || data.len() > 16384 {
+            std::process::exit(64)
+        }
+        let Ok(request) =
+            serde_json::from_slice::<securerun_sandboxie_adapter::files::Request>(&data)
+        else {
+            std::process::exit(64)
+        };
+        let reply = if args[1] == "--files-worker" {
+            if args.len() != 4 {
+                std::process::exit(64)
+            }
+            let (Ok(pid), Ok(birth)) = (args[2].parse(), args[3].parse()) else {
+                std::process::exit(64)
+            };
+            securerun_sandboxie_adapter::windows::provisioning::files::execute(pid, birth, request)
+        } else {
+            securerun_sandboxie_adapter::windows::provisioning::files::bounded_request(&request)
+        };
+        if let Ok(text) = serde_json::to_string(&reply) {
+            println!("{text}")
+        }
+        return;
+    }
     if args.get(1).map(String::as_str) == Some("--control-worker")
         || (args.len() == 2 && args[1] == "--control-once")
     {

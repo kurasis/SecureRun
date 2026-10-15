@@ -59,3 +59,11 @@ corrected. The complete gate remains pending on both platforms.
   from complete engine membership. Empty enumeration never proves nonexecution.
 - All T01–T66 final installed-candidate acceptance entries remain NOT_STARTED.
   P07 mapping/transfer and P08 cleanup/recovery are not implemented by P06.
+
+The c8b8d46 Server investigation additionally passed Unicode/x86 argv, genuine
+original-driver unload, real session 0/2 Stop, killed-worker reservation recovery
+and both held-object termination races. A natural short-lived exit could retire
+driver membership before the held OS object signaled; Stop now performs a bounded
+wait on that same object before treating the mismatch as live scope uncertainty.
+The UI polling lifecycle was also corrected so background refresh cannot supersede
+an active user operation. Matching final-source regressions are required again.

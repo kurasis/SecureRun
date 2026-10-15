@@ -3,8 +3,9 @@ $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new()
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 10|Set-Content (Join-Path $Fixture 'control-cases.json') -Encoding utf8}
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
-function Case([string]$scenarioId,[string]$name,[scriptblock]$body){$c=@{id=$scenarioId;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CONTROL_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.exception_type=$_.Exception.GetBaseException().GetType().FullName};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
+function Case([string]$scenarioId,[string]$name,[scriptblock]$body){$c=@{id=$scenarioId;name=$name;status='IN_PROGRESS'};$cases.Add($c);$script:nativeStage='CASE';Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CONTROL_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.native_stage=$script:nativeStage;$c.exception_type=$_.Exception.GetBaseException().GetType().FullName};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
 function Call($request,[string]$kind='control',[string]$image=$Manager,[bool]$allowFailure=$false){
+    $script:nativeStage='CALL_'+$kind+'_'+$request.action
     $s=[Diagnostics.ProcessStartInfo]::new($image);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
     $p=[Diagnostics.Process]::Start($s)
     try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(150000)) 'CONTROL_TIMEOUT';Require ($p.ExitCode -eq 0) 'CONTROL_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
@@ -16,11 +17,11 @@ function Coordinate([string]$action){
 }
 function New-App([string]$exe,[string[]]$arguments,[string]$cwd=$null){
     $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$script:e.id;expected_revision=$script:e.revision;operation_id=$id;display_name='Synthetic launch fixture';executable=$exe;arguments=$arguments;working_directory=$(if([string]::IsNullOrEmpty($cwd)){$null}else{$cwd})}
-    $receipt=$r.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'REGISTERED') $receipt.reason
+    $receipt=$r.receipts|Where-Object operation_id -eq $id;$script:nativeStage='REGISTER_RECEIPT';Require ($receipt.state -eq 'REGISTERED') $receipt.reason
     return @($r.applications|Where-Object {$_.environment_id -eq $script:e.id})[-1]
 }
-function Launch($a,[string]$operation=[Guid]::NewGuid().ToString()){$r=Call @{action='LAUNCH';application_id=$a.id;environment_id=$a.environment_id;expected_revision=$a.revision;operation_id=$operation};return ($r.receipts|Where-Object operation_id -eq $operation)}
-function Stop-Owned { $id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';environment_id=$script:e.id;operation_id=$id};$receipt=$r.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'STOPPED') $receipt.reason;return $r }
+function Launch($a,[string]$operation=[Guid]::NewGuid().ToString()){$r=Call @{action='LAUNCH';application_id=$a.id;environment_id=$a.environment_id;expected_revision=$a.revision;operation_id=$operation};$script:nativeStage='LAUNCH_RECEIPT';return ($r.receipts|Where-Object operation_id -eq $operation)}
+function Stop-Owned { $id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';environment_id=$script:e.id;operation_id=$id};$receipt=$r.receipts|Where-Object operation_id -eq $id;$script:nativeStage='STOP_RECEIPT';Require ($receipt.state -eq 'STOPPED') $receipt.reason;return $r }
 function Reports([string]$leaf){$clock=[Diagnostics.Stopwatch]::StartNew();do{$files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf);if($files.Count -gt 0){return @(Get-Content $files[0].FullName|ForEach-Object {$_|ConvertFrom-Json})};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);throw 'TARGET_REPORT_MISSING'}
 try {
     $who=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($who);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_TOKEN_REQUIRED'

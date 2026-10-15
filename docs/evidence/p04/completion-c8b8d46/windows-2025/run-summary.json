@@ -1,0 +1,15 @@
+{
+  "result": "PASSED",
+  "production_mutations": 0,
+  "phase": "P04",
+  "target": "x86_64-pc-windows-msvc",
+  "native_cases_passed": 19,
+  "manager_commit": "c8b8d46ab5ac7715b549cd1ecdcb7574a246a8e6",
+  "teardown": "DISCARD_ACTIONS_VM",
+  "production_target_launches": 0,
+  "pe_machine": "8664",
+  "manager_binary_sha256": "874bc5b14ba6a391e9246c285dc407a738d67d761b7b790ef7e7b44dfbde0128",
+  "adapter_tests_passed": 31,
+  "os_security_settings_modified": false,
+  "os_build": "10.0.26100.0"
+}

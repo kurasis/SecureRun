@@ -243,6 +243,26 @@ impl NativeEngine {
         }
         dispatched
     }
+    fn stop_member(
+        &self,
+        held: &Handle,
+        expected: &ProcessIdentity,
+        e: &OwnedEnvironment,
+    ) -> R<bool> {
+        match self.member(held, expected.pid, e).and_then(|current| {
+            if current == *expected {
+                Ok(())
+            } else {
+                Err("STOP_PROCESS_IDENTITY_CHANGED")
+            }
+        }) {
+            Ok(()) => Ok(true),
+            // The driver can retire membership before the OS process object
+            // becomes signaled. Observe only this held object; never reopen PID.
+            Err(_) if unsafe { WaitForSingleObject(held.0, 1000) } == WAIT_OBJECT_0 => Ok(false),
+            Err(code) => Err(code),
+        }
+    }
     fn stop_environment(&self, e: &OwnedEnvironment) -> R<()> {
         let _root = self.control_scope(e)?;
         if self
@@ -280,12 +300,14 @@ impl NativeEngine {
                 if unsafe { WaitForSingleObject(handle.0, 0) } == WAIT_OBJECT_0 {
                     continue;
                 }
-                let current = self.member(&handle, p.pid, e)?;
-                if current != p {
-                    return Err("STOP_PROCESS_IDENTITY_CHANGED");
+                if !self.stop_member(&handle, &p, e)? {
+                    continue;
                 }
                 let mut critical = 0;
                 if unsafe { IsProcessCritical(handle.0, &mut critical) } == 0 || critical != 0 {
+                    if unsafe { WaitForSingleObject(handle.0, 1000) } == WAIT_OBJECT_0 {
+                        continue;
+                    }
                     return Err("STOP_CRITICAL_STATE_UNSAFE");
                 }
                 held.push((handle, p));
@@ -297,16 +319,23 @@ impl NativeEngine {
                     continue;
                 }
                 let _scope = self.control_scope(e)?;
-                if self.member(&handle, p.pid, e)? != p {
-                    return Err("STOP_PROCESS_SCOPE_CHANGED");
+                if !self.stop_member(&handle, &p, e)? {
+                    continue;
                 }
-                if unsafe { TerminateProcess(handle.0, 79) } == 0
-                    && unsafe { WaitForSingleObject(handle.0, 0) } != WAIT_OBJECT_0
-                {
-                    return Err("STOP_DISPATCH_UNKNOWN");
+                let mut critical = 0;
+                if unsafe { IsProcessCritical(handle.0, &mut critical) } == 0 || critical != 0 {
+                    if unsafe { WaitForSingleObject(handle.0, 1000) } == WAIT_OBJECT_0 {
+                        continue;
+                    }
+                    return Err("STOP_CRITICAL_STATE_UNSAFE");
                 }
+                let dispatched = unsafe { TerminateProcess(handle.0, 79) } != 0;
                 if unsafe { WaitForSingleObject(handle.0, 5000) } != WAIT_OBJECT_0 {
-                    return Err("STOP_COMPLETION_UNKNOWN");
+                    return Err(if dispatched {
+                        "STOP_COMPLETION_UNKNOWN"
+                    } else {
+                        "STOP_DISPATCH_UNKNOWN"
+                    });
                 }
             }
         }

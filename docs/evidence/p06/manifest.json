@@ -130,6 +130,46 @@
       "path": "investigation-91cd662/windows-2025/standard-accepted.json",
       "sha256": "62a1c76c54fb3b8e34d674038b2a58cd10fdd396821079451c9eb6b84ccecdfe",
       "size": 353
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/standard-sessions.json",
+      "sha256": "45d7fe58c77694dc3be9065e4fe0e4dabb29c907d85255fcb61242f040cb086d",
+      "size": 549
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/standard-scope.json",
+      "sha256": "7afd4caad5274c13fafdfc6e945054a5fe19b6265a2981aba85faac1d69d1536",
+      "size": 913
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/standard-reserved.json",
+      "sha256": "dca2bfb9fbfa5c57aeefc99eac49f125ae155a053967f248c9710b853fcc52d2",
+      "size": 489
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/standard-normal.json",
+      "sha256": "8c1cfe33a4fd2a5720d967fe8d54adad7d1a147a0342afc4690fde1cde016488",
+      "size": 4654
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/standard-accepted.json",
+      "sha256": "87fc8dab48d1385b9f520d6dc6beef6c3d5a2f8e9ef5b6c5539b993f37429a5d",
+      "size": 345
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/stage.json",
+      "sha256": "57845d0389f84d5dcaf38984ad4f10ed32b8f7b394f0b88cfc5c75e6f5176da5",
+      "size": 112
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/run-summary.json",
+      "sha256": "a17d2318dca4b7e0455c018e9acfab46f45d6344e7887b46a0a8a7e426382e55",
+      "size": 536
+    },
+    {
+      "path": "investigation-c8b8d46/windows-2025/control-cases.json",
+      "sha256": "c114f7627b29891d7841b3e94f8515f0f07afd3eee7e12d353f9c0b5bb877864",
+      "size": 6319
     }
   ],
   "tested_sources": [],
@@ -148,6 +188,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38698529104",
       "result": "BLOCKED",
       "note": "Server proved production descendants, background activity, duplicate suppression, independent Stop, changed-scope refusal and stale-revision refusal. Remaining minimized failures concern UTF-8/dynamic-scope/PATH/session fixture preparation; no completion claimed."
+    },
+    {
+      "tested_commit": "c8b8d46ab5ac7715b549cd1ecdcb7574a246a8e6",
+      "run_id": 38700856884,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38700856884",
+      "result": "BLOCKED",
+      "note": "Server passed genuine x86/Unicode arguments, actual original-driver unload, both Windows sessions, killed-reservation recovery and held-object exit/scope cases. Short-lived cleanup exposed a membership-retirement versus process-signal Stop race; fixed through a bounded wait on the same held object."
     }
   ]
 }

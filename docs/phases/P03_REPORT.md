@@ -145,3 +145,7 @@ are retained in the phase manifest. This confirms this phase only; the P09
 product exit gate remains pending.
 
 Run: https://github.com/kurasis/SecureRun/actions/runs/38793638963
+
+P09 regression at `83985827bfb1cb55b1ebdd2071bc0fa8332a83da` passed both targets
+in run `38800451929`. Current production Rust/UI bytes match this validation;
+later P09 diagnostic scripts do not constitute final matching P09 dependency proof.

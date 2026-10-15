@@ -804,6 +804,96 @@
       "path": "investigation-ce6098f/windows-2025/control-cases.json",
       "size": 6796,
       "sha256": "00e5f4fccb64aea1a771705a2871da6a771ac6c66bb93a1f9dfa70779e19753a"
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/standard-sessions.json",
+      "sha256": "ab55e1ce8dd7f52965a9446b0dedd8e466f35158e0e417ae52faf928712c642c",
+      "size": 549
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/standard-scope.json",
+      "sha256": "125ecd3abb582afa2ff8045630ad8ca6c7279b7ca3bceebdaf28d96b47527d14",
+      "size": 913
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/standard-reserved.json",
+      "sha256": "ee1a1681601ebaade28edfe907cedc2bc6c926b5174f935425a75c6903a06e53",
+      "size": 489
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/standard-normal.json",
+      "sha256": "6c00dcc5192c462cdd01cae97553f0629204c635b3eae75e3937e3ea1dccb61c",
+      "size": 5363
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/standard-accepted.json",
+      "sha256": "a0a9d3b92465343b7eebc0c8f95ffc2bfc920e1a5b987987976058720d76c4cb",
+      "size": 489
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/stage.json",
+      "sha256": "28be95a384ead783759794caa02a2d436d2286a454507dd3f54097347ecb7d30",
+      "size": 112
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/run-summary.json",
+      "sha256": "cdfd6f47557738b13b2300f49bb4f0cfd0a86da64c568816d0d81388b98f9cd0",
+      "size": 536
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/driver-unload.json",
+      "sha256": "b2e8f2859a28096ed2748da0f3e14a1cd70ce50b86d80c6dfe4602d63ced79f9",
+      "size": 120
+    },
+    {
+      "path": "investigation-7ed2836/windows-11-arm/control-cases.json",
+      "sha256": "5cdbd634b58c9c329bad07f522933a3ba14ebac337cd10c983acb6f003698ff2",
+      "size": 7110
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/standard-sessions.json",
+      "sha256": "a73ccfa91809570c8741e8ae90ee52988955983513821eba7a8d2d54bc07288d",
+      "size": 549
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/standard-scope.json",
+      "sha256": "64111758c2bf01677664ae71ac28319208dc0153f4520349e163e094ebe4e32c",
+      "size": 913
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/standard-reserved.json",
+      "sha256": "7aba8e1f3b46133ab38d6ca5476f96f6be1a224af50c2c390132cd8930017def",
+      "size": 489
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/standard-normal.json",
+      "sha256": "6a0ab5569aa74de20596556e1830f9bef8ff3c148e7a159e58be473dcb9c39cc",
+      "size": 5025
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/standard-accepted.json",
+      "sha256": "46266504c35fa104de5fea18c27500494fedc69c8da9d28f84b4a8b90facd831",
+      "size": 489
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/stage.json",
+      "sha256": "f8beff9791a607aa3a4362334d558b308bae65da65c4e98da688006511991f46",
+      "size": 112
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/run-summary.json",
+      "sha256": "1246385ae91608d547a71ff0eea0395222e8b9ac6a290d366a2cb72f3ad27e94",
+      "size": 536
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/control-cases.json",
+      "sha256": "6f7eac3d2ac7feadeb5276c970dab57b9de43820015b78256682f533ace978af",
+      "size": 6796
+    },
+    {
+      "path": "investigation-7ed2836/windows-2025/driver-unload.json",
+      "sha256": "5c385dae19ab23d9425371f1ccc1643434aedce8f11b573cbcba530ee179d7a2",
+      "size": 120
     }
   ],
   "tested_sources": [
@@ -1363,6 +1453,12 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38793649785",
       "result": "FAILED",
       "note": "Server passed all 21 cases. ARM sessions prerequisites failed an unboxed endpoint positive control; no passing regression claim."
+    },
+    {
+      "run_id": 38798061737,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38798061737",
+      "result": "PASSED_HISTORICAL",
+      "note": "Both targets passed all scoped-control cases. Later cleanup/UI source changes require a new matching regression."
     }
   ]
 }

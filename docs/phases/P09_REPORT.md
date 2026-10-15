@@ -197,3 +197,9 @@ the PowerShell 7 actor used the .NET Framework event-opening overload. The ACL
 channel was created, but its standard-user self-check raised InvalidCastException.
 The actor now uses EventWaitHandleAcl.OpenExisting; the Windows PowerShell 5.1
 UIA helper retains its correct framework overload. No permission was broadened.
+
+Both P05 (`38798057764`) and P06 (`38798061737`) passed at `7ed2836`. These
+are historical after the cleanup/UI changes. P03 passed at `8398582` in run
+`38800451929`, with unchanged current production sources. P04 `38800456163` passed
+Server but ARM timed out in both actual boxed-manager checks. No boxed control
+or metadata success is claimed; a fresh full P04 run is `38802021230`.

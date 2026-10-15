@@ -5107,6 +5107,66 @@
       "path": "investigation-measurement-8398582/windows-11-arm/measurement-fixture.json",
       "sha256": "5d53b2608e4cb2b8bc4e169d6e5e4ddff8334eb3d4b18da686d843d984ea92fa",
       "size": 591
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/standard-product.json",
+      "sha256": "40c28c2cd5ee887bb7e7cd74ab96081240a0410ec4a1cee796e4da2e16d8e32f",
+      "size": 245
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/stage.json",
+      "sha256": "24a6b221cd9c8db70af3639565e8f3b4d97263245f96cbfb85c4f3a5400c8fd7",
+      "size": 112
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/run-summary.json",
+      "sha256": "f7b28cdcb982f55ab20fa668943764bf826aa6795f46a274cdba2a2837263192",
+      "size": 611
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-full-8398582/windows-2025/official-applications.json",
+      "sha256": "0d70531fd37dbcd4a04ea2c6c9de5b0171bb6120ac8979cd0b2e099470320063",
+      "size": 1918
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/standard-product.json",
+      "sha256": "5021ff365424e97f9cfec9e7685ebfc7e91aa1ccd178df42298a8c363e013e7d",
+      "size": 245
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/stage.json",
+      "sha256": "c3f58ff6b0198aad429eb036ceb65a07268af0efc58dc8e226dd9cdcda163908",
+      "size": 112
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/run-summary.json",
+      "sha256": "507cdef5765194213ff76ad4750b2b3c81e4ce03559b5a94069231d14e9edba7",
+      "size": 611
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-full-8398582/windows-11-arm/official-applications.json",
+      "sha256": "f33c011816f7368f6b75943edcb4c368098925a5646a27115315c28317e0be3c",
+      "size": 1936
     }
   ],
   "note": "P09 remains blocked pending actual product/application/performance proof. Both native measurement fixtures pass; the focused UI cannot yet reach environment cards. New minimized failure diagnostics capture only safe states/reason codes/counts. Matching regressions are running.",
@@ -5152,6 +5212,12 @@
       "result": "DIAGNOSTIC_FAILED",
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38796850868",
       "note": "Four environments only, no performance gate. ARM refused diagnostic membership during seeding. Server keyboard/UIA passed; CDP stage evaluations failed; fresh standard user could not activate Windows Settings. No phase exit claim."
+    },
+    {
+      "run_id": 38799721407,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38799721407",
+      "result": "FAILED",
+      "note": "Both actors stopped before seeding due to PowerShell 7 event API binding; permissions were not broadened."
     }
   ]
 }

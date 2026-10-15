@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "evidence": {
+        "standard_user": true,
+        "checkpoint": "Reserved",
+        "automatic_replay": false,
+        "target_executions": 0,
+        "duplicate_deliveries": 3,
+        "real_worker_killed": true,
+        "receipt_state": "UNKNOWN"
+      },
+      "name": "actual_dispatch_interruption_reserved",
+      "id": "T61",
+      "status": "PASSED"
+    }
+  ],
+  "standard_user": true,
+  "status": "PASSED",
+  "mode": "reserved"
+}

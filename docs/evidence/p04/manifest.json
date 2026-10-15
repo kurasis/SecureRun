@@ -544,6 +544,46 @@
       "path": "completion-ce6098f/windows-11-arm/standard-user.json",
       "sha256": "0efd526994758d0c1f9206b8e62d210a71a5bd564532531e92aa68dd57ac7476",
       "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/standard-user.json",
+      "sha256": "503aee3dfe2dd62f7faa6123109a6ceb6e43f2b3ad6e23a841329b7a50dbb4e4",
+      "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/stage.json",
+      "sha256": "6394fdeef4ea1985a353278375af6e9e015ea0d8ce66f52bff8088f8120d9f9e",
+      "size": 152
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/observation-cases.json",
+      "sha256": "3035c08193f482db0b40530597612ae113c79653a400485b5c694c0572c7dc3f",
+      "size": 6420
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/run-summary.json",
+      "sha256": "1586182cb542d6e062056575b07e3dc6dd12926aa331efff25b6af2786fc55dc",
+      "size": 511
+    },
+    {
+      "path": "investigation-8398582/windows-2025/standard-user.json",
+      "sha256": "8ad006f6d9cf27a2404004000eedb374f7569de574394c89e5cffaec22b29248",
+      "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-2025/stage.json",
+      "sha256": "64a891354b4148c02d7c8228f3649503033a021175f6e39e03c40d16578b7ec4",
+      "size": 152
+    },
+    {
+      "path": "investigation-8398582/windows-2025/run-summary.json",
+      "sha256": "eddf3189572fecac19e25f16953e92ca7d0131183ea4fd1671248c345266ebb6",
+      "size": 510
+    },
+    {
+      "path": "investigation-8398582/windows-2025/observation-cases.json",
+      "sha256": "7348cc0dbbbb72a3eb62779b473271f52b5c5b2104eaece7aa933dca53a66d7c",
+      "size": 7320
     }
   ],
   "tested_sources": [
@@ -839,5 +879,13 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close."
+  "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close.",
+  "historical_runs": [
+    {
+      "run_id": 38800456163,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38800456163",
+      "result": "FAILED",
+      "note": "Server passed; ARM boxed-manager observation and normal desktop refusal timed out. No successful boxed-startup claim."
+    }
+  ]
 }

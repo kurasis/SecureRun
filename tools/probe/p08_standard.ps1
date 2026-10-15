@@ -3,8 +3,8 @@ $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new()
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 12|Set-Content (Join-Path $Fixture 'lifecycle-cases.json') -Encoding utf8}
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
- $script:lastReply=$null
-function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'LIFECYCLE_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;if($null -ne $script:lastReply -and $null -ne $script:lastReply.PSObject.Properties['operations']){$c.backend_operations=@($script:lastReply.operations|Select-Object intent,stage,reason,native_status)}};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
+ $script:lastReply=$null;$script:nativeConfirmationStage='NOT_STARTED'
+function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS';also_ids=@(switch -Wildcard ($name){'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup'{'T55'};'real_cleanup_executor_interruption_*'{'T26';'T65'}})};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'LIFECYCLE_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.exception_type=$_.Exception.GetType().FullName;$c.native_confirmation_stage=$script:nativeConfirmationStage;$c.stack_lines=@([regex]::Matches($_.ScriptStackTrace,'line ([0-9]+)')|ForEach-Object {[int]$_.Groups[1].Value});if($null -ne $script:lastReply -and $null -ne $script:lastReply.PSObject.Properties['operations']){$c.backend_operations=@($script:lastReply.operations|Select-Object intent,stage,reason,native_status)}};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
 function Call($request,[string]$kind='lifecycle',[bool]$allowFailure=$false){
  $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
  $p=[Diagnostics.Process]::Start($s)
@@ -31,8 +31,16 @@ function Coordinate([string]$action){[IO.File]::WriteAllText((Join-Path $Fixture
 function Register-Probe([string]$mode,[string]$leaf){$id=[Guid]::NewGuid().ToString();$q=@{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$id;display_name='P08 workload';executable=(Join-Path (Split-Path $script:active) 'securerun-launch-probe.exe');arguments=@($mode,(Join-Path $Fixture $leaf));working_directory=$null};$r=Call $q 'control';Require (($r.receipts|Where-Object operation_id -eq $id).state -eq 'REGISTERED') 'WORKLOAD_REGISTER_FAILED';return ($r.applications|Where-Object environment_id -eq $e.id)[-1]}
 function Start-Normal-Desktop {$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$p=[Diagnostics.Process]::Start($s);$null=$p.StandardOutput.ReadToEndAsync();$null=$p.StandardError.ReadToEndAsync();return $p}
 function Native-Confirm([string]$intent,[bool]$accept){
- $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.ArgumentList.Add('--lifecycle-confirm-once');$p=[Diagnostics.Process]::Start($s)
- try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$q=@{action='ACT';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent=$intent;language='en'};$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();[P08Desktop]::Confirm($p,$script:active,$e.id,$accept,$intent);Require ($p.WaitForExit(180000)) 'NATIVE_CONFIRMATION_RESULT_TIMEOUT';Require ($p.ExitCode -eq 0) 'NATIVE_CONFIRMATION_PROCESS_FAILED';return ($read.Result|ConvertFrom-Json)}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
+ $script:nativeConfirmationStage='PROCESS_START';$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.ArgumentList.Add('--lifecycle-confirm-once');$p=[Diagnostics.Process]::Start($s)
+ try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$q=@{action='ACT';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent=$intent;language='en'};$script:nativeConfirmationStage='REQUEST_WRITE';$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();$script:nativeConfirmationStage='DIALOG_WAIT';[P08Desktop]::Confirm($p,$script:active,$e.id,$accept,$intent);$script:nativeConfirmationStage='DIALOG_CLICKED';Require ($p.WaitForExit(180000)) 'NATIVE_CONFIRMATION_RESULT_TIMEOUT';Require ($p.ExitCode -eq 0) 'NATIVE_CONFIRMATION_PROCESS_FAILED';$script:nativeConfirmationStage='RESPONSE_READ';return ($read.Result|ConvertFrom-Json)}catch{
+  $failure=$_
+  if($p.HasExited -and $read.IsCompletedSuccessfully){
+   $backend=$null;try{$backend=$read.Result|ConvertFrom-Json}catch{}
+   if($null -ne $backend -and $null -ne $backend.PSObject.Properties['reason'] -and $backend.reason -cmatch '^[A-Z][A-Z0-9_]{3,80}$'){
+    if($backend.reason -eq 'OBSERVED'){throw 'NATIVE_CONFIRMATION_BYPASSED'};throw $backend.reason
+   }
+  };throw $failure
+ }finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
 }
 function Box-Report([string]$leaf) {
  $clock=[Diagnostics.Stopwatch]::StartNew()
@@ -77,7 +85,6 @@ try{
  }elseif($Mode -eq 'normal'){
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p08_desktop.cs')))
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')))
-  Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'engine_bridge.cs')))
   $lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot)
   $script:registeredHost=Register-Host (Join-Path $Fixture 'host-report.jsonl')
   Case 'T24' 'reset_preserves_definition_applications_and_retained_root_identity' {
@@ -105,7 +112,7 @@ try{
    $r=Native-Confirm 'RESET' $true;Require ($r.reason -eq 'OBSERVED') $r.reason;Refresh-Environment;Empty-Root;Require ($e.generation -eq ($before+1)) 'NATIVE_CONFIRMATION_NOT_COMMITTED'
    @{real_native_dialog=$true;normal_production_binary=$true;affected_environment_uuid_visible=$true;cancel_preserves_data=$true;cancelled_plan_consumed=$true;explicit_accept_completed_reset=$true;renderer_confirmation_boolean=$false}
   }
-  Case 'T06' 'persistent_workload_survives_actual_normal_window_close' {
+  Case 'T25' 'persistent_workload_survives_actual_normal_window_close' {
    $held=Register-Probe 'hold' ('persistent-'+[Guid]::NewGuid().ToString('N')+'.jsonl');$receipt=Launch $held;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
    $gui=Start-Normal-Desktop
    try{[P08Desktop]::CloseNormalWindow($gui,$script:active)}finally{if(-not $gui.HasExited){$gui.Kill();$null=$gui.WaitForExit(10000)};$gui.Dispose()}
@@ -136,7 +143,7 @@ try{
    Require ($r.reason -in @('FILE_REFERENCE_GENERATION_CHANGED','FILE_REFERENCE_NOT_FOUND')) $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $destination 'must-not-publish.exe'))) 'STALE_TRANSFER_PUBLISHED'
    @{actual_imported_executable_ran_logically_before_reset=$true;host_report_absent=$true;generation_advanced=$true;application_record_retained_unavailable=$true;old_boxed_launch_refused=$true;old_file_reference_refused=$true;physical_host_fallback=$false}
   }
-  Case 'T18' 'current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair' {
+  Case 'T33' 'current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair' {
    $null=Import 'hooks-canary.txt';$box='SR_'+$e.id.Replace('-','');$lab.Register($box)
    foreach($pair in @(@('OnBoxDelete','C:\P08_UNAPPROVED_HOOK.exe'),@('AutoDelete','y'),@('AutoRecover','y'))){
     $lab.Set($box,$pair[0],$pair[1]);try{$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -ne 'OBSERVED' -and $null -eq $r.plan) 'UNAPPROVED_LIFECYCLE_ACCEPTED';Require ($lab.Read($box,$pair[0],0x70000000) -eq $pair[1]) 'EXTERNAL_SETTING_SILENTLY_REPAIRED'}finally{$lab.Set($box,$pair[0],$(if($pair[0] -eq 'OnBoxDelete'){$null}else{'n'}))}
@@ -144,20 +151,28 @@ try{
    Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'hooks-canary.txt').Count -eq 1) 'HOOK_REFUSAL_DELETED_DATA'
    @{current_hook_rejected=$true;automatic_recovery_and_delete_drift_rejected=$true;unapproved_values_not_silently_removed=$true;data_retained=$true;host_hook_executed=$false}
   }
-  Case 'T55' 'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup' {
+  Case 'T34' 'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup' {
    $box='SR_'+$e.id.Replace('-','');$lab.Register($box);$backup=$root+'.p08-original';$replacement=$root+'.p08-replacement';Move-Item -LiteralPath $root -Destination $backup
-   try{$null=New-Item -ItemType Directory -Path $root;[IO.File]::WriteAllText((Join-Path $root 'replacement-canary.txt'),'REPLACEMENT');$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='REMOVE'} 'lifecycle' $true;Require ($r.reason -in @('STOP_ROOT_CHANGED','ROOT_IDENTITY_CHANGED','CLEANUP_ROOT_CHANGED')) $r.reason;Require ([IO.File]::ReadAllText((Join-Path $root 'replacement-canary.txt')) -eq 'REPLACEMENT') 'REPLACEMENT_ROOT_MUTATED'}finally{if(Test-Path -LiteralPath $root){Move-Item -LiteralPath $root -Destination $replacement};Move-Item -LiteralPath $backup -Destination $root}
+   try{$missing=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($missing.reason -in @('STOP_ROOT_CHANGED','ROOT_IDENTITY_CHANGED','CLEANUP_ROOT_CHANGED')) $missing.reason;Require (-not(Test-Path -LiteralPath $root)) 'MISSING_ROOT_SILENTLY_RECREATED';$null=New-Item -ItemType Directory -Path $root;[IO.File]::WriteAllText((Join-Path $root 'replacement-canary.txt'),'REPLACEMENT');$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='REMOVE'} 'lifecycle' $true;Require ($r.reason -in @('STOP_ROOT_CHANGED','ROOT_IDENTITY_CHANGED','CLEANUP_ROOT_CHANGED')) $r.reason;Require ([IO.File]::ReadAllText((Join-Path $root 'replacement-canary.txt')) -eq 'REPLACEMENT') 'REPLACEMENT_ROOT_MUTATED'}finally{if(Test-Path -LiteralPath $root){Move-Item -LiteralPath $root -Destination $replacement};Move-Item -LiteralPath $backup -Destination $root}
    $lab.LifecycleSetting($box,'UseFileImage','y');try{$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -ne 'OBSERVED') 'IMAGE_CONFIGURATION_ACCEPTED'}finally{$lab.LifecycleSetting($box,'UseFileImage','n')}
-   @{unexpected_root_identity_refused=$true;replacement_canary_preserved=$true;original_identity_restored_by_fixture_only=$true;unsupported_images_refused=$true;no_root_rebinding_or_deletion_by_path=$true}
+   @{missing_root_not_recreated=$true;unexpected_root_identity_refused=$true;replacement_canary_preserved=$true;original_identity_restored_by_fixture_only=$true;unsupported_images_refused=$true;no_root_rebinding_or_deletion_by_path=$true}
   }
   Case 'T24' 'hardlinks_and_reparse_traversal_rejected_before_native_dispatch' {
    $outside=Join-Path $Fixture 'outside-cleanup';$null=New-Item -ItemType Directory -Path $outside;[IO.File]::WriteAllText((Join-Path $outside 'keep.txt'),'OUTSIDE_CANARY');$before=(Get-FileHash (Join-Path $outside 'keep.txt')).Hash
    $alias=Join-Path $root 'hardlink.txt';$null=New-Item -ItemType HardLink -Path $alias -Target (Join-Path $outside 'keep.txt')
    $p=Prepare 'RESET';try{$r=Commit $p $true;Require ($r.reason -eq 'CLEANUP_HARDLINK_REJECTED') $r.reason}finally{Remove-Item -LiteralPath $alias};$null=Call @{action='RECOVER';operation_id=$p.operation_id}
-   $junction=Join-Path $root 'junction';$null=New-Item -ItemType Directory -Path $junction;[P02StorageSeal]::MakeJunction($junction,$outside,0x100)
+   $junction=Join-Path $root 'junction';$null=New-Item -ItemType Junction -Path $junction -Target $outside
    $p=Prepare 'RESET';try{$r=Commit $p $true;Require ($r.reason -in @('CLEANUP_REPARSE_REJECTED','REPARSE_OR_HARDLINK_REJECTED')) $r.reason}finally{[IO.Directory]::Delete($junction)};$null=Call @{action='RECOVER';operation_id=$p.operation_id}
    Require ((Get-FileHash (Join-Path $outside 'keep.txt')).Hash -eq $before) 'OUTSIDE_CLEANUP_CANARY_CHANGED'
    @{hardlink_rejected_before_dispatch=$true;reparse_rejected_before_dispatch=$true;outside_canary_preserved=$true;generic_recursive_cleanup=$false}
+  }
+  Case 'T24' 'locked_file_cleanup_is_refused_or_visible_and_recovers_without_replay' {
+   $null=Import 'locked-retained.txt';$file=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'locked-retained.txt');Require ($file.Count -eq 1) 'LOCK_CANARY_MISSING';$before=(Get-FileHash -LiteralPath $file[0].FullName).Hash
+   $held=[IO.File]::Open($file[0].FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read);$plan=Prepare 'RESET'
+   try{$r=Commit $plan $true;Require ($r.reason -in @('CLEANUP_NATIVE_STATUS_UNRESOLVED','CLEANUP_OBJECT_SHARING_VIOLATION','CLEANUP_ROOT_SECURITY_UNAVAILABLE')) $r.reason;Require ((Get-FileHash -LiteralPath $file[0].FullName).Hash -eq $before) 'LOCKED_CANARY_DELETED'}finally{$held.Dispose()}
+   $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id;Require ($record.stage -in @('EXPIRED_UNDISPATCHED','INTERRUPTED_RETAINED_ARCHIVED')) 'LOCKED_CLEANUP_NOT_RECOVERABLE';Refresh-Environment;if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'}
+   Require ((Get-FileHash -LiteralPath $file[0].FullName).Hash -eq $before) 'RECOVERY_REPLAYED_LOCKED_DELETE';$null=Act 'RESET';Empty-Root
+   @{actual_no_delete_share_handle=$true;locked_data_preserved=$true;failure_visible=$true;recovery_inspected_without_replay=$true;fresh_explicit_cleanup_after_unlock=$true;outside_root_delete=$false}
   }
   Case 'T28' 'missing_ownership_database_cannot_adopt_or_remove_existing_box' {
    $path=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata/policy.sqlite';$saved=Join-Path $Fixture 'original-policy.sqlite';$empty=Join-Path $Fixture 'new-empty-policy.sqlite';Move-Item -LiteralPath $path -Destination $saved
@@ -192,7 +207,7 @@ try{
    Empty-Root;Require ($e.generation -eq ($before+1)) 'NORMAL_BINARY_ACTIVATED_LIFECYCLE_FAULT'
    @{normal_production_binary=$true;fault_variable_supplied=$true;cleanup_completed=$true;fault_checkpoint_activated=$false}
   }
-  Case 'T25' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
+  Case 'T24' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
    $old=$e.id;$savedRoot=$root;$cancel=Native-Confirm 'REMOVE' $false;Require ($cancel.reason -eq 'LIFECYCLE_CONFIRMATION_CANCELLED') $cancel.reason;Refresh-Environment;Require ($e.id -eq $old) 'REMOVE_CANCEL_LOST_ENVIRONMENT';$r=Native-Confirm 'REMOVE' $true;Require ($r.reason -eq 'OBSERVED') $r.reason;Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'
    Require (@($r.operations|Where-Object {$_.environment_id -eq $old -and $_.intent -eq 'REMOVE' -and $_.stage -eq 'COMPLETE'}).Count -eq 1) 'REMOVAL_TOMBSTONE_MISSING'
    $c=Call @{action='LIST'} 'control';Require (@($c.applications|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVAL_APPLICATION_RECORDS_REMAIN'
@@ -229,7 +244,7 @@ try{
    }
   }
   foreach($point in @('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','MetadataCommitted')){
-   Case 'T34' ('real_cleanup_executor_interruption_'+$point) {
+   Case 'T18' ('real_cleanup_executor_interruption_'+$point) {
     if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'}
     $null=Import ('crash-'+$point+'.txt');$plan=Prepare 'RESET';$env:SECURERUN_P08_PAUSE_STAGE=$point
     try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
@@ -239,12 +254,13 @@ try{
     Refresh-Environment
     $before=@(Get-ChildItem -LiteralPath $root -Recurse -File).Count;$again=Commit $plan;$after=@(Get-ChildItem -LiteralPath $root -Recurse -File).Count;Require ($before -eq $after) 'DESTRUCTIVE_OPERATION_REPLAYED'
     # An explicit new intent clears retained partial data; recovery never does it.
-    $null=Act 'RESET';Empty-Root
-    @{real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;competing_manager_refused=$proof.competing_manager_refused;external_original_dispatch_rejected=$proof.external_original_dispatch_rejected;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
+    $null=Act 'RESET';Empty-Root;$canary='new-generation-'+$point+'.txt';$null=Import $canary;$newGeneration=$e.generation
+    $null=Call @{action='RECOVER';operation_id=$plan.operation_id};$null=Commit $plan;Refresh-Environment;Require ($e.generation -eq $newGeneration -and @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $canary).Count -eq 1) 'OLD_CLEANUP_JOURNAL_MUTATED_NEW_GENERATION'
+    @{old_cleanup_journal_after_new_reset_inspection_only=$true;real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;competing_manager_refused=$proof.competing_manager_refused;external_original_dispatch_rejected=$proof.external_original_dispatch_rejected;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
    }
   }
   foreach($point in @('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','DefinitionRemoved','MetadataCommitted')){
-   Case 'T34' ('real_remove_interruption_'+$point) {
+   Case 'T18' ('real_remove_interruption_'+$point) {
     if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'};$null=Import 'remove-crash.txt';$old=$e.id;$plan=Prepare 'REMOVE';$env:SECURERUN_P08_PAUSE_STAGE=$point
     try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
     $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_REMOVE_KILL_PROOF_MISSING'

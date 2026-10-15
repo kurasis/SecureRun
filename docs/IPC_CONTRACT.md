@@ -142,3 +142,33 @@ launch-reservation path. See [safe file workflows](SAFE_FILE_WORKFLOWS.md).
 See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
 confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
 [the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.
+
+## P09 product integration
+
+`product_request` is a normal main-window permission with independent backend
+origin/label authorization. List returns bounded typed manager history and an
+advisory free-volume observation. Preview returns an immutable minimized bundle
+and backend-issued, single-use 60-second ID. Save accepts only that ID and an
+EN/RU picker-language enum; a native picker chooses a new JSON file and the backend
+writes the exact reviewed body. Cancel consumes the preview. No renderer path,
+free-form record/body, executable, URL or filesystem operation is accepted.
+Scale accepts only 100/150/200; Help accepts two fixed official topic enums.
+
+`policy_request` additionally supports Queue/ApplyQueued/DiscardQueued and
+metadata Rename. Queued drafts hold original native selections, current engine
+generation, environment revision/generation and a monotonic deadline. Apply
+consumes the draft before dispatch and revalidates identity and complete stopped
+scope. Rename uses a current display-name/revision/generation comparison and a
+permanent operation tombstone; it changes neither applied permissions nor data.
+
+The native policy/control/file/lifecycle entry points share a bounded, serialized
+request gate. Picker completion is reauthorized after its asynchronous dialog.
+Transfer cancellation remains independent so it can interrupt a held transfer.
+Normal request replies carry generated diagnostic IDs used by the typed history.
+Original operation journals remain authoritative for uncertain outcomes; logging
+failure never converts an unknown action into success. Session-only or unconfirmed
+history persistence is explicitly identified in the product UI.
+
+See [product UX](PRODUCT_UX.md) and
+[minimized diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). P09 native proof
+remains pending until its evidence gate and matching regressions pass.

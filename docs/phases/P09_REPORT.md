@@ -26,6 +26,26 @@ leases. They remain unapplied until an explicit fresh apply, complete stopped
 scope and original policy checks. Selections expire after 60 seconds and are not
 restored after restart. No automatic policy apply or launch replay is introduced.
 
+## Implemented outputs
+
+- [Product UX and accessibility](../PRODUCT_UX.md).
+- [Application compatibility matrix](../APPLICATION_COMPATIBILITY.md).
+- [Performance and minimized diagnostics](../PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md).
+- Normal release Windows lab: `.github/workflows/p09.yml`, `Invoke-P09.ps1`,
+  official hashed application fixtures and actual UIA/browser/job-accounting probes.
+- Strict evidence retainer and repository gate reject missing cases, wrong native
+  architectures, stale sources, exceeded budgets and missing matching regressions.
+
+## Checks so far
+
+Local frontend build, three foundation UI tests and four product helper tests pass.
+The repository validator and 13 tooling tests pass. Portable Rust tests, Windows
+adapter metadata Clippy and PowerShell/C# compile checks are recorded separately
+from native execution. Earlier product builds passed on both Windows targets at
+`ef2c4bd85830b6e1a486c0646e4e2e045f74a811` (Actions `38773439542`).
+Full native product lab `38782723570` was submitted at
+`53c8e58c1e4866fa02a417b44697e65443cbc2b9`; its outcome is pending.
+
 ## Validation pending
 
 Required native P09 proof: T30, T32, T41, T63 and T66; actual app versions and hashes;

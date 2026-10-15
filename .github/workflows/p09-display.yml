@@ -19,9 +19,9 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference='Stop'
-          Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase
+          Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase,System.Windows.Forms
           Add-Type 'using System;using System.Runtime.InteropServices;public static class DisplayDpi { [DllImport("user32.dll")] public static extern uint GetDpiForWindow(IntPtr hwnd); }'
-          $report=@{schema=1;status='FAILED';synthetic_actions_vm_only=$true;display_settings_modified=$false;controls=@();scale_options=@();actual_dpi=@()}
+          $report=@{schema=1;status='FAILED';synthetic_actions_vm_only=$true;display_settings_modified=$false;controls=@();resolution_options=@();scale_options=@();actual_dpi=@();stage='STARTING'}
           try {
             Start-Process 'ms-settings:display'
             $clock=[Diagnostics.Stopwatch]::StartNew();$root=$null
@@ -42,6 +42,20 @@ jobs:
                 $report.controls+=@{type=$type.ProgrammaticName;automation_id=$id;percentage=$percent;scale_label=($name -in @('Scale','Scale and layout','Change the size of text, apps, and other items'))}
               }
             }
+            $report.stage='ENUMERATING_ADVERTISED_RESOLUTIONS'
+            $resolution=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Resolution_ComboBox'))
+            $resolution.GetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern).Expand();Start-Sleep -Milliseconds 300
+            $items=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem))
+            $best=$null;$area=0
+            foreach($item in $items){if($item.Current.Name -match '^([0-9]{3,4})\s*[x×]\s*([0-9]{3,4})'){
+              $width=[int]$Matches[1];$height=[int]$Matches[2];$report.resolution_options+=@{width=$width;height=$height}
+              if($width*$height -gt $area){$area=$width*$height;$best=$item}
+            }}
+            if($null -eq $best){throw 'DISPLAY_RESOLUTION_OPTIONS_UNAVAILABLE'}
+            $best.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select();$report.display_settings_modified=$true;Start-Sleep -Seconds 2
+            $keep=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::NameProperty,'Keep changes'))
+            if($null -ne $keep){$keep.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern).Invoke()}
+            $report.stage='SELECTING_ACTUAL_WINDOWS_SCALE'
             $combo=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'))
             if($null -eq $combo -or -not $combo.Current.IsEnabled){throw 'SCALE_CONTROL_UNAVAILABLE'}
             foreach($percent in @(100,150,200,100)){

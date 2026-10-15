@@ -59,6 +59,8 @@ def check_target(folder,commit,machine):
  if machine=='aa64':architectures.append('securerun-launch-probe-x64')
  for architecture in architectures:
   proof=by_name[f'imported_boxed_exe_{architecture}']
+  expected='014c' if architecture.endswith('-x86') else '8664' if architecture.endswith('-x64') else machine
+  if proof['pe_machine']!=expected or not re.fullmatch('[0-9a-f]{64}',proof['probe_sha256']):raise ValueError('P07 actual target PE architecture/hash absent')
   if (not proof['boxed'] or not proof['logical_launch'] or not proof['original_get_handle_path_verified']
       or not proof['literal_percent_environment_name'] or not proof['no_shell_associations']
       or proof['physical_host_fallback'] or not proof['host_report_absent']):raise ValueError('P07 original engine boxed mapping/launch absent')

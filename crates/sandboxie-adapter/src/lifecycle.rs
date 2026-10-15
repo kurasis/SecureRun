@@ -120,6 +120,7 @@ pub struct OperationView {
     pub generation: u64,
     pub stage: String,
     pub reason: String,
+    pub native_status: Option<String>,
 }
 impl From<Record> for OperationView {
     fn from(r: Record) -> Self {
@@ -131,6 +132,7 @@ impl From<Record> for OperationView {
             generation: r.generation,
             stage: r.stage,
             reason: r.reason,
+            native_status: r.native_status.map(|code| format!("{code:08x}")),
         }
     }
 }

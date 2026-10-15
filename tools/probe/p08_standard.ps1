@@ -3,11 +3,12 @@ $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new()
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 12|Set-Content (Join-Path $Fixture 'lifecycle-cases.json') -Encoding utf8}
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
-function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'LIFECYCLE_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
+ $script:lastReply=$null
+function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'LIFECYCLE_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;if($null -ne $script:lastReply -and $null -ne $script:lastReply.PSObject.Properties['operations']){$c.backend_operations=@($script:lastReply.operations|Select-Object intent,stage,reason,native_status)}};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
 function Call($request,[string]$kind='lifecycle',[bool]$allowFailure=$false){
  $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
  $p=[Diagnostics.Process]::Start($s)
- try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(240000)) 'LIFECYCLE_CALL_TIMEOUT';Require ($p.ExitCode -eq 0) 'LIFECYCLE_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
+ try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(240000)) 'LIFECYCLE_CALL_TIMEOUT';Require ($p.ExitCode -eq 0) 'LIFECYCLE_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;$script:lastReply=$r;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
 }
 function New-Environment {
  $r=Call @{action='CREATE';display_name='P08 retained fixture Привет 🧪';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} 'policy'
@@ -50,7 +51,7 @@ function Box-Report([string]$leaf) {
 function Crash-Worker($request,[string]$kind,[string]$stage){
  $key=if($kind -eq 'files'){'SECURERUN_P07_PAUSE_STAGE'}else{'SECURERUN_P06_PAUSE_STAGE'};[Environment]::SetEnvironmentVariable($key,$stage)
  $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false)
- foreach($arg in @('--'+$kind+'-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
+ foreach($arg in @(('--'+$kind+'-worker'),[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
  $p=[Diagnostics.Process]::Start($s);try{$line=$p.StandardOutput.ReadLineAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'CHECKPOINT_TIMEOUT';Require ($line.Result -eq "CHECKPOINT_$stage") 'CHECKPOINT_NOT_REACHED';if($kind -eq 'control' -and $stage -eq 'Accepted'){$report=Box-Report $script:uncertainLeaf;Require ($report.boxed) 'UNCERTAIN_TARGET_NOT_BOXED'};$p.Kill();Require ($p.WaitForExit(10000)) 'HELD_WORKER_NOT_EXITED'}finally{[Environment]::SetEnvironmentVariable($key,$null);if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
 }
 try{
@@ -184,10 +185,10 @@ try{
    @{real_old_plan_refused=$true;old_import_tombstone_refused=$true;new_generation_data_preserved=$true;automatic_replay=$false}
   }
   Case 'T25' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
-   $old=$e.id;$savedRoot=$root;$r=Act 'REMOVE';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'
+   $old=$e.id;$savedRoot=$root;$cancel=Native-Confirm 'REMOVE' $false;Require ($cancel.reason -eq 'LIFECYCLE_CONFIRMATION_CANCELLED') $cancel.reason;Refresh-Environment;Require ($e.id -eq $old) 'REMOVE_CANCEL_LOST_ENVIRONMENT';$r=Native-Confirm 'REMOVE' $true;Require ($r.reason -eq 'OBSERVED') $r.reason;Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'
    Require (@($r.operations|Where-Object {$_.environment_id -eq $old -and $_.intent -eq 'REMOVE' -and $_.stage -eq 'COMPLETE'}).Count -eq 1) 'REMOVAL_TOMBSTONE_MISSING'
    $c=Call @{action='LIST'} 'control';Require (@($c.applications|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVAL_APPLICATION_RECORDS_REMAIN'
-   @{contents_cleared_before_definition_delete=$true;original_section_delete_read_back_absent=$true;known_empty_root_recorded=$true;unrelated_boxes_untouched=$true;audit_tombstone=$true}
+   @{real_native_remove_confirmation=$true;native_cancel_preserved_definition=$true;contents_cleared_before_definition_delete=$true;original_section_delete_read_back_absent=$true;known_empty_root_recorded=$true;unrelated_boxes_untouched=$true;audit_tombstone=$true}
   }
  }else{
   foreach($launchStage in @('Reserved','Accepted')){
@@ -234,15 +235,15 @@ try{
     @{real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;competing_manager_refused=$proof.competing_manager_refused;external_original_dispatch_rejected=$proof.external_original_dispatch_rejected;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
    }
   }
-  foreach($point in @('Cleared','DefinitionRemoved','MetadataCommitted')){
+  foreach($point in @('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','DefinitionRemoved','MetadataCommitted')){
    Case 'T34' ('real_remove_interruption_'+$point) {
     if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'};$null=Import 'remove-crash.txt';$old=$e.id;$plan=Prepare 'REMOVE';$env:SECURERUN_P08_PAUSE_STAGE=$point
     try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
     $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_REMOVE_KILL_PROOF_MISSING'
     $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id
-    if($point -eq 'Cleared'){Require ($record.stage -eq 'INTERRUPTED_RETAINED_ARCHIVED') 'REMOVE_RECOVERY_REPLAYED_DEFINITION_DELETE';Refresh-Environment;Require ($e.lifecycle -eq 'ARCHIVED') 'PARTIAL_REMOVE_NOT_ARCHIVED';$null=Act 'REMOVE'}else{Require ($record.stage -eq 'COMPLETE_RECOVERED') 'REMOVE_RECOVERY_NOT_VERIFIED';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'DELETED_DEFINITION_METADATA_REMAIN'}
+    if($point -notin @('DefinitionRemoved','MetadataCommitted')){Require ($record.stage -eq 'INTERRUPTED_RETAINED_ARCHIVED') 'REMOVE_RECOVERY_REPLAYED_DEFINITION_DELETE';Refresh-Environment;Require ($e.lifecycle -eq 'ARCHIVED') 'PARTIAL_REMOVE_NOT_ARCHIVED';$null=Act 'REMOVE'}else{Require ($record.stage -eq 'COMPLETE_RECOVERED') 'REMOVE_RECOVERY_NOT_VERIFIED';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'DELETED_DEFINITION_METADATA_REMAIN'}
     Empty-Root;$duplicate=Commit $plan;Require ($duplicate.reason -eq 'OBSERVED') $duplicate.reason;New-Environment
-    @{real_executor_killed=$true;checkpoint=$point;competing_manager_refused=$true;actual_definition_absent=$true;metadata_reconciled_without_delete_replay=$true;known_empty_root_retained=$true;fresh_intent_required_before_definition_delete=($point -eq 'Cleared')}
+    @{real_executor_killed=$true;checkpoint=$point;competing_manager_refused=$true;actual_definition_absent=$true;metadata_reconciled_without_delete_replay=$true;known_empty_root_retained=$true;fresh_intent_required_before_definition_delete=($point -notin @('DefinitionRemoved','MetadataCommitted'))}
    }
   }
  }

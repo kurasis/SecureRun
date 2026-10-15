@@ -2,7 +2,13 @@
   "phase": "P08",
   "result": "BLOCKED",
   "tested_commit": "617bb47fd92653eb7c5271e8c19b430eba40109b",
-  "files": [],
+  "files": [
+    {
+      "path": "investigation-seal-protocol/reviewed-investigation.json",
+      "sha256": "71bf5142a2482d9f7766421c1a24f45c6bff62101f8a5f7864122e95f29c1b9b",
+      "size": 1486
+    }
+  ],
   "targets": [],
   "tested_sources": [],
   "note": "Native lifecycle restoration and complete current regressions pending."

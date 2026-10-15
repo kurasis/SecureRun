@@ -6,6 +6,11 @@ mod seal;
 
 fn checkpoint(stage: &str) {
     #[cfg(feature = "policy-ci")]
+    {
+        println!("TRACE_STAGE_{stage}");
+        let _ = std::io::stdout().flush();
+    }
+    #[cfg(feature = "policy-ci")]
     if std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true")
         && std::env::var("SECURERUN_P08_PAUSE_STAGE").as_deref() == Ok(stage)
     {
@@ -416,6 +421,10 @@ fn native_clear(
             unsafe { (native.delete)(&mut attributes, callback, &clock as *const _ as _) } as u32;
         if matches!(status, 0 | 0xc0000043) && seal.empty().is_ok() {
             break status;
+        }
+        if r.native_status != Some(status) {
+            r.native_status = Some(status);
+            ops.save(r)?;
         }
         if !matches!(status, 0xc0000043 | 0xc0000101 | 0xc0000056)
             || clock.elapsed() >= Duration::from_secs(30)
@@ -946,6 +955,8 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         });
         let clock = Instant::now();
         let mut output = None;
+        #[cfg(feature = "policy-ci")]
+        let mut observed_stages = Vec::new();
         let mut interrupted = false;
         #[cfg(feature = "policy-ci")]
         let mut observed_checkpoint = None;
@@ -960,6 +971,13 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
             if let Ok(line) = rx.recv_timeout(Duration::from_millis(50)) {
                 if line.len() > 2 * 1024 * 1024 {
                     break;
+                }
+                #[cfg(feature = "policy-ci")]
+                if let Some(stage) = line.trim().strip_prefix("TRACE_STAGE_") {
+                    if observed_stages.len() < 16 {
+                        observed_stages.push(stage.to_string());
+                    }
+                    continue;
                 }
                 if line.starts_with("CHECKPOINT_") {
                     #[cfg(feature = "policy-ci")]
@@ -1021,6 +1039,39 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
             seal.restore()?;
         }
         #[cfg(feature = "policy-ci")]
+        if std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true")
+            && let contract::Request::Commit { operation_id, .. } = &request
+        {
+            let (_, ops) = journals(&engine)?;
+            let native_status = ops
+                .get(*operation_id)?
+                .and_then(|r| r.native_status)
+                .map(|v| format!("{v:08x}"));
+            let diagnostic = serde_json::json!({"observed_stages":observed_stages,"native_status":native_status,"requested_checkpoint":std::env::var("SECURERUN_P08_PAUSE_STAGE").unwrap_or_default()});
+            let bytes =
+                serde_json::to_vec(&diagnostic).map_err(|_| "LIFECYCLE_TEST_PROOF_UNAVAILABLE")?;
+            match OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .share_mode(0)
+                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                .open(
+                    engine
+                        .profile
+                        .join("metadata")
+                        .join(format!("lifecycle-attempt-{operation_id}.json")),
+                ) {
+                Ok(mut file) => {
+                    file.write_all(&bytes)
+                        .map_err(|_| "LIFECYCLE_TEST_PROOF_UNAVAILABLE")?;
+                    file.sync_all()
+                        .map_err(|_| "LIFECYCLE_TEST_PROOF_UNAVAILABLE")?;
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                Err(_) => return Err("LIFECYCLE_TEST_PROOF_UNAVAILABLE"),
+            }
+        }
+        #[cfg(feature = "policy-ci")]
         if interrupted
             && std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true")
             && let Some(checkpoint) = observed_checkpoint
@@ -1053,15 +1104,13 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         let mut reply: contract::Reply =
             serde_json::from_str(&output.ok_or("LIFECYCLE_EXECUTOR_OUTCOME_UNKNOWN")?)
                 .map_err(|_| "LIFECYCLE_RESPONSE_INVALID")?;
-        if reply.reason == "OBSERVED"
-            && let contract::Request::Commit { operation_id, .. } = &request
-        {
+        if let contract::Request::Commit { operation_id, .. } = &request {
             let _lock = lock(&engine)?;
             let (mut j, mut ops) = journals(&engine)?;
             let mut r = ops
                 .get(*operation_id)?
                 .ok_or("LIFECYCLE_OPERATION_NOT_FOUND")?;
-            if r.stage == "AWAITING_CONTROLLER_RESTORE" {
+            if reply.reason == "OBSERVED" && r.stage == "AWAITING_CONTROLLER_RESTORE" {
                 if r.intent == Action::Reset {
                     let mut e = j.get(r.environment_id)?;
                     if e.generation != r.generation + 1
@@ -1088,8 +1137,8 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                     "COMPLETE",
                     "CONTROLLER_RESTORED_RETENTION_VERIFIED",
                 )?;
-                reply.operations = ops.views()?;
             }
+            reply.operations = ops.views()?;
         }
         Ok(reply)
     })();

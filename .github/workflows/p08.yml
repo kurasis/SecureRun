@@ -32,7 +32,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: p08-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}
+          key: p08-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('crates/**/*.rs', 'src-tauri/**/*.rs', 'src-tauri/**/*.toml') }}
           restore-keys: |
             p08-${{ matrix.runner }}-rust190-
             p07-${{ matrix.runner }}-rust190-
@@ -59,4 +59,4 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: p08-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}
+          key: p08-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}-${{ hashFiles('crates/**/*.rs', 'src-tauri/**/*.rs', 'src-tauri/**/*.toml') }}

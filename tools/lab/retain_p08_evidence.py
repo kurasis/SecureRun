@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 IDS = {f'T{i:02}' for i in (6,18,24,25,26,28,33,34,36,42,43,48,55,56,61,64,65)}
 REQUIRED = {'remove_clears_before_definition_deletion_and_keeps_audit_tombstone', 'archive_retains_data_blocks_manager_launch_and_unarchive_revalidates', 'disposable_waits_for_background_descendants_and_survives_manager_crash', 'current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair', 'old_confirmation_and_import_operation_cannot_mutate_reset_generation', 'original_sandman_coexists_without_automatic_recovery_or_deletion', 'reset_invalidates_imported_executable_and_old_transfer_references', 'hardlinks_and_reparse_traversal_rejected_before_native_dispatch', 'reset_preserves_definition_applications_and_retained_root_identity', 'native_confirmation_names_environment_and_cancel_consumes_plan', 'forged_confirmation_and_stale_generation_refused_without_mutation', 'persistent_workload_survives_actual_normal_window_close', 'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup', 'cleanup_requires_complete_idle_across_actual_windows_sessions', 'missing_ownership_database_cannot_adopt_or_remove_existing_box', 'missing_service_and_changed_original_cleanup_component_fail_closed'}
 REQUIRED.update(f'real_cleanup_executor_interruption_{s}' for s in ('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','MetadataCommitted'))
-REQUIRED.update(f'real_remove_interruption_{s}' for s in ('Cleared','DefinitionRemoved','MetadataCommitted'))
+REQUIRED.update(f'real_remove_interruption_{s}' for s in ('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','DefinitionRemoved','MetadataCommitted'))
 REQUIRED.update(f'reset_reconciles_uncertain_launch_without_replay_{s}' for s in ('Reserved','Accepted'))
 REQUIRED.update(f'reset_refuses_stale_export_recovery_{s}' for s in ('AfterRename','MidCopy'))
 
@@ -42,9 +42,11 @@ def check_target(folder,commit,machine):
       or not proof['recovery_inspection_only'] or proof['replayed'] or not proof['fresh_explicit_cleanup']
       or proof['privileged_helper']):raise ValueError('P08 actual cleanup interruption/recovery absent')
   if not proof['competing_manager_refused'] or (stage in ('Fenced','Sealed','DispatchReserved') and proof['external_original_dispatch_rejected'] is not True):raise ValueError('P08 competing original/manager dispatch not refused')
- for stage in ('Cleared','DefinitionRemoved','MetadataCommitted'):
+ for stage in ('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','DefinitionRemoved','MetadataCommitted'):
   proof=by_name[f'real_remove_interruption_{stage}']
   if not all(proof[k] for k in ('real_executor_killed','competing_manager_refused','actual_definition_absent','metadata_reconciled_without_delete_replay','known_empty_root_retained')) or proof['checkpoint']!=stage:raise ValueError('P08 actual removal interruption absent')
+ remove=by_name['remove_clears_before_definition_deletion_and_keeps_audit_tombstone']
+ if not remove['real_native_remove_confirmation'] or not remove['native_cancel_preserved_definition']:raise ValueError('P08 native removal confirmation absent')
  native=by_name['native_confirmation_names_environment_and_cancel_consumes_plan']
  if not all(native[k] for k in ('real_native_dialog','normal_production_binary','affected_environment_uuid_visible','cancel_preserves_data','cancelled_plan_consumed','explicit_accept_completed_reset')) or native['renderer_confirmation_boolean']:raise ValueError('P08 native confirmation absent')
  sessions=by_name['cleanup_requires_complete_idle_across_actual_windows_sessions']

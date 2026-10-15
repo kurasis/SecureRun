@@ -26,6 +26,7 @@ pub(super) struct Seal {
     pub snapshot: Snapshot,
     _namespace: Vec<File>,
     security: Vec<Option<File>>,
+    guards: Vec<Option<File>>,
     changed: bool,
 }
 fn open(path: &Path, access: u32, sharing: u32) -> R<File> {
@@ -285,6 +286,7 @@ impl Seal {
             },
             _namespace: namespace,
             security: vec![],
+            guards: vec![],
             changed: false,
         };
         result.capture_node(Path::new(""), 0, &mut 0)?;
@@ -309,6 +311,15 @@ impl Seal {
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         )?;
         let info = checked(&file)?;
+        let directory = info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0;
+        let guard = open(
+            &path,
+            READ_CONTROL | FILE_READ_ATTRIBUTES | FILE_READ_DATA,
+            FILE_SHARE_READ | if directory { 0 } else { FILE_SHARE_DELETE },
+        )?;
+        if identity(&guard)? != identity(&file)? {
+            return Err("CLEANUP_OBJECT_REPLACED");
+        }
         let sd = descriptor(&file)?;
         *bytes += sd.len();
         if *bytes > MAX_DESCRIPTOR_BYTES {
@@ -321,17 +332,12 @@ impl Seal {
             descriptor: sd,
         });
         self.security.push(Some(file));
+        self.guards.push(Some(guard));
         if info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0 {
-            let pin = open(
-                &path,
-                READ_CONTROL | FILE_READ_ATTRIBUTES,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-            )?;
             for child in std::fs::read_dir(&path).map_err(|_| "CLEANUP_ENUMERATION_UNKNOWN")? {
                 let child = child.map_err(|_| "CLEANUP_ENUMERATION_UNKNOWN")?;
                 self.capture_node(&relative.join(child.file_name()), depth + 1, bytes)?
             }
-            drop(pin);
         }
         Ok(())
     }
@@ -421,7 +427,7 @@ impl Seal {
     /// Release only objects the original deleter has already marked delete-pending.
     /// Every surviving object retains preauthorized DACL/attribute restoration access.
     pub fn reap_deleted(&mut self) -> R<()> {
-        for file in self.security.iter_mut().skip(1) {
+        for (index, file) in self.security.iter_mut().enumerate().skip(1) {
             if let Some(held) = file.as_ref() {
                 let mut info = FILE_STANDARD_INFO::default();
                 if unsafe {
@@ -437,6 +443,21 @@ impl Seal {
                 }
                 if info.DeletePending {
                     *file = None;
+                    self.guards[index] = None;
+                }
+            }
+        }
+        for index in 1..self.guards.len() {
+            if self.guards[index].is_some()
+                && self.snapshot.nodes[index].attributes & FILE_ATTRIBUTE_DIRECTORY != 0
+            {
+                let path = self.resolve(Path::new(&self.snapshot.nodes[index].relative));
+                if std::fs::read_dir(path)
+                    .map_err(|_| "CLEANUP_ENUMERATION_UNKNOWN")?
+                    .next()
+                    .is_none()
+                {
+                    self.guards[index] = None;
                 }
             }
         }
@@ -445,6 +466,7 @@ impl Seal {
     pub fn delegated_restore(&mut self) {
         self.changed = false;
         self.release_children();
+        self.guards.clear();
     }
     pub fn restore(&mut self) -> R<()> {
         if identity(
@@ -527,7 +549,9 @@ mod tests {
     fn delete_pending_objects_are_released_without_losing_survivor_restore_authority() {
         let (_directory, path, owner, id) = fixture();
         std::fs::write(path.join("keep.txt"), b"SYNTHETIC").unwrap();
+        std::fs::write(path.join("survivor.txt"), b"RETAINED").unwrap();
         let mut seal = Seal::capture_path(path.clone(), &owner, &id).unwrap();
+        seal.freeze().unwrap();
         let text: Vec<u16> = "keep.txt".encode_utf16().collect();
         let name = NtName {
             length: (text.len() * 2) as u16,
@@ -549,7 +573,12 @@ mod tests {
         );
         assert_eq!(status, 0);
         seal.reap_deleted().unwrap();
-        assert_eq!(std::fs::read_dir(&path).unwrap().count(), 0);
+        assert_eq!(std::fs::read_dir(&path).unwrap().count(), 1);
+        seal.restore().unwrap();
+        assert_eq!(
+            std::fs::read(path.join("survivor.txt")).unwrap(),
+            b"RETAINED"
+        );
         drop(seal);
     }
     fn fixture() -> (tempfile::TempDir, PathBuf, String, String) {
@@ -600,6 +629,42 @@ mod tests {
         controller.restore().unwrap();
         assert_eq!(std::fs::read(path.join("keep.txt")).unwrap(), b"RETAINED");
         std::fs::write(path.join("new.txt"), b"NEW").unwrap();
+    }
+    #[test]
+    fn nonempty_directory_cannot_move_outside_sealed_root() {
+        let (_directory, path, owner, id) = fixture();
+        std::fs::create_dir(path.join("nested")).unwrap();
+        std::fs::write(path.join("nested/keep.txt"), b"RETAINED").unwrap();
+        let mut seal = Seal::capture_path(path.clone(), &owner, &id).unwrap();
+        seal.freeze().unwrap();
+        assert!(
+            std::fs::rename(path.join("nested"), path.parent().unwrap().join("outside")).is_err()
+        );
+        seal.restore().unwrap();
+        for (node, file) in seal.snapshot.nodes.iter().zip(&seal.security) {
+            assert_eq!(
+                acl_bytes(&descriptor(file.as_ref().unwrap()).unwrap()).unwrap(),
+                acl_bytes(&node.descriptor).unwrap()
+            );
+        }
+        assert_eq!(
+            std::fs::read(path.join("nested/keep.txt")).unwrap(),
+            b"RETAINED"
+        );
+    }
+    #[test]
+    fn existing_writer_refuses_capture_before_acl_mutation() {
+        let (_directory, path, owner, id) = fixture();
+        std::fs::write(path.join("keep.txt"), b"RETAINED").unwrap();
+        let writer = OpenOptions::new()
+            .write(true)
+            .share_mode(7)
+            .open(path.join("keep.txt"))
+            .unwrap();
+        assert!(Seal::capture_path(path.clone(), &owner, &id).is_err());
+        drop(writer);
+        std::fs::write(path.join("new.txt"), b"NOT_SEALED").unwrap();
+        assert_eq!(std::fs::read(path.join("keep.txt")).unwrap(), b"RETAINED");
     }
     #[test]
     fn hardlinked_payload_is_refused_before_namespace_seal() {

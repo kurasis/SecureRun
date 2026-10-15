@@ -39,7 +39,7 @@ pub fn profile() -> Result<(PathBuf, File)> {
     Ok((profile, writer))
 }
 const REMOTE: &str = r#"<!doctype html><title>Unauthorized origin fixture</title><script>
-(async()=>{window.__foundationRemoteStarted=true;let denied=true;for(const command of ['get_snapshot','create_draft','reserve_operation','diagnostic_summary','ci_report','policy_request','select_policy_path']){
+(async()=>{window.__foundationRemoteStarted=true;let denied=true;for(const command of ['get_snapshot','create_draft','reserve_operation','diagnostic_summary','ci_report','policy_request','select_policy_path','control_request','files_request']){
 if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false;window.__foundationRemoteCommandAccepted=true}catch(error){const acl=typeof error==='string' && /not allowed|permission|capability|scope/i.test(error);denied &&= acl;if(!acl)window.__foundationRemoteUnexpectedDenial=true}}}
 window.__foundationAclDenied=denied;})();</script>"#;
 pub fn start(

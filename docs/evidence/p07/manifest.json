@@ -1,0 +1,37 @@
+{
+  "phase": "P07",
+  "result": "BLOCKED",
+  "tested_commit": "f550018c6f2ceb1f17bfdc9a3b24dcc578652740",
+  "run_id": 38712304010,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38712304010",
+  "files": [
+    {
+      "path": "investigation-f550018/windows-2025/standard-normal.json",
+      "sha256": "d3a8f514d5799b3534de4005f5b5fe52c5ff112cb07706c5316c570561beac10",
+      "size": 106
+    },
+    {
+      "path": "investigation-f550018/windows-2025/standard-fault.json",
+      "sha256": "9c98b5b89428787e1bc1c45cf43cebbf344402bca522ce1635dce4d0d620e7ac",
+      "size": 106
+    },
+    {
+      "path": "investigation-f550018/windows-2025/stage.json",
+      "sha256": "d3ee46a82711d38dcf514bb02325d5a5d93d0ca0f93edaa7f6de54761e62ff96",
+      "size": 112
+    },
+    {
+      "path": "investigation-f550018/windows-2025/run-summary.json",
+      "sha256": "fb175d8b83e49d4263561895ee7d488ca8e482dcb1fefa653c26b1c421724386",
+      "size": 535
+    },
+    {
+      "path": "investigation-f550018/windows-2025/file-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    }
+  ],
+  "targets": [],
+  "tested_sources": [],
+  "note": "Initial native attempt failed before payload because the MOTW stream did not share DELETE with the held payload. Corrected protocol awaits native validation. No P07 completion claimed."
+}

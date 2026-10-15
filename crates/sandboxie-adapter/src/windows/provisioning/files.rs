@@ -93,6 +93,23 @@ fn streams(path: &Path) -> R<Vec<u8>> {
     unsafe { FindClose(handle) };
     result
 }
+fn exact_marker(path: &Path) -> R<Vec<u8>> {
+    let mut file = OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_DELETE)
+        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(format!("{}:Zone.Identifier", path.display()))
+        .map_err(|_| "PROVENANCE_MISSING")?;
+    let mut data = vec![];
+    Read::by_ref(&mut file)
+        .take(4097)
+        .read_to_end(&mut data)
+        .map_err(|_| "PROVENANCE_READ_FAILED")?;
+    if data.len() > 4096 || contract::marker(&data) != data {
+        return Err("PROVENANCE_INVALID");
+    }
+    Ok(data)
+}
 fn known(id: &windows_sys::core::GUID) -> R<PathBuf> {
     let mut raw = ptr::null_mut();
     if unsafe { SHGetKnownFolderPath(id, 0, ptr::null_mut(), &mut raw) } != 0 {
@@ -202,13 +219,13 @@ fn fresh_payload(directory: &Path) -> R<File> {
     identity(&f)?;
     Ok(f)
 }
-fn write_marker(path: &Path, expected: &[u8]) -> R<()> {
+fn write_marker(path: &Path, expected: &[u8]) -> R<File> {
     let ads = format!("{}:Zone.Identifier", path.display());
     let mut f = OpenOptions::new()
         .read(true)
         .write(true)
         .create_new(true)
-        .share_mode(FILE_SHARE_READ)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
         .open(ads)
         .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
@@ -217,13 +234,14 @@ fn write_marker(path: &Path, expected: &[u8]) -> R<()> {
         .and_then(|_| f.seek(SeekFrom::Start(0)))
         .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
     let mut read = vec![];
-    f.take(4097)
+    Read::by_ref(&mut f)
+        .take(4097)
         .read_to_end(&mut read)
         .map_err(|_| "PROVENANCE_VERIFY_FAILED")?;
     if read != expected {
         return Err("PROVENANCE_VERIFY_FAILED");
     }
-    Ok(())
+    Ok(f)
 }
 fn publish(file: &File, parent: &File, name: &str) -> R<()> {
     contract::leaf(name)?;
@@ -273,7 +291,16 @@ fn checkpoint(stage: &str) {
         println!("CHECKPOINT_{stage}");
         let _ = std::io::stdout().flush();
         loop {
-            std::thread::park();
+            if std::env::var("SECURERUN_P07_PAUSE_MODE").as_deref() == Ok("resume")
+                && profile_path().ok().is_some_and(|p| {
+                    p.join("metadata")
+                        .join(format!("resume-{stage}.flag"))
+                        .exists()
+                })
+            {
+                break;
+            }
+            std::thread::park_timeout(Duration::from_millis(100));
         }
     }
     #[cfg(not(feature = "policy-ci"))]
@@ -385,7 +412,7 @@ fn transfer(
         r.stage = "UNMARKED".into();
         journal.save(&r)?;
         checkpoint("BeforeMark");
-        write_marker(&staging.join("payload.part"), &r.provenance)?;
+        let _marker = write_marker(&staging.join("payload.part"), &r.provenance)?;
         r.stage = "MARKED_INCOMPLETE".into();
         journal.save(&r)?;
         checkpoint("AfterMark");
@@ -428,6 +455,9 @@ fn transfer(
             || identity(&payload).ok() != r.artifact_identity
         {
             return Err("ARTIFACT_IDENTITY_CHANGED");
+        }
+        if exact_marker(&staging.join("payload.part"))? != r.provenance {
+            return Err("PROVENANCE_CHANGED");
         }
         publish(&payload, &parent_file, name)?;
         checkpoint("AfterRename");
@@ -579,7 +609,7 @@ fn recover(
     }
     let is_final = candidate == PathBuf::from(&r.parent).join(&r.name);
     if is_final {
-        if streams(&candidate)? != r.provenance
+        if exact_marker(&candidate)? != r.provenance
             || file
                 .metadata()
                 .map_err(|_| "ARTIFACT_STATE_UNKNOWN")?
@@ -604,6 +634,90 @@ fn recover(
         r.stage = "INCOMPLETE_RETAINED".into();
         r.reason = "EXPLICIT_NEW_OPERATION_REQUIRED".into();
     }
+    journal.save(&r)
+}
+fn discard(
+    engine: &NativeEngine,
+    e: &OwnedEnvironment,
+    all: &[OwnedEnvironment],
+    journal: &contract::Journal,
+    id: Uuid,
+) -> R<()> {
+    let mut r = journal.get(id)?.ok_or("TRANSFER_NOT_FOUND")?;
+    if r.environment_id != e.id || r.generation != generation(e) {
+        return Err("ARTIFACT_GENERATION_CHANGED");
+    }
+    if matches!(r.stage.as_str(), "COMPLETE" | "COMPLETE_RECOVERED") {
+        return Err("COMPLETED_OUTPUT_NOT_A_STAGING_ARTIFACT");
+    }
+    let _scope = scope(engine, e, all, true)?;
+    let parent = Path::new(&r.parent);
+    let expected = parent.join(format!(".securerun-{}", id.simple()));
+    if expected != PathBuf::from(&r.staging_directory) {
+        return Err("ARTIFACT_SCOPE_CHANGED");
+    }
+    let _parents = if r.direction == "EXPORT" {
+        destination(engine, &r.parent, all)?
+    } else {
+        contained(engine, e, parent)?
+    };
+    if identity(_parents.last().ok_or("ARTIFACT_PARENT_CHANGED")?)? != r.parent_identity {
+        return Err("ARTIFACT_PARENT_CHANGED");
+    }
+    {
+        let held = canonical(&expected)?;
+        if identity(held.last().ok_or("ARTIFACT_DIRECTORY_CHANGED")?).ok()
+            != r.staging_directory_identity
+        {
+            return Err("ARTIFACT_DIRECTORY_CHANGED");
+        }
+        if let Some(id) = &r.artifact_identity {
+            let payload = OpenOptions::new()
+                .access_mode(DELETE | FILE_READ_ATTRIBUTES | READ_CONTROL)
+                .share_mode(0)
+                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                .open(expected.join("payload.part"))
+                .map_err(|_| "ARTIFACT_STATE_UNKNOWN")?;
+            if identity(&payload)? != *id {
+                return Err("ARTIFACT_IDENTITY_CHANGED");
+            }
+            let delete = FILE_DISPOSITION_INFO { DeleteFile: true };
+            if unsafe {
+                SetFileInformationByHandle(
+                    payload.as_raw_handle(),
+                    FileDispositionInfo,
+                    &delete as *const _ as _,
+                    std::mem::size_of_val(&delete) as u32,
+                )
+            } == 0
+            {
+                return Err("ARTIFACT_DELETE_FAILED");
+            }
+        }
+    }
+    let directory = OpenOptions::new()
+        .access_mode(DELETE | FILE_READ_ATTRIBUTES | READ_CONTROL)
+        .share_mode(0)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&expected)
+        .map_err(|_| "ARTIFACT_DIRECTORY_CHANGED")?;
+    if identity(&directory).ok() != r.staging_directory_identity {
+        return Err("ARTIFACT_DIRECTORY_CHANGED");
+    }
+    let delete = FILE_DISPOSITION_INFO { DeleteFile: true };
+    if unsafe {
+        SetFileInformationByHandle(
+            directory.as_raw_handle(),
+            FileDispositionInfo,
+            &delete as *const _ as _,
+            std::mem::size_of_val(&delete) as u32,
+        )
+    } == 0
+    {
+        return Err("ARTIFACT_DIRECTORY_NOT_EMPTY_OR_BUSY");
+    }
+    r.stage = "DISCARDED".into();
+    r.reason = "VERIFIED_STAGING_REMOVED".into();
     journal.save(&r)
 }
 pub fn execute(
@@ -660,6 +774,11 @@ pub fn execute(
                 ..
             }
             | contract::Request::Register {
+                environment_id,
+                expected_revision,
+                ..
+            }
+            | contract::Request::Discard {
                 environment_id,
                 expected_revision,
                 ..
@@ -728,6 +847,9 @@ pub fn execute(
                     name,
                     "EXPORT",
                 )
+            }
+            contract::Request::Discard { operation_id, .. } => {
+                discard(&engine, e, &all, &journal, *operation_id)
             }
             contract::Request::Recover { operation_id, .. } => {
                 recover(&engine, e, &all, &journal, *operation_id)
@@ -846,4 +968,68 @@ pub fn bounded_request(request: &crate::files::Request) -> crate::files::Reply {
         Ok(reply)
     })();
     result.unwrap_or_else(crate::files::Reply::failure)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn ntfs_marker_precedes_payload_and_handle_rename_never_replaces() {
+        let temp = tempfile::tempdir().unwrap();
+        let owner = process_sid(unsafe { GetCurrentProcess() }).unwrap();
+        let stage = temp.path().join("staging");
+        let _directory = fresh_directory(&stage, &owner).unwrap();
+        let mut payload = fresh_payload(&stage).unwrap();
+        assert_eq!(payload.metadata().unwrap().len(), 0);
+        let provenance = contract::marker(&[]);
+        let _marker = write_marker(&stage.join("payload.part"), &provenance).unwrap();
+        payload.write_all(b"SYNTHETIC").unwrap();
+        payload.sync_all().unwrap();
+        let parent = lease(temp.path(), true).unwrap();
+        let existing = temp.path().join("existing.txt");
+        std::fs::write(&existing, b"CANARY").unwrap();
+        assert!(publish(&payload, &parent, "existing.txt").is_err());
+        assert_eq!(std::fs::read(&existing).unwrap(), b"CANARY");
+        let id = identity(&payload).unwrap();
+        publish(&payload, &parent, "published.html").unwrap();
+        let final_path = temp.path().join("published.html");
+        assert_eq!(exact_marker(&final_path).unwrap(), provenance);
+        assert_eq!(identity(&payload).unwrap(), id);
+        assert!(!stage.join("payload.part").exists());
+    }
+    #[test]
+    fn ntfs_unmarked_or_forged_marker_is_never_recovery_proof() {
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("synthetic.txt");
+        std::fs::write(&path, b"SYNTHETIC").unwrap();
+        assert_eq!(exact_marker(&path).unwrap_err(), "PROVENANCE_MISSING");
+        std::fs::write(format!("{}:Zone.Identifier", path.display()), b"INVALID").unwrap();
+        assert_eq!(exact_marker(&path).unwrap_err(), "PROVENANCE_INVALID");
+        assert_eq!(
+            write_marker(&path, &contract::marker(&[])).unwrap_err(),
+            "PROVENANCE_WRITE_FAILED"
+        );
+    }
+    #[test]
+    fn ntfs_source_leases_reject_hardlinks_and_deny_growth() {
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("synthetic.txt");
+        std::fs::write(&path, b"SYNTHETIC").unwrap();
+        {
+            let _held = lease(&path, false).unwrap();
+            assert!(
+                OpenOptions::new()
+                    .write(true)
+                    .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+                    .open(&path)
+                    .is_err()
+            );
+        }
+        let alias = temp.path().join("alias.txt");
+        std::fs::hard_link(&path, &alias).unwrap();
+        assert_eq!(
+            lease(&path, false).unwrap_err(),
+            "REPARSE_OR_HARDLINK_REJECTED"
+        );
+    }
 }

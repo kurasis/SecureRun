@@ -203,7 +203,15 @@ impl Journal {
         Ok(out)
     }
     pub fn register(&mut self, a: &Application) -> PolicyResult<()> {
-        if self.applications()?.len() >= 128 {
+        let applications = self.applications()?;
+        if let Some(old) = applications.iter().find(|old| old.id == a.id) {
+            return if fingerprint(old) == fingerprint(a) {
+                Ok(())
+            } else {
+                Err("APPLICATION_OPERATION_CONFLICT")
+            };
+        }
+        if applications.len() >= 128 {
             return Err("APPLICATION_BOUND");
         }
         self.db

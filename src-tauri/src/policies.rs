@@ -95,8 +95,8 @@ pub async fn select_policy_path(
     let display_name = selected
         .file_name()
         .and_then(|s| s.to_str())
-        .unwrap_or("Selected resource")
-        .to_owned();
+        .unwrap_or("Selected resource");
+    let display_name = securerun_sandboxie_adapter::files::display(display_name);
     let mut selections = state
         .0
         .lock()
@@ -458,6 +458,11 @@ pub enum UiFilesRequest {
         expected_revision: u64,
         operation_id: Uuid,
     },
+    Discard {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+    },
     Cancel {
         operation_id: Uuid,
     },
@@ -569,6 +574,15 @@ pub async fn files_request(
             expected_revision,
             operation_id,
         } => F::Recover {
+            environment_id,
+            expected_revision,
+            operation_id,
+        },
+        UiFilesRequest::Discard {
+            environment_id,
+            expected_revision,
+            operation_id,
+        } => F::Discard {
             environment_id,
             expected_revision,
             operation_id,

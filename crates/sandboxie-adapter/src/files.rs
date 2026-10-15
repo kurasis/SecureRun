@@ -130,6 +130,11 @@ pub enum Request {
         expected_revision: u64,
         operation_id: Uuid,
     },
+    Discard {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+    },
     Cancel {
         operation_id: Uuid,
     },

@@ -95,5 +95,20 @@ class IntegrityTests(unittest.TestCase):
                 validator.validate(copy)
 
 
+    def test_p07_cannot_close_without_current_launch_regression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'docs/evidence/p07/manifest.json'
+            manifest = json.loads(path.read_text())
+            manifest['result'] = 'DONE'
+            path.write_text(json.dumps(manifest))
+            dependency = copy / 'docs/evidence/p06/manifest.json'
+            stale = json.loads(dependency.read_text())
+            stale['result'] = 'BLOCKED'
+            dependency.write_text(json.dumps(stale))
+            with self.assertRaisesRegex(ValueError, 'P07 DONE requires matching current P03/P04/P05/P06 regression'):
+                validator.validate(copy)
+
 if __name__ == '__main__':
     unittest.main()

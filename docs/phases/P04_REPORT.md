@@ -124,8 +124,8 @@ service-process identity uncertainty remains explicit rather than fabricated.
 
 ## Current P07 dependency regression
 
-Runtime `144be07d4a8cbb7c3d759a76411c0681740ef6ea` passes
-[run 38726646899](https://github.com/kurasis/SecureRun/actions/runs/38726646899)
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38729079754](https://github.com/kurasis/SecureRun/actions/runs/38729079754)
 on Server 2025 x64 and Windows 11 ARM64. Each target passed 38 native adapter
 tests and all 19 observation cases, including the actual boxed normal desktop
 entrypoint refusing before metadata. The [manifest](../evidence/p04/manifest.json)

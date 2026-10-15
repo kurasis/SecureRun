@@ -162,3 +162,14 @@ the completed wait on that same object. Numeric status-only diagnostics distingu
 dispatch failure from incomplete exit. All current phase gates have been revalidated for this shared dependency
 correction; no earlier source is relabeled DONE. The final source passes the
 complete P03–P06 gates on both owner-selected laboratories.
+
+
+## Current P07 dependency regression
+
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38729083037](https://github.com/kurasis/SecureRun/actions/runs/38729083037)
+on Server 2025 x64 and Windows 11 ARM64. Server passed all 21 and ARM all 22 native launch/receipt/Stop cases, with zero failures. Actual original-driver unload is a bootstrap negative control before provisioning: the utility exits 0, the driver is stopped and the standard-user production route returns exactly MANAGER_CONTEXT_UNSAFE without a dispatch reservation. Registered-target service loss is tested separately. Coordination covers the bounded utility operation; the production launch/Stop gates are unchanged.
+The [manifest](../evidence/p06/manifest.json) binds this same source as P03/P04/P05/P06/P07.
+Earlier sections describe historical phase scope; P07 adds the separately verified
+safe-file and boxed-reference services. Current status and the next eligible P08
+are recorded in [the P07 report](P07_REPORT.md).

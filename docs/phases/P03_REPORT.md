@@ -121,8 +121,8 @@ sources. Later P06 production commands do not expand the P03 fixture protocol.
 
 ## Current P07 dependency regression
 
-Runtime `144be07d4a8cbb7c3d759a76411c0681740ef6ea` passes
-[run 38726643393](https://github.com/kurasis/SecureRun/actions/runs/38726643393)
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38729076831](https://github.com/kurasis/SecureRun/actions/runs/38729076831)
 on Server 2025 x64 and Windows 11 ARM64. Each target passed 19 foundation,
 2 normal native, 3 UI and 27 actual command-boundary cases. The expanded boundary
 includes the P07 files command, untrusted local/remote requests, forged selection

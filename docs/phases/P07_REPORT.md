@@ -1,11 +1,13 @@
 # P07 — Safe file workflows and boxed executable references
 
-Status: IN_PROGRESS. Specification: 1.3. Requested scope: complete P07.
+Status: DONE. Specification: 1.3. Requested scope: complete P07.
 Implementation branch: `p07/safe-files`. Current runtime:
-`68af79d64d55aa6ae21dc763f0c057834aca4c6c`.
-[P07 native run 38725132900](https://github.com/kurasis/SecureRun/actions/runs/38725132900)
+`bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68`.
+[P07 native run 38729086335](https://github.com/kurasis/SecureRun/actions/runs/38729086335)
 completed successfully on both laboratories: 28 Server / 29 ARM cases passed,
-with zero failed or actor failures. Matching P04–P06 regressions remain pending.
+with zero failed or actor failures. Matching P03–P06 regressions passed on this same commit. Strict retainers verified
+all mandatory cases, exact source hashes and immutable raw checksums; no phase
+gate remains blocked.
 
 ## Outputs and behavior
 
@@ -69,11 +71,20 @@ Windows Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200. Actual x86
 PEs run on both; ARM also runs emulated x64. Native manager/stage match each OS.
 No Windows security setting is changed; no engine or SandMan binary is bundled.
 
+
+| Gate | Exact-source run | Server / ARM result |
+|---|---|---|
+| P03 command boundary | [38729076831](https://github.com/kurasis/SecureRun/actions/runs/38729076831) | Each: 19 foundation, 2 normal native, 3 UI and 27 command cases passed |
+| P04 observation | [38729079754](https://github.com/kurasis/SecureRun/actions/runs/38729079754) | Each: 38 adapter tests and 19 native scenarios passed |
+| P05 provisioning | [38730156869](https://github.com/kurasis/SecureRun/actions/runs/38730156869) | Each: 38 adapter tests and 45 applicable cases passed; one accurate Not applicable UAC route |
+| P06 launch/Stop | [38729083037](https://github.com/kurasis/SecureRun/actions/runs/38729083037) | 21 / 22 cases passed; no failures |
+| P07 safe files/boxed references | [38729086335](https://github.com/kurasis/SecureRun/actions/runs/38729086335) | 28 / 29 cases passed; no failures or actor failures |
+
 Portable checks pass: 19 foundation and 32 adapter tests, strict clippy, 3 UI
 checks and production asset build. Strict i686 Windows metadata checking is not
 native Windows evidence. Repository validation and all 10 tooling tests pass.
 PowerShell scripts parse with official PowerShell 7.5.4. Both native P07 workflows
-passed. Matching dependency regressions must pass before DONE.
+and matching P03–P06 dependency regressions passed.
 
 Retainers require successful exact-source Actions runs, all mandatory named
 cases, current runtime-file hashes, distinct normal/fault binary hashes and
@@ -101,9 +112,18 @@ an independently dispatched original-engine member and verify actual driver box,
 owner and held birth before resuming copy; either explicit activity or changed
 configuration refusal is safe only with that live-member proof and absent output.
 Historical failed raw reports remain separately retained, never relabeled success.
-Both final P07 laboratories generated real 8.3 leaf aliases and preserved output
+The completed native P07 laboratories generated real 8.3 leaf aliases and preserved output
 through case and short-alias collisions. Each copied a 4,296,015,873-byte sparse
 file with equal SHA-256 and a 1 MiB buffer.
+
+The dependent P06 lab originally attempted driver unload after provisioning probes,
+and actor coordination could expire before its original utility finished. The
+bootstrap negative control now runs before provisioning, independently verifies
+actual driver unload and requires the exact unsafe-context refusal with no dispatch
+reservation. Coordination waits cover the bounded original utility operation. A
+registered-target service-loss check still runs separately. The final P06 ARM run
+completed all 22 cases and observed original utility exit 0 plus driver stopped;
+Server completed all 21 cases. The production launch/Stop gates were unchanged.
 
 Unsupported workspace layouts, snapshots, images, UNC/SUBST destinations and
 root relocation remain refused. Import is one explicit regular file per operation;

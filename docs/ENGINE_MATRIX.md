@@ -80,3 +80,25 @@ Windows 11 x64 and final installed-candidate acceptance remain unclaimed.
 The [status](STATUS.md) and [P06 report](phases/P06_REPORT.md) link exact runs and
 source-bound immutable evidence. Current runtime checks remain mandatory on every
 action. No historical candidate flag or accepted INI setting grants availability.
+
+
+## Current P07 implementation evidence
+
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes matching P03–P07 gates
+on Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200 with the pinned
+original engine above. These remain pre-release laboratory tuples.
+
+| Production component | Current proof |
+|---|---|
+| Main-window IPC and native selections | P03: 27 command-boundary cases per target |
+| Trusted observation and safe NTFS primitives | P04: 38 adapter tests and 19 native scenarios per target |
+| StandardOffline/StandardOnline and provisioning | P05: 45 applicable cases per target; one accurate Not applicable UAC route |
+| Registered host-EXE launch and scoped Stop | P06: 21 Server / 22 ARM cases |
+| Safe import/export and boxed logical EXE launch | P07: 28 Server / 29 ARM cases, actual native/emulated target PEs, five real interruption points, disk exhaustion, >4 GiB and no-replace recovery |
+| Paid profiles | Disabled without verified entitlement |
+| Lifecycle/reset and packaging | P08/P11 remain pending |
+
+[Current status](STATUS.md) and the [P07 report](phases/P07_REPORT.md) link exact
+successful runs and immutable source-bound proof. Full Windows 11 x64 release
+compatibility and installed-candidate acceptance remain unclaimed. Runtime trust,
+ownership, policy and identity checks still execute independently on every action.

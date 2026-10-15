@@ -177,3 +177,14 @@ unchanged. Minimized historical failures remain retained; no case was excluded.
 [Current evidence](../evidence/p05/manifest.json) binds this same runtime as P03,
 P04 and P06. This regression executes the policy protocol; production application
 launch and scoped Stop are independently verified by P06.
+
+
+## Current P07 dependency regression
+
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38730156869](https://github.com/kurasis/SecureRun/actions/runs/38730156869)
+on Server 2025 x64 and Windows 11 ARM64. Each target passed 38 adapter tests and 45 applicable native policy/provisioning cases. One absent different-admin UAC route remains accurately Not applicable.
+The [manifest](../evidence/p05/manifest.json) binds this same source as P03/P04/P05/P06/P07.
+Earlier sections describe historical phase scope; P07 adds the separately verified
+safe-file and boxed-reference services. Current status and the next eligible P08
+are recorded in [the P07 report](P07_REPORT.md).

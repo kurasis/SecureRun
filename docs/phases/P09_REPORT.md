@@ -447,3 +447,11 @@ The Firefox fixture preserves the external-protocol warning preference. It may
 explicitly invoke the owned Open Link provider only when the prompt contains the
 fixed synthetic protocol, and it never toggles a persistent allow permission.
 Actual boxed handler execution and the unchanged host marker remain mandatory.
+
+Focused run `38824150548` passed actual keyboard checks and measured 0.90245%
+complete-job idle CPU / 225494339-byte average working set with four environments;
+it remains diagnostic-only, and its 9591 ms startup is not a passing budget.
+Its layout sequence exposed a lab transport defect: direct screenshot/AX calls
+referenced an undeclared timeout, whereas evaluation calls inherited the caller's
+variable. The transport now declares its bounded default explicitly. Source-line
+numbers on accessibility failures are retained without stack paths or raw text.

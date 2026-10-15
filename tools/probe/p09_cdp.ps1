@@ -8,7 +8,7 @@ function Connect-P09Cdp([int]$Port){
  $script:cdp=[Net.WebSockets.ClientWebSocket]::new();$cancel=[Threading.CancellationTokenSource]::new(15000)
  try{$null=$script:cdp.ConnectAsync($uri,$cancel.Token).GetAwaiter().GetResult()}finally{$cancel.Dispose()}
 }
-function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{}){
+function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{},[ValidateSet(300000,660000)][int]$TimeoutMs=300000){
  if($null -eq $script:cdp){throw 'P09_INSPECTOR_NOT_CONNECTED'};$script:cdpId++;$id=$script:cdpId
  $json=ConvertTo-Json -InputObject @{id=$id;method=$Method;params=$Parameters} -Depth 32 -Compress;$bytes=[Text.Encoding]::UTF8.GetBytes($json);$cancel=[Threading.CancellationTokenSource]::new($TimeoutMs)
  try{

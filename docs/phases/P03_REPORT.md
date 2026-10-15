@@ -149,3 +149,9 @@ Run: https://github.com/kurasis/SecureRun/actions/runs/38793638963
 P09 regression at `83985827bfb1cb55b1ebdd2071bc0fa8332a83da` passed both targets
 in run `38800451929`. Current production Rust/UI bytes match this validation;
 later P09 diagnostic scripts do not constitute final matching P09 dependency proof.
+
+
+P09 observer/UI regression at `eaab83c8a8a39e2b6ea293d6972b3e0d33b15096`
+passed both targets in Actions `38811673054`: 19 foundation, three normal native,
+three frontend and 32 actual command-boundary cases on each. This covers the
+current production sources. It does not close P09's app or performance gate.

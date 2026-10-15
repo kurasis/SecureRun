@@ -128,7 +128,7 @@ def check_target(folder, commit, machine):
             or not performance['target_and_engine_processes_excluded']
             or performance['startup_interactive_upper_bound_ms'] > 3000
             or not 0 <= performance['cpu_percent'] < 1
-            or not 0 < performance['average_working_set_bytes'] < 250 * 1024 * 1024):
+            or not 0 < performance['average_working_set_bytes'] < 250_000_000):
         raise ValueError('P09 reference manager group performance budget is incomplete or exceeded')
     files = read(folder / 'file-workload.json')
     if (files['total_files'] != 10000 or files['pages'] != 79 or files['maximum_page'] > 128

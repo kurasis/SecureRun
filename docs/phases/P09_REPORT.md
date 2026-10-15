@@ -39,7 +39,7 @@ restored after restart. No automatic policy apply or launch replay is introduced
 ## Checks so far
 
 Local frontend build, three foundation UI tests and four product helper tests pass.
-The repository validator and 13 tooling tests pass. Portable Rust tests, Windows
+The repository validator and 14 tooling tests pass. Portable Rust tests, Windows
 adapter metadata Clippy and PowerShell/C# compile checks are recorded separately
 from native execution. Earlier product builds passed on both Windows targets at
 `ef2c4bd85830b6e1a486c0646e4e2e045f74a811` (Actions `38773439542`).
@@ -245,3 +245,22 @@ the same health generation; completed managed mutations request a fresh metadata
 read. A lab button waits for normal enabled state before one click. ARM's missing
 optional npm native binding is handled by at most one repeat of the exact locked,
 script-free install. No dependency pin or Windows security check is bypassed.
+
+
+At `eaab83c`, native product build `38811627887` passed both targets, including
+55 native adapter tests, three app tests, four product UI tests, native Clippy
+and the actual 60-second measurement fixture. The fixture has zero reference
+environments and makes no performance-gate claim. P03 (`38811673054`) and P04
+(`38811676793`) passed on both targets. A retained MiB/MB unit mistake is
+corrected to the specification's strict 250,000,000-byte memory threshold.
+
+
+Single-environment run `38811626796` passed Server overview, rename, keyboard/UIA
+and all twelve content-zoom layouts, but failed the display-controller request
+after native 100% DPI. Startup's external UIA upper bound was 5659.6163 ms
+(native window 2534.9429 ms). No startup success is claimed. The next fixture
+records navigation lookup, invoke and language lookup separately, restores an
+existing Settings window before reuse, and retains each controller's fixed
+stage/result. A failed DPI case remains failed and blocks acceptance, but no
+longer prevents independent application/file workflows from collecting evidence;
+presentation reset is attempted even if display restoration fails.

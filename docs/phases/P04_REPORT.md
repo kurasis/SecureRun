@@ -153,3 +153,10 @@ Fresh P09 regression `38802021230` at `d2b138a39acb50e596852eef0b1c1886c40d8ba0`
 passed both targets, including both actual boxed-manager refusal checks and the
 standard-user all-session observations. The earlier ARM timeout is preserved.
 The phase manifest remains provisional until final matching P03/source proof.
+
+
+P09 bounded-observer/UI regression at
+`eaab83c8a8a39e2b6ea293d6972b3e0d33b15096` passed both targets in Actions
+`38811676793`, including real boxed-manager refusal, standard-user all-session
+observation and native trust/context cases. Evidence remains independent of
+P09's application and resource gate.

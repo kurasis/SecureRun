@@ -77,7 +77,7 @@ try {
   if($index -lt 3){
    $displayRequests++;if($displayRequests -gt 8){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_REQUEST_BOUND'}
    $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
-   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_CONTROLLER','-Scale',[string]@(100,150,200)[$index])){$display.ArgumentList.Add($arg)}
+   foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_CONTROLLER','-Scale',[string]@(100,150,200)[$index],'-ResultFile',(Join-Path $out ("display-controller-$displayRequests.json")))){$display.ArgumentList.Add($arg)}
    if($index -eq 0 -and $displayRequests -gt 1){$display.ArgumentList.Add('-CloseSettings')}
    $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
    $controller=[Diagnostics.Process]::Start($display)

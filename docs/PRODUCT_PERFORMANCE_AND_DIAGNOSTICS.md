@@ -20,7 +20,7 @@ measurement. Fresh Windows measurements are required before claiming improvement
 |---|---|---|
 | Startup | Interactive within 3 seconds | Normal release without inspector; prewarmed Windows UIA watcher invokes Settings and observes its enabled language control |
 | Idle | CPU below 1% over at least 60 seconds | Complete kernel job CPU delta including exited children; denominator explicitly records logical processor count |
-| Idle memory | Aggregate average working set below 250 MiB | Sample the complete manager/Rust/WebView job every 250 ms; retain peak and sample count too |
+| Idle memory | Aggregate average working set below 250 MB (250,000,000 bytes) | Sample the complete manager/Rust/WebView job every 250 ms; retain peak and sample count too |
 | Process update | At most 2 seconds | Introduce an actual independently launched boxed member and wait for the real environment card |
 | Added launch latency | Below 1 second | Same fixed benign probe through original dispatch and checked manager dispatch; remove no production checks |
 | File list | Ten idle environments; one box with 10,000 files | Measure first actual UI listing and walk every native page; retain at most 128 rows per page/DOM |

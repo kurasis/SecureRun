@@ -1,49 +1,49 @@
 {
   "phase": "P03",
-  "result": "BLOCKED",
-  "run_id": 38800451929,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38800451929",
-  "tested_commit": "83985827bfb1cb55b1ebdd2071bc0fa8332a83da",
+  "result": "DONE",
+  "run_id": 38811673054,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38811673054",
+  "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-8398582/windows-2025",
+      "evidence_directory": "completion-eaab83c/windows-2025",
       "summary": {
-        "frontend_tests_passed": 3,
-        "windows_command_cases_passed": 32,
-        "node_version": "v24.19.0",
-        "os_build": "10.0.26100.0",
-        "manager_commit": "83985827bfb1cb55b1ebdd2071bc0fa8332a83da",
-        "result": "PASSED",
-        "target": "x86_64-pc-windows-msvc",
-        "pe_machine": "8664",
-        "engine_operations_executed": 0,
-        "teardown": "DISCARD_ACTIONS_VM",
-        "os_security_settings_modified": false,
         "foundation_tests_passed": 19,
+        "target": "x86_64-pc-windows-msvc",
+        "teardown": "DISCARD_ACTIONS_VM",
+        "manager_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
         "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+        "os_security_settings_modified": false,
+        "result": "PASSED",
+        "pe_machine": "8664",
+        "node_version": "v24.19.0",
+        "phase": "P03",
+        "os_build": "10.0.26100.0",
+        "engine_operations_executed": 0,
         "normal_native_tests_passed": 3,
-        "phase": "P03"
+        "windows_command_cases_passed": 32,
+        "frontend_tests_passed": 3
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-8398582/windows-11-arm",
+      "evidence_directory": "completion-eaab83c/windows-11-arm",
       "summary": {
-        "frontend_tests_passed": 3,
+        "os_security_settings_modified": false,
+        "foundation_tests_passed": 19,
+        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
         "normal_native_tests_passed": 3,
         "phase": "P03",
-        "foundation_tests_passed": 19,
+        "frontend_tests_passed": 3,
+        "node_version": "v24.19.0",
+        "windows_command_cases_passed": 32,
         "teardown": "DISCARD_ACTIONS_VM",
         "engine_operations_executed": 0,
-        "windows_command_cases_passed": 32,
-        "manager_commit": "83985827bfb1cb55b1ebdd2071bc0fa8332a83da",
-        "node_version": "v24.19.0",
-        "result": "PASSED",
         "pe_machine": "aa64",
         "target": "aarch64-pc-windows-msvc",
-        "os_security_settings_modified": false,
-        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+        "manager_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
+        "result": "PASSED",
         "os_build": "10.0.26200.0"
       }
     }
@@ -688,6 +688,46 @@
       "path": "completion-8398582/windows-11-arm/run-summary.json",
       "sha256": "019131856062ea98244a36e0c77ae24f8bde1a2864078bc419a3809fb5cd0dfa",
       "size": 553
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/acl-manifests.json",
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b",
+      "size": 73527
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/capabilities.json",
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b",
+      "size": 760
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/command-boundary.json",
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa",
+      "size": 3732
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/run-summary.json",
+      "sha256": "02e1a0af608010dcef86cfedf378f23cd9980a4ec5d09ec5e659b4774af3f6d3",
+      "size": 552
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/acl-manifests.json",
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b",
+      "size": 73527
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/capabilities.json",
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b",
+      "size": 760
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/command-boundary.json",
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa",
+      "size": 3732
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/run-summary.json",
+      "sha256": "9bf18a9688d1d1bdc3f146d694ff0a2470e33083639e726609383f7d92b198dc",
+      "size": 553
     }
   ],
   "tested_sources": [
@@ -857,6 +897,11 @@
       "size": 37655
     },
     {
+      "path": "crates/sandboxie-adapter/src/windows/live.rs",
+      "sha256": "fe62910264088c0b5d0e2650f7d6e2bbbb4cc1fc0dcf5492557eefa04febdd03",
+      "size": 8993
+    },
+    {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/aliases.rs",
       "sha256": "dd3a6b289b7b73bd43f76013f6fc0120c1814c3a640c069c204cdac9b6fff19d",
       "size": 2020
@@ -893,18 +938,18 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning.rs",
-      "sha256": "dd5e897d651a2e068991d08b5a65dc38f12350b1320c11b1f93ec06ba77b2725",
-      "size": 108602
+      "sha256": "3c54d71a8fc3ccfd91c41ec7ef969c15346829db054e85ac436a51532c2d1a2b",
+      "size": 110264
     },
     {
       "path": "crates/sandboxie-adapter/src/windows.rs",
-      "sha256": "135ecf0a29eb903e450be27f0fba35a99bd6aa918fafc8e49d537f0cf22fbd9d",
-      "size": 40127
+      "sha256": "e7e8d7b63b7a99a6f5e2519a4fc2049c4c6864d531e5bcefe5a35c17e0f10850",
+      "size": 41321
     },
     {
       "path": "src-tauri/Cargo.toml",
-      "sha256": "9088064c0280af0a2e34eab1f09d62ce3e557014ac4ca3ee4d93300fafa45609",
-      "size": 1035
+      "sha256": "9d196ca29e4718bccc5f9aba2cacea01b39ca7862ac497dc8a6bee09414f6b33",
+      "size": 968
     },
     {
       "path": "src-tauri/build.rs",
@@ -933,8 +978,8 @@
     },
     {
       "path": "src-tauri/src/app.rs",
-      "sha256": "91aa179af47d10170e586ea3eef6befbb82aaf1092677484e285ad4919088d7a",
-      "size": 22336
+      "sha256": "710f1425567df089acb2dab1dc84b49e2e9f61b3a5abcf83455cf014931950d8",
+      "size": 25388
     },
     {
       "path": "src-tauri/src/ci.rs",
@@ -943,8 +988,8 @@
     },
     {
       "path": "src-tauri/src/main.rs",
-      "sha256": "24606c7f9aa0adbafae6b89ff142fb320cc8f8465590507283f6a52cbd6aef33",
-      "size": 8961
+      "sha256": "6f4a25c0378803aca8e802362d6d3216ce4100bc47050f418be71d3d5ef5f721",
+      "size": 9404
     },
     {
       "path": "src-tauri/src/native.rs",
@@ -973,8 +1018,8 @@
     },
     {
       "path": "ui/backend.ts",
-      "sha256": "c601eb71ab291cc2309bed7b84d6cebec9a538d3c545ec741f63e216d0725318",
-      "size": 714
+      "sha256": "d7253cba9f7d6300ab34ab665d4a454a87f260baea79af8abe0419fe0f67460e",
+      "size": 958
     },
     {
       "path": "ui/contracts.ts",
@@ -1013,8 +1058,8 @@
     },
     {
       "path": "ui/main.tsx",
-      "sha256": "e7ef0c16b8f694a781b87dfb6cff533aeda9f8b0ddd05a5229e48058af5c575a",
-      "size": 19825
+      "sha256": "52042a4ccf415285dd1cfe534937b58a10ea889bd38f68047c374b76fc87dd60",
+      "size": 21279
     },
     {
       "path": "ui/policies.tsx",
@@ -1023,8 +1068,8 @@
     },
     {
       "path": "ui/product.ts",
-      "sha256": "fe6d518bc731414b99788ba979c96aace86492d5f2c6c487197d6d6a1c7079ee",
-      "size": 21242
+      "sha256": "354690a87976595c016e4a1d66cb5fc6dbf5238cc9ce4df492a2ed3dde454612",
+      "size": 22028
     },
     {
       "path": "ui/selftest.ts",
@@ -1152,8 +1197,15 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38793638963",
       "result": "BLOCKED",
       "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close."
+    },
+    {
+      "tested_commit": "83985827bfb1cb55b1ebdd2071bc0fa8332a83da",
+      "run_id": 38800451929,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38800451929",
+      "result": "BLOCKED",
+      "note": "P09 UI now distinguishes the independently verified production SDK route from unavailable P04 service process identity. A fresh matching native regression is required."
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P09 UI now distinguishes the independently verified production SDK route from unavailable P04 service process identity. A fresh matching native regression is required."
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
 }

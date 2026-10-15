@@ -42,7 +42,14 @@ function Picker([int]$id,[string]$path){
  return @{real_native_picker=$true;value_pattern_used=$true;explicit_button_invoked=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
 function Set-ActualDisplayScale([int]$Scale){
-   $script:stage='OPENING_WINDOWS_DISPLAY_SETTINGS';Start-Process 'ms-settings:display';$clock=[Diagnostics.Stopwatch]::StartNew();$settingsRoot=$null
+   $script:stage='OPENING_WINDOWS_DISPLAY_SETTINGS';$settingsRoot=$null
+   $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object {$_.MainWindowHandle -ne 0 -and $_.SessionId -eq (Get-Process -Id $PID).SessionId}|Select-Object -First 1
+   if($null -ne $settings){
+    $existing=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$pattern=$null
+    if($existing.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal)}
+    $null=[P09Access]::SetForegroundWindow($settings.MainWindowHandle)
+   }else{Start-Process 'ms-settings:display'}
+   $clock=[Diagnostics.Stopwatch]::StartNew()
    do{
     $settings=Get-Process SystemSettings -ErrorAction SilentlyContinue|Where-Object MainWindowHandle -ne 0|Select-Object -First 1
     if($null -ne $settings){$candidate=[Windows.Automation.AutomationElement]::FromHandle($settings.MainWindowHandle);$combo=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $combo){$settingsRoot=$candidate;break}}
@@ -66,7 +73,7 @@ function Set-ActualDisplayScale([int]$Scale){
  $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close()}
 }
 try{
- if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}
+ if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;$result.status='PASSED';$result.requested_windows_scale=$Scale;$result.os_security_settings_modified=$false;if($ResultFile){$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8};Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}
  if($Mode -eq 'READY'){
   $stage='PREWARMING_NATIVE_PROVIDER';$null=[Windows.Automation.AutomationElement]::RootElement
   $stage='WAITING_FOR_COORDINATION';[IO.File]::WriteAllText($Coordination+'.ready','READY')
@@ -113,9 +120,11 @@ try{
   default {
    $stage='WAITING_FOR_ACCESSIBLE_NAVIGATION';$clock=[Diagnostics.Stopwatch]::StartNew();$navigation=$null;$settings=$null
    do{if($Mode -eq 'KEYBOARD'){$navigation=Find $root ([Windows.Automation.ControlType]::Button) 'Environments'};$settings=Find $root ([Windows.Automation.ControlType]::Button) 'Settings';if($null -ne $settings -and ($Mode -eq 'READY' -or $null -ne $navigation)){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
-   Need ($null -ne $settings -and ($Mode -eq 'READY' -or $null -ne $navigation));Click $settings
+   $result.navigation_lookup_ms=$clock.Elapsed.TotalMilliseconds
+   Need ($null -ne $settings -and ($Mode -eq 'READY' -or $null -ne $navigation));$invokeClock=[Diagnostics.Stopwatch]::StartNew();Click $settings;$result.settings_invoke_ms=$invokeClock.Elapsed.TotalMilliseconds
    $clock=[Diagnostics.Stopwatch]::StartNew();$language=$null
    do{$language=Find $root ([Windows.Automation.ControlType]::ComboBox) 'Language';if($null -ne $language){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
+   $result.language_lookup_ms=$clock.Elapsed.TotalMilliseconds
    Need ($null -ne $language -and $language.Current.IsEnabled);$result.accessible_label_and_role=$true;$result.native_invoke_changed_real_page=$true
    if($Mode -eq 'READY'){$result.startup_interactive_upper_bound_ms=([Diagnostics.Stopwatch]::GetTimestamp()-[long]$start.ticks)*1000.0/[Diagnostics.Stopwatch]::Frequency}
    if($Mode -eq 'KEYBOARD'){

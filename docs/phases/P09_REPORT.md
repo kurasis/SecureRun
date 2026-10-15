@@ -344,3 +344,13 @@ answers fixed display requests with failure when that owned controller has
 failed; it never substitutes a successful DPI result. The mandatory DPI case
 still fails and blocks acceptance. Application, file, history and performance
 evidence no longer depends on this unrelated fixture bootstrap succeeding.
+
+
+The fixture now records keyboard failure without blocking independent DOM/DPI
+checks. A failed dependent policy/file GUI sequence remains failed and records
+its typed dependency result, closes its own inspected GUI/held synthetic member
+and proceeds to separate application environments. Editor/archive failures remain
+failed; explicit checked stops of that exact owned test environment separate
+the next application workflow. Missing dependent cases and any failure still
+reject P09. This collects independent compatibility proof without claiming skipped
+work or replacing any native operation guard.

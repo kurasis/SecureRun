@@ -4,7 +4,7 @@ $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Ge
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
 function Require([bool]$Ok,[string]$Code){if(-not $Ok){$script:failureCode=$Code;throw $Code}}
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 20|Set-Content (Join-Path $results 'product-cases.json') -Encoding utf8;ConvertTo-Json -InputObject @($script:uiCases.ToArray()) -Depth 10|Set-Content (Join-Path $results 'ui-cases.json') -Encoding utf8}
-function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;$message=$_.Exception.GetBaseException().Message;if($message -cmatch '^P09_[A-Z0-9_]{1,100}$'){$record.code=$message};if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}));if($record.status -eq 'FAILED' -and $Name -notin @('normal_manager_startup_and_complete_process_group_idle_budget','normal_manager_startup_diagnostic_only','actual_windows_display_dpi_and_bilingual_product_layouts')){$script:failureCode=$record.code;throw 'P09_FOCUSED_CASE_FAILED'}}
+function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;$message=$_.Exception.GetBaseException().Message;if($message -cmatch '^P09_[A-Z0-9_]{1,100}$'){$record.code=$message};if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}));if($record.status -eq 'FAILED' -and $Name -notin @('normal_manager_startup_and_complete_process_group_idle_budget','normal_manager_startup_diagnostic_only','actual_windows_display_dpi_and_bilingual_product_layouts','real_keyboard_and_windows_screen_reader_provider','official_editor_saves_boxed_document_without_host_write','official_archive_gui_and_create_extract_round_trip')){$script:failureCode=$record.code;throw 'P09_FOCUSED_CASE_FAILED'}}
 function Clean([string]$Text){foreach($canary in @('P09_ARGV_SECRET_CANARY','P09_ENV_SECRET_CANARY','FORGED_EVENT')){if($Text.Contains($canary)){$script:capturesClean=$false;return $false}};return $true}
 function Native([hashtable]$Request,[string]$Kind='policy',[switch]$AllowFailure){
  $start=[Diagnostics.ProcessStartInfo]::new($Manager);$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add(('--'+$Kind+'-once'))
@@ -138,6 +138,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){'DIAGNOSTIC_ONLY'}else{'FAILED'});workload_mode='DIAGNOSTIC_ONLY';layout_only=$true;reference_environments=1;standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
   Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1};exit 0
  }
+ try{
  Case 'T32' 'real_process_activity_update_latency' {
   $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name;environment_count=$environmentCount};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))
   Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_ACTIVITY_MEMBER_NOT_ALIVE';$r=Invoke-P09Stage 'ACTIVITY_END' @{environment_name=$first.display_name};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'process-update.json') -Encoding utf8;Require ($r.metrics.update_upper_bound_ms -le 2000) 'P09_PROCESS_UPDATE_BUDGET_EXCEEDED';$lab.FenceNewFixtureDispatch(('SR_'+$first.id.Replace('-','')));Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_EXTERNAL_MEMBER_STOPPED_BY_FENCE';$r.metrics
@@ -182,7 +183,13 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   Require ((Get-FileHash -LiteralPath $inputFile).Hash -eq $hash -and (Get-FileHash -LiteralPath $exported).Hash -eq $hash -and (Get-FileHash -LiteralPath $renamed).Hash -eq $hash) 'P09_UI_WORKFLOW_CHANGED_HOST_DATA'
   @{actual_product_ui=$true;real_native_pickers=$true;import_export_sha256_equal=$true;collision_rename_preserved_original=$true;archive_preserved_data=$true;native_confirmations_scoped=$true;reset_generation_incremented=$true;reset_root_empty=$true;host_input_and_exports_unchanged=$true;automatic_open=$false}
  }
- $null=Invoke-P09Stage 'RESET_PRESENTATION';Close-P09Cdp;$gui.Dispose();$gui=$null
+ }catch{
+  @{status='FAILED';dependent_gui_sequence_completed=$false;code=$(if($script:failureCode){$script:failureCode}else{'P09_GUI_DEPENDENCY_FAILED'});independent_application_cases_continue=$true}|ConvertTo-Json|Set-Content (Join-Path $results 'gui-workflow.json') -Encoding utf8
+ }finally{
+  try{$null=Invoke-P09Stage 'RESET_PRESENTATION'}catch{}
+  Close-P09Cdp;if($null -ne $gui){$gui.Dispose();$gui=$null};if($null -ne $held){[P05Lab]::Stop($held);$script:held=$null}
+ }
+
  Case 'T66' 'local_history_and_debug_error_capture_remain_minimized' {
   $paths=@((Join-Path $Fixture 'normal-manager.log'),(Join-Path $Fixture 'inspected-manager.log'));$metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';foreach($name in @('history.sqlite','history.sqlite-wal','history.sqlite-shm')){if(Test-Path -LiteralPath (Join-Path $metadata $name)){$paths+=Join-Path $metadata $name}}
   foreach($path in $paths){$bytes=[IO.File]::ReadAllBytes($path);Require (Clean ([Text.Encoding]::UTF8.GetString($bytes))) 'P09_SECRET_IN_LOCAL_HISTORY';Require (Clean ([Text.Encoding]::Unicode.GetString($bytes))) 'P09_SECRET_IN_LOCAL_UTF16_CAPTURE'}
@@ -195,6 +202,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   $saved=Find-BoxFile $apps 'editor-output.txt';Require (([IO.File]::ReadAllText($saved.FullName)).Trim() -ceq 'P09_EDITOR_CANARY') 'P09_EDITOR_BYTES_DIFFER';Require (-not(Test-Path -LiteralPath $outputFile) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $before) 'P09_EDITOR_CHANGED_HOST'
   @{official_executable=$true;real_gui_editor=$true;actual_keyboard_edit_and_save=$access.real_keyboard_edit;original_driver_member_observed=$true;boxed_saved_bytes_verified=$true;host_input_unchanged=$true;host_output_absent=$true;clean_portable_profile=$true;plugins_and_host_update_integrations_outside_validated_workflow=$true}
  }
+ Stop-Box $apps
  Case 'T30' 'official_archive_gui_and_create_extract_round_trip' {
   $guiApp=Register-App $apps 'P09 archive file manager' (Join-Path (Split-Path $archive) '7zFM.exe') @($Fixture);$guiReceipt=Launch-App $apps $guiApp;$null=Wait-GuiPid $apps;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$guiReceipt.operation_id} 'control'
   $inputFile=Join-Path $Fixture 'archive-source.txt';$zip=Join-Path $Fixture 'created-archive.zip';$unpack=Join-Path $Fixture 'archive-unpacked';[IO.File]::WriteAllText($inputFile,'P09_ARCHIVE_ROUND_TRIP');$hash=(Get-FileHash -LiteralPath $inputFile).Hash
@@ -205,6 +213,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   Require ((Get-FileHash -LiteralPath $output.FullName).Hash -eq $hash -and -not(Test-Path -LiteralPath $unpack) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $hash) 'P09_ARCHIVE_ROUND_TRIP_DIFFER'
   @{official_gui_observed_boxed=$true;actual_archive_created=$true;actual_archive_extracted=$true;round_trip_sha256_matches=$true;host_input_unchanged=$true;host_zip_and_extraction_absent=$true;engine_hooks_or_security_exceptions_added=$false}
  }
+ Stop-Box $apps
  Case 'T41' 'official_browser_existing_host_instance_no_url_or_cookie_handoff' {
   $nonce=[Guid]::NewGuid().ToString();$script:browserProof=[P09Browser]::new($EngineHome,('SR_'+$web.id.Replace('-','')),$nonce)
   $script:hostBrowser=[P09Desktop]::new($browser,$EngineHome,(Join-Path $Fixture 'host-browser.log'),0,[string[]]@('-no-remote','-profile',$hostProfile,('http://127.0.0.1:'+$browserProof.Port+'/host/'+$nonce)))

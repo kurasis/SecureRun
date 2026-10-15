@@ -98,7 +98,7 @@ try{
   }
   Case 'T24' 'native_confirmation_names_environment_and_cancel_consumes_plan' {
    $null=Import 'native-confirmation.txt';$before=$e.generation
-   $r=Native-Confirm 'RESET' $false;Require ($r.reason -eq 'LIFECYCLE_CONFIRMATION_CANCELLED') $r.reason;Refresh-Environment;Require ($e.generation -eq $before) 'CANCEL_CHANGED_GENERATION';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'native-confirmation.txt').Count -eq 1) 'NATIVE_CANCEL_DELETED_DATA'
+   $r=Native-Confirm 'RESET' $false;Require ($r.reason -eq 'LIFECYCLE_CONFIRMATION_CANCELLED') $r.reason;Require (@($r.operations|Where-Object {$_.environment_id -eq $e.id -and $_.stage -eq 'CANCELLED_UNDISPATCHED'}).Count -eq 1) 'CANCELLED_PLAN_NOT_CONSUMED';Refresh-Environment;Require ($e.generation -eq $before) 'CANCEL_CHANGED_GENERATION';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'native-confirmation.txt').Count -eq 1) 'NATIVE_CANCEL_DELETED_DATA'
    $r=Native-Confirm 'RESET' $true;Require ($r.reason -eq 'OBSERVED') $r.reason;Refresh-Environment;Empty-Root;Require ($e.generation -eq ($before+1)) 'NATIVE_CONFIRMATION_NOT_COMMITTED'
    @{real_native_dialog=$true;normal_production_binary=$true;affected_environment_uuid_visible=$true;cancel_preserves_data=$true;cancelled_plan_consumed=$true;explicit_accept_completed_reset=$true;renderer_confirmation_boolean=$false}
   }

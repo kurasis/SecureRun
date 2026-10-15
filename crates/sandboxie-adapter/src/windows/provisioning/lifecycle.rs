@@ -340,8 +340,11 @@ fn native_clear(
     if seal.snapshot.parent_identity != r.parent_identity {
         return Err("CLEANUP_PARENT_CHANGED");
     }
-    r.snapshot =
-        Some(serde_json::to_string(&seal.snapshot).map_err(|_| "CLEANUP_SNAPSHOT_INVALID")?);
+    let snapshot = serde_json::to_string(&seal.snapshot).map_err(|_| "CLEANUP_SNAPSHOT_INVALID")?;
+    if r.snapshot.as_deref() != Some(&snapshot) {
+        return Err("CLEANUP_SUPERVISOR_SNAPSHOT_CHANGED");
+    }
+
     stage(ops, r, "SNAPSHOT_CAPTURED", "ORIGINAL_ACLS_RECORDED")?;
     checkpoint("SnapshotCaptured");
     engine.fence(e)?;
@@ -352,6 +355,7 @@ fn native_clear(
     stage(ops, r, "FENCED", "LAUNCH_DISABLED")?;
     checkpoint("Fenced");
     seal.freeze()?;
+    seal.delegated_restore();
     stage(ops, r, "SEALED", "NAMESPACE_SEALED")?;
     checkpoint("Sealed");
     engine.mutation_context()?;
@@ -384,8 +388,25 @@ fn native_clear(
         qos: ptr::null_mut(),
     };
     let clock = Instant::now();
-    let status =
-        unsafe { (native.delete)(&mut attributes, callback, &clock as *const _ as _) } as u32;
+    // The controller retains metadata restoration handles for all survivors.
+    // It closes only handles already marked delete-pending by this original ABI.
+    // A bounded in-flight drain handles directories awaiting those final closes;
+    // journal recovery never enters this loop or replays native dispatch.
+    let status = loop {
+        let status =
+            unsafe { (native.delete)(&mut attributes, callback, &clock as *const _ as _) } as u32;
+        if matches!(status, 0 | 0xc0000043) && seal.empty().is_ok() {
+            break status;
+        }
+        if !matches!(status, 0xc0000043 | 0xc0000101 | 0xc0000056)
+            || clock.elapsed() >= Duration::from_secs(30)
+        {
+            return Err("CLEANUP_NATIVE_STATUS_UNRESOLVED");
+        }
+        engine.mutation_context()?;
+        engine.idle(&e.name())?;
+        std::thread::sleep(Duration::from_millis(20));
+    };
     checkpoint("NativeReturned");
     r.native_status = Some(status);
     if status != 0 && status != 0xc0000043 {
@@ -393,7 +414,6 @@ fn native_clear(
     }
     seal.empty()?;
     engine.idle(&e.name())?;
-    seal.restore()?;
     let _root = engine.control_scope(e)?;
     stage(ops, r, "CLEARED", "VERIFIED_EMPTY_RETAINED_ROOT")?;
     checkpoint("Cleared");
@@ -475,14 +495,18 @@ fn commit(
                 .generation
                 .checked_add(1)
                 .ok_or("ENVIRONMENT_GENERATION_EXHAUSTED")?;
-            e.lifecycle_operation = None;
             e.disposable_pending = false;
-            e.reason = "RESET_COMPLETE".into();
+            e.reason = "RESET_AWAITING_CONTROLLER_RESTORE".into();
             j.save(&e)?;
             control_reconciled(engine, e.id)?;
         }
         checkpoint("MetadataCommitted");
-        stage(ops, &mut r, "COMPLETE", "RETENTION_POSTCONDITIONS_VERIFIED")
+        stage(
+            ops,
+            &mut r,
+            "AWAITING_CONTROLLER_RESTORE",
+            "SEALED_RETENTION_POSTCONDITIONS_VERIFIED",
+        )
     })();
     if let Err(reason) = result {
         r.reason = reason.into();
@@ -508,7 +532,10 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
     }
     let e = j.get(r.environment_id);
     if r.intent == Action::Remove
-        && matches!(r.stage.as_str(), "CLEARED" | "DEFINITION_REMOVED")
+        && matches!(
+            r.stage.as_str(),
+            "CLEARED" | "DEFINITION_REMOVED" | "AWAITING_CONTROLLER_RESTORE"
+        )
         && !engine.exists(&format!("SR_{}", r.environment_id.simple()))?
     {
         let path = PathBuf::from(engine.root_for(r.environment_id));
@@ -548,9 +575,9 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
     }
     let mut e = e?;
     if e.generation == r.generation + 1
-        && e.lifecycle_operation.is_none()
+        && (e.lifecycle_operation.is_none() || e.lifecycle_operation == Some(id))
         && r.intent == Action::Reset
-        && r.stage == "CLEARED"
+        && matches!(r.stage.as_str(), "CLEARED" | "AWAITING_CONTROLLER_RESTORE")
     {
         let _scope = engine.control_scope(&e)?;
         engine.idle(&e.name())?;
@@ -561,6 +588,8 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
         {
             return Err("CLEANUP_CONTENTS_REMAIN");
         }
+        e.lifecycle_operation = None;
+        j.save(&e)?;
         return stage(
             ops,
             &mut r,
@@ -755,8 +784,8 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         } = &request
         {
             let _lock = lock(&engine)?;
-            let (j, ops) = journals(&engine)?;
-            let r = ops
+            let (j, mut ops) = journals(&engine)?;
+            let mut r = ops
                 .get(*operation_id)?
                 .ok_or("LIFECYCLE_OPERATION_NOT_FOUND")?;
             if r.plan_id != *plan_id {
@@ -767,6 +796,11 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                 unchanged(&engine, &e, &r)?;
                 scope(&engine, &e, &j.list()?)?;
                 let mut seal = seal::Seal::capture(&engine, &e)?;
+                r.snapshot = Some(
+                    serde_json::to_string(&seal.snapshot)
+                        .map_err(|_| "CLEANUP_SNAPSHOT_INVALID")?,
+                );
+                ops.save(&r)?;
                 seal.enable_supervision();
                 restoration = Some(seal);
             }
@@ -839,6 +873,9 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         #[cfg(feature = "policy-ci")]
         let mut competing_manager_refused = false;
         while clock.elapsed() < Duration::from_secs(180) {
+            if let Some(seal) = &mut restoration {
+                seal.reap_deleted()?;
+            }
             if let Ok(line) = rx.recv_timeout(Duration::from_millis(50)) {
                 if line.len() > 2 * 1024 * 1024 {
                     break;
@@ -922,8 +959,46 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                 "LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED",
             ));
         }
-        serde_json::from_str(&output.ok_or("LIFECYCLE_EXECUTOR_OUTCOME_UNKNOWN")?)
-            .map_err(|_| "LIFECYCLE_RESPONSE_INVALID")
+        let mut reply: contract::Reply =
+            serde_json::from_str(&output.ok_or("LIFECYCLE_EXECUTOR_OUTCOME_UNKNOWN")?)
+                .map_err(|_| "LIFECYCLE_RESPONSE_INVALID")?;
+        if reply.reason == "OBSERVED"
+            && let contract::Request::Commit { operation_id, .. } = &request
+        {
+            let _lock = lock(&engine)?;
+            let (mut j, mut ops) = journals(&engine)?;
+            let mut r = ops
+                .get(*operation_id)?
+                .ok_or("LIFECYCLE_OPERATION_NOT_FOUND")?;
+            if r.stage == "AWAITING_CONTROLLER_RESTORE" {
+                if r.intent == Action::Reset {
+                    let mut e = j.get(r.environment_id)?;
+                    if e.generation != r.generation + 1
+                        || e.lifecycle_operation != Some(*operation_id)
+                    {
+                        return Err("STALE_LIFECYCLE_OPERATION");
+                    }
+                    scope(&engine, &e, &j.list()?)?;
+                    e.lifecycle_operation = None;
+                    e.reason = "RESET_COMPLETE".into();
+                    j.save(&e)?;
+                    for view in &mut reply.environments {
+                        if view.environment_id == e.id {
+                            view.pending_operation = None;
+                            view.activity = "IDLE".into();
+                        }
+                    }
+                }
+                stage(
+                    &mut ops,
+                    &mut r,
+                    "COMPLETE",
+                    "CONTROLLER_RESTORED_RETENTION_VERIFIED",
+                )?;
+                reply.operations = ops.views()?;
+            }
+        }
+        Ok(reply)
     })();
     result.unwrap_or_else(contract::Reply::failure)
 }

@@ -29,3 +29,12 @@ Initial ARM run 38736673131 passed 40 adapter tests and failed three new seal te
 before any engine mutation: joining an empty root-relative component introduced
 a trailing separator rejected by strict local-file grammar. Root resolution now
 keeps the original canonical root spelling. No path validation was weakened.
+
+Runs 38741141781 and 38742057167 disproved restoration by root inheritance alone.
+The isolated native deletion probe also confirmed that retaining child metadata
+handles delays namespace unlink until their final close. The revised protocol
+retains restoration handles for survivors and releases only kernel-confirmed
+delete-pending objects; a controller-bound pre-seal snapshot prevents the worker
+from sealing a different set of objects. COMPLETE is withheld until the controller
+restores the recorded ACLs after the held executor exits. Native verification of
+the revised protocol is pending.

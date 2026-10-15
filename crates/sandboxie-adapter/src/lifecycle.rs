@@ -305,6 +305,33 @@ mod tests {
         assert!(serde_json::from_str::<Request>(r#"{"action":"COMMIT","operation_id":"00000000-0000-0000-0000-000000000000","plan_id":"00000000-0000-0000-0000-000000000000","confirmed":true}"#).is_err());
     }
     #[test]
+    fn recovery_refuses_foreign_future_and_corrupt_journals_without_replacement() {
+        let temp = tempfile::tempdir().unwrap();
+        for (name, sql) in [
+            (
+                "foreign",
+                "CREATE TABLE unrelated(value TEXT); INSERT INTO unrelated VALUES('KEEP');",
+            ),
+            (
+                "future",
+                "PRAGMA user_version=2; CREATE TABLE future(value TEXT);",
+            ),
+        ] {
+            let path = temp.path().join(name);
+            let db = Connection::open(&path).unwrap();
+            db.execute_batch(sql).unwrap();
+            drop(db);
+            let original = std::fs::read(&path).unwrap();
+            assert!(Journal::open(&path, "owner").is_err());
+            assert_eq!(std::fs::read(&path).unwrap(), original);
+        }
+        let path = temp.path().join("corrupt");
+        let original = b"SYNTHETIC_INVALID_DATABASE_RETAINED";
+        std::fs::write(&path, original).unwrap();
+        assert!(Journal::open(&path, "owner").is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), original);
+    }
+    #[test]
     fn lifecycle_journal_preserves_non_replayable_identity_bound_intent() {
         let temp = tempfile::tempdir().unwrap();
         let path = temp.path().join("journal");

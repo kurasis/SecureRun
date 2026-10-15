@@ -25,7 +25,7 @@ pub(super) struct Seal {
     owner: String,
     pub snapshot: Snapshot,
     _namespace: Vec<File>,
-    security: Vec<File>,
+    security: Vec<Option<File>>,
     changed: bool,
 }
 fn open(path: &Path, access: u32, sharing: u32) -> R<File> {
@@ -281,29 +281,11 @@ impl Seal {
         }
         let path = self.resolve(relative);
         crate::files::local_path(path.to_str().ok_or("CLEANUP_PATH_INVALID")?)?;
-        let access = READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES;
-        let file = if relative.as_os_str().is_empty() {
-            // The canonical root and every ancestor are already pinned without
-            // delete sharing. Verify the opened identity before retaining this
-            // handle for the inherited-ACL restoration path.
-            let file = OpenOptions::new()
-                .access_mode(access | FILE_LIST_DIRECTORY)
-                .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
-                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
-                .open(&path)
-                .map_err(|_| "CLEANUP_ROOT_SECURITY_UNAVAILABLE")?;
-            checked(&file)?;
-            if identity(&file)? != self.snapshot.root_identity {
-                return Err("CLEANUP_ROOT_CHANGED");
-            }
-            file
-        } else {
-            open(
-                &path,
-                access,
-                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-            )?
-        };
+        let file = open(
+            &path,
+            READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,
+            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        )?;
         let info = checked(&file)?;
         let sd = descriptor(&file)?;
         *bytes += sd.len();
@@ -316,7 +298,7 @@ impl Seal {
             attributes: info.dwFileAttributes,
             descriptor: sd,
         });
-        self.security.push(file);
+        self.security.push(Some(file));
         if info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0 {
             let pin = open(
                 &path,
@@ -339,9 +321,14 @@ impl Seal {
     }
     pub fn freeze(&mut self) -> R<()> {
         self.changed = true;
-        apply(&self.security[0], &frozen(&self.owner)?)?;
+        apply(
+            self.security[0]
+                .as_ref()
+                .ok_or("CLEANUP_RESTORE_AUTHORITY_LOST")?,
+            &frozen(&self.owner)?,
+        )?;
         let inherited = sddl("D:AI")?;
-        for file in self.security.iter().skip(1) {
+        for file in self.security.iter().skip(1).flatten() {
             apply(file, &inherited)?
         }
         let mut observed = std::collections::BTreeMap::new();
@@ -356,12 +343,12 @@ impl Seal {
             return Err("CLEANUP_SNAPSHOT_CHANGED");
         }
         for (node, file) in self.snapshot.nodes.iter().zip(&self.security) {
+            let file = file.as_ref().ok_or("CLEANUP_RESTORE_AUTHORITY_LOST")?;
             if identity(file)? != node.identity {
                 return Err("CLEANUP_OBJECT_REPLACED");
             };
             attributes(file, normalized(node.attributes))?
         }
-        self.release_children();
         Ok(())
     }
     fn snapshot_current(
@@ -409,69 +396,83 @@ impl Seal {
         };
         Ok(())
     }
+    /// Release only objects the original deleter has already marked delete-pending.
+    /// Every surviving object retains preauthorized DACL/attribute restoration access.
+    pub fn reap_deleted(&mut self) -> R<()> {
+        for file in self.security.iter_mut().skip(1) {
+            if let Some(held) = file.as_ref() {
+                let mut info = FILE_STANDARD_INFO::default();
+                if unsafe {
+                    GetFileInformationByHandleEx(
+                        held.as_raw_handle(),
+                        FileStandardInfo,
+                        &mut info as *mut _ as _,
+                        std::mem::size_of_val(&info) as u32,
+                    )
+                } == 0
+                {
+                    return Err("CLEANUP_DELETE_STATE_UNKNOWN");
+                }
+                if info.DeletePending {
+                    *file = None;
+                }
+            }
+        }
+        Ok(())
+    }
+    pub fn delegated_restore(&mut self) {
+        self.changed = false;
+        self.release_children();
+    }
     pub fn restore(&mut self) -> R<()> {
-        if identity(&self.security[0])? != self.snapshot.root_identity {
+        if identity(
+            self.security[0]
+                .as_ref()
+                .ok_or("CLEANUP_RESTORE_AUTHORITY_LOST")?,
+        )? != self.snapshot.root_identity
+        {
             return Err("CLEANUP_ROOT_CHANGED");
         }
-        let current = descriptor(&self.security[0])?;
+        let current = descriptor(
+            self.security[0]
+                .as_ref()
+                .ok_or("CLEANUP_RESTORE_AUTHORITY_LOST")?,
+        )?;
         let original = &self.snapshot.nodes[0].descriptor;
         if acl_bytes(&current)? != acl_bytes(original)? {
             if acl_bytes(&current)? != acl_bytes(&frozen(&self.owner)?)? {
                 return Err("CLEANUP_ACL_EXTERNAL_CHANGE");
             }
-            apply(&self.security[0], original)?;
+            apply(
+                self.security[0]
+                    .as_ref()
+                    .ok_or("CLEANUP_RESTORE_AUTHORITY_LOST")?,
+                original,
+            )?;
         }
         let mut result = Ok(());
-        for node in &self.snapshot.nodes {
-            let path = self.resolve(Path::new(&node.relative));
-            let file = match open(
-                &path,
-                READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,
-                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-            ) {
-                Ok(f) => f,
-                Err(code) => {
-                    #[cfg(test)]
-                    eprintln!(
-                        "CLEANUP_RESTORE_OPEN root={} code={}",
-                        node.relative.is_empty(),
-                        code
-                    );
-                    #[cfg(test)]
-                    if let Ok(read) = open(&path, READ_CONTROL | FILE_READ_ATTRIBUTES, 7)
-                        && let Ok(descriptor) = descriptor(&read)
-                    {
-                        eprintln!(
-                            "CLEANUP_RESTORE_ACL inherited_only={:?} protected={:?}",
-                            inherited_only(&descriptor),
-                            acl_bytes(&descriptor).map(|a| a.1)
-                        );
-                    }
-
-                    if !path.try_exists().map_err(|_| "CLEANUP_RESTORE_UNKNOWN")? {
-                        continue;
-                    };
-                    result = Err(code);
-                    continue;
-                }
+        self.reap_deleted()?;
+        for (index, node) in self.snapshot.nodes.iter().enumerate() {
+            let Some(file) = self.security.get(index).and_then(Option::as_ref) else {
+                continue;
             };
-            if identity(&file)? != node.identity {
+            if identity(file)? != node.identity {
                 return Err("CLEANUP_RESTORE_IDENTITY_CHANGED");
             }
-            let current = descriptor(&file)?;
+            let current = descriptor(file)?;
             if acl_bytes(&current)? != acl_bytes(&node.descriptor)? {
                 if node.relative.is_empty() || !inherited_only(&current)? {
                     return Err("CLEANUP_ACL_EXTERNAL_CHANGE");
                 }
-                apply(&file, &node.descriptor)?;
+                apply(file, &node.descriptor)?;
             }
-            let info = checked(&file)?;
+            let info = checked(file)?;
             if info.dwFileAttributes & !FILE_ATTRIBUTE_NORMAL
                 == (node.attributes
                     & !(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM))
                     & !FILE_ATTRIBUTE_NORMAL
             {
-                attributes(&file, node.attributes)?
+                attributes(file, node.attributes)?
             } else if info.dwFileAttributes != node.attributes {
                 result = Err("CLEANUP_ATTRIBUTES_EXTERNAL_CHANGE")
             }
@@ -483,7 +484,6 @@ impl Seal {
     /// killed executor. No stored path grants authority to delete or rebind.
     pub fn enable_supervision(&mut self) {
         self.changed = true;
-        self.release_children()
     }
 }
 impl Drop for Seal {
@@ -502,10 +502,10 @@ mod tests {
         fn NtDeleteFile(attributes: *const NtAttributes) -> i32;
     }
     #[test]
-    fn inspect_delete_with_pre_authorized_metadata_handle() {
+    fn delete_pending_objects_are_released_without_losing_survivor_restore_authority() {
         let (_directory, path, owner, id) = fixture();
         std::fs::write(path.join("keep.txt"), b"SYNTHETIC").unwrap();
-        let seal = Seal::capture_path(path.clone(), &owner, &id).unwrap();
+        let mut seal = Seal::capture_path(path.clone(), &owner, &id).unwrap();
         let text: Vec<u16> = "keep.txt".encode_utf16().collect();
         let name = NtName {
             length: (text.len() * 2) as u16,
@@ -526,8 +526,9 @@ mod tests {
             std::fs::read_dir(&path).unwrap().count()
         );
         assert_eq!(status, 0);
-        drop(seal);
+        seal.reap_deleted().unwrap();
         assert_eq!(std::fs::read_dir(&path).unwrap().count(), 0);
+        drop(seal);
     }
     fn fixture() -> (tempfile::TempDir, PathBuf, String, String) {
         let owner = process_sid(unsafe { GetCurrentProcess() }).unwrap();

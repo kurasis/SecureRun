@@ -35,8 +35,13 @@ generation. Unexpected root recreation is never adopted automatically.
 A private WAL/FULL SQLite journal records reservation before mutation, bounded
 security-descriptor snapshots, dispatch uncertainty and checked postconditions.
 A separate ordinary-user controller survives UI exit, bounds the executor with a
-one-process 128 MiB job and waits for its held process before restoring the known
-seal. Native faults and ACL restoration must pass the phase's Windows tests before
+one-process 128 MiB job and retains preauthorized metadata handles for every
+snapshotted object. It closes only handles already marked delete-pending by the
+original upstream native routine; surviving objects retain restoration authority.
+Bounded drain passes inside the active dispatch allow pending child handles to
+close before the original routine removes their directories. Recovery never
+re-enters those passes. The controller waits for the held executor, restores the
+known ACLs and only then publishes COMPLETE. Native faults and ACL restoration must pass the phase's Windows tests before
 this protocol can be described as complete.
 
 On restart, Inspect reads the journal and current identities. It never replays a

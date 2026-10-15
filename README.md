@@ -3,10 +3,13 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01 and P02 feasibility are complete; P03 adds the native application foundation,
-SQLite persistence and a scoped IPC boundary. The shell currently offers read-only
-setup and trusted read-only engine observation. Read [STATUS](docs/STATUS.md)
-for the exact phase evidence. No production user-target launcher exists yet.
+P01–P05 have retained native phase evidence. P06 adds registered host-EXE
+launch, durable receipts, current process views and scoped Stop. Its current
+validation status and exact source provenance are in [STATUS](docs/STATUS.md).
+See [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md) and
+[policy/provisioning](docs/POLICY_PROVISIONING.md) for action prerequisites.
+Final release acceptance, safe file workflows, cleanup and packaging remain
+later phases.
 
 The complete, unchanged specification is in
 [docs/specification/00_README.md](docs/specification/00_README.md).
@@ -52,7 +55,11 @@ npm run tauri -- build --debug --no-bundle
 ```
 
 The normal configuration includes only the bundled main-window capability.
-It has no engine mutation/target launch, generic shell/filesystem API or test-report grant.
+It exposes constrained policy/provisioning and registered application/Stop commands,
+with fresh native authorization. It grants no generic shell/filesystem API or
+test-report command. Engine control requires a protected application installation
+and matching validated prerequisites; a development checkout is not trusted as
+an installed manager.
 The separately compiled foundation test feature is not a release build.
 See [IPC contract](docs/IPC_CONTRACT.md) and [persistence](docs/PERSISTENCE.md).
 
@@ -69,7 +76,9 @@ npm test
 
 The Linux cloud uses [setup-cloud.sh](tools/setup-cloud.sh); it pins and verifies
 Rust installation, activates workspace-local caches and executes these checks.
-Native Windows validation is reproduced by the P03/P04 Actions workflows.
+Native Windows validation is reproduced by the P03–P06 Actions workflows on
+Server 2025 x64 and Windows 11 ARM64, with actual x86/x64 target PEs.
 The [observation contract](docs/ENGINE_OBSERVATION.md) describes the versioned
 compatibility manifest, trust/context gates, private local diagnostics and bounded
-native worker. P04 does not introduce a production program launcher.
+native worker. Its observation-only interface cannot authorize launch; P06
+uses the separate registration/dispatch service and durable operation journal.

@@ -1,0 +1,149 @@
+{
+  "status": "FAILED",
+  "standard_user": true,
+  "mode": "normal",
+  "cases": [
+    {
+      "name": "exact_arguments_securerun-launch-probe-x86",
+      "id": "T04",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "status": "FAILED"
+    },
+    {
+      "name": "exact_arguments_securerun-launch-probe",
+      "id": "T04",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "status": "FAILED"
+    },
+    {
+      "status": "PASSED",
+      "name": "production_child_and_grandchild_membership",
+      "evidence": {
+        "process_count": 5,
+        "births_present": true,
+        "actual_boxed_tree": 3,
+        "complete": true
+      },
+      "id": "T05"
+    },
+    {
+      "status": "PASSED",
+      "name": "stop_survives_launch_policy_ineligibility_without_entitlement",
+      "evidence": {
+        "stop_completed": true,
+        "paid_entitlement_required": false,
+        "launch_blocked": true,
+        "optional_paid_expiry": "NOT_APPLICABLE_BASELINE_HAS_NO_PAID_DEPENDENCY"
+      },
+      "id": "T54"
+    },
+    {
+      "status": "PASSED",
+      "name": "background_child_keeps_environment_running",
+      "evidence": {
+        "remaining_descendants": 4,
+        "cleanup_dispatched": false,
+        "primary_may_exit": true,
+        "environment_running": true
+      },
+      "id": "T06"
+    },
+    {
+      "status": "PASSED",
+      "name": "duplicate_completed_launch_is_never_dispatched_twice",
+      "evidence": {
+        "new_manager_process_per_delivery": true,
+        "target_executions": 1,
+        "deliveries": 5
+      },
+      "id": "T61"
+    },
+    {
+      "name": "stop_managed_preserves_unmanaged_box_and_host_process",
+      "id": "T19",
+      "exception_type": "System.InvalidOperationException",
+      "code": "STORAGE_HANDLE_UNAVAILABLE_2",
+      "line": 125,
+      "status": "FAILED"
+    },
+    {
+      "status": "PASSED",
+      "name": "rapid_launch_stop_serializes_and_duplicate_scope_conflicts",
+      "evidence": {
+        "conflicting_operation_refused": true,
+        "all_waits_completed": true,
+        "rapid_cycles": 3
+      },
+      "id": "T26"
+    },
+    {
+      "status": "PASSED",
+      "name": "stopped_engine_service_never_dispatches_target",
+      "evidence": {
+        "os_security_settings_modified": false,
+        "host_fallback": false,
+        "production_launch_refused": true,
+        "service_actually_stopped": true
+      },
+      "id": "T01"
+    },
+    {
+      "status": "PASSED",
+      "name": "changed_original_component_refuses_launch",
+      "evidence": {
+        "verification_disabled": false,
+        "original_signature_restored": true,
+        "component_replaced_on_disposable_vm": true,
+        "launch_refused": true
+      },
+      "id": "T02"
+    },
+    {
+      "status": "PASSED",
+      "name": "registered_target_replacement_is_refused",
+      "evidence": {
+        "host_fallback": false,
+        "registered_identity_changed": true,
+        "target_not_dispatched": true
+      },
+      "id": "T03"
+    },
+    {
+      "status": "PASSED",
+      "name": "invalid_exe_and_control_characters_are_refused",
+      "evidence": {
+        "invalid_exe_refused": true,
+        "shell_used": false,
+        "controls_refused": true
+      },
+      "id": "T03"
+    },
+    {
+      "status": "PASSED",
+      "name": "target_cwd_is_separate_from_host_worker_cwd",
+      "evidence": {
+        "hostile_target_directory_accepted_separately": true,
+        "trusted_host_worker_cwd": true,
+        "impostor_dependencies_unused": true,
+        "hostile_path_scrubbed": true,
+        "secret_environment_absent": true
+      },
+      "id": "T50"
+    },
+    {
+      "status": "PASSED",
+      "name": "stale_application_revision_cannot_dispatch_after_policy_change",
+      "evidence": {
+        "old_response_does_not_authorize_dispatch": true,
+        "fresh_worker_prerequisites": true,
+        "stale_registration_refused": true,
+        "new_revision_observed": true
+      },
+      "id": "T56"
+    }
+  ]
+}

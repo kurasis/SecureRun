@@ -1,6 +1,7 @@
 # Engine candidate matrix
 
-No supported production tuple exists. These are P02 feasibility candidates only.
+No final production-release tuple is declared. The P02 table below records
+historical feasibility; current implementation evidence is listed at the end.
 Pinned official Plus 1.18.6 / core 5.73.6 source:
 `cdba7096240b93d79c5373aa81a75a1c5c71b883`; observed core ABI `0x57230`.
 [Machine-readable provenance pin](engine-candidate.json).
@@ -58,3 +59,24 @@ notices are source-pinned. No upstream implementation is copied and no engine is
 redistributed. The original QSbieAPI runtime cleanup dependency is a concrete
 exception assessed for the lab; distribution review remains required, not a claim that dynamic loading removes obligations.
 Manager license/distribution terms remain unselected; see [licensing assessment](FEASIBILITY_REPORT.md).
+
+
+## Current P06 implementation evidence
+
+Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1` passes the current P03–P06 gates on
+Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200, using the pinned
+original engine above. These are the owner-selected pre-release laboratory tuples;
+Windows 11 x64 and final installed-candidate acceptance remain unclaimed.
+
+| Production component | Current phase proof |
+|---|---|
+| Main-window IPC and native selection | P03: 25 actual command-boundary cases per target |
+| Trusted read-only observation | P04: 31 adapter tests and 19 native scenarios per target |
+| StandardOffline/StandardOnline compiler and provisioning | P05: 45 applicable native cases per target, plus one accurate Not applicable UAC route |
+| Registered host-EXE dispatch, receipts and scoped Stop | P06: 21 Server / 22 ARM native cases, including actual/emulated x86/x64, interruption and session 0/2 stopping |
+| Paid profiles | Disabled without verified entitlement |
+| Safe import/boxed-EXE mapping, lifecycle cleanup and packaging | P07/P08/P11 remain pending |
+
+The [status](STATUS.md) and [P06 report](phases/P06_REPORT.md) link exact runs and
+source-bound immutable evidence. Current runtime checks remain mandatory on every
+action. No historical candidate flag or accepted INI setting grants availability.

@@ -1,0 +1,15 @@
+{
+  "mode": "accepted",
+  "cases": [
+    {
+      "id": "T01",
+      "status": "FAILED",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "required_prerequisites",
+      "line": 5,
+      "code": "PATH_GRAMMAR_UNSUPPORTED"
+    }
+  ],
+  "standard_user": true,
+  "status": "FAILED"
+}

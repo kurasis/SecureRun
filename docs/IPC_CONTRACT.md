@@ -39,8 +39,9 @@ boxed normal desktop startup exits before metadata/WebView creation. Unknown
 context exposes minimum read-only setup; no control/elevation or self-escape is
 available. A small in-memory store supplies setup state; real engine observations
 come from the isolated backend worker, never mocks. P05 exposes constrained
-user-owned provisioning separately through policy_request. User-target dispatch,
-import/export and lifecycle cleanup remain unavailable.
+user-owned provisioning separately through policy_request. P06 adds registered
+host-EXE dispatch and scoped Stop through control_request; import/export and
+lifecycle cleanup remain later-phase work.
 See [observation contract](ENGINE_OBSERVATION.md) and
 [policy contract](POLICY_PROVISIONING.md).
 
@@ -94,3 +95,28 @@ use the same already-minimized schema, capped at 4,096 entries/30 days and 1 MiB
 serialized output. No automatic crash/telemetry upload is configured.
 
 See [schema/recovery behavior](PERSISTENCE.md) and [P03 report](phases/P03_REPORT.md).
+
+
+## P06 production application and control commands
+
+`control_request` is granted only to the bundled main WebView, with the same
+backend exact-origin/label check as policy commands. Register accepts one-use
+`executable_selection` and optional `directory_selection` IDs from the native
+picker, never raw renderer paths. Launch accepts application/environment IDs,
+expected revision and operation UUID. Stop accepts an environment ID/operation;
+Stop managed resolves explicit journaled ownership, never a box-name prefix.
+List and Reconcile return bounded application/process/receipt views without
+stored argument arrays or executable/CWD paths. Process FILETIMEs are decimal
+strings. Console worker framing has a fixed 16 KiB request, 2 MiB response and
+120-second external bound; unknown outcomes must be reconciled without replay.
+
+The P03 foundation `reserve_operation` command stays restricted to its existing
+fixture protocol. It cannot authorize production execution. Normal production
+launch/Stop uses the separate durable P06 journal and current adapter checks
+outlined in [Launch and process control](LAUNCH_AND_PROCESS_CONTROL.md).
+
+Control responses include the backend engine generation and a monotonically
+increasing control request sequence. A response from an old engine generation
+or superseded request is rejected before returning to the renderer; its durable
+operation receipt remains available for reconciliation. The UI additionally
+ignores older local request tickets and expires runtime views after 15 seconds.

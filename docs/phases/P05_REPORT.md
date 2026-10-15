@@ -160,3 +160,20 @@ All project source, Markdown and reviewed JSON are published by
 [PR #6](https://github.com/kurasis/SecureRun/pull/6) under the owner's standing
 push/normal-merge authorization; credentials, private paths, raw target arguments
 and generated binaries remain excluded.
+
+
+## Current P06 dependency regression
+
+Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
+[run 38705482872](https://github.com/kurasis/SecureRun/actions/runs/38705482872),
+passed both owner-selected targets: 31 adapter tests and all 45 applicable native
+policy/provisioning cases; zero failed/blocked/skipped, with one accurately
+Not applicable absent different-administrator UAC route per target. Seven real
+interruption checkpoints and ordinary-user/security-boundary reports pass.
+The private diagnostic Stop confirms completion by waiting on the same retained
+object, including natural exit racing termination dispatch; a live/incomplete
+object remains refused. Root/owner/membership and original-helper guards are
+unchanged. Minimized historical failures remain retained; no case was excluded.
+[Current evidence](../evidence/p05/manifest.json) binds this same runtime as P03,
+P04 and P06. This regression executes the policy protocol; production application
+launch and scoped Stop are independently verified by P06.

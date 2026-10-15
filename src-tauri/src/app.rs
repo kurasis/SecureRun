@@ -559,6 +559,7 @@ pub fn run() {
             get_operation,
             diagnostic_summary,
             crate::policies::policy_request,
+            crate::policies::control_request,
             crate::policies::select_policy_path,
             ci_report
         ])

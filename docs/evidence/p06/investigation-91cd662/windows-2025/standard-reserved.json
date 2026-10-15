@@ -1,0 +1,15 @@
+{
+  "standard_user": true,
+  "status": "FAILED",
+  "cases": [
+    {
+      "exception_type": "System.Management.Automation.PropertyNotFoundException",
+      "line": 80,
+      "status": "FAILED",
+      "code": "CONTROL_CASE_FAILED",
+      "id": "T61",
+      "name": "actual_dispatch_interruption_reserved"
+    }
+  ],
+  "mode": "reserved"
+}

@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "status": "PASSED",
+      "name": "actual_scope_change_after_process_handles_retained",
+      "id": "T62",
+      "evidence": {
+        "concurrent_second_manager_refused": true,
+        "numeric_pid_fallback": false,
+        "real_held_handles": true,
+        "target_survives": true,
+        "unknown_completion_preserved": true,
+        "scope_changed_before_dispatch": true
+      }
+    },
+    {
+      "name": "exited_retained_object_does_not_retarget_unrelated_process",
+      "exception_type": "System.Management.Automation.CommandNotFoundException",
+      "line": 61,
+      "code": "CONTROL_CASE_FAILED",
+      "status": "FAILED",
+      "id": "T07"
+    }
+  ],
+  "status": "FAILED",
+  "standard_user": true,
+  "mode": "scope"
+}

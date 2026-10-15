@@ -1,4 +1,5 @@
 //! Trusted observation and constrained journaled policy provisioning.
+pub mod control;
 pub mod policy;
 pub mod provision;
 use serde::{Deserialize, Serialize};

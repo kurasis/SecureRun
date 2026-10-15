@@ -1,0 +1,15 @@
+{
+  "standard_user": true,
+  "status": "FAILED",
+  "mode": "accepted",
+  "cases": [
+    {
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "status": "FAILED",
+      "name": "actual_dispatch_interruption_accepted",
+      "line": 5,
+      "id": "T61",
+      "code": "PROCESS_SCOPE_CHANGED"
+    }
+  ]
+}

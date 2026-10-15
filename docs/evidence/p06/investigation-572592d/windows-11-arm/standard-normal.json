@@ -1,0 +1,129 @@
+{
+  "standard_user": true,
+  "mode": "normal",
+  "cases": [
+    {
+      "status": "FAILED",
+      "id": "T04",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "exact_arguments_securerun-launch-probe-x64"
+    },
+    {
+      "status": "FAILED",
+      "id": "T04",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "exact_arguments_securerun-launch-probe-x86"
+    },
+    {
+      "status": "FAILED",
+      "id": "T04",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "exact_arguments_securerun-launch-probe"
+    },
+    {
+      "status": "FAILED",
+      "id": "T05",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "production_child_and_grandchild_membership"
+    },
+    {
+      "status": "FAILED",
+      "id": "T54",
+      "code": "LAUNCH_NOT_BLOCKED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "stop_survives_launch_policy_ineligibility_without_entitlement"
+    },
+    {
+      "status": "FAILED",
+      "id": "T06",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "background_child_keeps_environment_running"
+    },
+    {
+      "status": "FAILED",
+      "id": "T61",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "duplicate_completed_launch_is_never_dispatched_twice"
+    },
+    {
+      "status": "FAILED",
+      "id": "T19",
+      "code": "PENDING_ROOT_PRECONDITION_FAILED",
+      "line": 124,
+      "exception_type": "System.InvalidOperationException",
+      "name": "stop_managed_preserves_unmanaged_box_and_host_process"
+    },
+    {
+      "status": "FAILED",
+      "id": "T26",
+      "code": "CONTROL_CASE_FAILED",
+      "line": 132,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "rapid_launch_stop_serializes_and_duplicate_scope_conflicts"
+    },
+    {
+      "status": "FAILED",
+      "id": "T01",
+      "code": "CONTROL_CASE_FAILED",
+      "line": 140,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "stopped_engine_service_never_dispatches_target"
+    },
+    {
+      "status": "FAILED",
+      "id": "T02",
+      "code": "CONTROL_CASE_FAILED",
+      "line": 145,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "changed_original_component_refuses_launch"
+    },
+    {
+      "status": "FAILED",
+      "id": "T03",
+      "code": "PATH_GRAMMAR_UNSUPPORTED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "registered_target_replacement_is_refused"
+    },
+    {
+      "evidence": {
+        "invalid_exe_refused": true,
+        "controls_refused": true,
+        "shell_used": false
+      },
+      "status": "PASSED",
+      "id": "T03",
+      "name": "invalid_exe_and_control_characters_are_refused"
+    },
+    {
+      "status": "FAILED",
+      "id": "T50",
+      "code": "PROCESS_SCOPE_CHANGED",
+      "line": 5,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "target_cwd_is_separate_from_host_worker_cwd"
+    },
+    {
+      "status": "FAILED",
+      "id": "T56",
+      "code": "CONTROL_CASE_FAILED",
+      "line": 165,
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "name": "stale_application_revision_cannot_dispatch_after_policy_change"
+    }
+  ],
+  "status": "FAILED"
+}

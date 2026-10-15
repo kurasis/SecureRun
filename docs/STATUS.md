@@ -9,7 +9,7 @@ Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P09.
 | P03 | DONE — current P09 source regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | DONE — current P09 source regression passed | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED — P09 regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | BLOCKED — P09 regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P06 | BLOCKED — ARM endpoint positive control failed | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
 | P07 | BLOCKED — P09 regression pending | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
 | P08 | BLOCKED — P09 regression pending | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
 | P09 | IN_PROGRESS — native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |

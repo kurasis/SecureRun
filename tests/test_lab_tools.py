@@ -14,6 +14,20 @@ SPEC.loader.exec_module(validator)
 
 
 class IntegrityTests(unittest.TestCase):
+    def test_focused_p09_run_cannot_claim_a_full_gate_even_with_passed_status(self):
+        spec = importlib.util.spec_from_file_location('p09_retainer', ROOT / 'tools/lab/retain_p09_evidence.py')
+        retainer = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(retainer)
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / 'run-summary.json').write_text(json.dumps({
+                'phase': 'P09', 'result': 'PASSED', 'workload_mode': 'DIAGNOSTIC_ONLY',
+            }))
+            for name, data in [('product-cases.json', []), ('ui-cases.json', []), ('standard-product.json', {})]:
+                (folder / name).write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, 'native architecture/source/result'):
+                retainer.check_target(folder, 'a' * 40, '8664')
+
     def test_official_candidate_structure_and_all_outputs(self):
         validator.validate(ROOT)
 

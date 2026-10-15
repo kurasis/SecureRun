@@ -1,10 +1,10 @@
-param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit)
+param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Generic.List[object]]::new();$script:lastUi=$null;$script:stage='INITIALIZING';$script:capturesClean=$true;$script:failureCode=$null;$script:browserGuiPid=0;$script:browserReceipt=$null
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
 function Require([bool]$Ok,[string]$Code){if(-not $Ok){$script:failureCode=$Code;throw $Code}}
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 20|Set-Content (Join-Path $results 'product-cases.json') -Encoding utf8;ConvertTo-Json -InputObject @($script:uiCases.ToArray()) -Depth 10|Set-Content (Join-Path $results 'ui-cases.json') -Encoding utf8}
-function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}))}
+function Case([string]$Id,[string]$Name,[scriptblock]$Body){$script:stage=$Name;$script:failureCode=$null;$record=@{id=$Id;name=$Name;status='IN_PROGRESS'};$cases.Add($record);Save;try{$record.evidence=(& $Body);$record.status='PASSED'}catch{$record.status='FAILED';$record.code=if($script:failureCode){$script:failureCode}else{'P09_CASE_FAILED'};$record.line=$_.InvocationInfo.ScriptLineNumber;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName;$message=$_.Exception.GetBaseException().Message;if($message -cmatch '^P09_[A-Z0-9_]{1,100}$'){$record.code=$message};if($null -ne $script:lastUi -and $script:lastUi.PSObject.Properties['stage']){$record.ui_stage=$script:lastUi.stage};};Save;Write-Host ($Name+' '+$record.status+$(if($record.ContainsKey('code')){' '+$record.code}else{''}))}
 function Clean([string]$Text){foreach($canary in @('P09_ARGV_SECRET_CANARY','P09_ENV_SECRET_CANARY','FORGED_EVENT')){if($Text.Contains($canary)){$script:capturesClean=$false;return $false}};return $true}
 function Native([hashtable]$Request,[string]$Kind='policy',[switch]$AllowFailure){
  $start=[Diagnostics.ProcessStartInfo]::new($Manager);$start.UseShellExecute=$false;$start.WorkingDirectory=$EngineHome;$start.RedirectStandardInput=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true;$start.ArgumentList.Add(('--'+$Kind+'-once'))
@@ -22,10 +22,11 @@ function Wait-Launched($Receipt){
  $p=$null
  try{$p=[Diagnostics.Process]::GetProcessById($Receipt.process.pid);if([string]$p.StartTime.ToFileTimeUtc() -eq [string]$Receipt.process.creation_time){Require ($p.WaitForExit(45000)) 'P09_APPLICATION_EXIT_TIMEOUT';Require ($p.ExitCode -eq 0) 'P09_APPLICATION_EXIT_FAILED'}}catch [ArgumentException]{}finally{if($null -ne $p){$p.Dispose()}}
 }
-function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async){
+function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.WorkingDirectory=$EngineHome
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode',$Mode,'-ManagerPid',[string]$ProcessId,'-ResultFile',$result)){$ps.ArgumentList.Add($arg)}
  if($Path){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-EnvironmentId'}else{'-SelectedPath'}));$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-Intent'}else{'-ProtocolUri'}));$ps.ArgumentList.Add($Uri)}
+ if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
  try{Require ($p.WaitForExit(90000)) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
@@ -54,8 +55,8 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
 user_pref("network.protocol-handler.warn-external.securerun-p09", false);
 '@
  [IO.File]::WriteAllText((Join-Path $hostProfile 'user.js'),$prefs);[IO.File]::WriteAllText((Join-Path $boxedProfile 'user.js'),$prefs)
- $all=@();$script:stage='SEEDING_TEN_REAL_ENVIRONMENTS'
- for($i=1;$i -le 10;$i++){
+ $all=@();$environmentCount=if($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
+ for($i=1;$i -le $environmentCount;$i++){
   $script:stage=('SEEDING_ENVIRONMENT_{0:00}' -f $i)
   $grants=@();if($i -eq 3){$grants=@(@{path=$hostProfile;permission='BLOCK'})};$preset=if($i -eq 3){'STANDARD_ONLINE'}else{'STANDARD_OFFLINE'}
   $r=Native @{action='CREATE';display_name=('P09 reference {0:00}' -f $i);operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset=$preset;grants=$grants}}
@@ -68,11 +69,12 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  [IO.File]::WriteAllText((Join-Path $Fixture 'policy-resource.txt'),'P09_POLICY_RESOURCE')
  Case 'T32' 'completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence' {
   $metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';$records=@(Get-ChildItem -LiteralPath $metadata -Filter 'diagnostic-*.json' -File);$retired=@(Get-ChildItem -LiteralPath $metadata -Filter 'probe-retired-*.json' -File)
-  Require ($records.Count -gt 64 -and $records.Count -le 256 -and $retired.Count -eq $records.Count) 'P09_DIAGNOSTIC_RETENTION_INCOMPLETE'
+  Require ($records.Count -gt $(if($Focused){0}else{64}) -and $records.Count -le 256 -and $retired.Count -eq $records.Count) 'P09_DIAGNOSTIC_RETENTION_INCOMPLETE'
   foreach($record in $retired){$proof=Get-Content -LiteralPath $record.FullName -Raw|ConvertFrom-Json;Require ($proof.completed -and $proof.definition_removed -and $proof.root_data_retained -and $proof.synthetic_report_unchanged) 'P09_DIAGNOSTIC_RETIREMENT_PROOF_INVALID'}
   foreach($record in $records){$scope=Get-Content -LiteralPath $record.FullName -Raw|ConvertFrom-Json -Depth 20;Require ($null -eq $lab.Read(('SR_'+$scope.id.Replace('-','')),'Enabled',0x70000000)) 'P09_COMPLETED_DIAGNOSTIC_DEFINITION_REMAINS';Require (Test-Path -LiteralPath $scope.compiled.section.FileRootPath[0] -PathType Container) 'P09_DIAGNOSTIC_DATA_REMOVED'}
   @{retained_diagnostics=$records.Count;retention_limit=256;completed_definition_count=0;all_successful_definitions_retired=$true;root_data_retained=$true;synthetic_reports_unchanged=$true;no_recursive_data_deletion=$true}
  }
+ if(-not $Focused){
  Case 'T32' 'ten_real_idle_environments_and_populated_box' { $r=Native @{action='LIST'} 'control';Require (@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0) 'P09_IDLE_SEED_SCOPE_INCOMPLETE';@{actual_environments=$all.Count;actual_files=10000;all_idle=(@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0);synthetic_only=$true} }
  # Prewarm the UIA provider before timing the normal manager, without an inspector.
  Case 'T32' 'normal_manager_startup_and_complete_process_group_idle_budget' {
@@ -90,10 +92,11 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
    $metrics
   }finally{if($null -ne $gui){$gui.Dispose();$gui=$null};if(-not $watcher.HasExited){$watcher.Kill($true)};$watcher.Dispose()}
  }
+ }
  # Normal product, real backend and real WebView. Inspector access exists only in this lab launch environment.
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()
  $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'inspected-manager.log'),$port);Connect-P09Cdp $port;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))
- Case 'T32' 'actual_normal_webview_environment_navigation' {$null=Invoke-P09Stage 'OVERVIEW';@{normal_production_binary=$true;real_backend=$true;mock_state=$false;ten_owned_environments=$true}}
+ Case 'T32' 'actual_normal_webview_environment_navigation' {$null=Invoke-P09Stage 'OVERVIEW' @{environment_count=$environmentCount};@{normal_production_binary=$true;real_backend=$true;mock_state=$false;ten_owned_environments=($environmentCount -eq 10)}}
  Case 'T32' 'metadata_rename_preserves_identity_and_never_replays' {$null=Invoke-P09Stage 'RENAME' @{environment_id=$first.id;environment_name=$first.display_name};@{actual_product_ui=$true;metadata_only=$true;permanent_replay_tombstone=$true;policy_and_generation_unchanged=$true}}
  Case 'T32' 'real_keyboard_and_windows_screen_reader_provider' {$r=Access 'KEYBOARD' $gui.ProcessId;@{real_windows_uia=$r.real_windows_uia;native_window_dpi=$r.native_window_dpi;tab_order_actual=$r.tab_order_actual;f6_navigation_actual=$r.f6_navigation_actual;accessible_labels_and_roles=$r.accessible_label_and_role;native_invoke_changed_page=$r.native_invoke_changed_real_page}}
  Case 'T32' 'english_russian_themes_and_native_webview_scaling' {
@@ -103,6 +106,15 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   }}}
   $null=Invoke-P09Stage 'RESET_PRESENTATION';$ax=Send-P09Cdp 'Accessibility.getFullAXTree';$names=@($ax.nodes|Where-Object {$_.role.value -eq 'combobox' -and $_.name.value -in @('Language','Appearance','Content scale')});Require ($names.Count -eq 3) 'P09_ACCESSIBILITY_TREE_LABELS_MISSING'
   @{languages=@('en','ru');themes=@('light','dark');content_scales=@(100,150,200);actual_native_webview_zoom=$true;real_chromium_accessibility_tree=$true;labeled_comboboxes=$names.Count;os_display_setting_modified=$false}
+ }
+ Case 'T32' 'actual_windows_display_dpi_and_bilingual_product_layouts' {
+  $observed=@()
+  try{foreach($percent in @(100,150,200)){
+   $r=Access 'DISPLAY_SCALE' $gui.ProcessId -Scale $percent;$observed+=@{percent=$percent;native_window_dpi=$r.native_window_dpi}
+   foreach($language in @('en','ru')){foreach($theme in @('light','dark')){$null=Invoke-P09Stage 'WINDOWS_LAYOUT' @{language=$language;theme=$theme;scale=100;windows_scale=$percent}}}
+   $shot=Send-P09Cdp 'Page.captureScreenshot' @{format='png';captureBeyondViewport=$false};[IO.File]::WriteAllBytes((Join-Path $results ("windows-dpi-$percent.png")),[Convert]::FromBase64String($shot.data))
+  };@{actual_windows_display_changes=$true;production_manager_window_measured=$true;native_dpi_observations=$observed;content_scale_percent=100;os_security_settings_modified=$false}}
+  finally{$null=Access 'DISPLAY_SCALE' $gui.ProcessId -Scale 100;$null=Invoke-P09Stage 'RESET_PRESENTATION'}
  }
  Case 'T32' 'real_process_activity_update_latency' {
   $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))
@@ -127,7 +139,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   finally{if($null -ne $pending){$null=Complete-Access $pending}}
  }
  Case 'T32' 'actual_ui_import_export_collision_archive_and_reset_workflow' {
-  $workflow=(Native @{action='LIST'}).environments|Where-Object display_name -eq 'P09 reference 10';Require ($null -ne $workflow) 'P09_WORKFLOW_ENVIRONMENT_MISSING'
+  $workflow=(Native @{action='LIST'}).environments|Where-Object display_name -eq ('P09 reference {0:00}' -f $environmentCount);Require ($null -ne $workflow) 'P09_WORKFLOW_ENVIRONMENT_MISSING'
   $inputFile=Join-Path $Fixture 'workflow-source.txt';[IO.File]::WriteAllText($inputFile,'P09_UI_TRANSFER_CANARY');$hash=(Get-FileHash -LiteralPath $inputFile).Hash;$destination=Join-Path $Fixture 'workflow-export';$null=New-Item -ItemType Directory -Path $destination
   $pending=Access 'PICKER' $gui.ProcessId $inputFile -Async
   try{$null=Invoke-P09Stage 'TRANSFER_IMPORT_PICK' @{environment_id=$workflow.id;environment_name=$workflow.display_name};$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
@@ -212,7 +224,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   @{same_fixed_benign_probe=$true;original_dispatch_ms=$directMs;production_manager_dispatch_ms=$managedMs;manager_added_upper_bound_ms=[Math]::Max(0,$managedMs-$directMs);target_startup_included_in_both=$true;target_met=($managedMs-$directMs -lt 1000);no_required_check_removed=$true}
  }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count
- @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){'PASSED'}else{'FAILED'});standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
+ @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
  Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1}
 }catch{
  @{status='FAILED';standard_user=$true;stage=$script:stage;code=$(if($script:failureCode){$script:failureCode}else{'P09_ACTOR_FAILED'});exception_type=$_.Exception.GetBaseException().GetType().FullName;line=$_.InvocationInfo.ScriptLineNumber;manager_commit=$Commit}|ConvertTo-Json|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8;Save;exit 1

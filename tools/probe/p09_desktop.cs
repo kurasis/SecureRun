@@ -53,7 +53,11 @@ public sealed class P09Desktop : IDisposable {
  public Dictionary<string,object> Sample() {
   IntPtr data=Marshal.AllocHGlobal(8+256*IntPtr.Size);try{uint returned;if(!QueryInformationJobObject(job,3,data,(uint)(8+256*IntPtr.Size),out returned))throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");
    int assigned=Marshal.ReadInt32(data),count=Marshal.ReadInt32(data,4);if(assigned!=count||count>256)throw new InvalidOperationException("P09_PROCESS_GROUP_INCOMPLETE");long memory=0;int webviews=0,observed=0;
-   for(int i=0;i<count;i++){long pid=IntPtr.Size==8?Marshal.ReadInt64(data,8+i*IntPtr.Size):Marshal.ReadInt32(data,8+i*IntPtr.Size);try{using(var p=Process.GetProcessById((int)pid)){if(p.HasExited)continue;memory+=p.WorkingSet64;observed++;if(p.ProcessName.Equals("msedgewebview2",StringComparison.OrdinalIgnoreCase))webviews++;}}catch(ArgumentException){}}
+   for(int i=0;i<count;i++){long pid=IntPtr.Size==8?Marshal.ReadInt64(data,8+i*IntPtr.Size):Marshal.ReadInt32(data,8+i*IntPtr.Size);try{using(var p=Process.GetProcessById((int)pid)){
+    try{if(p.HasExited)continue;long workingSet=p.WorkingSet64;bool webview=p.ProcessName.Equals("msedgewebview2",StringComparison.OrdinalIgnoreCase);memory+=workingSet;observed++;if(webview)webviews++;}
+    catch(InvalidOperationException){if(!p.HasExited)throw new InvalidOperationException("P09_LIVE_PROCESS_MEASUREMENT_FAILED");}
+    catch(System.ComponentModel.Win32Exception){if(!p.HasExited)throw new InvalidOperationException("P09_LIVE_PROCESS_MEASUREMENT_FAILED");}
+   }}catch(ArgumentException){}}
    return new Dictionary<string,object>{{"working_set_bytes",memory},{"process_count",observed},{"webview_processes",webviews},{"job_group_complete",true}};
   }finally{Marshal.FreeHGlobal(data);}
  }

@@ -11,6 +11,7 @@ from uuid import UUID
 ROOT = Path(__file__).resolve().parents[2]
 IDS = {'T30', 'T32', 'T41', 'T63', 'T66'}
 REQUIRED = {
+    'actual_windows_display_dpi_and_bilingual_product_layouts',
     'completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence',
     'actual_ui_import_export_collision_archive_and_reset_workflow',
     'metadata_rename_preserves_identity_and_never_replays',
@@ -49,6 +50,7 @@ def check_target(folder, commit, machine):
     cases, ui = read(folder / 'product-cases.json'), read(folder / 'ui-cases.json')
     actor = read(folder / 'standard-product.json')
     if (summary['phase'] != 'P09' or summary['result'] != 'PASSED'
+            or summary.get('workload_mode') != 'FULL'
             or summary['manager_commit'] != commit or summary['pe_machine'] != machine
             or summary['build'] != 'release' or not summary['standard_user']
             or not summary['real_normal_webview'] or not summary['synthetic_profiles_only']
@@ -68,10 +70,19 @@ def check_target(folder, commit, machine):
     expected_layout = {f'real_webview_{language}_{theme}_{scale}'
                        for language in ('en', 'ru') for theme in ('light', 'dark')
                        for scale in (100, 150, 200)}
+    expected_layout.update(f'real_webview_windows_dpi_{scale}_{language}_{theme}'
+                           for scale in (100, 150, 200) for language in ('en', 'ru')
+                           for theme in ('light', 'dark'))
     if (len(set(ui_names)) != len(ui_names) or not expected_layout.issubset(ui_names)
             or any(not c['passed'] for c in ui) or summary['ui_cases_passed'] != len(ui)):
         raise ValueError('P09 actual bilingual/theme/scaling UI proof is incomplete')
     by_name = {c['name']: c['evidence'] for c in cases}
+    dpi = by_name['actual_windows_display_dpi_and_bilingual_product_layouts']
+    if (not dpi['actual_windows_display_changes'] or not dpi['production_manager_window_measured']
+            or dpi['content_scale_percent'] != 100 or dpi['os_security_settings_modified']
+            or dpi['native_dpi_observations'] != [dict(percent=p, native_window_dpi=96*p//100)
+                                                  for p in (100, 150, 200)]):
+        raise ValueError('P09 actual Windows display DPI proof is incomplete')
     keys = {
         'completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence': ('all_successful_definitions_retired','root_data_retained','synthetic_reports_unchanged','no_recursive_data_deletion'),
         'actual_ui_import_export_collision_archive_and_reset_workflow': ('actual_product_ui','real_native_pickers','import_export_sha256_equal','collision_rename_preserved_original','archive_preserved_data','native_confirmations_scoped','reset_generation_incremented','reset_root_empty','host_input_and_exports_unchanged'),

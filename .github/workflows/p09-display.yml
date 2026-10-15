@@ -64,6 +64,11 @@ jobs:
               $choices=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ListItem))
               $choice=$null
               foreach($item in $choices){if($item.Current.Name -match '^([0-9]{2,3})\s*%'){$option=[int]$Matches[1];if($option -notin $report.scale_options){$report.scale_options+= $option};if($option -eq $percent){$choice=$item}}}
+              if($null -eq $choice){
+                $container=$combo.GetCurrentPattern([Windows.Automation.ItemContainerPattern]::Pattern)
+                foreach($label in @("$percent%","$percent% (Recommended)")){$candidate=$container.FindItemByProperty($null,[Windows.Automation.AutomationElement]::NameProperty,$label);if($null -ne $candidate){$choice=$candidate;break}}
+                if($null -ne $choice){$virtual=$null;if($choice.TryGetCurrentPattern([Windows.Automation.VirtualizedItemPattern]::Pattern,[ref]$virtual)){$virtual.Realize()};$scroll=$null;if($choice.TryGetCurrentPattern([Windows.Automation.ScrollItemPattern]::Pattern,[ref]$scroll)){$scroll.ScrollIntoView()}}
+              }
               if($null -eq $choice -and $percent -eq 100){$combo.SetFocus();[Windows.Forms.SendKeys]::SendWait('{HOME}{ENTER}')}
               elseif($null -ne $choice){$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()}
               else{throw 'REQUESTED_SCALE_OPTION_UNAVAILABLE'}

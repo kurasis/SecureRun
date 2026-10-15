@@ -16,7 +16,7 @@ window.__p09_run=async function(stage,config={}) {
  try {
   switch(stage){
    case 'OVERVIEW':{
-    await nav();const r=await readyPolicy();check('T32','real_owned_environment_views',r.reason==='OBSERVED'&&r.environments.length===10&&document.querySelectorAll('.cards article').length===10);
+    await nav();const r=await readyPolicy();check('T32','real_owned_environment_views',r.reason==='OBSERVED'&&r.environments.length===config.environment_count&&document.querySelectorAll('.cards article').length===config.environment_count);
     const input=document.querySelector('input[type=search]');set(input,'P09 reference 03');await wait(()=>document.querySelectorAll('.cards article').length===1);check('T32','search_uses_real_owned_names',document.querySelector('.cards article').textContent.includes('P09 reference 03'));set(input,'');break;
    }
    case 'RENAME':{
@@ -25,20 +25,21 @@ window.__p09_run=async function(stage,config={}) {
     await click('Rename environment');dialog=await wait(()=>document.querySelector('dialog[open]'));set(dialog.querySelector('input'),config.environment_name);dialog.querySelector('form').requestSubmit();await wait(()=>!document.querySelector('dialog[open]'));await wait(()=>document.querySelector('main h1').textContent===config.environment_name);
     const replay=await native({action:'RENAME',environment_id:before.id,expected_revision:before.revision,expected_generation:before.generation,expected_display_name:before.display_name,display_name:changed.display_name,operation_id:changed.operation_id},'policy_request');check('T32','old_metadata_rename_not_replayed_after_rename_back',replay.reason==='OBSERVED'&&replay.environments.find(e=>e.id===before.id).display_name===before.display_name);await nav();break;
    }
-   case 'LAYOUT':{
+   case 'LAYOUT':case 'WINDOWS_LAYOUT':{
     await click(document.documentElement.lang==='ru'?'Настройки':'Settings',document.querySelector('nav'));
     const language=await wait(()=>document.querySelector('[data-testid=language]'));set(language,config.language);await wait(()=>document.documentElement.lang===config.language);
     set(document.querySelector('[data-testid=theme]'),config.theme);await wait(()=>document.documentElement.dataset.theme===config.theme);
-    if(!state.viewport100){await native({action:'SCALE',percent:100});await pause(300);state.viewport100=innerWidth;}
-    set(document.querySelector('[data-testid=scale]'),String(config.scale));await native({action:'SCALE',percent:config.scale});await wait(()=>Math.abs(innerWidth-state.viewport100*100/config.scale)<4);await pause(150);
+    if(stage==='LAYOUT'){if(!state.viewport100){await native({action:'SCALE',percent:100});await pause(300);state.viewport100=innerWidth;}
+    set(document.querySelector('[data-testid=scale]'),String(config.scale));await native({action:'SCALE',percent:config.scale});await wait(()=>Math.abs(innerWidth-state.viewport100*100/config.scale)<4);await pause(150);}else{set(document.querySelector('[data-testid=scale]'),'100');await native({action:'SCALE',percent:100});await wait(()=>Math.abs(devicePixelRatio-config.windows_scale/100)<.05);await pause(200);}
+    const layoutSuffix=stage==='LAYOUT'?`${config.language}_${config.theme}_${config.scale}`:`windows_dpi_${config.windows_scale}_${config.language}_${config.theme}`;
     const size=document.documentElement;const controls=Array.from(document.querySelectorAll('button,input,select,textarea')).filter(e=>e.getClientRects().length);
     const labels=controls.every(e=>e.tagName==='BUTTON'?!!(e.getAttribute('aria-label')||text(e)):e.labels?.length||e.getAttribute('aria-label'));
-    check('T32',`real_webview_${config.language}_${config.theme}_${config.scale}`,size.scrollWidth<=size.clientWidth+2&&labels&&controls.every(e=>e.getBoundingClientRect().width>8));
+    check('T32',`real_webview_${layoutSuffix}`,size.scrollWidth<=size.clientWidth+2&&labels&&controls.every(e=>e.getBoundingClientRect().width>8));
     const rgb=value=>value.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{n/=255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4;});
     const lum=v=>{const c=rgb(v);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};const contrast=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
     const css=getComputedStyle(size);const paragraph=document.querySelector('.settings p');const paragraphCss=getComputedStyle(paragraph);const surface=getComputedStyle(document.querySelector('.settings')).backgroundColor;
-    check('T32',`readable_contrast_${config.language}_${config.theme}_${config.scale}`,contrast(css.color,css.backgroundColor)>=4.5&&contrast(paragraphCss.color,surface)>=4.5);
-    check('T32',`unsupported_controls_${config.language}_${config.theme}_${config.scale}`,document.querySelector('.settings').textContent.includes(config.language==='ru'?'буфера обмена':'Clipboard')&&document.querySelector('.settings').textContent.includes(config.language==='ru'?'недоступ':'unavailable'));
+    check('T32',`readable_contrast_${layoutSuffix}`,contrast(css.color,css.backgroundColor)>=4.5&&contrast(paragraphCss.color,surface)>=4.5);
+    check('T32',`unsupported_controls_${layoutSuffix}`,document.querySelector('.settings').textContent.includes(config.language==='ru'?'буфера обмена':'Clipboard')&&document.querySelector('.settings').textContent.includes(config.language==='ru'?'недоступ':'unavailable'));
     break;
    }
    case 'RESET_PRESENTATION':{

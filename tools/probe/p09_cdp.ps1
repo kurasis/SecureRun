@@ -6,13 +6,13 @@ function Connect-P09Cdp([int]$Port){
  if($page.Count -ne 1){throw 'P09_NORMAL_WEBVIEW_INSPECTOR_NOT_READY'}
  $uri=[Uri]$page[0].webSocketDebuggerUrl;if(-not $uri.IsLoopback -or $uri.Scheme -ne 'ws' -or $uri.Port -ne $Port){throw 'P09_INSPECTOR_SCOPE_REJECTED'}
  $script:cdp=[Net.WebSockets.ClientWebSocket]::new();$cancel=[Threading.CancellationTokenSource]::new(15000)
- try{$script:cdp.ConnectAsync($uri,$cancel.Token).GetAwaiter().GetResult()}finally{$cancel.Dispose()}
+ try{$null=$script:cdp.ConnectAsync($uri,$cancel.Token).GetAwaiter().GetResult()}finally{$cancel.Dispose()}
 }
 function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{}){
  if($null -eq $script:cdp){throw 'P09_INSPECTOR_NOT_CONNECTED'};$script:cdpId++;$id=$script:cdpId
  $json=ConvertTo-Json -InputObject @{id=$id;method=$Method;params=$Parameters} -Depth 32 -Compress;$bytes=[Text.Encoding]::UTF8.GetBytes($json);$cancel=[Threading.CancellationTokenSource]::new(300000)
  try{
-  $script:cdp.SendAsync([ArraySegment[byte]]::new($bytes),[Net.WebSockets.WebSocketMessageType]::Text,$true,$cancel.Token).GetAwaiter().GetResult()
+  $null=$script:cdp.SendAsync([ArraySegment[byte]]::new($bytes),[Net.WebSockets.WebSocketMessageType]::Text,$true,$cancel.Token).GetAwaiter().GetResult()
   for($messages=0;$messages -lt 512;$messages++){
    $stream=[IO.MemoryStream]::new()
    try{do{$buffer=[byte[]]::new(65536);$read=$script:cdp.ReceiveAsync([ArraySegment[byte]]::new($buffer),$cancel.Token).GetAwaiter().GetResult();if($read.MessageType -ne [Net.WebSockets.WebSocketMessageType]::Text){throw 'P09_INSPECTOR_MESSAGE_INVALID'};$stream.Write($buffer,0,$read.Count);if($stream.Length -gt 8388608){throw 'P09_INSPECTOR_RESPONSE_BOUND'}}while(-not $read.EndOfMessage)

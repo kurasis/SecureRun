@@ -6,6 +6,11 @@ on:
   pull_request:
     paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/*P09*', 'tools/lab/p09-applications.json', 'tools/probe/p09*', '.github/workflows/p09.yml']
   workflow_dispatch:
+    inputs:
+      focused:
+        description: 'Diagnostic only: four environments, no performance exit gate'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -16,7 +21,7 @@ jobs:
         runner: [windows-2025, windows-11-arm]
     runs-on: ${{ matrix.runner }}
     concurrency:
-      group: p09-${{ github.ref }}-${{ matrix.runner }}
+      group: p09-${{ github.ref }}-${{ matrix.runner }}-${{ inputs.focused && 'diagnostic' || 'full' }}
       cancel-in-progress: false
     timeout-minutes: 75
     steps:
@@ -39,14 +44,14 @@ jobs:
             p09-${{ matrix.runner }}-rust190-
             p09-build-${{ matrix.runner }}-
             p08-${{ matrix.runner }}-rust190-
-      - name: Verify actual product, official applications, accessibility and budgets
+      - name: Verify actual product (${{ inputs.focused && 'diagnostic only' || 'full exit gate' }})
         shell: pwsh
-        run: ./tools/lab/Invoke-P09.ps1
+        run: ./tools/lab/Invoke-P09.ps1 -Focused:$${{ inputs.focused && 'true' || 'false' }}
       - name: Retain structured proof and synthetic UI screenshots
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
-          name: p09-${{ matrix.runner }}-${{ github.sha }}
+          name: ${{ inputs.focused && 'p09-diagnostic' || 'p09' }}-${{ matrix.runner }}-${{ github.sha }}
           path: |
             artifacts/p09/*.json
             artifacts/p09/*.png

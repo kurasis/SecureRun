@@ -165,6 +165,15 @@ impl NativeEngine {
         let command = wide(&contract::command(&a.executable, &a.arguments)?);
         let run: Run = unsafe { bind(&self.api, b"SbieDll_RunSandboxed\0")? };
         self.mutation_context()?;
+        let _scope = self.control_scope(e)?;
+        if self
+            .api
+            .processes(&e.name())?
+            .iter()
+            .any(|p| p.owner_sid != self.owner)
+        {
+            return Err("LAUNCH_FOREIGN_SESSION_SCOPE");
+        }
         self.set(&e.name(), "Enabled", &["y".into()])?;
         self.reload()?;
         let dispatched = (|| -> R<(String, Option<ProcessIdentity>)> {
@@ -236,6 +245,14 @@ impl NativeEngine {
     }
     fn stop_environment(&self, e: &OwnedEnvironment) -> R<()> {
         let _root = self.control_scope(e)?;
+        if self
+            .api
+            .processes(&e.name())?
+            .iter()
+            .any(|p| p.owner_sid != self.owner)
+        {
+            return Err("STOP_FOREIGN_SESSION_SCOPE");
+        }
         self.set(&e.name(), "Enabled", &["n".into()])?;
         self.reload()?;
         for _ in 0..8 {

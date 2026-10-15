@@ -47,7 +47,7 @@ function Invoke-P09Stage([string]$Stage,[hashtable]$Config=@{}){
  $stageJson=ConvertTo-Json -InputObject $Stage -Compress;$configJson=ConvertTo-Json -InputObject $Config -Depth 8 -Compress
  $r=Evaluate-P09 "window.__p09_run($stageJson,$configJson)";$script:lastUi=$r
  foreach($case in $r.cases){$script:uiCases.Add($case)}
- if($r.status -ne 'PASSED'){throw 'P09_REAL_PRODUCT_UI_FAILED'}
+ if($r.status -ne 'PASSED'){$r|ConvertTo-Json -Depth 12|Set-Content (Join-Path $results 'ui-failure.json') -Encoding utf8;if($r.code -cmatch '^P09_[A-Z0-9_]{1,100}$'){throw $r.code};throw 'P09_REAL_PRODUCT_UI_FAILED'}
  return $r
 }
 function Close-P09Cdp {if($null -ne $script:cdp){$script:cdp.Dispose();$script:cdp=$null}}

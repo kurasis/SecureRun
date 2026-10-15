@@ -181,3 +181,13 @@ three fixed actions in the lab controller via owner-restricted named events. No
 paths, code or arbitrary payload cross that boundary; the normal product receives
 no event names. The standard user still independently checks actual manager DPI.
 A parent-controller result alone cannot satisfy the product DPI gate.
+
+Native build/measurement run `38799721509` at `8398582` passed both targets,
+including the real 60-second complete job-group sampler. This is a debug GUI
+without reference environments and does not claim the P09 performance budget.
+Focused run `38798053888` at `7ed2836` reached four verified environments on
+both targets but stopped in OVERVIEW before environment cards became available.
+The next lab revision retains only onboarding state, fixed backend reason codes
+and environment counts on failure. It never retains raw UI/JavaScript exceptions.
+Dependent UI scenarios stop after their first failed prerequisite; a measured
+performance-budget failure still allows independent product checks to run.

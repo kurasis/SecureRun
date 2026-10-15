@@ -4507,9 +4507,609 @@
       "path": "investigation-focused-bf116dc/windows-11-arm/last-native-refusal.json",
       "sha256": "0cdd5361eeaecd0fe179e4f8bb55afb69c011e2eb0f4bc7e8c01cf8c9d9ddb1c",
       "size": 113
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/startup-diagnostic.json",
+      "sha256": "a26892527451e1a335be909c60f8a58b6cb188c21122f25a247ffa2164759485",
+      "size": 200
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/startup-accessibility.json",
+      "sha256": "0b17b99e09c20ad6bad652eb7da3a4afc75a96bcc4f7ff4718246ef01c7dd384",
+      "size": 346
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/standard-product.json",
+      "sha256": "ad0900639b0fb0ac9f1d91a8f701438bd0b52e20eeb2ee736f44ef3a22fe31c9",
+      "size": 304
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/stage.json",
+      "sha256": "a0caf3da4f9456ae43e9cb21018cb070ffded69304db093969b6466002ced83c",
+      "size": 112
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/run-summary.json",
+      "sha256": "bb2b9fecc75878ab81e152a5ba6f66b0acf56e96cc4b9f6c8844f89536cbef0c",
+      "size": 622
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/product-cases.json",
+      "sha256": "fd946b9fee20f02e7427b30c79613c4f222c8b0556e1dafa728aea8ed5c5276e",
+      "size": 1078
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-f6212e90fa85490691ddb59dabfb67c5.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-db6509a6fe744b2f8826c167d22f4535.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-d538650ff723449e9e7dbdcff0fbf8d3.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-b69279a1073a46bba0c039abdf51005e.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-ca80b295fec4488d98cddd5627814f60.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-bfd4f96c45c24ffe8d8bb12a988a85d8.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-bb5062f1098848289cad846c0101e02d.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-a4b6acc2a5c14f4f859a694d76b3615f.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-92c36bf46fbd4772873c86ea44b22805.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-8c5121ae1ca643bba0c282e60f02b768.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-8339116328a34b0badb470d858e2d1a5.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-733481f7c25647a6b27037ff2c417015.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-63a5ebcef1504a19ab0f8d118b626b81.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-6ce4cbb58f8749a08235be3e6ee2caa8.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-62a28367d7034c17b5b56ea8dc8e2f6d.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-5cdef6b37b6f420fa635fb41e9e5cf0e.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-495bff489f974585a870d2417ddb00e4.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-3802e017bda84112ac982cd29066009b.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-3fda0d2483b841b9ae3855ad5b456a7c.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-35f9cade1b78409f9bfd08dc9813cb54.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-2d3b5bb35b754373b93c4e991b821e14.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-1cae5606fa064fc2aa9aac260149ba6f.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-2934731a224d494ab9a2cffeadef8e1d.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-24dc5266099048b1970ed988ff262360.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-132d104ec84940e08d35585d79af8ac4.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-0d9d2d322d0b47bfa964481070924a99.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-02ddd3d0914045bc9f9abf62505b0551.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-0b122ee29be44ac7bc0c6524bf868d67.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-01d322606fa742e4baeb07d290b689fc.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-result-019a1ab803a146f89cb2d7b4ca72fabd.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-f6212e90fa85490691ddb59dabfb67c5.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-db6509a6fe744b2f8826c167d22f4535.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-d538650ff723449e9e7dbdcff0fbf8d3.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-ca80b295fec4488d98cddd5627814f60.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-bfd4f96c45c24ffe8d8bb12a988a85d8.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-bb5062f1098848289cad846c0101e02d.json",
+      "sha256": "90006fe8e9e743b4a1516486ddcb47e9f0f1d261749827a36493720e15678508",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-b69279a1073a46bba0c039abdf51005e.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-a4b6acc2a5c14f4f859a694d76b3615f.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-92c36bf46fbd4772873c86ea44b22805.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-8c5121ae1ca643bba0c282e60f02b768.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-8339116328a34b0badb470d858e2d1a5.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-733481f7c25647a6b27037ff2c417015.json",
+      "sha256": "af9af075869b1615b40541fec6686522797384f7c38b71d9bf952f458445b885",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-6ce4cbb58f8749a08235be3e6ee2caa8.json",
+      "sha256": "af9af075869b1615b40541fec6686522797384f7c38b71d9bf952f458445b885",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-63a5ebcef1504a19ab0f8d118b626b81.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-62a28367d7034c17b5b56ea8dc8e2f6d.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-495bff489f974585a870d2417ddb00e4.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-5cdef6b37b6f420fa635fb41e9e5cf0e.json",
+      "sha256": "1ec1da159e12f42c188bcf77640fa0a30c76965d3cbafbaaa1316267e3bd9e41",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-3fda0d2483b841b9ae3855ad5b456a7c.json",
+      "sha256": "1ec1da159e12f42c188bcf77640fa0a30c76965d3cbafbaaa1316267e3bd9e41",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-3802e017bda84112ac982cd29066009b.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-35f9cade1b78409f9bfd08dc9813cb54.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-2d3b5bb35b754373b93c4e991b821e14.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-2934731a224d494ab9a2cffeadef8e1d.json",
+      "sha256": "90006fe8e9e743b4a1516486ddcb47e9f0f1d261749827a36493720e15678508",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-24dc5266099048b1970ed988ff262360.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-1cae5606fa064fc2aa9aac260149ba6f.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-0d9d2d322d0b47bfa964481070924a99.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-132d104ec84940e08d35585d79af8ac4.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-0b122ee29be44ac7bc0c6524bf868d67.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-02ddd3d0914045bc9f9abf62505b0551.json",
+      "sha256": "16a9b81ac3e5d4983549479b4795c3cb0c9e3c187f4d160d03b9f0bf51970ddf",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-01d322606fa742e4baeb07d290b689fc.json",
+      "sha256": "0b4ede6b2f67450fe46e6ca4c0ca685e57660e49015e499839d96029580e7bf1",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/probe-evidence-019a1ab803a146f89cb2d7b4ca72fabd.json",
+      "sha256": "9e7dca750799805dedbcf59d8a6c7c768922c200e2816cfd340bc651f407f966",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/official-applications.json",
+      "sha256": "93c723828a82dc332c36cd9ababb6ea8a01b289c985aad9d0cc5fb3df1d7d53e",
+      "size": 1936
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-11-arm/owned-policy-observations.json",
+      "sha256": "19ca8ac67c9e76b286efbcdca314c4dff5cdee31c98099401793de9fd1f96b6f",
+      "size": 651
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/startup-diagnostic.json",
+      "sha256": "270baea1a4da0e97d928ed4ec84cec12c5a5659f92c0951a8aa1cf0a2d135645",
+      "size": 202
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/startup-accessibility.json",
+      "sha256": "8f09e4a3e718d5ae5c2ff9ad55c52ad37f7d2e390e038c5a703c99afd477d1e1",
+      "size": 348
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/standard-product.json",
+      "sha256": "efa093de2fc2e7eb6f711a042fc3413abe89077d75b25be2855019c5d7eb35c4",
+      "size": 304
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/stage.json",
+      "sha256": "f8464391659076ef1535510a3a100d08e7a78e772c4e065df4a7bbe40213925b",
+      "size": 112
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/run-summary.json",
+      "sha256": "bcce236013e529ebfe0e167f43bfd5133d87f8ce3eff95bb6f2506406b7aefd1",
+      "size": 622
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/product-cases.json",
+      "sha256": "28a4e44d51507a182aca9d02ef54d7b48cb967dae008bb2d2cd643ef32be0550",
+      "size": 1080
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-f1a19df6086442aaa99981f33a00fcd5.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-edcd3cadf0414aacac7f34c0a9f1d0f4.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-e8bd62e65fcf4a36a00fdc56f4892eb4.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-e05a9381813341288d7bbd6fe9a86660.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-d8a562fe9ae447399eefd5aa3fd58aaf.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-d4fef0aa12c547628ced7bda61396fff.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-a6d6cfed80a148ba8ec36380ba907ed8.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-b27bbeaea3144b528d0822265ac16ea9.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-9a659ae9cbb64ef498038d4d1bb2f071.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-7154bf20524749939a831a2d3deaf6bf.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-606946a1d5ef4faab78f5b7d71d4091a.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-51f65f2ba06a4416a97fff69b270a0d3.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-4cdd51d50ff841c680ba9ddf69caf19f.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-46da240d41dc4a3ebba3213a4af23fed.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-33c2762e9ab54999b1823187f44f2136.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-2f82e53ee59347d6b039370fb9c50428.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-28e3bb3ec48a4680814477aa6721dc06.json",
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31",
+      "size": 1318
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-10ff5569454e49bba31abbacd61e02ee.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-10e7ff4d3fea444b8d0b531ebd54c774.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-result-10a870885d074212ba18e0cfdbc72aa7.json",
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb",
+      "size": 1355
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-f1a19df6086442aaa99981f33a00fcd5.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-edcd3cadf0414aacac7f34c0a9f1d0f4.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-e8bd62e65fcf4a36a00fdc56f4892eb4.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-e05a9381813341288d7bbd6fe9a86660.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-d8a562fe9ae447399eefd5aa3fd58aaf.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-d4fef0aa12c547628ced7bda61396fff.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-b27bbeaea3144b528d0822265ac16ea9.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-a6d6cfed80a148ba8ec36380ba907ed8.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-9a659ae9cbb64ef498038d4d1bb2f071.json",
+      "sha256": "34b6bcef8a7e2c8f9dee9e40cb8cfbdf8cde427f779e54ca2d11acf612ae3840",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-7154bf20524749939a831a2d3deaf6bf.json",
+      "sha256": "1fa12996c2ce797654c87f8f8cbedb34e40229ae8237998164ab1aff68e9e8ff",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-606946a1d5ef4faab78f5b7d71d4091a.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-51f65f2ba06a4416a97fff69b270a0d3.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-4cdd51d50ff841c680ba9ddf69caf19f.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-46da240d41dc4a3ebba3213a4af23fed.json",
+      "sha256": "1fa12996c2ce797654c87f8f8cbedb34e40229ae8237998164ab1aff68e9e8ff",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-33c2762e9ab54999b1823187f44f2136.json",
+      "sha256": "cff706c1f6a311df126393d1878725fb69b798b723e7d6685339e9efe38d987b",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-2f82e53ee59347d6b039370fb9c50428.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-28e3bb3ec48a4680814477aa6721dc06.json",
+      "sha256": "34b6bcef8a7e2c8f9dee9e40cb8cfbdf8cde427f779e54ca2d11acf612ae3840",
+      "size": 1481
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-10ff5569454e49bba31abbacd61e02ee.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-10e7ff4d3fea444b8d0b531ebd54c774.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/owned-policy-observations.json",
+      "sha256": "c341906c7a831edfc34902eafdadcd25d7c0dcd981bf217e4e7f7e6a36a2b5e4",
+      "size": 651
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/probe-evidence-10a870885d074212ba18e0cfdbc72aa7.json",
+      "sha256": "2819f8bbe4bafe5715682f88d630a2adec542ee79dfbfe3c4fe63e05f20422e4",
+      "size": 1518
+    },
+    {
+      "path": "investigation-focused-7ed2836/windows-2025/official-applications.json",
+      "sha256": "f4e3408ca5e1ceb04ff4a974d51128ca96fe42c92d9099c7fe731674a7a43ad6",
+      "size": 1918
+    },
+    {
+      "path": "investigation-measurement-8398582/windows-2025/measurement-fixture.json",
+      "sha256": "ded4528b370e086d1651c7d72c96b6773a94bc80326f344136d09c399ddd5801",
+      "size": 590
+    },
+    {
+      "path": "investigation-measurement-8398582/windows-11-arm/measurement-fixture.json",
+      "sha256": "5d53b2608e4cb2b8bc4e169d6e5e4ddff8334eb3d4b18da686d843d984ea92fa",
+      "size": 591
     }
   ],
-  "note": "P09 remains blocked: Server seeded all ten environments and 10000 files, then the performance sampler failed during process exit and CDP returned an extra VoidTaskResult. Startup UIA upper bound was 6349.9831 ms, exceeding the 3000 ms target. ARM product results remain pending. P03/P04/P07 regressions passed; P06 ARM endpoint positive control failed.",
+  "note": "P09 remains blocked pending actual product/application/performance proof. Both native measurement fixtures pass; the focused UI cannot yet reach environment cards. New minimized failure diagnostics capture only safe states/reason codes/counts. Matching regressions are running.",
   "historical_runs": [
     {
       "tested_commit": "53c8e58c1e4866fa02a417b44697e65443cbc2b9",

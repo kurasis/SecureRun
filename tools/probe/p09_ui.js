@@ -112,6 +112,13 @@ window.__p09_run=async function(stage,config={}) {
    default:throw Error('P09_UI_STAGE_UNKNOWN');
   }
   return {status:'PASSED',cases};
- }catch(error){return {status:'FAILED',cases,code:'P09_PRODUCT_UI_FAILED',stage,exception_type:error?.constructor?.name??'Unknown'};}
+ }catch(error){
+  const safe=value=>typeof value==='string'&&/^[A-Z][A-Z0-9_]{1,100}$/.test(value)?value:'WITHHELD';
+  const bounded=promise=>Promise.race([promise.catch(()=>null),pause(10000).then(()=>null)]);
+  const [health,policies]=await Promise.all([bounded(window.__TAURI_INTERNALS__.invoke('get_engine_health',{})),bounded(readyPolicy())]);
+  const setup=Array.from(document.querySelector('.notice')?.classList??[]).find(value=>/^setup-(checking|missing|untrusted|unavailable|restart|untested|ready)$/.test(value))??'WITHHELD';
+  const diagnostic={document_complete:document.readyState==='complete',setup,card_count:document.querySelectorAll('.cards article').length,has_selected_tabs:!!document.querySelector('[role=tablist]'),health_fresh:health?.fresh===true,health_reason:safe(health?.observation?.reason),policy_reason:safe(policies?.reason),owned_environment_count:Array.isArray(policies?.environments)?policies.environments.length:-1};
+  return {status:'FAILED',cases,code:safe(error?.message).startsWith('P09_')?safe(error.message):'P09_PRODUCT_UI_FAILED',stage,exception_type:['Error','TypeError','ReferenceError','SyntaxError'].includes(error?.constructor?.name)?error.constructor.name:'Unknown',diagnostic};
+ }
 };
 true;

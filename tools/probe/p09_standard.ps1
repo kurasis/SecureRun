@@ -162,10 +162,27 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
 
  Case 'T32' 'running_policy_diff_queue_requires_explicit_stopped_apply' {
-  Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_HELD_MEMBER_NOT_RUNNING'
+  # The external SDK activity fixture can be observed while Enabled=y. LIST
+  # durably records that conflict; returning the flag never silently heals it.
+  if($null -ne $held){[P05Lab]::Stop($held);$script:held=$null};Stop-Box $first
+  $current=(Native @{action='LIST'}).environments|Where-Object id -eq $first.id;$repaired=$false
+  if($current.stage -ne 'VERIFIED'){
+   $inspected=(Native @{action='INSPECT';environment_id=$current.id}).environments|Where-Object id -eq $current.id
+   Require ($inspected.reason -cmatch '^INSPECTED_BASELINE:([0-9a-f]{64})$') 'P09_EXTERNAL_CONFLICT_NOT_INSPECTED';$observed=$Matches[1]
+   $repair=Native @{action='REPAIR';environment_id=$current.id;expected_revision=$current.revision;observed_fingerprint=$observed;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$true}
+   $current=$repair.environments|Where-Object id -eq $current.id;$repaired=$true
+  }
+  Require ($current.stage -eq 'VERIFIED') 'P09_EXTERNAL_FIXTURE_POLICY_NOT_VERIFIED';$script:first=$current
+  $application=Register-App $first 'P09 managed running-policy target' (Join-Path $productHome 'securerun-launch-probe.exe') @('hold',(Join-Path $Fixture 'queued-policy-held.jsonl'))
+  $receipt=Launch-App $first $application
+  $memberAlive={
+   $scopes=(Native @{action='LIST'} 'control').environments|Where-Object environment_id -eq $first.id
+   return @($scopes.processes|Where-Object {$_.pid -eq $receipt.process.pid -and [string]$_.creation_time -eq [string]$receipt.process.creation_time}).Count -eq 1
+  }
+  Require (& $memberAlive) 'P09_MANAGED_QUEUE_MEMBER_NOT_RUNNING'
   $pending=Access 'PICKER' $gui.ProcessId (Join-Path $Fixture 'policy-resource.txt') -Async
-  try{$null=Invoke-P09Stage 'PERMISSION_PICK' @{environment_name=$first.display_name;environment_id=$first.id};$picker=Complete-Access $pending;$pending=$null;$null=Invoke-P09Stage 'PERMISSION_QUEUE' @{environment_id=$first.id};Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_QUEUE_STOPPED_PROCESS';$null=Invoke-P09Stage 'STOP_AND_APPLY' @{environment_id=$first.id;environment_name=$first.display_name};@{real_native_picker=$picker.picker.real_native_picker;queued_in_backend=$true;applied_while_running=$false;explicit_whole_box_stop=$true;independent_policy_readback=$true}}
-  finally{if($null -ne $pending){$null=Complete-Access $pending};if($null -ne $held){[P05Lab]::Stop($held);$script:held=$null}}
+  try{$null=Invoke-P09Stage 'PERMISSION_PICK' @{environment_name=$first.display_name;environment_id=$first.id};$picker=Complete-Access $pending;$pending=$null;$null=Invoke-P09Stage 'PERMISSION_QUEUE' @{environment_id=$first.id};Require (& $memberAlive) 'P09_QUEUE_STOPPED_PROCESS';$null=Invoke-P09Stage 'STOP_AND_APPLY' @{environment_id=$first.id;environment_name=$first.display_name};@{real_native_picker=$picker.picker.real_native_picker;queued_in_backend=$true;applied_while_running=$false;explicit_whole_box_stop=$true;independent_policy_readback=$true;managed_launch_receipt_verified=$true;external_fixture_conflict_explicitly_repaired=$repaired}}
+  finally{if($null -ne $pending){$null=Complete-Access $pending};Stop-Box $first}
  }
  Case 'T63' 'ten_thousand_files_bounded_ui_and_complete_pagination' {$r=Invoke-P09Stage 'FILE_LIST' @{environment_id=$first.id};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'file-workload.json') -Encoding utf8;$r.metrics}
  Case 'T66' 'synthetic_argv_and_environment_do_not_enter_manager_logs' {

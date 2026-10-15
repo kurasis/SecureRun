@@ -372,3 +372,16 @@ four reference environments and no performance-gate claim; the full ten-box
 acceptance requirement is unchanged. This obtains completed-observer CPU/frames
 earlier for profiling. The single-environment layout diagnostic remains short.
 Case diagnostics clear the previous UI stage before each new case.
+
+
+Policy editor failure is explained by the native journal: LIST durably marks a
+Verified environment Conflict if it observes the external fixture's Enabled=y
+transition. Restoring the flag cannot automatically restore verification. Before
+the independent queued-edit scenario the fixture now explicitly stops its own
+external member, performs native Inspect/Repair against the exact current
+fingerprint when needed, and launches a fresh held member through the actual
+managed registration/launch path. Queue checks bind its PID and creation time
+through a fresh original-driver-backed native list. UI Stop and explicit stopped
+Apply remain required. No journal state or conflict check is bypassed. Failure
+diagnostics now retain only selected policy stage/reason and editor-presence
+booleans to distinguish native refusal from a missing UI.

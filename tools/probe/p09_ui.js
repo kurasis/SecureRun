@@ -6,7 +6,7 @@ window.__p09_run=async function(stage,config={}) {
  const wait=async predicate=>{const end=performance.now()+90000;while(performance.now()<end){const value=predicate();if(value)return value;await pause(50);}throw Error('P09_UI_WAIT_EXPIRED');};
  const text=element=>element.textContent.replace(/\s+/g,' ').trim();
  const button=(label,scope=document)=>Array.from(scope.querySelectorAll('button')).find(e=>text(e)===label);
- const click=async(label,scope=document)=>{const e=await wait(()=>button(label,scope));if(e.disabled)throw Error('P09_UI_ACTION_DISABLED');e.click();return e;};
+ const click=async(label,scope=document)=>{const e=await wait(()=>{const candidate=button(label,scope);return candidate&&!candidate.matches(':disabled')?candidate:null;});e.click();return e;};
  const set=(e,value)=>{const type=e instanceof HTMLSelectElement?HTMLSelectElement:e instanceof HTMLTextAreaElement?HTMLTextAreaElement:HTMLInputElement;Object.getOwnPropertyDescriptor(type.prototype,'value').set.call(e,value);e.dispatchEvent(new Event(e instanceof HTMLSelectElement?'change':'input',{bubbles:true}));};
  const check=(id,name,condition)=>{cases.push({id,name,passed:!!condition});if(!condition)throw Error('P09_UI_ASSERTION_FAILED');};
  const nav=async()=>{await click('Environments',document.querySelector('nav'));await wait(()=>button('Environments',document.querySelector('nav'))?.getAttribute('aria-current')==='page');const back=button('All environments');if(back)back.click();await wait(()=>document.querySelector('.cards'));};

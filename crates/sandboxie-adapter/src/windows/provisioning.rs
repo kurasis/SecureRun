@@ -2057,6 +2057,32 @@ impl NativeEngine {
                             )
                         });
                     if !original_helper {
+                        // A short-lived OS reporter can finish while its image is
+                        // being inspected. Waiting on this same held object is
+                        // not authority to terminate an unreviewed live process.
+                        if unsafe { WaitForSingleObject(held.0, 1000) } == WAIT_OBJECT_0 {
+                            let data = serde_json::json!({"schema":1,"unreviewed_process_completed":true,"termination_dispatched":false});
+                            let mut record = OpenOptions::new()
+                                .write(true)
+                                .create_new(true)
+                                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                                .open(self.profile.join("metadata").join(format!(
+                                    "image-status-{}-{}.json",
+                                    diagnostic.id.simple(),
+                                    Uuid::new_v4().simple()
+                                )))
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            record
+                                .write_all(
+                                    &serde_json::to_vec(&data)
+                                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                                )
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            record
+                                .sync_all()
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            continue;
+                        }
                         let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
                         let allowed_name = [
                             "SandboxieRpcSs.exe",

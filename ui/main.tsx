@@ -42,7 +42,7 @@ function App() {
  const [environments,setEnvironments]=useState<Owned[]>([]);const [controls,setControls]=useState<Control[]>([]);const [selected,setSelected]=useState('');const [search,setSearch]=useState('');
  const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [creation,setCreation]=useState(false);const [clock,setClock]=useState(Date.now());
  const [routeAt,setRouteAt]=useState(0);const [routeGeneration,setRouteGeneration]=useState(0);const healthGeneration=useRef(0);healthGeneration.current=health?.generation??0;
- const [renaming,setRenaming]=useState<Owned|null>(null);const [stopPlan,setStopPlan]=useState<Owned[]|null>(null);const stopDialog=useRef<HTMLDialogElement>(null);const serial=useRef(0);const observer=useRef(false);const loading=useRef(false);const metadataAt=useRef(0);const controlPolling=useRef(false);const [controlAt,setControlAt]=useState(0);
+ const [renaming,setRenaming]=useState<Owned|null>(null);const [stopPlan,setStopPlan]=useState<Owned[]|null>(null);const stopDialog=useRef<HTMLDialogElement>(null);const serial=useRef(0);const observer=useRef(false);const loading=useRef(false);const metadataAt=useRef(0);const controlPolling=useRef(false);const reloadPending=useRef(false);const [controlGeneration,setControlGeneration]=useState(0);const [controlAt,setControlAt]=useState(0);
  const t=strings[language];const p=productText[language];const fresh=!!health?.fresh&&clock-health.observation.observed_unix_ms<15000;const setup=setupState(health,fresh,routeAt>0&&routeGeneration===health?.generation&&clock-routeAt<15000);
  const canBrowse=fresh&&health?.observation.trust==='VERIFIED'&&health.observation.reason==='OBSERVED'&&health.observation.manager_context==='UNBOXED'&&health.observation.bridge_context==='UNBOXED'&&health.observation.service_running&&health.observation.driver_running;
  const env=environments.find(e=>e.id===selected);
@@ -51,12 +51,12 @@ function App() {
   if(loading.current)return;loading.current=true;const routeTicket=healthGeneration.current;const ticket=++serial.current;setBusy(true);
   try {const policies=await invoke<{reason:string;environments:Owned[]}>('policy_request',{request:{action:'LIST'}});if(ticket!==serial.current)return;
    if(policies.reason!=='OBSERVED'){setRouteAt(0);setError(policies.reason);return;}recordRoute(routeTicket);setEnvironments(policies.environments);metadataAt.current=Date.now();
-   const control=await invoke<{reason:string;environments:Control[]}>('control_request',{request:{action:'LIST'}});if(ticket!==serial.current)return;setControls(control.environments);setControlAt(Date.now());if(control.reason!=='OBSERVED')setError(control.reason);else setError('');
-  }catch(e){setRouteAt(0);setError((e as {code?:string})?.code??'BACKEND_UNAVAILABLE');}finally{loading.current=false;setBusy(false);}
+   const control=await invoke<{reason:string;environments:Control[]}>('control_request',{request:{action:'LIST'}});if(ticket!==serial.current)return;setControls(control.environments);setControlGeneration(routeTicket);setControlAt(Date.now());if(control.reason!=='OBSERVED')setError(control.reason);else setError('');
+  }catch(e){setRouteAt(0);setError((e as {code?:string})?.code??'BACKEND_UNAVAILABLE');}finally{loading.current=false;setBusy(false);if(reloadPending.current){reloadPending.current=false;void refreshMetadata();}}
  }
  async function pollControls() {
   if(controlPolling.current||loading.current)return;controlPolling.current=true;const routeTicket=healthGeneration.current;
-  try {const value=await invoke<{reason:string;environments:Control[]}>('control_request',{request:{action:'LIST'}});if(value.reason==='OBSERVED'){recordRoute(routeTicket);setControls(value.environments);setControlAt(Date.now());}else{setRouteAt(0);setControls([]);setControlAt(0);}}
+  try {const value=await invoke<{reason:string;environments:Control[]}>('control_request',{request:{action:'LIST'}});if(value.reason==='OBSERVED'){recordRoute(routeTicket);setControls(value.environments);setControlGeneration(routeTicket);setControlAt(Date.now());}else{setRouteAt(0);setControls([]);setControlAt(0);}}
   catch{setRouteAt(0);setControls([]);setControlAt(0);}finally{controlPolling.current=false;}
  }
  async function observe() {
@@ -65,7 +65,8 @@ function App() {
   catch{setHealth(null);}finally{observer.current=false;}
  }
  useEffect(()=>{void invoke<Snapshot>('get_snapshot').then(setSnapshot).catch(()=>setError('BACKEND_UNAVAILABLE'));void observe();const timer=setInterval(()=>{setClock(Date.now());void observe();},1000);const resume=()=>{setRouteAt(0);setHealth(null);metadataAt.current=0;void observe();};window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);return()=>{serial.current++;clearInterval(timer);window.removeEventListener('focus',resume);document.removeEventListener('visibilitychange',resume);};},[]);
- useEffect(()=>{if(canBrowse&&metadataAt.current===0)void refreshMetadata();if(!canBrowse)return;const timer=setInterval(()=>void pollControls(),5000);return()=>clearInterval(timer);},[canBrowse]);
+ useEffect(()=>{if(canBrowse&&metadataAt.current===0)void refreshMetadata();if(!canBrowse)return;const timer=setInterval(()=>void pollControls(),10000);return()=>clearInterval(timer);},[canBrowse]);
+ useEffect(()=>{const changed=()=>{reloadPending.current=true;if(!loading.current){reloadPending.current=false;void refreshMetadata();}};window.addEventListener('securerun:managed-state',changed);return()=>window.removeEventListener('securerun:managed-state',changed);},[]);
  useEffect(()=>{document.documentElement.lang=language;document.documentElement.dataset.theme=theme;savePreference('language',language);savePreference('theme',theme);},[language,theme]);
  useEffect(()=>{savePreference('scale',scale);void invoke('product_request',{request:{action:'SCALE',percent:Number(scale)}}).catch(()=>setError('CAPABILITY_UNAVAILABLE'));},[scale]);
  useEffect(()=>{if(stopPlan)stopDialog.current?.showModal();},[stopPlan]);
@@ -75,7 +76,7 @@ function App() {
  function activityLabel(value:string) {return ({RUNNING:t.running,IDLE:language==='ru'?'Простой':'Idle',STARTING:language==='ru'?'Запускается':'Starting',STOPPING:language==='ru'?'Останавливается':'Stopping',CLEANING:language==='ru'?'Очищается':'Cleaning'} as Record<string,string>)[value]??p.unknown;}
  function launchReason(e:Owned) {
   if(!fresh)return 'OBSERVATION_STALE';
-  if(clock-controlAt>=15000)return 'CONTROL_OBSERVATION_STALE';
+  if(clock-controlAt>=15000||controlGeneration!==health?.generation)return 'CONTROL_OBSERVATION_STALE';
   if(e.lifecycle!=='ACTIVE')return 'ENVIRONMENT_NOT_ACTIVE';
   const control=controls.find(c=>c.environment_id===e.id);
   return control?.launch_eligible?'CURRENT_PREREQUISITES_SATISFIED':control?.reason??'ENVIRONMENT_NOT_OBSERVED';

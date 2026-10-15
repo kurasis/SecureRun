@@ -13,6 +13,18 @@ mod product;
 #[cfg(windows)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("--engine-stream-worker") {
+        std::panic::set_hook(Box::new(|_| {}));
+        if args.len() != 4 {
+            std::process::exit(64);
+        }
+        let (Ok(pid), Ok(birth)) = (args[2].parse(), args[3].parse()) else {
+            std::process::exit(64);
+        };
+        std::process::exit(securerun_sandboxie_adapter::windows::live::worker(
+            pid, birth,
+        ));
+    }
     if args.get(1).map(String::as_str) == Some("--product-worker")
         || (args.len() == 2 && args[1] == "--product-once")
     {

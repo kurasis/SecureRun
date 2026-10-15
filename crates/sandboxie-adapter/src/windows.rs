@@ -1,4 +1,5 @@
 //! Independently declared read-only ABI for the source-pinned native 64-bit engine.
+pub mod live;
 pub mod provisioning;
 use crate::*;
 use sha2::{Digest, Sha256};
@@ -252,6 +253,7 @@ fn birth(h: &Handle) -> R<u64> {
         Ok(((a.dwHighDateTime as u64) << 32) | a.dwLowDateTime as u64)
     }
 }
+#[derive(PartialEq, Eq)]
 struct Service {
     path: PathBuf,
     running: bool,
@@ -350,6 +352,7 @@ fn service(name: &str) -> R<Service> {
     }
 }
 struct Trusted {
+    protected_indices: Vec<usize>,
     home: PathBuf,
     _leases: Vec<File>,
     identity: String,
@@ -383,6 +386,7 @@ fn discover() -> R<Trusted> {
         .iter()
         .find(|t| t["architecture"] == std::env::consts::ARCH)
         .ok_or("ARCHITECTURE_UNTESTED")?;
+    let mut protected_indices = vec![held.len() - 1];
     let mut digest = Sha256::new();
     for entry in target["components"].as_array().ok_or("MANIFEST_INVALID")? {
         let name = entry["name"].as_str().ok_or("MANIFEST_INVALID")?;
@@ -418,9 +422,11 @@ fn discover() -> R<Trusted> {
         signature(&p, &f)?;
         digest.update(hash.as_bytes());
         digest.update(identity(&f)?.as_bytes());
+        protected_indices.push(held.len());
         held.push(f);
     }
     Ok(Trusted {
+        protected_indices,
         home,
         _leases: held,
         identity: format!("{:x}", digest.finalize()),
@@ -769,6 +775,13 @@ impl Api {
 }
 
 pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
+    observe_retained(manager_pid, manager_birth, None)
+}
+fn observe_retained(
+    manager_pid: u32,
+    manager_birth: u64,
+    retained: Option<(&Trusted, &Api)>,
+) -> Observation {
     let mut report = Observation::failure("NOT_OBSERVED");
     report.manager_pid = manager_pid;
     report.manager_birth = manager_birth;
@@ -791,7 +804,22 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
         if birth(&parent)? != manager_birth {
             return Err("MANAGER_IDENTITY_CHANGED");
         }
-        let trusted = discover()?;
+        let owned_trusted;
+        let trusted = if let Some((trusted, _)) = retained {
+            // No signature/hash is cached across released file objects. These
+            // retained no-write/no-delete objects pin the authenticated bytes.
+            for index in &trusted.protected_indices {
+                protected(&trusted._leases[*index])?;
+                identity(&trusted._leases[*index])?;
+            }
+            if service("SbieSvc")? != trusted.svc || service("SbieDrv")? != trusted.drv {
+                return Err("ENGINE_SERVICE_IDENTITY_CHANGED");
+            }
+            trusted
+        } else {
+            owned_trusted = discover()?;
+            &owned_trusted
+        };
         report.trust = "VERIFIED".into();
         report.installation_identity = Some(trusted.identity.clone());
         report.service_running = trusted.svc.running;
@@ -804,7 +832,13 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN"
         }
         .into();
-        let api = Api::load(&trusted.home)?;
+        let owned_api;
+        let api = if let Some((_, api)) = retained {
+            api
+        } else {
+            owned_api = Api::load(&trusted.home)?;
+            &owned_api
+        };
         let mut version = [0u16; 16];
         let mut abi = 0;
         if unsafe { (api.version)(version.as_mut_ptr(), &mut abi) } != 0 {
@@ -874,7 +908,7 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             Capability {
                 name: "production_launch".into(),
                 availability: Availability::Unavailable,
-                reason: "P05_P06_NOT_IMPLEMENTED".into(),
+                reason: "OBSERVATION_ONLY".into(),
                 provenance: "PHASE_BOUNDARY".into(),
             },
         ];

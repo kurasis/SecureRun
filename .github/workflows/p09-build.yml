@@ -2,7 +2,7 @@ name: P09 native product build
 on:
   push:
     branches: ['p09/**']
-    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tests/product_ui.test.ts', 'tools/lab/Test-P09-Measurement.ps1', 'tools/probe/p09_desktop.cs', '.github/workflows/p09-build.yml']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tests/product_ui.test.ts', 'tools/lab/Install-P09-Node.ps1', 'tools/lab/Test-P09-Measurement.ps1', 'tools/probe/p09_desktop.cs', '.github/workflows/p09-build.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -38,8 +38,7 @@ jobs:
           $ErrorActionPreference='Stop'
           rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
           if($LASTEXITCODE -ne 0){throw 'TOOLCHAIN_FAILED'}
-          npm ci --ignore-scripts
-          if($LASTEXITCODE -ne 0){throw 'DEPENDENCIES_FAILED'}
+          ./tools/lab/Install-P09-Node.ps1
           npm run build
           if($LASTEXITCODE -ne 0){throw 'UI_BUILD_FAILED'}
           npm run test:product

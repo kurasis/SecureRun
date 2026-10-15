@@ -1,5 +1,5 @@
 # Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100)
+param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase,System.Windows.Forms
@@ -63,7 +63,7 @@ function Set-ActualDisplayScale([int]$Scale){
    Need ($null -ne $choice);$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()
 
  $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($settings.MainWindowHandle);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
- $window=$null;if($settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close()}
+ $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close()}
 }
 try{
  if($Mode -eq 'DISPLAY_CONTROLLER'){Set-ActualDisplayScale $Scale;Write-Host 'P09_DISPLAY_CONTROLLER_COMPLETE';exit 0}
@@ -112,8 +112,8 @@ try{
   }
   default {
    $stage='WAITING_FOR_ACCESSIBLE_NAVIGATION';$clock=[Diagnostics.Stopwatch]::StartNew();$navigation=$null;$settings=$null
-   do{$navigation=Find $root ([Windows.Automation.ControlType]::Button) 'Environments';$settings=Find $root ([Windows.Automation.ControlType]::Button) 'Settings';if($null -ne $navigation -and $null -ne $settings){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
-   Need ($null -ne $navigation -and $null -ne $settings);Click $settings
+   do{if($Mode -eq 'KEYBOARD'){$navigation=Find $root ([Windows.Automation.ControlType]::Button) 'Environments'};$settings=Find $root ([Windows.Automation.ControlType]::Button) 'Settings';if($null -ne $settings -and ($Mode -eq 'READY' -or $null -ne $navigation)){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+   Need ($null -ne $settings -and ($Mode -eq 'READY' -or $null -ne $navigation));Click $settings
    $clock=[Diagnostics.Stopwatch]::StartNew();$language=$null
    do{$language=Find $root ([Windows.Automation.ControlType]::ComboBox) 'Language';if($null -ne $language){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
    Need ($null -ne $language -and $language.Current.IsEnabled);$result.accessible_label_and_role=$true;$result.native_invoke_changed_real_page=$true
@@ -124,7 +124,7 @@ try{
     [Windows.Forms.SendKeys]::SendWait('{F6}');Start-Sleep -Milliseconds 100;Need ([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments');$result.f6_navigation_actual=$true
     [Windows.Forms.SendKeys]::SendWait('^1');Start-Sleep -Milliseconds 100;$result.ctrl_navigation_actual=$true
    }
-   Click $navigation
+   if($null -eq $navigation){$navigation=Find $root ([Windows.Automation.ControlType]::Button) 'Environments'};Click $navigation
   }
  }
  $result.status='PASSED'

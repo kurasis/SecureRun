@@ -11,8 +11,7 @@ Push-Location $repo
 try {
  rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal --component rustfmt,clippy
  if($LASTEXITCODE -ne 0){throw 'P09_TOOLCHAIN_FAILED'}
- npm ci --ignore-scripts
- if($LASTEXITCODE -ne 0){throw 'P09_DEPENDENCIES_FAILED'}
+ & (Join-Path $PSScriptRoot 'Install-P09-Node.ps1')
  npm run build
  if($LASTEXITCODE -ne 0){throw 'P09_FRONTEND_BUILD_FAILED'}
  npm test
@@ -79,6 +78,7 @@ try {
    $displayRequests++;if($displayRequests -gt 8){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_REQUEST_BOUND'}
    $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
    foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_CONTROLLER','-Scale',[string]@(100,150,200)[$index])){$display.ArgumentList.Add($arg)}
+   if($index -eq 0 -and $displayRequests -gt 1){$display.ArgumentList.Add('-CloseSettings')}
    $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
    $controller=[Diagnostics.Process]::Start($display)
    try{$completed=$controller.WaitForExit(90000);if($completed -and $controller.ExitCode -eq 0){$null=$displayEvents[3].Set()}else{$null=$displayEvents[4].Set()}}finally{if(-not $controller.HasExited){$controller.Kill($true)};$controller.Dispose()}

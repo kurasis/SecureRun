@@ -1,6 +1,20 @@
 # P09 performance and minimized diagnostics
 
-Native measurements are pending. No measured result is inferred from compilation.
+The full workload has not passed its budgets. Run `38804430207` measured
+4973.6882 ms startup, 4.790866449% complete-job idle CPU and 380194586 bytes
+average working set on Server. These are failed measurements, not release proof.
+Compilation and the separate zero-environment measurement fixture cannot satisfy
+the performance gate.
+
+The next revision uses a bounded read-only observation worker: authenticated
+component file objects remain held against writes/deletion for at most 60 seconds.
+Each one-second snapshot still checks SCM configuration/status, protected object
+ownership/DACL/link identity, current driver ABI, manager/worker context, boxes,
+processes, roots and configuration. A stale, changed or failed observation clears
+availability. Every mutation independently repeats its full native checks; the
+observer supplies no mutation authority. WebView2's public low-memory target
+reduces caches without changing its sandbox or excluding any child from the
+measurement. Fresh Windows measurements are required before claiming improvement.
 
 | Workload | Required reference budget | Measurement |
 |---|---|---|

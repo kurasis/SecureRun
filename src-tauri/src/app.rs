@@ -76,7 +76,6 @@ impl From<Operation> for OperationView {
 }
 pub struct Backend {
     pub health: Health,
-    pub observation_inflight: bool,
     pub state_channels: HashMap<Uuid, tauri::ipc::Channel<StateEvent>>,
     pub store: Store,
     pub selections: Selections,
@@ -193,38 +192,7 @@ async fn get_engine_health(
     window: WebviewWindow,
     state: State<'_, AppState>,
 ) -> Result<HealthView> {
-    let ticket = {
-        let mut backend = locked(&window, &state)?;
-        if backend.fixture || backend.observation_inflight {
-            return Ok(backend.health.view(Instant::now()));
-        }
-        backend.observation_inflight = true;
-        let before = backend.health.view(Instant::now()).generation;
-        let ticket = backend.health.begin(Instant::now());
-        if backend.health.view(Instant::now()).generation != before {
-            backend.store.reconnect()?;
-            backend.handles.clear();
-            backend.selections = Selections::default();
-        }
-        ticket
-    };
-    let observation =
-        tauri::async_runtime::spawn_blocking(securerun_sandboxie_adapter::windows::bounded_observe)
-            .await
-            .unwrap_or_else(|_| {
-                securerun_sandboxie_adapter::Observation::failure("BRIDGE_TASK_FAILED")
-            });
-    let mut backend = locked(&window, &state)?;
-    backend.observation_inflight = false;
-    let before = backend.health.view(Instant::now()).generation;
-    backend.health.accept(ticket, observation, Instant::now());
-    let view = backend.health.view(Instant::now());
-    if view.generation != before {
-        backend.store.reconnect()?;
-        backend.handles.clear();
-        backend.selections = Selections::default();
-    }
-    Ok(view)
+    Ok(locked(&window, &state)?.health.view(Instant::now()))
 }
 #[derive(Serialize)]
 pub struct SubscriptionView {
@@ -533,7 +501,6 @@ pub fn run() {
     };
     let backend = Backend {
         health,
-        observation_inflight: false,
         store,
         state_channels: HashMap::new(),
         selections: Selections::default(),
@@ -598,12 +565,94 @@ pub fn run() {
             if fixture {
                 config.url = tauri::WebviewUrl::App("index.html?foundation-ci".into());
             }
-            tauri::WebviewWindowBuilder::from_config(app, &config)?
+            let window = tauri::WebviewWindowBuilder::from_config(app, &config)?
                 .on_navigation(|url| {
                     authorized_origin("main", url.as_str(), cfg!(debug_assertions))
                 })
                 .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
                 .build()?;
+            // The supported WebView2 resource policy keeps its sandbox and CSP.
+            // It reduces caches rather than omitting processes from measurement.
+            let _ = window.with_webview(|view| unsafe {
+                use webview2_com::Microsoft::Web::WebView2::Win32::{
+                    COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW, ICoreWebView2_19,
+                };
+                use windows::core::Interface;
+                if let Ok(core) = view.controller().CoreWebView2()
+                    && let Ok(memory) = core.cast::<ICoreWebView2_19>()
+                {
+                    if memory
+                        .SetMemoryUsageTargetLevel(COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW)
+                        .is_ok()
+                    {
+                        use std::io::Write;
+                        let _ = writeln!(std::io::stderr().lock(), "WEBVIEW_MEMORY_TARGET_LOW");
+                    }
+                }
+            });
+            if !fixture {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(std::time::Duration::from_millis(500));
+                    loop {
+                        let state = handle.state::<AppState>();
+                        let epoch = match state.inner().0.lock() {
+                            Ok(backend) => backend.health.view(Instant::now()).generation,
+                            Err(_) => return,
+                        };
+                        let mut stream =
+                            securerun_sandboxie_adapter::windows::live::Stream::start();
+                        let mut retry_delay = std::time::Duration::from_secs(1);
+                        loop {
+                            let report = match &mut stream {
+                                Ok(stream) => stream.next_frame(),
+                                Err(reason) => Err(*reason),
+                            };
+                            let normal_end = matches!(report, Err("BRIDGE_STREAM_ENDED"));
+                            if normal_end {
+                                retry_delay = std::time::Duration::ZERO;
+                                break;
+                            }
+                            let failed = !report
+                                .as_ref()
+                                .is_ok_and(|value| value.reason == "OBSERVED");
+                            let observation = report
+                                .unwrap_or_else(securerun_sandboxie_adapter::Observation::failure);
+                            let mut backend = match state.inner().0.lock() {
+                                Ok(backend) => backend,
+                                Err(_) => return,
+                            };
+                            if backend.health.view(Instant::now()).generation != epoch {
+                                break;
+                            }
+                            let before = backend.health.view(Instant::now()).generation;
+                            let ticket = backend.health.begin(Instant::now());
+                            if backend.health.view(Instant::now()).generation != epoch {
+                                backend.handles.clear();
+                                backend.selections = Selections::default();
+                                if backend.store.reconnect().is_err() {
+                                    backend.health.invalidate("METADATA_CONTEXT_RESET_FAILED");
+                                }
+                                break;
+                            }
+                            backend.health.accept(ticket, observation, Instant::now());
+                            let changed = backend.health.view(Instant::now()).generation != before;
+                            if changed {
+                                backend.handles.clear();
+                                backend.selections = Selections::default();
+                                if backend.store.reconnect().is_err() {
+                                    backend.health.invalidate("METADATA_CONTEXT_RESET_FAILED");
+                                }
+                            }
+                            if failed || changed {
+                                break;
+                            }
+                        }
+                        drop(stream);
+                        std::thread::sleep(retry_delay);
+                    }
+                });
+            }
             #[cfg(feature = "foundation-ci")]
             if fixture {
                 crate::ci::start(app.handle().clone(), profile.clone().unwrap())?;

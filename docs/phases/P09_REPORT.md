@@ -228,3 +228,20 @@ is tied to the observation generation and is cleared on focus/refusal. Service
 process identity stays Unknown; native context_safe and every operation gate
 remain unchanged. Unit cases require this separate proof and reject stale,
 boxed, stopped-driver and inconsistent service-identity states.
+
+
+Run `38804430207` at `d16affc` passed Server overview, identity-preserving rename,
+keyboard/UIA and all twelve WebView language/theme/zoom combinations. It failed
+the startup, idle CPU and memory budgets (see the measured report). Actual 100%
+Windows DPI passed; reopening Settings prevented 150% and final restoration.
+The controller now keeps the same Settings window until final restoration. ARM
+stopped at an unreviewed live WerFault process during private diagnostic cleanup;
+no termination exception was added. Cleanup may wait one second for the same
+held process object to exit naturally and otherwise retains its refusal.
+
+The bounded read-only observer and supported WebView memory target require fresh
+native compilation and measurements. UI route/control observations are tied to
+the same health generation; completed managed mutations request a fresh metadata
+read. A lab button waits for normal enabled state before one click. ARM's missing
+optional npm native binding is handled by at most one repeat of the exact locked,
+script-free install. No dependency pin or Windows security check is bypassed.

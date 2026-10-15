@@ -1,7 +1,9 @@
 # P06 — Isolated launch and scoped process control
 
 Status: DONE.
-Specification: 1.3. Requested scope: complete P06 only.
+Specification: 1.3. Original requested scope: complete P06.
+The sections below record the historical P06 completion; the current P07
+dependency regression is recorded separately when its native gate completes.
 
 Implementation/runtime commit: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
 [P06 native run 38705476091](https://github.com/kurasis/SecureRun/actions/runs/38705476091)
@@ -102,12 +104,12 @@ The normal manager has no checkpoint activation. A separately compiled
 its distinct binary hash is retained. Fixed original `KmdUtil` administration
 and a narrow disposable logon fixture are not product helpers.
 
-## Dependencies and checks
+## Historical P06 dependencies and checks
 
 P05 was complete before P06 began, with runtime `a6cdbd1` and matching P03/P04
 proof. Changes require current regression evidence for the final P06 source.
 
-| Check | Current result |
+| Check | Historical P06 result |
 |---|---|
 | Portable Rust | 19 foundation and 28 adapter tests passed |
 | Windows metadata-only strict i686 clippy | Passed; not Windows execution evidence |

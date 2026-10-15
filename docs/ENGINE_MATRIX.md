@@ -61,14 +61,14 @@ exception assessed for the lab; distribution review remains required, not a clai
 Manager license/distribution terms remain unselected; see [licensing assessment](FEASIBILITY_REPORT.md).
 
 
-## Current P06 implementation evidence
+## Historical P06 implementation evidence
 
-Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1` passes the current P03–P06 gates on
+Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1` passed the historical P03–P06 gates on
 Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200, using the pinned
 original engine above. These are the owner-selected pre-release laboratory tuples;
 Windows 11 x64 and final installed-candidate acceptance remain unclaimed.
 
-| Production component | Current phase proof |
+| Production component | Historical P06 phase proof |
 |---|---|
 | Main-window IPC and native selection | P03: 25 actual command-boundary cases per target |
 | Trusted read-only observation | P04: 31 adapter tests and 19 native scenarios per target |

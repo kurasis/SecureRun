@@ -162,7 +162,7 @@ push/normal-merge authorization; credentials, private paths, raw target argument
 and generated binaries remain excluded.
 
 
-## Current P06 dependency regression
+## Historical P06 dependency regression
 
 Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
 [run 38705482872](https://github.com/kurasis/SecureRun/actions/runs/38705482872),

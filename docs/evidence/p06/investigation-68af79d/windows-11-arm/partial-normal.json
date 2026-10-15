@@ -1,0 +1,43 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "exact_target_argv": true,
+      "receipt": "RUNNING_BOXED",
+      "actual_pe": "securerun-launch-probe-x64",
+      "boxed": true,
+      "host_output_absent": true
+    },
+    "name": "exact_arguments_securerun-launch-probe-x64",
+    "id": "T04"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "exact_target_argv": true,
+      "receipt": "RUNNING_BOXED",
+      "actual_pe": "securerun-launch-probe-x86",
+      "boxed": true,
+      "host_output_absent": true
+    },
+    "name": "exact_arguments_securerun-launch-probe-x86",
+    "id": "T04"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "exact_target_argv": true,
+      "receipt": "RUNNING_BOXED",
+      "actual_pe": "securerun-launch-probe",
+      "boxed": true,
+      "host_output_absent": true
+    },
+    "name": "exact_arguments_securerun-launch-probe",
+    "id": "T04"
+  },
+  {
+    "status": "IN_PROGRESS",
+    "name": "unloaded_original_driver_refuses_production_launch",
+    "id": "T01"
+  }
+]

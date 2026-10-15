@@ -164,6 +164,106 @@
       "path": "investigation-2b0158e/windows-11-arm/stage.json",
       "sha256": "3510bbd2fae349aaea1e397a548a999d9c2adc1e3142c7c3d525f36c45fac88b",
       "size": 112
+    },
+    {
+      "path": "investigation-50397b8/windows-11-arm/file-cases.json",
+      "size": 4432,
+      "sha256": "fcf2df16db0819b8d4fa112d3e736c475d2ef94dcecea0b0493fa02f20da8f0e"
+    },
+    {
+      "path": "investigation-50397b8/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "94a98115649c8fd243b56a6b45fdb22f5c8bab0d4c960f95934f4dae87ca08b1"
+    },
+    {
+      "path": "investigation-50397b8/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "740e619899548ff71aa24f7b8f8f9165e37e64968cc55eb400298d6281fec425"
+    },
+    {
+      "path": "investigation-50397b8/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "f80ff95ea171d32d6b2027fc160de9fdc14a12d9003580ccf4d54888a8697fb3"
+    },
+    {
+      "path": "investigation-50397b8/windows-11-arm/standard-normal.json",
+      "size": 114,
+      "sha256": "4f1efae554d39c89c01fa0da073b169eeec4f823fdaeccc7e21f34345641b240"
+    },
+    {
+      "path": "investigation-75a38c9/windows-11-arm/file-cases.json",
+      "size": 8684,
+      "sha256": "2ce9b1ebebb6ace3f54ab7abf48c1d384eb1226cdbef8fa7a819efbe7dd154bf"
+    },
+    {
+      "path": "investigation-75a38c9/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "4a87bb9d6ea56f7e2e78d722176f3f397599b77ff7db98c98414e1e569296a55"
+    },
+    {
+      "path": "investigation-75a38c9/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "fa05b7c8a23e2df611418e3a524ccbf29864f8369dc58280f4fa6920a50b81d4"
+    },
+    {
+      "path": "investigation-75a38c9/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "e49ff967ead98fab5ec140dd47eb9b86aa9072c915556901437b73933b90a119"
+    },
+    {
+      "path": "investigation-75a38c9/windows-11-arm/standard-normal.json",
+      "size": 91,
+      "sha256": "6ca10c83bda319608065fe7f664d0e62b9fc5cf6abff68b5c8491e3107b69673"
+    },
+    {
+      "path": "investigation-68af79d/windows-2025/standard-normal.json",
+      "size": 91,
+      "sha256": "b98f0c52702cee06850be6f3519d6b9a99326d09b188af480d9e2886b8bd962c"
+    },
+    {
+      "path": "investigation-68af79d/windows-2025/standard-fault.json",
+      "size": 90,
+      "sha256": "5309818e4d8a58624895afeddd304fced85726a827f97a0a6815bfeb3867cc47"
+    },
+    {
+      "path": "investigation-68af79d/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "21cad0347c0ab2c1a2e790640f8a00bcbe77a672e6569fa827492e3464c99657"
+    },
+    {
+      "path": "investigation-68af79d/windows-2025/run-summary.json",
+      "size": 653,
+      "sha256": "b87aa20e250e30417270c09c9926bc3fbee4b95e243374449fe6f3ca08db9920"
+    },
+    {
+      "path": "investigation-68af79d/windows-2025/file-cases.json",
+      "size": 8928,
+      "sha256": "d9e414ac53f1bdf595c9c32d7dc3ad414358e605d1589a32bcf91aecf93dd422"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/standard-normal.json",
+      "size": 91,
+      "sha256": "99c9bc0b5b081a4e61477cba3d02b63b4402dd1e86672d7e41083826ef361b49"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "3cda7e6f7369972fdd868339a0f0f9186bafc84519b3564bbbbd34fba4f52acd"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "21cad0347c0ab2c1a2e790640f8a00bcbe77a672e6569fa827492e3464c99657"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "75fbd3d75e0675e19cd4cdf5ab8c1b81dfcb7357f9b81bbc85a94d0313475fb6"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/file-cases.json",
+      "size": 9504,
+      "sha256": "e547ec2559a1e9abe2aeb5b8d27116fbcebb06524f6201d1d0aa50ef2316d1f8"
     }
   ],
   "targets": [],
@@ -190,6 +290,26 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38718912872",
       "result": "FAILED",
       "note": "All cases except the external-launch fixture passed. Transfer refused changed configuration without publishing; the revised fixture independently verifies a live boxed member and accepts either activity or configuration fencing."
+    },
+    {
+      "tested_commit": "50397b84a5af7cc4b4c988bbd6b257504b750707",
+      "run_id": 38723327091,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38723327091",
+      "result": "FAILED",
+      "note": "All 14 fault cases passed. Normal actor failed closed during diagnostic helper cleanup before file scenarios; a completed held process could no longer supply image metadata. Completion-aware same-object waiting is revalidated on the later source."
+    },
+    {
+      "tested_commit": "75a38c90ecf4916faf241bcdc0e27c0fd83d4071",
+      "run_id": 38720671789,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38720671789",
+      "result": "FAILED",
+      "note": "All 14 fault cases passed; x86 normal probe report was observed between JSON writes. Later framing waits for a complete leased record and always stops its synthetic workload."
+    },
+    {
+      "tested_commit": "68af79d64d55aa6ae21dc763f0c057834aca4c6c",
+      "run_id": 38725132900,
+      "result": "PASSED",
+      "note": "Both P07 laboratories passed all 28 Server / 29 ARM cases; phase completion still requires matching dependency regressions."
     }
   ]
 }

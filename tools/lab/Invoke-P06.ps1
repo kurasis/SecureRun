@@ -92,7 +92,14 @@ try {
                         $utilityPath=Join-Path $engine 'KmdUtil.exe';if((Get-AuthenticodeSignature $utilityPath).Status -ne 'Valid'){throw 'ORIGINAL_DRIVER_UTILITY_UNTRUSTED'}
                         $utilityStart=[Diagnostics.ProcessStartInfo]::new($utilityPath);$utilityStart.UseShellExecute=$false;$utilityStart.WorkingDirectory=$engine;$utilityStart.ArgumentList.Add('stop');$utilityStart.ArgumentList.Add('SbieDrv');$utilityStart.Environment.Clear()
                         foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$utilityStart.Environment[$key]=$value}};$utilityStart.Environment['PATH']=Join-Path $env:SystemRoot 'System32'
-                        $utilityProcess=[Diagnostics.Process]::Start($utilityStart);try{if(-not $utilityProcess.WaitForExit(30000) -or $utilityProcess.ExitCode -ne 0){throw 'ORIGINAL_DRIVER_UNLOAD_FAILED'}}finally{if(-not $utilityProcess.HasExited){$utilityProcess.Kill()};$utilityProcess.Dispose()}
+                        $utilityProcess=[Diagnostics.Process]::Start($utilityStart)
+                        try{
+                            # Pinned KmdUtil performs its own delayed unload retries.
+                            # Preserve the actual exit/status, never infer an unload.
+                            $utilityCompleted=$utilityProcess.WaitForExit(60000)
+                            @{completed=$utilityCompleted;exit_code=$(if($utilityCompleted){$utilityProcess.ExitCode}else{-1});driver_stopped=((Get-Service SbieDrv).Status -eq 'Stopped');source='ORIGINAL_AUTHENTICATED_KMDUTIL'}|ConvertTo-Json|Set-Content (Join-Path $out 'driver-unload.json') -Encoding utf8
+                            if(-not $utilityCompleted -or $utilityProcess.ExitCode -ne 0){throw 'ORIGINAL_DRIVER_UNLOAD_FAILED'}
+                        }finally{if(-not $utilityProcess.HasExited){$utilityProcess.Kill()};$utilityProcess.Dispose()}
                         if((Get-Service SbieDrv).Status -ne 'Stopped'){throw 'DRIVER_STILL_RUNNING'}
                     }
                     'driver-on' {Start-Service SbieDrv;Start-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}

@@ -82,7 +82,7 @@ Source ACLs and arbitrary alternate streams are never exported.
    size and 1 TiB; detect growth, shrink or source metadata/identity drift. A
    write error, exhausted disk, cancellation or lost scope leaves visible staging.
 6. Flush payload, journal its digest and ready state, revalidate scope and
-   identities and publish with handle-based `FileRenameInfo`, replacement false,
+   identities and publish with native handle-based `FileRenameInformation`, replacement false,
    relative to the held destination directory. Filesystem collision authority
    includes case/short-name aliases. Rename or Skip are the only collision actions.
 7. Commit completion only after successful publication. No output is opened.

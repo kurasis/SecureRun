@@ -98,7 +98,7 @@ credentials remain excluded. Reusable cloud install/start instructions were save
 as a draft; publishing a cloud snapshot is a separate environment-settings action.
 Next eligible phase: P05, not started here.
 
-## Current regression after P05
+## Historical regression after P05
 
 Current source `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636` passes
 [run 38649290153](https://github.com/kurasis/SecureRun/actions/runs/38649290153)
@@ -111,7 +111,7 @@ proof remains historical. Ordinary-user service-process birth remains Unknown
 where access is denied, and boxed startup still exits before metadata/WebView.
 The separate P05 suite validates user-owned policy/provisioning mutation.
 
-## Current P06 regression
+## Historical P06 regression
 
 Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
 [run 38705479692](https://github.com/kurasis/SecureRun/actions/runs/38705479692),

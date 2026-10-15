@@ -101,6 +101,14 @@ try {
         }
     }else{
         $probes=@(Get-ChildItem (Split-Path $Manager) -Filter 'securerun-launch-probe*.exe')
+        # Establish the real unloaded-driver negative control before the mixed-PE
+        # workload series. No live target or emulation teardown is needed here.
+        Case 'T01' 'unloaded_original_driver_refuses_production_launch' {
+            $driverTarget=New-App (Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe') @('short',(Join-Path $Fixture 'driver-refusal.jsonl'))
+            Coordinate 'driver-off'
+            try{$r=Call @{action='LAUNCH';environment_id=$driverTarget.environment_id;application_id=$driverTarget.id;expected_revision=$driverTarget.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'UNLOADED_DRIVER_ACCEPTED_TARGET'}finally{Coordinate 'driver-on'}
+            @{driver_actually_unloaded=$true;original_authenticated_kmdutil=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
+        }
         foreach($probe in $probes){
             Case 'T04' ('exact_arguments_'+$probe.BaseName) {
                 try {
@@ -113,12 +121,6 @@ try {
             }
         }
         $probe=$probes|Where-Object Name -eq 'securerun-launch-probe.exe'
-        Case 'T01' 'unloaded_original_driver_refuses_production_launch' {
-            $driverTarget=New-App (Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe') @('short',(Join-Path $Fixture 'driver-refusal.jsonl'))
-            Coordinate 'driver-off'
-            try{$r=Call @{action='LAUNCH';environment_id=$driverTarget.environment_id;application_id=$driverTarget.id;expected_revision=$driverTarget.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'UNLOADED_DRIVER_ACCEPTED_TARGET'}finally{Coordinate 'driver-on'}
-            @{driver_actually_unloaded=$true;original_authenticated_kmdutil=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
-        }
         Case 'T05' 'production_child_and_grandchild_membership' {
             $leaf='tree-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('tree',(Join-Path $Fixture $leaf));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
             Start-Sleep -Milliseconds 700;$r=Call @{action='LIST'};$view=$r.environments|Where-Object environment_id -eq $e.id;$reports=Reports $leaf

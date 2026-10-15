@@ -324,6 +324,26 @@
       "path": "completion-50397b8/windows-11-arm/standard-user.json",
       "sha256": "616ff2d6c6b91597a4611cb41fa285ba85feda8d6e005985e698b6c684ae2fec",
       "size": 430
+    },
+    {
+      "path": "investigation-68af79d-first-arm/stage.json",
+      "size": 152,
+      "sha256": "5391c38ff47cd88c4d7428f18b6adf3298d55a8d0a71bb0b1993da17eb62391d"
+    },
+    {
+      "path": "investigation-68af79d-first-arm/standard-user.json",
+      "size": 430,
+      "sha256": "4dc436ec382c511b69347116e0ead1c3cc3c4085c739f57568b1bdfbd2565cf3"
+    },
+    {
+      "path": "investigation-68af79d-first-arm/run-summary.json",
+      "size": 511,
+      "sha256": "cd040c6717c19cbd879a4ed0b1544e304d6fbd034f60e2a643ee4da0eea73c4e"
+    },
+    {
+      "path": "investigation-68af79d-first-arm/observation-cases.json",
+      "size": 7205,
+      "sha256": "ceefe4564467964bdb84ce42e5a3e4faf2ccc198b4ddbd7c4ee4e0f93907b505"
     }
   ],
   "tested_sources": [
@@ -559,6 +579,15 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.",
-  "stale_reason": "Shared diagnostic held-object exit handling and synthetic append framing changed during P07; fresh matching regression pending."
+  "note": "P07 lab ordering/diagnostic source changed; matching exact-source native regression pending. Historical raw reports are retained.",
+  "stale_reason": "Shared diagnostic held-object exit handling and synthetic append framing changed during P07; fresh matching regression pending.",
+  "historical_runs": [
+    {
+      "tested_commit": "68af79d64d55aa6ae21dc763f0c057834aca4c6c",
+      "run_id": 38725423400,
+      "attempt": 1,
+      "result": "FAILED",
+      "note": "Server passed all 19 observation cases and 38 adapter tests. ARM passed 18 observation cases and 38 adapter tests; actual boxed desktop startup did not complete its 30-second wait. No successful refusal is inferred. A fresh disposable ARM job is required; its result remains separate."
+    }
+  ]
 }

@@ -369,6 +369,16 @@
       "path": "completion-c8d135d/windows-11-arm/standard-sessions.json",
       "size": 549,
       "sha256": "6df0b79f8178bed0c8d0fc8525940bd4c0d78e313fe827ce5e1dd84b1659f1a3"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "f2021bc029423f94c347a1f3d483f982c0594059534acac10f748ad2839a990a"
+    },
+    {
+      "path": "investigation-68af79d/windows-11-arm/partial-normal.json",
+      "size": 1064,
+      "sha256": "450ff4a5018d9de9d95ecfe4a9e89a9f2796858adae63c566a83dbf5b6b60dc2"
     }
   ],
   "tested_sources": [
@@ -769,7 +779,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production phase paths; final installed-candidate acceptance remains P12.",
+  "note": "P07 lab ordering/diagnostic source changed; matching exact-source native regression pending. Historical raw reports are retained.",
   "historical_runs": [
     {
       "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",
@@ -805,6 +815,12 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38702307806",
       "result": "BLOCKED",
       "note": "Both native P06 targets passed all required production cases. Matching final-source P05 regression is still pending; DONE is not claimed."
+    },
+    {
+      "tested_commit": "68af79d64d55aa6ae21dc763f0c057834aca4c6c",
+      "run_id": 38725430536,
+      "result": "FAILED",
+      "note": "ARM exact argv passed for all three architectures; original driver utility did not complete before the 30-second lab limit. Later lab source moves the actual-unload negative control before mixed-PE workloads, allows the original utility retry window and retains numeric completion status."
     }
   ],
   "stale_reason": "P07 runtime and tooling changed; matching native regression pending"

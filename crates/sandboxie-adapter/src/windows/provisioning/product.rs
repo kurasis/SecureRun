@@ -66,9 +66,11 @@ pub fn execute(pid: u32, birth: u64, request: contract::Request) -> contract::Re
             .map_err(|_| "HISTORY_BUSY")?;
         identity(&lock)?;
         let path = meta.join("history.sqlite");
-        if path.exists() {
-            let _held = lease(&path, true)?;
-        }
+        let _database = if path.exists() {
+            Some(lease(&path, true)?)
+        } else {
+            None
+        };
         let journal = contract::Journal::open(&path, &engine.owner)?;
         if let contract::Request::Record { event } = request {
             journal.record(&event)?;

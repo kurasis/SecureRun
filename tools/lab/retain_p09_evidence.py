@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+from uuid import UUID
 
 ROOT = Path(__file__).resolve().parents[2]
 IDS = {'T30', 'T32', 'T41', 'T63', 'T66'}
@@ -95,6 +96,14 @@ def check_target(folder, commit, machine):
             or not 0 < len(bundle['events']) <= 64
             or any(set(e) != {'action', 'outcome', 'diagnostic_id', 'unix_ms'} for e in bundle['events'])):
         raise ValueError('P09 shared diagnostic minimization is invalid')
+    allowed_actions = {'RENAME', 'POLICY_CREATE', 'POLICY_APPLY', 'POLICY_QUEUE', 'POLICY_DRAFT_DISCARD', 'POLICY_INSPECT', 'POLICY_REPAIR', 'REGISTER', 'LAUNCH', 'STOP', 'STOP_MANAGED', 'IMPORT', 'EXPORT', 'TRANSFER_INSPECT', 'TRANSFER_DISCARD', 'RETENTION_CHANGE', 'LIFECYCLE_INSPECT', 'DIAGNOSTIC_PREVIEW', 'DIAGNOSTIC_SAVE'}
+    if bundle['product'] != 'SecureRun 0.3.0':
+        raise ValueError('P09 diagnostic product schema is invalid')
+    for event in bundle['events']:
+        if (event['action'] not in allowed_actions or event['outcome'] not in {'OBSERVED','REFUSED','UNKNOWN'}
+                or type(event['unix_ms']) is not int or event['unix_ms'] <= 0
+                or str(UUID(event['diagnostic_id'])) != event['diagnostic_id']):
+            raise ValueError('P09 diagnostic event contains untyped or external fields')
     text = (folder / 'reviewed-diagnostic-example.json').read_text(encoding='utf-8-sig')
     if any(secret in text for secret in ('P09_ARGV_SECRET_CANARY', 'P09_ENV_SECRET_CANARY', 'FORGED_EVENT')):
         raise ValueError('P09 shared diagnostics disclose synthetic secret input')

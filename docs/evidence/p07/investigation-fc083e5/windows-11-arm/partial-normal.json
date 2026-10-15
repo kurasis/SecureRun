@@ -1,0 +1,121 @@
+[
+  {
+    "evidence": {
+      "internet_zone": true,
+      "same_bytes": true,
+      "production_route": true,
+      "auto_open": false
+    },
+    "id": "T21",
+    "name": "production_export_correct_bytes_and_motw",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "collision_no_replace": true,
+      "folder_rejected": true,
+      "duplicate_not_replayed": true
+    },
+    "id": "T20",
+    "name": "import_collision_duplicate_operation_and_regular_file_only",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "normal_unicode": true,
+      "unsafe_names_rejected": 9,
+      "full_extensions": true
+    },
+    "id": "T63",
+    "name": "unsafe_names_and_extensions",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "hardlink_rejected": true,
+      "arbitrary_ads_rejected": true,
+      "sensitive_destination_rejected": true,
+      "destination_junction_rejected": true
+    },
+    "id": "T22",
+    "name": "hardlinks_streams_reparse_and_sensitive_destinations_rejected",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "metadata_only": true,
+      "files": 4,
+      "host_execution": false,
+      "preview_handler_invoked": false
+    },
+    "id": "T23",
+    "name": "inert_metadata_for_html_svg_shortcut_and_executable",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "forged_id_refused": true,
+      "frontend_paths_not_authority": true
+    },
+    "id": "T49",
+    "name": "forged_file_and_raw_path_fields_rejected",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "restricted_zone_preserved": true,
+      "collision_preserved": true,
+      "url_not_copied": true
+    },
+    "id": "T44",
+    "name": "existing_destination_and_restricted_zone_preserved",
+    "status": "PASSED"
+  },
+  {
+    "id": "T43",
+    "line": 5,
+    "name": "imported_boxed_exe_securerun-launch-probe-x64",
+    "code": "BOX_LOGICAL_LAUNCH_FAILED",
+    "status": "FAILED"
+  },
+  {
+    "id": "T43",
+    "line": 5,
+    "name": "imported_boxed_exe_securerun-launch-probe-x86",
+    "code": "STOP_REQUIRED_ALL_SESSIONS",
+    "status": "FAILED"
+  },
+  {
+    "id": "T43",
+    "line": 5,
+    "name": "imported_boxed_exe_securerun-launch-probe",
+    "code": "STOP_REQUIRED_ALL_SESSIONS",
+    "status": "FAILED"
+  },
+  {
+    "evidence": {
+      "external_engine_processes_observed": true,
+      "busy_refused": true
+    },
+    "id": "T42",
+    "name": "running_environment_blocks_file_mutation",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "automatic_deletion_disabled": true,
+      "automatic_recovery_disabled": true,
+      "original_gui_running": true,
+      "source_preserved": true,
+      "export_correct": true
+    },
+    "id": "T42",
+    "name": "original_sandman_open_does_not_recover_or_delete_managed_data",
+    "status": "PASSED"
+  },
+  {
+    "id": "T45",
+    "name": "greater_than_four_gib_streamed_with_bounded_memory",
+    "status": "IN_PROGRESS"
+  }
+]

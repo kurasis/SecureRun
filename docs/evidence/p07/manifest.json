@@ -29,9 +29,53 @@
       "path": "investigation-f550018/windows-2025/file-cases.json",
       "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
       "size": 4
+    },
+    {
+      "path": "investigation-fc083e5/windows-2025/standard-normal.json",
+      "sha256": "5387b44aa75b2ecaf57f014d99c63153d5dc2c7242695a064ffbc805a32284f3",
+      "size": 91
+    },
+    {
+      "path": "investigation-fc083e5/windows-2025/standard-fault.json",
+      "sha256": "28d348e094e91261a93878e82abed3b365c4aaafa8f9e5540b363dc4fba46e3e",
+      "size": 91
+    },
+    {
+      "path": "investigation-fc083e5/windows-2025/file-cases.json",
+      "sha256": "893c299191985ae0e23b3faa6a7e3eb1dd087028277cf3dc903823395f319de8",
+      "size": 5436
+    },
+    {
+      "path": "investigation-fc083e5/windows-2025/stage.json",
+      "sha256": "37976f98a5865ece2865416828d1f56b996d3f69ff840e36f44dd1be5ac5fe9a",
+      "size": 112
+    },
+    {
+      "path": "investigation-fc083e5/windows-2025/run-summary.json",
+      "sha256": "6d657eda675a196957f900c85316723f724558c287a364e0ed1c1852757755e2",
+      "size": 561
+    },
+    {
+      "path": "investigation-fc083e5/windows-11-arm/stage.json",
+      "sha256": "5ca1df23865ebda69a331cfd4d50ffb2a1da4f42e58ef962646fee167fb4992c",
+      "size": 112
+    },
+    {
+      "path": "investigation-fc083e5/windows-11-arm/partial-normal.json",
+      "sha256": "43ed6374839898fab1fb10856db288fc1f0bf8663bfa40675d25ce9e4fe69bd4",
+      "size": 3007
     }
   ],
   "targets": [],
   "tested_sources": [],
-  "note": "Initial native attempt failed before payload because the MOTW stream did not share DELETE with the held payload. Corrected protocol awaits native validation. No P07 completion claimed."
+  "note": "Initial native attempt failed before payload because the MOTW stream did not share DELETE with the held payload. Corrected protocol awaits native validation. No P07 completion claimed.",
+  "historical_runs": [
+    {
+      "tested_commit": "fc083e5e20196a18a955d46e50aff97083db7c01",
+      "run_id": 38715086000,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38715086000",
+      "result": "FAILED",
+      "note": "Server ordinary copy, provenance, naming, path rejection, SandMan and >4 GiB passed. Start prototype launch failed; fault-stage variables were scrubbed; ARM unoptimized large-file hashing timed out. New protected CreateProcess stage, feature-only test variable allowlist and optimized pinned SHA-256 await native closure."
+    }
+  ]
 }

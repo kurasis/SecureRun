@@ -1,0 +1,22 @@
+{
+  "duration_ms": 60010,
+  "cpu_percent": 1.5947723363439537,
+  "cpu_denominator_logical_processors": 4,
+  "average_working_set_bytes": 238777613,
+  "peak_working_set_bytes": 387358720,
+  "samples": 228,
+  "webview_processes": 6,
+  "peak_process_count": 9,
+  "includes_exited_child_cpu": true,
+  "job_group_complete": true,
+  "target_and_engine_processes_excluded": true,
+  "startup_interactive_upper_bound_ms": 4567.2086,
+  "idle_environments": 10,
+  "populated_box_files": 10000,
+  "inspector_enabled": false,
+  "reference": "GitHub hosted owner-selected runner; normal release binary",
+  "webview_memory_target_low": true,
+  "startup_target_met": false,
+  "idle_cpu_target_met": false,
+  "idle_working_set_target_met": true
+}

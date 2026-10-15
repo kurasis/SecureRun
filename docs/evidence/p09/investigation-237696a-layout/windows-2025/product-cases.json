@@ -1,0 +1,95 @@
+[
+  {
+    "status": "PASSED",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "id": "T32",
+    "evidence": {
+      "completed_definition_count": 0,
+      "synthetic_reports_unchanged": true,
+      "root_data_retained": true,
+      "all_successful_definitions_retired": true,
+      "no_recursive_data_deletion": true,
+      "retention_limit": 256,
+      "retained_diagnostics": 2
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "normal_manager_startup_diagnostic_only",
+    "id": "T32",
+    "evidence": {
+      "environment_count": 1,
+      "inspector_enabled": false,
+      "native_window_present_ms": 4746.4687,
+      "startup_interactive_upper_bound_ms": 8261.5406,
+      "performance_exit_gate_claimed": false
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "actual_normal_webview_environment_navigation",
+    "id": "T32",
+    "evidence": {
+      "ten_owned_environments": false,
+      "real_backend": true,
+      "mock_state": false,
+      "normal_production_binary": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "id": "T32",
+    "evidence": {
+      "permanent_replay_tombstone": true,
+      "metadata_only": true,
+      "actual_product_ui": true,
+      "policy_and_generation_unchanged": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "id": "T32",
+    "evidence": {
+      "tab_order_actual": true,
+      "real_windows_uia": true,
+      "f6_navigation_actual": true,
+      "accessible_labels_and_roles": true,
+      "native_window_dpi": 96,
+      "native_invoke_changed_page": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "id": "T32",
+    "evidence": {
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "os_display_setting_modified": false,
+      "actual_native_webview_zoom": true,
+      "real_chromium_accessibility_tree": true,
+      "labeled_comboboxes": 3
+    }
+  },
+  {
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "id": "T32",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "line": 5,
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts"
+  }
+]

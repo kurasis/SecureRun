@@ -298,6 +298,66 @@
       "path": "completion-74d86db/windows-11-arm/standard-sessions.json",
       "size": 93,
       "sha256": "4ac80ec34aae4889543484ac5a5da33bc40d3d802f115c4f2b49ac85a91b9ba2"
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/lifecycle-cases.json",
+      "sha256": "74df0005a8f8ed133dca877079928634bc90e82f110e65f2242d0fda4405561e",
+      "size": 18957
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/run-summary.json",
+      "sha256": "f30a74c260b8234bb0d7da47d5f2836c521fb59f64b07c609c8d7ca2d6c0bf25",
+      "size": 653
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/stage.json",
+      "sha256": "33a7fa02d8b2cc4897e75a591a66b6604198ef7cb0a6431afebc39c2a9941f9a",
+      "size": 112
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/standard-fault.json",
+      "sha256": "e49ff967ead98fab5ec140dd47eb9b86aa9072c915556901437b73933b90a119",
+      "size": 90
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/standard-normal.json",
+      "sha256": "3643a760b5b96cc8b51c0a3b1623ffcc533597f95b6974426f8a422faf2a2de6",
+      "size": 91
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/standard-sessions.json",
+      "sha256": "4698323b10fee251b42821edae6670188ae1c7da7cd39157f021cba2fc994c8d",
+      "size": 93
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/lifecycle-cases.json",
+      "sha256": "b73d0a3852432d69a8bd4625fa282608c63ede60d6812a42c09d8793e565b225",
+      "size": 18957
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/run-summary.json",
+      "sha256": "bee7c6a73fe1b95ce09aadb27eb0be95f625b42c18b32841646d6c6ca95a1ece",
+      "size": 653
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/stage.json",
+      "sha256": "2affce374d23dc0a8bbe2a8561c6b9003f697b330bf3178142bd3b91e4ad5c2a",
+      "size": 112
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/standard-fault.json",
+      "sha256": "3cda7e6f7369972fdd868339a0f0f9186bafc84519b3564bbbbd34fba4f52acd",
+      "size": 90
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/standard-normal.json",
+      "sha256": "2ac0c5c4059ab71997ab413242e52bd886272ebd4441e5b2741969fce561670d",
+      "size": 91
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/standard-sessions.json",
+      "sha256": "a1b15d18c37f8d94b4c99aa3dead7c37adb7c1aa92bde414d75cfa9d0e775a9e",
+      "size": 93
     }
   ],
   "tested_sources": [
@@ -794,6 +854,13 @@
       "tested_commit": "3e844cf42ba8434f506a2a3132eec419c4fe6c8f",
       "result": "BLOCKED",
       "note": "Both platforms passed all 19 native destructive interruption/recovery cases; remaining native desktop and fixture checks plus exact-source P03-P07 regressions are pending."
+    },
+    {
+      "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
+      "run_id": 38811689873,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38811689873",
+      "result": "PASSED",
+      "note": "Historical actual native results. Later source changes require matching regressions. Diagnostic/isolated-fixture results never close P09."
     }
   ]
 }

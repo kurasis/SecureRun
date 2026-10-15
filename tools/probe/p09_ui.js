@@ -45,7 +45,7 @@ window.__p09_run=async function(stage,config={}) {
    case 'RESET_PRESENTATION':{
     await click(document.documentElement.lang==='ru'?'Настройки':'Settings',document.querySelector('nav'));set(await wait(()=>document.querySelector('[data-testid=language]')),'en');await wait(()=>document.documentElement.lang==='en');set(document.querySelector('[data-testid=theme]'),'system');set(document.querySelector('[data-testid=scale]'),'100');await native({action:'SCALE',percent:100});await pause(200);break;
    }
-   case 'ACTIVITY_BEGIN':{await nav();await wait(()=>document.querySelectorAll('.cards article').length===10);state.activityBegin=performance.now();break;}
+   case 'ACTIVITY_BEGIN':{await nav();await wait(()=>document.querySelectorAll('.cards article').length===config.environment_count);state.activityBegin=performance.now();break;}
    case 'ACTIVITY_END':{const card=await wait(()=>Array.from(document.querySelectorAll('.cards article')).find(e=>e.textContent.includes(config.environment_name)&&e.textContent.includes('Running')));const ms=performance.now()-state.activityBegin;check('T32','activity_comes_from_actual_driver_observation',!!card);return {status:'PASSED',cases,metrics:{update_upper_bound_ms:ms,real_external_boxed_member:true,refresh_interval_ms:1000}};}
    case 'PERMISSION_PICK':{
     await open();await tab('Permissions');await click('Edit policy');const r=await readyPolicy();state.applied=r.environments.find(e=>e.id===config.environment_id);check('T32','mandatory_rules_are_read_only',!!document.querySelector('.mandatory')&&!document.querySelector('.mandatory input'));

@@ -130,7 +130,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1};exit 0
  }
  Case 'T32' 'real_process_activity_update_latency' {
-  $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))
+  $null=Invoke-P09Stage 'ACTIVITY_BEGIN' @{environment_name=$first.display_name;environment_count=$environmentCount};$lab.Register(('SR_'+$first.id.Replace('-','')));$script:held=$lab.HoldProductionProbe(('SR_'+$first.id.Replace('-','')))
   Require ($lab.HeldMemberAlive($held,('SR_'+$first.id.Replace('-','')))) 'P09_ACTIVITY_MEMBER_NOT_ALIVE';$r=Invoke-P09Stage 'ACTIVITY_END' @{environment_name=$first.display_name};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'process-update.json') -Encoding utf8;Require ($r.metrics.update_upper_bound_ms -le 2000) 'P09_PROCESS_UPDATE_BUDGET_EXCEEDED';$r.metrics
  }
 
@@ -234,7 +234,8 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   $box='SR_'+$apps.id.Replace('-','');$lab.Register($box);$clock=[Diagnostics.Stopwatch]::StartNew();$direct=$lab.HoldProductionProbe($box);$directMs=$clock.Elapsed.TotalMilliseconds
   try{Require ($lab.HeldMemberAlive($direct,$box)) 'P09_DIRECT_BASELINE_NOT_BOXED'}finally{[P05Lab]::Stop($direct);$lab.FenceFixture($box)}
   $application=Register-App $apps 'P09 launch budget' (Join-Path $productHome 'securerun-launch-probe.exe') @('hold',(Join-Path $Fixture 'managed-launch.jsonl'));$clock.Restart();$receipt=Launch-App $apps $application;$managedMs=$clock.Elapsed.TotalMilliseconds;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
-  @{same_fixed_benign_probe=$true;original_dispatch_ms=$directMs;production_manager_dispatch_ms=$managedMs;manager_added_upper_bound_ms=[Math]::Max(0,$managedMs-$directMs);target_startup_included_in_both=$true;target_met=($managedMs-$directMs -lt 1000);no_required_check_removed=$true}
+  $measurement=@{same_fixed_benign_probe=$true;original_dispatch_ms=$directMs;production_manager_dispatch_ms=$managedMs;manager_added_upper_bound_ms=[Math]::Max(0,$managedMs-$directMs);target_startup_included_in_both=$true;target_met=($managedMs-$directMs -lt 1000);no_required_check_removed=$true}
+  $measurement|ConvertTo-Json|Set-Content (Join-Path $results 'launch-performance.json') -Encoding utf8;Require $measurement.target_met 'P09_MANAGER_ADDED_LAUNCH_BUDGET_EXCEEDED';$measurement
  }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count
  @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8

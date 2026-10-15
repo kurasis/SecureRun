@@ -278,17 +278,15 @@ fn publish(file: &File, parent: &File, name: &str) -> R<()> {
         )
     } == 0
     {
-        return Err(
-            if matches!(
-                unsafe { GetLastError() },
-                ERROR_ALREADY_EXISTS | ERROR_FILE_EXISTS
-            ) {
-                "DESTINATION_COLLISION_RENAME_OR_SKIP"
-            } else {
-                "PUBLISH_NO_REPLACE_FAILED"
-            },
-        );
+        return Err(match unsafe { GetLastError() } {
+            ERROR_ALREADY_EXISTS | ERROR_FILE_EXISTS => "DESTINATION_COLLISION_RENAME_OR_SKIP",
+            ERROR_ACCESS_DENIED => "PUBLISH_ACCESS_DENIED",
+            ERROR_INVALID_PARAMETER => "PUBLISH_HANDLE_PROTOCOL_INVALID",
+            ERROR_SHARING_VIOLATION => "PUBLISH_SHARING_CONFLICT",
+            _ => "PUBLISH_NO_REPLACE_FAILED",
+        });
     }
+
     Ok(())
 }
 fn checkpoint(stage: &str) {
@@ -738,14 +736,31 @@ pub fn execute(
         let engine = NativeEngine::new(manager_pid, manager_birth)?;
         let meta = engine.profile.join("metadata");
         if let contract::Request::Cancel { operation_id } = request {
+            let path = meta.join("transfers.sqlite");
+            let _held = lease(&path, true)?;
+            let journal = contract::Journal::open(&path)?;
+            let record = journal.get(operation_id)?.ok_or("TRANSFER_NOT_FOUND")?;
+            let policy = Journal::open(&meta.join("policy.sqlite"), &engine.owner)?;
+            let e = policy.get(record.environment_id)?;
+            if record.generation != generation(&e) {
+                return Err("ARTIFACT_GENERATION_CHANGED");
+            }
             let p = meta.join(format!("cancel-{operation_id}.flag"));
-            let _f = OpenOptions::new()
+            match OpenOptions::new()
                 .write(true)
                 .create_new(true)
                 .share_mode(0)
                 .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
-                .open(p)
-                .map_err(|_| "CANCELLATION_ALREADY_RECORDED")?;
+                .open(&p)
+            {
+                Ok(file) => {
+                    identity(&file)?;
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    let _held = canonical(&p)?;
+                }
+                Err(_) => return Err("CANCELLATION_RECORD_FAILED"),
+            }
             return Ok(());
         }
         let _lock = OpenOptions::new()
@@ -806,6 +821,20 @@ pub fn execute(
             return Err("REVISION_CONFLICT");
         }
         let _scope = scope(&engine, e, &all, false)?;
+        // A stale/replayed import cannot even materialize a directory in a
+        // current generation before its permanent operation binding is checked.
+        if let contract::Request::Import { operation_id, .. }
+        | contract::Request::Export { operation_id, .. } = &request
+        {
+            if let Some(record) = journal.get(*operation_id)? {
+                reply.transfers = journal.views(e.id)?;
+                return if record.signature == fingerprint(&(&request, generation(e))) {
+                    Ok(())
+                } else {
+                    Err("TRANSFER_OPERATION_CONFLICT")
+                };
+            }
+        }
         let action = (|| match &request {
             contract::Request::List {
                 node_id, offset, ..

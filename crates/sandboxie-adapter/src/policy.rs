@@ -248,13 +248,17 @@ pub fn validate_automation(
             }
         }
     }
-    if raw.get("Template").is_some_and(|values| !values.is_empty())
-        || global
-            .get("Template")
-            .is_some_and(|values| !values.is_empty())
+    if raw
+        .iter()
+        .chain(global)
+        .any(|(key, values)| key.eq_ignore_ascii_case("Template") && !values.is_empty())
         || ["AutoDelete", "AutoRecover"].iter().any(|key| {
             raw.get(*key) != Some(&vec!["n".into()])
-                || effective.get(*key) != Some(&vec!["n".into()])
+                || effective
+                    .get(*key)
+                    .and_then(|values| values.first())
+                    .map(String::as_str)
+                    != Some("n")
         })
     {
         return Err("STOP_AUTOMATION_UNAPPROVED");

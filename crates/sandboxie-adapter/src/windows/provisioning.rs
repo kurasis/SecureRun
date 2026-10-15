@@ -6,6 +6,7 @@ use uuid::Uuid;
 mod aliases;
 pub mod control;
 pub mod files;
+pub mod lifecycle;
 mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
@@ -788,6 +789,7 @@ impl NativeEngine {
                             | "SECURERUN_P05_PAUSE_STAGE"
                             | "SECURERUN_P06_PAUSE_STAGE"
                             | "SECURERUN_P07_PAUSE_STAGE"
+                            | "SECURERUN_P08_PAUSE_STAGE"
                             | "SECURERUN_P07_PAUSE_MODE"
                     )
                 );
@@ -1146,7 +1148,8 @@ pub fn execute(manager_pid: u32, manager_birth: u64, request: Request) -> Reply 
             Request::List => {
                 let all = journal.list()?;
                 for mut e in all.clone() {
-                    if e.stage == Stage::Verified
+                    if e.lifecycle_operation.is_none()
+                        && e.stage == Stage::Verified
                         && let Err(reason) = validate_owned(&engine, &e, &all)
                     {
                         e.stage = Stage::Conflict;
@@ -2189,6 +2192,11 @@ impl NativeEngine {
             owner_sid: self.owner.clone(),
             engine_identity: self.engine_identity(),
             root_identity: None,
+            generation: 0,
+            lifecycle: crate::lifecycle::State::Active,
+            mode: crate::lifecycle::Mode::Persistent,
+            disposable_pending: false,
+            lifecycle_operation: None,
             revision: 0,
             stage: Stage::PendingRoot,
             desired,

@@ -115,7 +115,7 @@ empty staging directory, through `FileDispositionInfo`. It checks the generation
 parent, derived operation-directory name and directory identity first; never
 recursively walks, deletes a completed export or rolls back by path alone.
 An old-generation journal cannot mutate a recreated root. Full reset generation
-advancement and reset-invalidates-reference acceptance finish in P08.
+advancement and reset-invalidates-reference paths are supplied by P08.
 
 Flushes and atomic namespace publication do not promise durability under every
 power loss or storage failure. Actual state is revalidated after restart.
@@ -148,3 +148,9 @@ Transfer directory leases share read/write while excluding DELETE, permitting
 the kernel's rename-target directory open. Provisioning retains its previous
 stricter directory-sharing mode; payload/source data leases continue to deny
 writers. Replacement, POSIX overwrite and ignore-read-only flags are absent.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
+[the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.

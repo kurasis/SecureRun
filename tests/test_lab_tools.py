@@ -110,5 +110,41 @@ class IntegrityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'P07 DONE requires matching current P03/P04/P05/P06 regression'):
                 validator.validate(copy)
 
+    def test_p08_cannot_close_without_current_file_regression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'docs/evidence/p08/manifest.json'
+            manifest = json.loads(path.read_text())
+            manifest['result'] = 'DONE'
+            path.write_text(json.dumps(manifest))
+            dependency = copy / 'docs/evidence/p07/manifest.json'
+            stale = json.loads(dependency.read_text())
+            stale['result'] = 'BLOCKED'
+            dependency.write_text(json.dumps(stale))
+            with self.assertRaisesRegex(ValueError, 'P08 DONE requires matching current P03/P04/P05/P06/P07 regression'):
+                validator.validate(copy)
+
+    def test_p08_cleanup_component_pins_cannot_be_substituted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'crates/sandboxie-adapter/cleanup-compatibility-v1.json'
+            pins = json.loads(path.read_text())
+            pins['targets'][0]['components'][0]['sha256'] = '0' * 64
+            path.write_text(json.dumps(pins))
+            # Even self-consistent source checksum edits cannot replace the
+            # independent authenticated P02 installation inventory.
+            data = path.read_bytes()
+            for phase in range(3, 9):
+                evidence = copy / f'docs/evidence/p{phase:02}/manifest.json'
+                manifest = json.loads(evidence.read_text())
+                for source in manifest.get('tested_sources', []):
+                    if source['path'] == path.relative_to(copy).as_posix():
+                        source.update(sha256=hashlib.sha256(data).hexdigest(), size=len(data))
+                evidence.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'P08 cleanup component pins differ'):
+                validator.validate(copy)
+
 if __name__ == '__main__':
     unittest.main()

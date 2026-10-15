@@ -561,6 +561,7 @@ pub fn run() {
             crate::policies::policy_request,
             crate::policies::control_request,
             crate::policies::files_request,
+            crate::policies::lifecycle_request,
             crate::policies::select_policy_path,
             ci_report
         ])

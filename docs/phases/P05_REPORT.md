@@ -188,3 +188,10 @@ The [manifest](../evidence/p05/manifest.json) binds this same source as P03/P04/
 Earlier sections describe historical phase scope; P07 adds the separately verified
 safe-file and boxed-reference services. Current status and the next eligible P08
 are recorded in [the P07 report](P07_REPORT.md).
+
+## P08 integration regression
+
+The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this phase on both owner-selected
+laboratories in [run 38763825315](https://github.com/kurasis/SecureRun/actions/runs/38763825315): 48 adapter tests and 45 applicable native cases passed; one absent different-admin UAC route is Not applicable.
+The [manifest](../evidence/p05/manifest.json) binds the current source and
+original structured evidence; earlier results above remain historical.

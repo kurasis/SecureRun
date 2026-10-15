@@ -317,6 +317,63 @@ def validate(root: Path) -> None:
                     raise ValueError('Unsafe P07 source path')
                 verify_file(path, entry['sha256'], entry['size'])
 
+    cleanup = json.loads((root / 'crates/sandboxie-adapter/cleanup-compatibility-v1.json').read_text())
+    if (cleanup['schema'] != 1 or cleanup['upstream_commit'] != 'cdba7096240b93d79c5373aa81a75a1c5c71b883'
+        or cleanup['native_export'] != '?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z'):
+        raise ValueError('P08 cleanup upstream ABI pin changed')
+    expected_targets = []
+    for runner, architecture in (('windows-2025', 'x86_64'), ('windows-11-arm', 'aarch64')):
+        inventory = json.loads((root / f'docs/evidence/p02/completion-0cf59a6/{runner}/installation.json').read_text(encoding='utf-8-sig'))
+        components = [{key: component[key] for key in ('name', 'sha256', 'signature')}
+                      for component in inventory['components']
+                      if component['name'].lower().endswith('.dll') and '/' not in component['name'] and '\\' not in component['name']]
+        if inventory['source_commit'] != cleanup['upstream_commit'] or any(not c.get('authenticated_payload_match') for c in inventory['components']):
+            raise ValueError('P08 cleanup inventory is not authenticated')
+        expected_targets.append({'architecture': architecture, 'components': components})
+    if cleanup['targets'] != expected_targets:
+        raise ValueError('P08 cleanup component pins differ from authenticated P02 inventory')
+
+    p08_path = root / 'docs/evidence/p08/manifest.json'
+    if p08_path.exists():
+        p08 = json.loads(p08_path.read_text())
+        if p08['phase'] != 'P08' or p08['result'] not in {'DONE', 'BLOCKED'} or not re.fullmatch('[0-9a-f]{40}', p08['tested_commit']):
+            raise ValueError('Invalid P08 phase/source')
+        seen = set()
+        for entry in p08['files']:
+            path = (p08_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p08_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P08 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if p08['result'] == 'DONE':
+            for phase in ('p03', 'p04', 'p05', 'p06', 'p07'):
+                dependency = json.loads((root / f'docs/evidence/{phase}/manifest.json').read_text())
+                if dependency['result'] != 'DONE' or dependency['tested_commit'] != p08['tested_commit']:
+                    raise ValueError('P08 DONE requires matching current P03/P04/P05/P06/P07 regression')
+            if p08['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p08['run_id']}" or p08['run_id'] <= 0:
+                raise ValueError('Invalid P08 run provenance')
+            if len(p08['targets']) != 2 or {t['runner'] for t in p08['targets']} != {'windows-2025', 'windows-11-arm'}:
+                raise ValueError('P08 requires both Windows laboratories')
+            import importlib.util
+            module_spec = importlib.util.spec_from_file_location('p08_gate', root / 'tools/lab/retain_p08_evidence.py')
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            for target in p08['targets']:
+                folder = (p08_path.parent / target['evidence_directory']).resolve()
+                if not folder.is_relative_to(p08_path.parent.resolve()):
+                    raise ValueError('Unsafe P08 target directory')
+                for name in ('run-summary.json', 'lifecycle-cases.json', 'standard-normal.json', 'standard-fault.json', 'standard-sessions.json'):
+                    if (folder / name).relative_to(p08_path.parent.resolve()).as_posix() not in seen:
+                        raise ValueError('P08 required report is not checksum-bound')
+                module.check_target(folder, p08['tested_commit'], 'aa64' if target['runner'] == 'windows-11-arm' else '8664')
+            if not p08['tested_sources']:
+                raise ValueError('P08 tested source bindings absent')
+            for entry in p08['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P08 source path')
+                verify_file(path, entry['sha256'], entry['size'])
+
 
 if __name__ == '__main__':
     try:

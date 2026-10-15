@@ -1,0 +1,38 @@
+{
+  "phase": "P08",
+  "role": "historical-failure-investigation",
+  "result": "SUPERSEDED_PENDING_FULL_NATIVE_VERIFICATION",
+  "runs": [
+    {
+      "run_id": 38736673131,
+      "tested_commit": "a998fb68d281bc1953cf152578d5b615e4416b4b",
+      "finding": "Strict canonical grammar rejected root with an appended empty component.",
+      "correction": "Preserve the exact canonical root spelling."
+    },
+    {
+      "run_id": 38741141781,
+      "tested_commit": "617bb47fd92653eb7c5271e8c19b430eba40109b",
+      "finding": "Native restoration of surviving child ACLs cannot rely on resetting the root ACL.",
+      "server_adapter_passed": 41,
+      "server_adapter_failed": 2
+    },
+    {
+      "run_id": 38742057167,
+      "tested_commit": "9a33867bf3e4e1ad7c73512c36bc6a5f65f44312",
+      "finding": "Changing directory open flags did not restore surviving child ACLs. NtDeleteFile accepted deletion with retained metadata handles but the entry remained until final close."
+    },
+    {
+      "run_id": 38742806149,
+      "tested_commit": "b9854d4dbffabda67a03b91bd56f299606f1a019",
+      "result": "PASSED",
+      "targets": [
+        "windows-2025",
+        "windows-11-arm"
+      ],
+      "native_seal_cases_each": 4,
+      "finding": "Preauthorized survivor handles restore recorded ACLs; only kernel-confirmed delete-pending handles are released."
+    }
+  ],
+  "release_acceptance": false,
+  "native_product_gate": "Full production cleanup and recovery run remains required."
+}

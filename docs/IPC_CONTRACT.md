@@ -40,8 +40,9 @@ context exposes minimum read-only setup; no control/elevation or self-escape is
 available. A small in-memory store supplies setup state; real engine observations
 come from the isolated backend worker, never mocks. P05 exposes constrained
 user-owned provisioning separately through policy_request. P06 adds registered
-host-EXE dispatch and scoped Stop through control_request; import/export and
-lifecycle cleanup remain later-phase work.
+host-EXE dispatch and scoped Stop through control_request. P07 adds constrained
+file_request operations; P08 adds lifecycle_request with native confirmation and
+inspect-only recovery.
 See [observation contract](ENGINE_OBSERVATION.md) and
 [policy contract](POLICY_PROVISIONING.md).
 
@@ -135,3 +136,9 @@ The native file worker uses bounded JSON (16 KiB request, 2 MiB reply), a 128 Mi
 OS job memory ceiling and a one-hour cancellable transfer bound. It cannot launch
 content. Boxed registration creates a typed reference consumed by the existing
 launch-reservation path. See [safe file workflows](SAFE_FILE_WORKFLOWS.md).
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
+[the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.

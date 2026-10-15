@@ -39,6 +39,16 @@ pub struct OwnedEnvironment {
     pub operation_signature: String,
     pub baseline: Option<Section>,
     pub observed: Option<Section>,
+    #[serde(default)]
+    pub generation: u64,
+    #[serde(default)]
+    pub lifecycle: crate::lifecycle::State,
+    #[serde(default)]
+    pub mode: crate::lifecycle::Mode,
+    #[serde(default)]
+    pub disposable_pending: bool,
+    #[serde(default)]
+    pub lifecycle_operation: Option<Uuid>,
     pub production_launch_available: bool,
 }
 impl OwnedEnvironment {
@@ -262,6 +272,15 @@ impl Journal {
         }
         Ok(())
     }
+    pub fn remove(&mut self, id: Uuid) -> PolicyResult<()> {
+        self.db
+            .execute(
+                "DELETE FROM owned WHERE id=?1 AND owner=?2",
+                params![id.to_string(), self.owner],
+            )
+            .map_err(sql_error)?;
+        Ok(())
+    }
     pub fn recover(&mut self) -> PolicyResult<usize> {
         let mut count = 0;
         for mut e in self.list()? {
@@ -358,6 +377,11 @@ pub fn create(
         owner_sid: owner.into(),
         engine_identity: engine.engine_identity(),
         root_identity: None,
+        generation: 0,
+        lifecycle: crate::lifecycle::State::Active,
+        mode: crate::lifecycle::Mode::Persistent,
+        disposable_pending: false,
+        lifecycle_operation: None,
         revision: 0,
         stage: Stage::Intent,
         desired: policy,
@@ -466,6 +490,9 @@ pub fn validate_owned(
     e: &OwnedEnvironment,
     all: &[OwnedEnvironment],
 ) -> PolicyResult<()> {
+    if e.lifecycle_operation.is_some() {
+        return Err("LIFECYCLE_RECONCILIATION_REQUIRED");
+    }
     if e.engine_identity != engine.engine_identity()
         || e.compiled.section.get("FileRootPath") != Some(&vec![engine.root_for(e.id)])
         || e.compiled.section.get("SecureRunOwner") != Some(&vec![e.marker()])
@@ -527,6 +554,9 @@ pub fn apply(
         return Ok(e);
     }
     let mut e = journal.get(id)?;
+    if e.lifecycle_operation.is_some() {
+        return Err("LIFECYCLE_NOT_ACTIVE");
+    }
     if e.revision != revision {
         return Err("REVISION_CONFLICT");
     }

@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "upstream_commit": "cdba7096240b93d79c5373aa81a75a1c5c71b883",
+  "native_export": "?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z",
+  "targets": [
+    {
+      "architecture": "x86_64",
+      "components": [
+        {
+          "name": "SbieDll.dll",
+          "sha256": "c046ecfdc5772890f4ab29818876a80f6df2f8c593a7a30096a5285051977072",
+          "signature": "Valid"
+        },
+        {
+          "name": "SbieMsg.dll",
+          "sha256": "f18d2ca1d55f3ce5af4c55ca05e0746881c46110cb1a2b4ffa5562072fd27c14",
+          "signature": "Valid"
+        },
+        {
+          "name": "QSbieAPI.dll",
+          "sha256": "3c9d03b25a60843cf3cb31426fef9d5e2124fe99b935b425096afa1a09339f80",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Core.dll",
+          "sha256": "2eda0349e2b7cd0d8b48069eee572296452c256cc1156462fe4b7c436fdcb92e",
+          "signature": "Valid"
+        },
+        {
+          "name": "MiscHelpers.dll",
+          "sha256": "9eaa7177b9c0889e2bc1dc5d70556c38f2111c931cd1c9f277babe09edff4f48",
+          "signature": "Valid"
+        },
+        {
+          "name": "7z.dll",
+          "sha256": "58ed729e1536f6999c35cd88c1a8c9cd271c720b5cd5c7f83b88a671f4367a8b",
+          "signature": "Valid"
+        },
+        {
+          "name": "concrt140.dll",
+          "sha256": "c463cb07e0d417fc6cab77d202f69ae99e6a4d029b6d51b650764ac55f846b50",
+          "signature": "Valid"
+        },
+        {
+          "name": "libcrypto-3-x64.dll",
+          "sha256": "f388bd835a64dffcf46b32265de69350583cc74184e0ee9473ba9bd3d06ade48",
+          "signature": "Valid"
+        },
+        {
+          "name": "libssl-3-x64.dll",
+          "sha256": "d2d254c9bbed06b5f1b91fdc0d0191ba3c7d1a75e36a998166817869a8b139a5",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_1.dll",
+          "sha256": "bfad5aef4c63a669e3c140655cdfdf395b6c979b400a447bd5dcb65ed8826c3d",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_2.dll",
+          "sha256": "3ea06f0ee098b4823cb79599df3780e7f23cce52c19aac31d2a0d47efe33a5e9",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_atomic_wait.dll",
+          "sha256": "640b2aefced484d0368eea5bdd06addd0658a3a70a49256e560d6923b404a479",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_codecvt_ids.dll",
+          "sha256": "f2069a52880ec885ee7f0511186100eb7fada0411a2b4948fafea7735b878a18",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140.dll",
+          "sha256": "0f885b509a685d2bbfa652fed26b5fb31d88fbdab0a978c641d1c7b8aa460aa9",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Gui.dll",
+          "sha256": "a945bc24268949ed646ca3556ea1943f43da353dbdcf56c202e1c51541b6330e",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Network.dll",
+          "sha256": "f94bb05b4d560f8ad2455d46ef37712b49081ca0bfc2c87a661e4b508f6b3188",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Qml.dll",
+          "sha256": "63e9c2a33a615f865b7097b04c6acee41f5ef084ea3b6343f89132c0a84bc1a7",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Widgets.dll",
+          "sha256": "8297b30dfe0b097b0709b4da4bf074a550e3e20559e086f4432abb694e650a17",
+          "signature": "Valid"
+        },
+        {
+          "name": "qtsingleapp.dll",
+          "sha256": "2802664e7eb9e942da343cadcf2a72b25e3fea31a02d260ad89353b2cf79fbf6",
+          "signature": "Valid"
+        },
+        {
+          "name": "SbieShellExt.dll",
+          "sha256": "62f42ffb4390eba1fa3e5efcef365274ec469c79f19b25cb561a442277ff7240",
+          "signature": "Valid"
+        },
+        {
+          "name": "SboxHostDll.dll",
+          "sha256": "de95c72967f6126d45e4eff5287601d017cd33d026b274a45396b3e0d2b3be39",
+          "signature": "Valid"
+        },
+        {
+          "name": "UGlobalHotkey.dll",
+          "sha256": "6b7329593cb6b26b9d98ef70035e8357baecf582d742b9a9da66642bb66eafbd",
+          "signature": "Valid"
+        },
+        {
+          "name": "vccorlib140.dll",
+          "sha256": "46c526a4db456994211acbcde47a055053527cb2cf6eae90de3e0519625a0d51",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140_1.dll",
+          "sha256": "1f2d41c4aa5db0bc33ebf7b66d72943a817d7ce6cbe880502a9403823633093f",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140_threads.dll",
+          "sha256": "219915cf20822f34d5e7c1fdd4e21ae7f3396881096c51036225fb8f84b47afa",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140.dll",
+          "sha256": "d5e4d9a3e835fa679450145d6a7d94e36573a509317111904d9b3712c30d9066",
+          "signature": "Valid"
+        }
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "components": [
+        {
+          "name": "SbieDll.dll",
+          "sha256": "29af559779dd52a99cc80414c93906a58fe74f21723fbf1dd1088873ff033b90",
+          "signature": "Valid"
+        },
+        {
+          "name": "SbieMsg.dll",
+          "sha256": "0cebea6b6c89fa24c756589550235e4a9d64a7c20dac70cf9315e7c1fe4b1dde",
+          "signature": "Valid"
+        },
+        {
+          "name": "QSbieAPI.dll",
+          "sha256": "6eb58016a889efd5a8eb664ae353ec57f236fce2cbd99cdec43f984b95f902e0",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Core.dll",
+          "sha256": "ec688787b256070a1c2e4e70f7f2343adf3196b76d2283e731e9303a06f49afa",
+          "signature": "Valid"
+        },
+        {
+          "name": "MiscHelpers.dll",
+          "sha256": "604f779e1132d88d9ec33829f93e9be081a85daca1c46055014d3ccd36b528ce",
+          "signature": "Valid"
+        },
+        {
+          "name": "7z.dll",
+          "sha256": "32954d61a3ff09a3ae9f8f04f2274a8b4d3ec7478b3357a881c3a6a51dea0423",
+          "signature": "Valid"
+        },
+        {
+          "name": "concrt140.dll",
+          "sha256": "0c67cdf1e9e42bf224339dd7817d6c8db0d4cb1d57a28eec515f76bc76fd9d52",
+          "signature": "Valid"
+        },
+        {
+          "name": "libcrypto-1_1-arm64.dll",
+          "sha256": "48dcb8ab8148a5eebf90c5ee01ecb8e9d55e736680f58f11cd49c08e2bc4a4e6",
+          "signature": "Valid"
+        },
+        {
+          "name": "libssl-1_1-arm64.dll",
+          "sha256": "f26a24c66b7b75f4e40cd1c750bcdbd36a9136a0170a2f759a0e26ae3f65262a",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_1.dll",
+          "sha256": "af9dd287c5e5d47186fec391099e140bf9e758245d39c78e94f8cb4ffaada1e5",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_2.dll",
+          "sha256": "17dd07ea186d419e1803a4b25785644b59d4346dd1a00df709fb6eb403baa11e",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_atomic_wait.dll",
+          "sha256": "4384e35592b7be1f0b80718eba2f779060d73c3e232eb1bfadf8a4cb9b14601f",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140_codecvt_ids.dll",
+          "sha256": "6e075254adab66a80e1624b656fbe81043c23149e5045871b2eccc4c7ff589ce",
+          "signature": "Valid"
+        },
+        {
+          "name": "msvcp140.dll",
+          "sha256": "045faeab0b5710816ae160ea20dae8495ffc11bb51feca15d22aaf7ff3752cb3",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Gui.dll",
+          "sha256": "2d1ef68cb9e2c5c8d94e8ed84731cdb98acd67efb497974747cad08410500ad4",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Network.dll",
+          "sha256": "6d636443df8c99f1e603ae486bc49560ff1cbe7a2cf9e9873ffdf33805edf2a8",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Qml.dll",
+          "sha256": "bc09ae37d0d759cfeb0356a790578fb1876c054940e0fd868c5b7ea01e087404",
+          "signature": "Valid"
+        },
+        {
+          "name": "Qt6Widgets.dll",
+          "sha256": "4783655558c8cdb7e3fccf230fc388a29e0d20c25b4f00128bb4e0e27c270f1d",
+          "signature": "Valid"
+        },
+        {
+          "name": "qtsingleapp.dll",
+          "sha256": "8823b0f4fbe95de7f5e081b84281858f4c71465bfac0db832d4ccce209c744a8",
+          "signature": "Valid"
+        },
+        {
+          "name": "SbieShellExt.dll",
+          "sha256": "f32e2a31e0aa8dab30c8d8257ed27af2e952ce6899161084c000ed0dc77c2dd7",
+          "signature": "Valid"
+        },
+        {
+          "name": "SboxHostDll.dll",
+          "sha256": "06ec748913d53bfad78ae5379ff165ed6d412c379688f538e64ff23f7823607c",
+          "signature": "Valid"
+        },
+        {
+          "name": "UGlobalHotkey.dll",
+          "sha256": "f482c155ddda01dbb986f776ce408a6f440a9c279dbc86c17c9aedbba1b5be4d",
+          "signature": "Valid"
+        },
+        {
+          "name": "vccorlib140.dll",
+          "sha256": "9d665bd68ad399c60fc1ca0d1252d17809b3ac7b49ec78f93c98b4491f70aac8",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140_1.dll",
+          "sha256": "42b5f76f1f0ae03c93fc4c107adf83c5f14e86032474860032cfe672d0836546",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140_threads.dll",
+          "sha256": "165c779ae40e8c1a914537873629c17546d6866ecb3c24cc2022805053e6c77d",
+          "signature": "Valid"
+        },
+        {
+          "name": "vcruntime140.dll",
+          "sha256": "d8a8513921544569837e400d37cc71302819967ae6defa932266a7ecb41dbaf9",
+          "signature": "Valid"
+        }
+      ]
+    }
+  ]
+}

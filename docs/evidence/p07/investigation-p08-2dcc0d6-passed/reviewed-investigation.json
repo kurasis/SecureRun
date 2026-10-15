@@ -1,0 +1,9 @@
+{
+  "role": "historical-passing-native-run",
+  "phase": "P07",
+  "tested_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
+  "run_id": 38757796223,
+  "result": "PASSED",
+  "phase_gate_closed": false,
+  "note": "Native cases passed on both laboratories. P05 dependency did not close on this source; later bounded harness diagnostic changes require matching new-source proof."
+}

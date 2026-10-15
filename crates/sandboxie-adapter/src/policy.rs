@@ -229,6 +229,42 @@ pub fn validate_inheritance(global: &Section, templates: &[String]) -> PolicyRes
     }
     Ok(())
 }
+/// Stop's own execution-sensitive prerequisites; no entitlement or WFP readiness gate.
+pub fn validate_automation(
+    raw: &Section,
+    effective: &Section,
+    global: &Section,
+) -> PolicyResult<()> {
+    for section in [raw, effective, global] {
+        for (key, values) in section {
+            let key = key.to_ascii_lowercase();
+            if (key.starts_with("onbox")
+                || key == "onfilerecovery"
+                || key.contains("deletecommand")
+                || key.ends_with("runcommand"))
+                && values.iter().any(|value| !value.is_empty())
+            {
+                return Err("STOP_AUTOMATION_UNAPPROVED");
+            }
+        }
+    }
+    if raw
+        .iter()
+        .chain(global)
+        .any(|(key, values)| key.eq_ignore_ascii_case("Template") && !values.is_empty())
+        || ["AutoDelete", "AutoRecover"].iter().any(|key| {
+            raw.get(*key) != Some(&vec!["n".into()])
+                || effective
+                    .get(*key)
+                    .and_then(|values| values.first())
+                    .map(String::as_str)
+                    != Some("n")
+        })
+    {
+        return Err("STOP_AUTOMATION_UNAPPROVED");
+    }
+    Ok(())
+}
 pub fn verify_readback(
     compiled: &CompiledPolicy,
     raw: &Section,
@@ -316,6 +352,35 @@ pub fn minimize_section(section: &Section) -> Section {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn stop_automation_audit_is_independent_of_optional_network_readiness() {
+        let safe = Section::from([
+            ("AutoDelete".into(), vec!["n".into()]),
+            ("AutoRecover".into(), vec!["n".into()]),
+        ]);
+        let global = Section::from([
+            ("NetworkEnableWFP".into(), vec!["n".into()]),
+            ("SecureRunWfpState".into(), vec!["UNAVAILABLE".into()]),
+        ]);
+        validate_automation(&safe, &safe, &global).unwrap();
+        for key in [
+            "OnBoxTerminate",
+            "OnBoxDelete",
+            "OnFileRecovery",
+            "DeleteCommand",
+            "StartRunCommand",
+        ] {
+            let mut inherited = safe.clone();
+            inherited.insert(key.into(), vec!["UNAPPROVED_SYNTHETIC".into()]);
+            assert_eq!(
+                validate_automation(&safe, &inherited, &global),
+                Err("STOP_AUTOMATION_UNAPPROVED")
+            );
+        }
+        let mut changed = safe.clone();
+        changed.insert("AutoDelete".into(), vec!["y".into()]);
+        assert!(validate_automation(&changed, &changed, &global).is_err());
+    }
     fn mandatory() -> Mandatory {
         Mandatory {
             root: "C:\\State\\boxes\\a".into(),

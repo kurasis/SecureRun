@@ -1,0 +1,17 @@
+{
+  "os_build": 26100,
+  "boxed_stage_sha256": "cfad7ea9ffc8bcbf836b7c631a587dc636d2a3309301da22358689ce7a2aaad0",
+  "failed": 3,
+  "result": "FAILED",
+  "os_security_settings_modified": false,
+  "actor_failures": 2,
+  "fault_binary_sha256": "6e481dbb8881b30f02d5464d3b1c31610a4748e6b6c3d26c82a6b081b6616dcd",
+  "elevated_helper": false,
+  "standard_user": true,
+  "phase": "P08",
+  "manager_binary_sha256": "696e0a89fd885b13a84fbdcca05418c2e9588c5bf5aa65d7870568b65659e3e4",
+  "native_cases_passed": 32,
+  "manager_commit": "3e844cf42ba8434f506a2a3132eec419c4fe6c8f",
+  "pe_machine": "8664",
+  "fault_feature_release_enabled": false
+}

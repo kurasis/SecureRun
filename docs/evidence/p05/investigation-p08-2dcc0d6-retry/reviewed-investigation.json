@@ -1,0 +1,14 @@
+{
+  "role": "historical-failed-regression",
+  "phase": "P05",
+  "run_id": 38760761111,
+  "tested_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
+  "runner": "windows-11-arm",
+  "result": "FAILED",
+  "native_passed": 44,
+  "native_failed": 1,
+  "primary_reason": "SESSION_PROVISIONING_NOT_READY",
+  "standard_user_provisioning": "PASSED",
+  "limitation": "The parent did not preserve the actor failure before session-ready. This generic failure cannot establish an underlying cause.",
+  "response": "Preserve bounded actor failure classifications before a new diagnostic run; retain all safety checks."
+}

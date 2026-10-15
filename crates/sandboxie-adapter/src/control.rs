@@ -40,6 +40,8 @@ pub struct ApplicationView {
     pub revision: u64,
     pub display_name: String,
     pub boxed: bool,
+    pub available: bool,
+    pub unavailable_reason: Option<String>,
 }
 impl From<Application> for ApplicationView {
     fn from(a: Application) -> Self {
@@ -49,6 +51,8 @@ impl From<Application> for ApplicationView {
             revision: a.revision,
             display_name: a.display_name,
             boxed: a.boxed.is_some(),
+            available: true,
+            unavailable_reason: None,
         }
     }
 }
@@ -332,6 +336,25 @@ impl Journal {
             }
         }
         Ok(false)
+    }
+    pub fn reconcile_environment(&mut self, environment: Uuid) -> PolicyResult<()> {
+        self.db.execute("INSERT OR IGNORE INTO reconciliations SELECT id FROM dispatch WHERE owner=?1 AND environment=?2",params![self.owner,environment.to_string()]).map_err(db_error)?;
+        Ok(())
+    }
+    pub fn remove_applications(&mut self, environment: Uuid) -> PolicyResult<()> {
+        for application in self
+            .applications()?
+            .into_iter()
+            .filter(|a| a.environment_id == environment)
+        {
+            self.db
+                .execute(
+                    "DELETE FROM applications WHERE id=?1 AND owner=?2",
+                    params![application.id.to_string(), self.owner],
+                )
+                .map_err(db_error)?;
+        }
+        Ok(())
     }
     pub fn reconcile(&mut self, id: Uuid) -> PolicyResult<()> {
         self.receipt(id)?.ok_or("OPERATION_NOT_FOUND")?;

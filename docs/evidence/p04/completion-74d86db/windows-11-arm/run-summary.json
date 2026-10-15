@@ -1,0 +1,15 @@
+{
+  "target": "aarch64-pc-windows-msvc",
+  "manager_binary_sha256": "f5f6d2293b58e7b21b461b62dec368aa50bcde1d97073a3301b37c0760865ab5",
+  "os_build": "10.0.26200.0",
+  "production_target_launches": 0,
+  "pe_machine": "aa64",
+  "os_security_settings_modified": false,
+  "result": "PASSED",
+  "phase": "P04",
+  "production_mutations": 0,
+  "manager_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
+  "teardown": "DISCARD_ACTIONS_VM",
+  "adapter_tests_passed": 48,
+  "native_cases_passed": 19
+}

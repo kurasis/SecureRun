@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "id": "T61",
+      "evidence": {
+        "checkpoint": "Accepted",
+        "real_worker_killed": true,
+        "standard_user": true,
+        "target_executions": 1,
+        "duplicate_deliveries": 3,
+        "receipt_state": "UNKNOWN",
+        "automatic_replay": false
+      },
+      "name": "actual_dispatch_interruption_accepted",
+      "status": "PASSED"
+    }
+  ],
+  "mode": "accepted",
+  "standard_user": true,
+  "status": "PASSED"
+}

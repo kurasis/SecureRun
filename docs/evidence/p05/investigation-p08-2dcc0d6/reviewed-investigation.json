@@ -1,0 +1,16 @@
+{
+  "role": "historical-failed-regression",
+  "phase": "P05",
+  "run_id": 38757785675,
+  "tested_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
+  "runner": "windows-11-arm",
+  "result": "FAILED",
+  "native_passed": 43,
+  "native_failed": 2,
+  "primary_reason": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "observed_image_kind": "WerFault.exe",
+  "observed_location_kind": "OTHER_LOCATION",
+  "secondary_failure": "Second-user fixture could not read the unavailable first-user provisioning result.",
+  "response": "A fresh-run retry uses the identical source. No process-image allowance or safety check is changed.",
+  "workflow_result": "CANCELLED_DURING_FAILURE_CACHE_POSTSTEP_BY_NEXT_RUN"
+}

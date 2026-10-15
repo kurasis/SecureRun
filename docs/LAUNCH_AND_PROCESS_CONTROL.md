@@ -53,7 +53,7 @@ expansion are absent; the physical storage path is never a host launch target.
 `BOXED_STAGE_RUNNING` and `BOXED_STAGE_EXITED` describe only the stage. The
 registered target outcome remains `TARGET_OUTCOME_UNOBSERVED`; stage exit is not
 target completion. Current all-session driver membership and the same independent
-Stop gate apply. Reset invalidation completes in P08.
+Stop gate apply. P08 Reset advances the generation and invalidates old references.
 
 ## Action prerequisites
 
@@ -96,7 +96,8 @@ These manager locks do not serialize a trusted administrator or SandMan. Current
 external configuration/root changes abort the operation; this does not claim
 atomic isolation against a concurrent trusted administrator editing configuration.
 Persistent workloads are not placed in the worker's kill-on-close job and do not
-end just because the UI/worker exits. General reset/cleanup remains P08.
+end just because the UI/worker exits. P08 adds explicit Reset/Remove and journal
+inspection; it does not automatically clean up on manager exit.
 
 ## Evidence
 
@@ -107,3 +108,9 @@ activation. Evidence distinguishes real killed workers, actual all-session Stop,
 short-lived receipts and changed-scope refusal from portable tests. No raw target
 arguments, environments, private paths or account credentials are collected.
 See the [phase report](phases/P06_REPORT.md) for current results and limitations.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
+[the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.

@@ -25,13 +25,14 @@ unsafe extern "system" {
         class: u32,
     ) -> i32;
 }
-fn generation(e: &OwnedEnvironment) -> String {
+pub(super) fn generation(e: &OwnedEnvironment) -> String {
     fingerprint(&(
         &e.id,
         &e.owner_sid,
         &e.engine_identity,
         &e.root_identity,
         e.revision,
+        e.generation,
     ))
 }
 fn scope(
@@ -810,7 +811,7 @@ pub fn execute(
             .open(meta.join("policy-writer.lock"))
             .map_err(|_| "NAMESPACE_OPERATION_BUSY")?;
         identity(&_lock)?;
-        let policy = Journal::open(&meta.join("policy.sqlite"), &engine.owner)?;
+        let mut policy = Journal::open(&meta.join("policy.sqlite"), &engine.owner)?;
         let all = policy.list()?;
         let path = meta.join("transfers.sqlite");
         if path.exists() {
@@ -854,6 +855,13 @@ pub fn execute(
             .iter()
             .find(|e| e.id == environment_id)
             .ok_or("OWNERSHIP_NOT_FOUND")?;
+        if matches!(
+            request,
+            contract::Request::Import { .. } | contract::Request::Register { .. }
+        ) && e.lifecycle != crate::lifecycle::State::Active
+        {
+            return Err("LIFECYCLE_NOT_ACTIVE");
+        }
         if e.revision != revision || e.stage != Stage::Verified {
             return Err("REVISION_CONFLICT");
         }
@@ -882,6 +890,11 @@ pub fn execute(
                 ..
             } => {
                 engine.idle(&e.name())?;
+                if e.mode == crate::lifecycle::Mode::Disposable && !e.disposable_pending {
+                    let mut dirty = e.clone();
+                    dirty.disposable_pending = true;
+                    policy.save(&dirty)?;
+                }
                 let (physical, _) = workspace(&engine, e)?;
                 let _held = materialize(&engine, e, &physical)?;
                 transfer(

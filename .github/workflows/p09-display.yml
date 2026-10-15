@@ -27,9 +27,9 @@ jobs:
             $clock=[Diagnostics.Stopwatch]::StartNew();$root=$null
             do {
               $process=Get-Process SystemSettings -ErrorAction SilentlyContinue | Where-Object MainWindowHandle -ne 0 | Select-Object -First 1
-              if($null -ne $process){$root=[Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle);break}
+              if($null -ne $process){$candidate=[Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle);$ready=$candidate.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox'));if($null -ne $ready){$root=$candidate;break}}
               Start-Sleep -Milliseconds 250
-            }while($clock.ElapsedMilliseconds -lt 30000)
+            }while($clock.ElapsedMilliseconds -lt 60000)
             if($null -eq $root){throw 'WINDOWS_SETTINGS_PROVIDER_UNAVAILABLE'}
             Start-Sleep -Seconds 3
             $types=@([Windows.Automation.ControlType]::ComboBox,[Windows.Automation.ControlType]::Slider)
@@ -39,7 +39,7 @@ jobs:
                 $id=$item.Current.AutomationId
                 if($id -cnotmatch '^[A-Za-z0-9_.-]{0,120}$'){throw 'UNEXPECTED_PROVIDER_IDENTIFIER'}
                 $name=$item.Current.Name;$percent=if($name -match '^([0-9]{2,3})\s*%'){[int]$Matches[1]}else{$null}
-                $report.controls+=@{type=$type.ProgrammaticName;automation_id=$id;percentage=$percent;scale_label=($name -in @('Scale','Scale and layout','Change the size of text, apps, and other items'))}
+                $report.controls+=@{type=$type.ProgrammaticName;automation_id=$id;enabled=$item.Current.IsEnabled;patterns=@($item.GetSupportedPatterns()|ForEach-Object {$_.ProgrammaticName});percentage=$percent;scale_label=($name -in @('Scale','Scale and layout','Change the size of text, apps, and other items'))}
               }
             }
             $report.stage='ENUMERATING_ADVERTISED_RESOLUTIONS'
@@ -72,7 +72,7 @@ jobs:
               if($dpi -ne (96*$percent/100)){throw 'DISPLAY_DPI_NOT_APPLIED'}
             }
             $report.status='PASSED'
-          }catch{$report.code='WINDOWS_DISPLAY_PROVIDER_DISCOVERY_FAILED';$report.exception_type=$_.Exception.GetBaseException().GetType().FullName}
+          }catch{$report.code='WINDOWS_DISPLAY_PROVIDER_DISCOVERY_FAILED';$report.exception_type=$_.Exception.GetBaseException().GetType().FullName;$report.failure_line=$_.InvocationInfo.ScriptLineNumber;$report.hresult=$_.Exception.GetBaseException().HResult}
           $report|ConvertTo-Json -Depth 6|Set-Content display-provider.json -Encoding UTF8
           if($report.status -ne 'PASSED'){exit 1}
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4

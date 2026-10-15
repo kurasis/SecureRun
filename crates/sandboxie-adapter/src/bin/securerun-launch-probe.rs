@@ -87,7 +87,11 @@ fn main() {
         .append(true)
         .open(output)
         .unwrap();
-    writeln!(f, "{report}").unwrap();
+    // One append record, including its terminator, avoids interleaving fields
+    // when synthetic descendants share the same report file.
+    let mut record = serde_json::to_vec(&report).unwrap();
+    record.push(b'\n');
+    f.write_all(&record).unwrap();
     drop(f);
     if !exact {
         std::process::exit(94)

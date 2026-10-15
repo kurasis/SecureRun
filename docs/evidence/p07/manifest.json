@@ -64,6 +64,106 @@
       "path": "investigation-fc083e5/windows-11-arm/partial-normal.json",
       "sha256": "43ed6374839898fab1fb10856db288fc1f0bf8663bfa40675d25ce9e4fe69bd4",
       "size": 3007
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-2025/standard-normal.json",
+      "sha256": "f76c7258d11ef08a2c7d58f01c482ae44b65271bac19809f2c5b2d76845109c3",
+      "size": 91
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-2025/standard-fault.json",
+      "sha256": "e11d990e20830fe1e901f87ed76dc69829e5ab9b8bbea17bc0bef6f13a12b45a",
+      "size": 91
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-2025/run-summary.json",
+      "sha256": "a2f50b4af0d81a948fd79a6b6d8c8ecb286d0e22d01344221d928e2b0767d658",
+      "size": 654
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-2025/file-cases.json",
+      "sha256": "d428fca1eacec3b2d4ab52fbcc47aa3abb94a0ab7389e38851115af162030b2a",
+      "size": 5926
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-2025/stage.json",
+      "sha256": "ffd110f5b33198955f9ccbcfaa333fa0528d9043d8efb5a9c192c390b58d1ccd",
+      "size": 112
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-11-arm/standard-normal.json",
+      "sha256": "574813bad4d0ef8c88d91369e67cc7359da3df4dbc929c480aa8e7287e1df1e4",
+      "size": 91
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-11-arm/standard-fault.json",
+      "sha256": "09bf89834a3b1786a73b579796ed822add3bb5a4f1c435c99d8f0e91eea5bfc9",
+      "size": 91
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-11-arm/stage.json",
+      "sha256": "7ac3ec85be04cbe4a60a23e3368d85014bb290be29f807f6a98ca4d6b8415870",
+      "size": 112
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-11-arm/run-summary.json",
+      "sha256": "1dead963f3cf1aa808938b6b8f53b12514f0db8be90596462774b73e8642a44d",
+      "size": 654
+    },
+    {
+      "path": "investigation-c8dbb1f/windows-11-arm/file-cases.json",
+      "sha256": "837a17ed01880abafc432f904a713390e72cfa3d4a2b2884c7b8c949023b27f1",
+      "size": 6382
+    },
+    {
+      "path": "investigation-2b0158e/windows-2025/standard-normal.json",
+      "sha256": "08e9b6bb1c0156a1c9bf4dd0dbcfe1208cabc25755644e59191fd873589499a9",
+      "size": 91
+    },
+    {
+      "path": "investigation-2b0158e/windows-2025/standard-fault.json",
+      "sha256": "713ba02b4afca9a6b40927dcac6883a1cf31d1c88634ac3ee72dd1ffa6dc28f9",
+      "size": 90
+    },
+    {
+      "path": "investigation-2b0158e/windows-2025/stage.json",
+      "sha256": "4c46c2d55233099fbe66a520e8e717e469d40d97ec9b62bb977627bbacb16a43",
+      "size": 112
+    },
+    {
+      "path": "investigation-2b0158e/windows-2025/run-summary.json",
+      "sha256": "f910d8cf001f017bee6f1c0d5a0ac31b1489fce31a2426b33e1227f5ddf6d8dd",
+      "size": 653
+    },
+    {
+      "path": "investigation-2b0158e/windows-2025/file-cases.json",
+      "sha256": "119e23c15d458d0ea11144ba4545887698d4df53c5aa7634018595a608a063a8",
+      "size": 8519
+    },
+    {
+      "path": "investigation-2b0158e/windows-11-arm/standard-normal.json",
+      "sha256": "81ce1dabebb92d5b59c075233eb291c507491cbe875d7bde77021f75881ae923",
+      "size": 91
+    },
+    {
+      "path": "investigation-2b0158e/windows-11-arm/run-summary.json",
+      "sha256": "b55ded460785a5a39f97bc7b6878feb344132823425aa227de6ca065e7a71c91",
+      "size": 653
+    },
+    {
+      "path": "investigation-2b0158e/windows-11-arm/standard-fault.json",
+      "sha256": "8b0a49482a8178604e6ceaea14de620108f4cc42f74aabec0cbfe1c48ebc6fa0",
+      "size": 90
+    },
+    {
+      "path": "investigation-2b0158e/windows-11-arm/file-cases.json",
+      "sha256": "acbd91ae156946e5584eb32b32475d2b27924f6e998840ce7d308fcb89a8a73b",
+      "size": 9095
+    },
+    {
+      "path": "investigation-2b0158e/windows-11-arm/stage.json",
+      "sha256": "3510bbd2fae349aaea1e397a548a999d9c2adc1e3142c7c3d525f36c45fac88b",
+      "size": 112
     }
   ],
   "targets": [],
@@ -76,6 +176,20 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38715086000",
       "result": "FAILED",
       "note": "Server ordinary copy, provenance, naming, path rejection, SandMan and >4 GiB passed. Start prototype launch failed; fault-stage variables were scrubbed; ARM unoptimized large-file hashing timed out. New protected CreateProcess stage, feature-only test variable allowlist and optimized pinned SHA-256 await native closure."
+    },
+    {
+      "tested_commit": "c8dbb1f8955f90ef065eabde2d06e8a9b164ad3c",
+      "run_id": 38717784461,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38717784461",
+      "result": "FAILED",
+      "note": "Both ordinary-user normal workflows passed, including the protected native boxed stage and >4 GiB; CI checkpoint variables were still scrubbed."
+    },
+    {
+      "tested_commit": "2b0158ea1523ae97e2e3e4f9cff65893955c9aea",
+      "run_id": 38718912872,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38718912872",
+      "result": "FAILED",
+      "note": "All cases except the external-launch fixture passed. Transfer refused changed configuration without publishing; the revised fixture independently verifies a live boxed member and accepts either activity or configuration fencing."
     }
   ]
 }

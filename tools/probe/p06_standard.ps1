@@ -22,7 +22,20 @@ function New-App([string]$exe,[string[]]$arguments,[string]$cwd=$null){
 }
 function Launch($a,[string]$operation=[Guid]::NewGuid().ToString()){$r=Call @{action='LAUNCH';application_id=$a.id;environment_id=$a.environment_id;expected_revision=$a.revision;operation_id=$operation};$script:nativeStage='LAUNCH_RECEIPT';return ($r.receipts|Where-Object operation_id -eq $operation)}
 function Stop-Owned { $id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';environment_id=$script:e.id;operation_id=$id};$receipt=$r.receipts|Where-Object operation_id -eq $id;$script:nativeStage='STOP_RECEIPT';Require ($receipt.state -eq 'STOPPED') $receipt.reason;return $r }
-function Reports([string]$leaf){$clock=[Diagnostics.Stopwatch]::StartNew();do{$files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf);if($files.Count -gt 0){return @(Get-Content $files[0].FullName|ForEach-Object {$_|ConvertFrom-Json})};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);throw 'TARGET_REPORT_MISSING'}
+function Reports([string]$leaf){
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do {
+  $files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf);Require ($files.Count -le 1) 'DUPLICATE_TARGET_REPORT'
+  if($files.Count -eq 1){
+   $reader=$null;$stream=$null;$contents=$null
+   try{$stream=[IO.File]::Open($files[0].FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete));$reader=[IO.StreamReader]::new($stream,[Text.UTF8Encoding]::new($false,$true));$chars=[char[]]::new(16385);$n=$reader.ReadBlock($chars,0,$chars.Length);Require ($n -le 16384) 'TARGET_REPORT_BOUND';$contents=[string]::new($chars,0,$n)}catch [IO.IOException]{}finally{if($null -ne $reader){$reader.Dispose()}elseif($null -ne $stream){$stream.Dispose()}}
+   if($null -ne $contents){$end=$contents.LastIndexOf("`n");if($end -ge 0){return @($contents.Substring(0,$end+1).Split("`n",[StringSplitOptions]::RemoveEmptyEntries)|ForEach-Object {$_|ConvertFrom-Json})}}
+  }
+  Start-Sleep -Milliseconds 100
+ }while($clock.ElapsedMilliseconds -lt 15000)
+ throw 'COMPLETE_TARGET_REPORT_MISSING'
+}
+
 try {
     $who=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($who);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_TOKEN_REQUIRED'
     $active=if($Mode -in @('normal','sessions')){$Manager}else{$FaultManager}
@@ -90,11 +103,13 @@ try {
         $probes=@(Get-ChildItem (Split-Path $Manager) -Filter 'securerun-launch-probe*.exe')
         foreach($probe in $probes){
             Case 'T04' ('exact_arguments_'+$probe.BaseName) {
+                try {
                 $leaf='args-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$output=Join-Path $Fixture $leaf
                 $unicodeExe=Join-Path $Fixture ($probe.BaseName+' Программа 🧪.exe');Copy-Item $probe.FullName $unicodeExe;$a=New-App $unicodeExe @('arguments',$output,'','Unicode Привет 🧪','spaces in argument','a"quote','trailing\','/terminate_all','& echo SHOULD_NOT_EXECUTE','\"tail\')
                 $receipt=Launch $a;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason
-                $reports=Reports $leaf;Require ($reports.Count -eq 1 -and $reports[0].boxed -and $reports[0].arguments_exact -and -not(Test-Path $output)) 'ARGUMENT_OR_HOST_BOUNDARY_FAILED';$null=Stop-Owned
+                $reports=Reports $leaf;Require ($reports.Count -eq 1 -and $reports[0].boxed -and $reports[0].arguments_exact -and -not(Test-Path $output)) 'ARGUMENT_OR_HOST_BOUNDARY_FAILED'
                 @{boxed=$true;exact_target_argv=$true;host_output_absent=$true;actual_pe=$probe.BaseName;receipt=$receipt.state}
+                }finally{$null=Stop-Owned}
             }
         }
         $probe=$probes|Where-Object Name -eq 'securerun-launch-probe.exe'

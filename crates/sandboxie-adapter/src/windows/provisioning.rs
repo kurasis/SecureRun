@@ -1946,6 +1946,23 @@ impl NativeEngine {
                         QueryFullProcessImageNameW(held.0, 0, path.as_mut_ptr(), &mut length)
                     } == 0
                     {
+                        let error = unsafe { GetLastError() };
+                        // Image teardown can precede process-object signaling.
+                        // Only completion of this retained object permits skip;
+                        // no live unknown image is authorized for termination.
+                        let waited = unsafe { WaitForSingleObject(held.0, 5000) };
+                        if waited == WAIT_OBJECT_0 {
+                            continue;
+                        }
+                        let status = serde_json::json!({"schema":1,"query_error":error,"wait_status":waited,"complete":false});
+                        std::fs::write(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("image-status-{}.json", diagnostic.id.simple())),
+                            serde_json::to_vec(&status)
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                         return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
                     }
                     let image = PathBuf::from(text(&path)?);

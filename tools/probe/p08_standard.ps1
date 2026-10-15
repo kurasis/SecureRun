@@ -145,11 +145,22 @@ try{
   }
   Case 'T33' 'current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair' {
    $null=Import 'hooks-canary.txt';$box='SR_'+$e.id.Replace('-','');$lab.Register($box)
-   foreach($pair in @(@('OnBoxDelete','C:\P08_UNAPPROVED_HOOK.exe'),@('AutoDelete','y'),@('AutoRecover','y'))){
-    $lab.Set($box,$pair[0],$pair[1]);try{$r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -ne 'OBSERVED' -and $null -eq $r.plan) 'UNAPPROVED_LIFECYCLE_ACCEPTED';Require ($lab.Read($box,$pair[0],0x70000000) -eq $pair[1]) 'EXTERNAL_SETTING_SILENTLY_REPAIRED'}finally{$lab.Set($box,$pair[0],$(if($pair[0] -eq 'OnBoxDelete'){$null}else{'n'}))}
+   $marker=Join-Path $Fixture 'p08-hook-ran.txt';[IO.File]::WriteAllLines((Join-Path $Fixture 'p08-hook.cmd'),[string[]]@('@echo off','> "%~dp0p08-hook-ran.txt" echo SYNTHETIC_P08_UNAPPROVED_HOOK'),[Text.Encoding]::ASCII);$hook=$lab.LifecycleHookCommand()
+   foreach($pair in @(@('OnBoxDelete',$hook),@('DeleteCommand',$hook),@('AutoDelete','y'),@('AutoRecover','y'))){
+    $confirmedBeforeDrift=Prepare 'RESET';$lab.Set($box,$pair[0],$pair[1])
+    try{
+     $r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -ne 'OBSERVED' -and $null -eq $r.plan) 'UNAPPROVED_LIFECYCLE_ACCEPTED'
+     $r=Commit $confirmedBeforeDrift $true;Require ($r.reason -ne 'OBSERVED') 'HOOK_DRIFT_BYPASSED_CONFIRMED_PLAN';Require ($lab.Read($box,$pair[0],0x70000000) -eq $pair[1]) 'EXTERNAL_SETTING_SILENTLY_REPAIRED';Require (-not(Test-Path -LiteralPath $marker)) 'UNAPPROVED_HOST_HOOK_EXECUTED'
+    }finally{$lab.Set($box,$pair[0],$(if($pair[0] -in @('OnBoxDelete','DeleteCommand')){$null}else{'n'}))}
+    $null=Call @{action='RECOVER';operation_id=$confirmedBeforeDrift.operation_id}
    }
+   $confirmedBeforeDrift=Prepare 'RESET';$lab.LifecycleHookTemplate($box,$true)
+   try{
+    Require ($lab.Read($box,'OnBoxDelete',0x40000000) -eq $hook) 'INHERITED_HOOK_FIXTURE_NOT_EFFECTIVE';$r=Commit $confirmedBeforeDrift $true;Require ($r.reason -ne 'OBSERVED') 'INHERITED_HOOK_ACCEPTED';Require (-not(Test-Path -LiteralPath $marker)) 'INHERITED_HOST_HOOK_EXECUTED'
+   }finally{$lab.LifecycleHookTemplate($box,$false)}
+   $null=Call @{action='RECOVER';operation_id=$confirmedBeforeDrift.operation_id}
    Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'hooks-canary.txt').Count -eq 1) 'HOOK_REFUSAL_DELETED_DATA'
-   @{current_hook_rejected=$true;automatic_recovery_and_delete_drift_rejected=$true;unapproved_values_not_silently_removed=$true;data_retained=$true;host_hook_executed=$false}
+   @{current_hook_rejected=$true;direct_delete_command_rejected=$true;effective_inherited_hook_rejected=$true;real_host_marker_fixture=$true;confirmed_plan_revalidated_after_hook_drift=$true;automatic_recovery_and_delete_drift_rejected=$true;unapproved_values_not_silently_removed=$true;data_retained=$true;host_hook_executed=$false}
   }
   Case 'T34' 'root_substitution_and_unsupported_image_configuration_never_authorize_cleanup' {
    $box='SR_'+$e.id.Replace('-','');$lab.Register($box);$backup=$root+'.p08-original';$replacement=$root+'.p08-replacement';Move-Item -LiteralPath $root -Destination $backup

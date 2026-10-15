@@ -47,6 +47,8 @@ def check_target(folder,commit,machine):
  for stage in ('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','DefinitionRemoved','MetadataCommitted'):
   proof=by_name[f'real_remove_interruption_{stage}']
   if not all(proof[k] for k in ('real_executor_killed','competing_manager_refused','actual_definition_absent','metadata_reconciled_without_delete_replay','known_empty_root_retained')) or proof['checkpoint']!=stage:raise ValueError('P08 actual removal interruption absent')
+ hooks=by_name['current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair']
+ if not all(hooks[k] for k in ('current_hook_rejected','direct_delete_command_rejected','effective_inherited_hook_rejected','real_host_marker_fixture','confirmed_plan_revalidated_after_hook_drift','data_retained')) or hooks['host_hook_executed']:raise ValueError('P08 current/inherited cleanup consumer rejection absent')
  roots=by_name['root_substitution_and_unsupported_image_configuration_never_authorize_cleanup']
  if not roots['missing_root_not_recreated'] or not roots['unexpected_root_identity_refused'] or not roots['replacement_canary_preserved']:raise ValueError('P08 missing/replaced root was adopted')
  locked=by_name['locked_file_cleanup_is_refused_or_visible_and_recovers_without_replay']

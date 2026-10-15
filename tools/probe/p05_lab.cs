@@ -48,13 +48,26 @@ public sealed class P05Lab {
         if(marker!="v1:"+sid+":"+box.Substring(3))throw new InvalidOperationException("LAB_OWNER_MISMATCH");boxes.Add(box);
     }
     public void Set(string box,string key,string value) {
-        if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(Enabled|AutoDelete|AutoRecover|OnBoxDelete|ClosedFilePath|ReadFilePath|OpenFilePath|FileRootPath|Template)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(Enabled|AutoDelete|AutoRecover|OnBoxDelete|DeleteCommand|ClosedFilePath|ReadFilePath|OpenFilePath|FileRootPath|Template)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("LAB_WRITE_REFUSED");
     }
     // P08 disposable fixtures only; current owned marker remains mandatory.
     public void LifecycleSetting(string box,string key,string value) {
         if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(UseFileImage|NeverDelete)\z")||!(value=="y"||value=="n"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("LAB_WRITE_REFUSED");
+    }
+    public string LifecycleHookCommand() {
+        return "\""+Path.Combine(Environment.SystemDirectory,"cmd.exe")+"\" /d /c \"\""+Path.Combine(fixture,"p08-hook.cmd")+"\"\"";
+    }
+    public void LifecycleHookTemplate(string box,bool enabled) {
+        if(!boxes.Contains(box)||Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true")throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        const string name="SecureRunP08LifecycleHook";string section="Template_"+name,command=LifecycleHookCommand();
+        string current=Read("GlobalSettings","Template",0x70000000U),hook=Read(section,"OnBoxDelete",0x70000000U);
+        if(enabled?(current!=null||hook!=null):(current!=name||hook!=command))throw new InvalidOperationException("UNEXPECTED_GLOBAL_HOOK_NOT_CHANGED");
+        if(enabled && update('s',null,section,"OnBoxDelete",command)!=0)throw new InvalidOperationException("LAB_TEMPLATE_FIXTURE_FAILED");
+        if(update('s',null,"GlobalSettings","Template",enabled?name:null)!=0)throw new InvalidOperationException("LAB_TEMPLATE_FIXTURE_FAILED");
+        if(!enabled && update('s',null,section,"*",null)!=0)throw new InvalidOperationException("LAB_TEMPLATE_FIXTURE_FAILED");
+        if(reload((uint)Process.GetCurrentProcess().SessionId,1)!=0)throw new InvalidOperationException("LAB_TEMPLATE_RELOAD_FAILED");
     }
     public void Wfp(bool enabled) {
         if(update('s',null,"GlobalSettings","NetworkEnableWFP",enabled?"y":"n")!=0||reload((uint)Process.GetCurrentProcess().SessionId,1)!=0)throw new InvalidOperationException("LAB_WFP_FIXTURE_FAILED");

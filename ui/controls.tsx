@@ -4,7 +4,7 @@ import type { Language } from './strings';
 type Env = { id: string; revision: number; display_name: string };
 type Process = { pid: number; creation_time: string; session: number };
 type Receipt = { operation_id: string; state: string; reason: string };
-type Reply = { reason: string; applications: { id: string; environment_id: string; revision: number; display_name: string }[]; environments: { environment_id: string; activity: string; complete: boolean; launch_eligible: boolean; reason: string; processes: Process[] }[]; receipts: Receipt[] };
+type Reply = { reason: string; applications: { id: string; environment_id: string; revision: number; display_name: string; boxed: boolean }[]; environments: { environment_id: string; activity: string; complete: boolean; launch_eligible: boolean; reason: string; processes: Process[] }[]; receipts: Receipt[] };
 export function Controls({ language }: { language: Language }) {
   const ru = language === 'ru'; const [reply, setReply] = useState<Reply | null>(null); const [envs, setEnvs] = useState<Env[]>([]);
   const [environment, setEnvironment] = useState(''); const [name, setName] = useState(''); const [args, setArgs] = useState('[]');
@@ -59,7 +59,7 @@ export function Controls({ language }: { language: Language }) {
     <button disabled={busy} onClick={() => void refresh()}>{ru ? 'Обновить' : 'Refresh'}</button><button disabled={busy} onClick={() => void action({ action: 'STOP_MANAGED' })}>{ru ? 'Остановить все управляемые' : 'Stop managed'}</button>
     {error && <p role="alert">{error}</p>}{!fresh && <p role="status">{ru ? 'Активность неизвестна: обновите состояние.' : 'Activity unknown: refresh state.'}</p>}
     {reply?.environments.map(e => <article key={e.environment_id}><h3>{envs.find(v => v.id === e.environment_id)?.display_name ?? e.environment_id}</h3><p>{fresh ? e.activity : 'UNKNOWN'} · {e.reason}</p>
-      {reply.applications.filter(a => a.environment_id === e.environment_id).map(a => <p key={a.id}>{a.display_name} <button disabled={busy || !fresh || !e.launch_eligible} onClick={() => void action({ action: 'LAUNCH', application_id: a.id, environment_id: e.environment_id, expected_revision: a.revision })}>{ru ? 'Запустить' : 'Run'}</button></p>)}
+      {reply.applications.filter(a => a.environment_id === e.environment_id).map(a => <p key={a.id}>{a.display_name} <small>({a.boxed ? (ru ? 'импортированный boxed EXE' : 'imported boxed EXE') : (ru ? 'установленный на хосте EXE' : 'host-installed EXE')})</small> <button disabled={busy || !fresh || !e.launch_eligible} onClick={() => void action({ action: 'LAUNCH', application_id: a.id, environment_id: e.environment_id, expected_revision: a.revision })}>{ru ? 'Запустить' : 'Run'}</button></p>)}
       <button disabled={busy} onClick={() => void action({ action: 'STOP', environment_id: e.environment_id })}>{ru ? 'Остановить окружение' : 'Stop environment'}</button>
       <ul>{e.processes.map(p => <li key={`${p.pid}:${p.creation_time}`}>PID {p.pid} · {ru ? 'сеанс' : 'session'} {p.session}</li>)}</ul></article>)}
     {lastOperation && <button disabled={busy} onClick={() => void reconcile(lastOperation)}>{ru ? 'Проверить последнюю операцию без повторного запуска' : 'Reconcile last operation without replay'}</button>}

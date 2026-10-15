@@ -1,7 +1,6 @@
 //! Host-side inert file handling. No shell, recovery hooks, preview or host EXE dispatch.
 use super::*;
 use crate::files::{self as contract, Entry, Node, Record};
-use std::io::{Seek, SeekFrom};
 
 fn generation(e: &OwnedEnvironment) -> String {
     fingerprint(&(
@@ -221,28 +220,37 @@ fn fresh_payload(directory: &Path) -> R<File> {
 }
 fn write_marker(path: &Path, expected: &[u8]) -> R<File> {
     let ads = format!("{}:Zone.Identifier", path.display());
-    let mut f = OpenOptions::new()
+    {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(&ads)
+            .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
+        file.write_all(expected)
+            .and_then(|_| file.sync_all())
+            .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
+    }
+    // Reopen read-only and verify under the lease that remains held through
+    // publication. No payload is copied before this read-back succeeds.
+    let mut held = OpenOptions::new()
         .read(true)
-        .write(true)
-        .create_new(true)
         .share_mode(FILE_SHARE_READ | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
-        .open(ads)
-        .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
-    f.write_all(expected)
-        .and_then(|_| f.sync_all())
-        .and_then(|_| f.seek(SeekFrom::Start(0)))
-        .map_err(|_| "PROVENANCE_WRITE_FAILED")?;
-    let mut read = vec![];
-    Read::by_ref(&mut f)
-        .take(4097)
-        .read_to_end(&mut read)
+        .open(&ads)
         .map_err(|_| "PROVENANCE_VERIFY_FAILED")?;
-    if read != expected {
+    let mut data = vec![];
+    Read::by_ref(&mut held)
+        .take(4097)
+        .read_to_end(&mut data)
+        .map_err(|_| "PROVENANCE_VERIFY_FAILED")?;
+    if data != expected {
         return Err("PROVENANCE_VERIFY_FAILED");
     }
-    Ok(f)
+    Ok(held)
 }
+
 fn publish(file: &File, parent: &File, name: &str) -> R<()> {
     contract::leaf(name)?;
     #[repr(C)]
@@ -975,7 +983,7 @@ mod tests {
     use super::*;
     #[test]
     fn ntfs_marker_precedes_payload_and_handle_rename_never_replaces() {
-        let temp = tempfile::tempdir().unwrap();
+        let temp = tempfile::tempdir_in(known(&FOLDERID_LocalAppData).unwrap()).unwrap();
         let owner = process_sid(unsafe { GetCurrentProcess() }).unwrap();
         let stage = temp.path().join("staging");
         let _directory = fresh_directory(&stage, &owner).unwrap();
@@ -999,7 +1007,7 @@ mod tests {
     }
     #[test]
     fn ntfs_unmarked_or_forged_marker_is_never_recovery_proof() {
-        let temp = tempfile::tempdir().unwrap();
+        let temp = tempfile::tempdir_in(known(&FOLDERID_LocalAppData).unwrap()).unwrap();
         let path = temp.path().join("synthetic.txt");
         std::fs::write(&path, b"SYNTHETIC").unwrap();
         assert_eq!(exact_marker(&path).unwrap_err(), "PROVENANCE_MISSING");
@@ -1012,7 +1020,7 @@ mod tests {
     }
     #[test]
     fn ntfs_source_leases_reject_hardlinks_and_deny_growth() {
-        let temp = tempfile::tempdir().unwrap();
+        let temp = tempfile::tempdir_in(known(&FOLDERID_LocalAppData).unwrap()).unwrap();
         let path = temp.path().join("synthetic.txt");
         std::fs::write(&path, b"SYNTHETIC").unwrap();
         {

@@ -39,7 +39,7 @@ try {
     $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault
     $allCases=[Collections.Generic.List[object]]::new()
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
-    & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
+    Get-ChildItem (Join-Path $repo 'artifacts/p02') -Filter 'feasibility_probe_*.exe'|Copy-Item -Destination $code
     $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p07-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
     Copy-Item (Join-Path $repo 'tools/probe/engine_bridge.cs'),(Join-Path $repo 'tools/probe/p07_initialize.ps1') $code

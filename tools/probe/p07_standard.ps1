@@ -70,6 +70,12 @@ try{
   Case 'T44' 'marker_failure_before_any_payload' {
    $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='unmarked.txt';$r=Paused $q 'BeforeMark' {$payload=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');[IO.File]::WriteAllText(($payload+':Zone.Identifier'),'UNTRUSTED_PREEXISTING_MARKER')};Require ($r.reason -eq 'PROVENANCE_WRITE_FAILED') $r.reason;$payload=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');Require ((Get-Item -LiteralPath $payload).Length -eq 0) 'PAYLOAD_BEFORE_MARKER';Require (-not(Test-Path -LiteralPath (Join-Path $output 'unmarked.txt'))) 'UNMARKED_PUBLISHED';@{actual_ads_creation_failure=$true;copied_payload_bytes=0;final_absent=$true}
   }
+  Case 'T42' 'external_engine_launch_mid_export_aborts_without_publication' {
+   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box);$arch=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'arm64'}else{'x64'};$externalProbe=Join-Path $PSScriptRoot ('feasibility_probe_'+$arch+'.exe')
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='external-busy.txt';$script:external=$null
+   try{$r=Paused $q 'MidCopy' {$script:external=$lab.Hold($box,$externalProbe)};Require ($r.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'external-busy.txt'))) 'EXTERNAL_BUSY_PUBLISHED'}finally{if($null -ne $script:external){[P05Lab]::Stop($script:external)};$lab.FenceFixture($box)}
+   @{independent_original_engine_dispatch=$true;process_started_during_copy=$true;copy_aborted=$true;final_absent=$true}
+  }
   Case 'T45' 'actual_ntfs_disk_full_during_streaming_copy' {
    $small=Join-Path 'R:/' ('P07-'+$Mode);$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$small;$q.name='disk-full.txt';$r=Paused $q 'AfterMark' {
     $f=[IO.File]::Open((Join-Path $small 'filler.bin'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write);try{$chunk=[byte[]]::new(65536);while($true){$f.Write($chunk,0,$chunk.Length)}}catch [IO.IOException]{}finally{try{$f.Dispose()}catch [IO.IOException]{}}
@@ -108,6 +114,11 @@ try{
   }
   Case 'T42' 'running_environment_blocks_file_mutation' {
    $probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe';$op=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$op;display_name='Busy fixture';executable=$probe;arguments=@('hold',(Join-Path $Fixture 'busy.jsonl'));working_directory=$null} 'control';$app=$r.applications|Where-Object display_name -eq 'Busy fixture';$op=[Guid]::NewGuid().ToString();$r=Call @{action='LAUNCH';application_id=$app.id;environment_id=$e.id;expected_revision=$e.revision;operation_id=$op} 'control';$x=Export $entry 'busy.txt' $true;Require ($x.reply.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $x.reply.reason;Stop-Owned;@{busy_refused=$true;external_engine_processes_observed=$true}
+  }
+  Case 'T42' 'original_sandman_open_does_not_recover_or_delete_managed_data' {
+   $sandman=Join-Path $EngineHome 'SandMan.exe';Require ((Get-AuthenticodeSignature $sandman).Status -eq 'Valid') 'ORIGINAL_SANDMAN_UNTRUSTED';$s=[Diagnostics.ProcessStartInfo]::new($sandman);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$gui=[Diagnostics.Process]::Start($s)
+   try{Start-Sleep -Seconds 2;Require (-not $gui.HasExited) 'SANDMAN_NOT_RUNNING';$x=Export $entry 'sandman-open.txt';Require ((Get-FileHash -LiteralPath (Join-Path $output 'sandman-open.txt')).Hash -eq $sourceHash) 'SANDMAN_RACED_EXPORT';$r=Workspace;Require (@($r.entries|Where-Object name -eq 'Привет 🧪.txt').Count -eq 1) 'SANDMAN_DELETED_SOURCE'}finally{if(-not $gui.HasExited){$gui.Kill($true);$null=$gui.WaitForExit(10000)};$gui.Dispose()}
+   @{original_gui_running=$true;automatic_recovery_disabled=$true;automatic_deletion_disabled=$true;source_preserved=$true;export_correct=$true}
   }
   Case 'T45' 'greater_than_four_gib_streamed_with_bounded_memory' {
    $large=Join-Path $Fixture 'large.bin';$f=[IO.File]::Open($large,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write);try{[P07Sparse]::Mark($f);$f.SetLength(4296015873)}finally{$f.Dispose()};$x=Import $large 'large.bin';$r=Workspace;$largeEntry=$r.entries|Where-Object name -eq 'large.bin';Require ($largeEntry.size -eq '4296015873') 'LARGE_SIZE_TRUNCATED';$x=Export $largeEntry 'large.bin';$final=Join-Path $output 'large.bin';Require ((Get-Item -LiteralPath $final).Length -eq 4296015873 -and (Get-FileHash -LiteralPath $large).Hash -eq (Get-FileHash -LiteralPath $final).Hash) 'LARGE_COPY_WRONG';Remove-Item -LiteralPath $large,$final

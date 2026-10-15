@@ -18,6 +18,8 @@ REQUIRED = {
  'forged_file_and_raw_path_fields_rejected',
  'existing_destination_and_restricted_zone_preserved',
  'running_environment_blocks_file_mutation',
+ 'external_engine_launch_mid_export_aborts_without_publication',
+ 'original_sandman_open_does_not_recover_or_delete_managed_data',
  'greater_than_four_gib_streamed_with_bounded_memory',
  'replaced_staging_file_never_deleted_or_adopted',
  'discard_only_verified_staging_identity',

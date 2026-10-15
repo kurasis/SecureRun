@@ -17,6 +17,8 @@ public static class P09Access {
  public delegate bool Visit(IntPtr hwnd,IntPtr data);
  [DllImport("user32.dll")]public static extern IntPtr WindowFromPoint(P09Point point);
  [DllImport("user32.dll")]public static extern IntPtr GetAncestor(IntPtr window,uint flags);
+ [DllImport("user32.dll")]public static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
+ public static uint RootOwnerPid(IntPtr window){uint pid=0;IntPtr root=GetAncestor(window,3);if(root!=IntPtr.Zero)GetWindowThreadProcessId(root,out pid);return pid;}
  [DllImport("user32.dll")]public static extern bool SetCursorPos(int x,int y);
  [DllImport("user32.dll")]public static extern void mouse_event(uint flags,uint x,uint y,uint data,UIntPtr extra);
  [DllImport("user32.dll")]public static extern bool EnumWindows(Visit visit,IntPtr data);
@@ -168,13 +170,13 @@ try{
    Need ($null -ne $language -and $language.Current.IsEnabled);$result.accessible_label_and_role=$true;$result.native_invoke_changed_real_page=$true
    if($Mode -eq 'READY'){$result.startup_interactive_upper_bound_ms=([Diagnostics.Stopwatch]::GetTimestamp()-[long]$start.ticks)*1000.0/[Diagnostics.Stopwatch]::Frequency}
    if($Mode -eq 'KEYBOARD'){
-    $stage='FOCUSING_OWNED_MANAGER';$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal);$null=[P09Access]::SetForegroundWindow($hwnd);$navigation.SetFocus()
+    $stage='FOCUSING_OWNED_MANAGER';$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd);$navigation.SetFocus();Start-Sleep -Milliseconds 100
     $clickable=$navigation.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
-    $hit=[P09Access]::GetAncestor([P09Access]::WindowFromPoint($point),2);$hitOwner=0;$null=[P09Access]::GetWindowThreadProcessId($hit,[ref]$hitOwner);$result.keyboard_click_hit_owned_window=($hitOwner -eq $ManagerPid)
+    $hit=[P09Access]::WindowFromPoint($point);$hitOwner=[P09Access]::RootOwnerPid($hit);$result.keyboard_point_hits_window=($hit -ne [IntPtr]::Zero);$result.keyboard_click_hit_owned_window=($hitOwner -eq $ManagerPid)
     Need ($hitOwner -eq $ManagerPid);Need ([P09Access]::SetCursorPos($point.X,$point.Y));try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
     $focusClock=[Diagnostics.Stopwatch]::StartNew()
-    do{if([P09Access]::GetForegroundWindow() -eq $hwnd -and [Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000)
-    $foregroundOwner=0;$null=[P09Access]::GetWindowThreadProcessId([P09Access]::GetForegroundWindow(),[ref]$foregroundOwner);$result.keyboard_foreground_owned=($foregroundOwner -eq $ManagerPid);$result.keyboard_navigation_focused=([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments')
+    do{if([P09Access]::RootOwnerPid([P09Access]::GetForegroundWindow()) -eq $ManagerPid -and [Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000)
+    $foregroundOwner=[P09Access]::RootOwnerPid([P09Access]::GetForegroundWindow());$result.keyboard_foreground_owned=($foregroundOwner -eq $ManagerPid);$result.keyboard_navigation_focused=([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments')
     Need ($foregroundOwner -eq $ManagerPid -and $result.keyboard_navigation_focused)
     $stage='CHECKING_TAB_FOCUS';[Windows.Forms.SendKeys]::SendWait('{TAB}');$focusClock.Restart();do{$focused=[Windows.Automation.AutomationElement]::FocusedElement;if($focused.Current.Name -eq 'Settings'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000);Need ($focused.Current.Name -eq 'Settings');$result.tab_order_actual=$true
     $stage='CHECKING_F6_FOCUS';[Windows.Forms.SendKeys]::SendWait('{F6}');$focusClock.Restart();do{if([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000);Need ([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments');$result.f6_navigation_actual=$true

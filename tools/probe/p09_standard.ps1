@@ -88,6 +88,9 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   try{$buffer=[byte[]]::new(8192);$length=$trace.Read($buffer,0,$buffer.Length);$text=[Text.Encoding]::UTF8.GetString($buffer,0,$length)}finally{$trace.Dispose()}
   $value=@{webview_memory_target_low=$text.Contains('WEBVIEW_MEMORY_TARGET_LOW')}
   foreach($name in @('OBSERVATION','BEFORE_WEBVIEW','WINDOW_CREATED')){if($text -match ('(?m)^MANAGER_STARTUP_'+$name+'_MS=([0-9]{1,8})\r?$')){$value['native_'+$name.ToLower()+'_ms']=[long]$Matches[1]}}
+  $streams=[regex]::Matches($text,'(?m)^PASSIVE_OBSERVER_FRAMES=([0-9]{1,2});CPU100NS=([0-9]{1,16})\r?$');$frames=0;$ticks=0L
+  foreach($stream in $streams){$frames+=[int]$stream.Groups[1].Value;$ticks+=[long]$stream.Groups[2].Value}
+  $value.completed_observer_streams=$streams.Count;$value.completed_observer_frames=$frames;$value.completed_observer_cpu_seconds=$ticks/10000000.0;$value.observer_cpu_attribution_complete=$false
   return $value
  }
  Case 'T32' $startupCase {

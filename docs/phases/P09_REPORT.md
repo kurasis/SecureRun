@@ -325,3 +325,14 @@ fixed scale requests, without building/installing the product or engine. The
 controller retains only typed initialization stage, exception class and source
 line on failure, never raw exceptions or private paths. It cannot replace real
 standard-user product-window DPI proof.
+
+
+Isolated retained-controller run `38817227177` passed preparation and all four
+fixed requests on both Windows targets. Product layout run `38815909628` at
+`c20c7e9` passed all 76 Server UI cases, including actual Windows DPI 96/144/192;
+it is one-environment DIAGNOSTIC_ONLY, not a full P09 gate. ARM stopped before
+keyboard because its clickable point hit a foreign window; no click was sent.
+The fixture now raises only its own manager window without activation and
+checks the actual Windows root-owner chain before a real click. Complete kernel
+job CPU remains authoritative. Additional fixed counters attribute only completed
+held observation workers' CPU/frames and are explicitly incomplete diagnostics.

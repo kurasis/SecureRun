@@ -188,6 +188,26 @@ impl Drop for Stream {
         let _ = self.child.kill();
         unsafe {
             WaitForSingleObject(self.child.as_raw_handle(), 5000);
+            let mut created = std::mem::zeroed();
+            let mut exited = std::mem::zeroed();
+            let mut kernel = std::mem::zeroed::<FILETIME>();
+            let mut user = std::mem::zeroed::<FILETIME>();
+            if GetProcessTimes(
+                self.child.as_raw_handle(),
+                &mut created,
+                &mut exited,
+                &mut kernel,
+                &mut user,
+            ) != 0
+            {
+                let ticks = ((kernel.dwHighDateTime as u64) << 32 | kernel.dwLowDateTime as u64)
+                    + ((user.dwHighDateTime as u64) << 32 | user.dwLowDateTime as u64);
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "PASSIVE_OBSERVER_FRAMES={};CPU100NS={ticks}",
+                    self.count
+                );
+            }
         }
     }
 }

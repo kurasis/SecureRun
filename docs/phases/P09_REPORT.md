@@ -394,3 +394,13 @@ process check. The same command/output remains; there is no new IPC permission.
 Two portable tests cover notification-before-wait and single-reservation release
 on timeout/drop. Native adapter Clippy, frontend compilation and four product
 tests pass locally; actual Windows CPU/update results remain pending.
+
+
+ARM's latest layout diagnostic passed all 76 presentation cases and real display
+DPI, while the keyboard helper refused its click target. Helpers now use a
+per-thread Per-Monitor-V2 coordinate context. A click requires both actual native
+window ownership and the exact navigation provider's UIA identity/ancestry at
+the point, not a matching caption. Foreground ownership and actual focus are
+checked before keys. Ctrl+comma and Ctrl+1 additionally require the actual
+Settings language control and environment search page, respectively. No Windows
+security setting or broad foreground permission is changed.

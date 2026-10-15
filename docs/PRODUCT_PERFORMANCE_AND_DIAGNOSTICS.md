@@ -33,6 +33,11 @@ uses only the reviewed bytes and a new ordinary JSON filename, never replaces an
 existing file, and never opens or uploads the output. There is no renderer path
 or arbitrary diagnostic-body argument.
 
+Private enforcement diagnostics retain at most 256 generated scopes. A completed
+verified definition is retired only after exact current scope and complete idle
+checks; its data and audit evidence remain. Failed scopes remain fenced. No
+recursive diagnostic data deletion or automatic retry of user work is added.
+
 The native lab actually passes a synthetic secret argument to a boxed probe and
 injects a different synthetic manager environment secret. The probe reports that
 it received the intended argument and did not inherit the environment secret.

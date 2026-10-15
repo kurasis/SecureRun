@@ -72,6 +72,76 @@
       "path": "investigation-8a39608/windows-11-arm/official-applications.json",
       "sha256": "3d70466c6fe28563a9d415e9f781221a4084027b7acfa34e85d431742365e33e",
       "size": 1936
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/standard-product.json",
+      "sha256": "afd65f03175f4d29222d51a7e0ba90fde370d85fd0179352044c6290a5340ce4",
+      "size": 282
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/stage.json",
+      "sha256": "32b630d3552155a58a34e7a1878bc96dc78931a9be13a4790b3b2dbcceab89eb",
+      "size": 112
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/run-summary.json",
+      "sha256": "1aec205fcee31ae096b9d5a4d8b6c720a9a41d27ae33cacaeee34f27f354c4b0",
+      "size": 583
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/official-applications.json",
+      "sha256": "7df6e8625a03d85b631f6937be526e0fc245987be1cef722b06940c2da8d376a",
+      "size": 1936
+    },
+    {
+      "path": "investigation-5341094/windows-11-arm/last-native-refusal.json",
+      "sha256": "8342c2628e5c774f9925b69c6d570bc46162bb4e7f9d579270dfd831df9afa80",
+      "size": 107
+    },
+    {
+      "path": "investigation-5341094/windows-2025/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-5341094/windows-2025/standard-product.json",
+      "sha256": "5e00d40b1b7498a8adb15e476834ec941b95d45031846e52b6b86e17b432395c",
+      "size": 287
+    },
+    {
+      "path": "investigation-5341094/windows-2025/stage.json",
+      "sha256": "b64d0e2285309a08cc0d71c7629c1dc875f28f80f79b23479bc15ec70ddf6590",
+      "size": 112
+    },
+    {
+      "path": "investigation-5341094/windows-2025/run-summary.json",
+      "sha256": "f3d4abcf0122c46a1eaaf2a1cfc5f124b3d5e611d2eb526431ff4ec6f4b4c1fd",
+      "size": 583
+    },
+    {
+      "path": "investigation-5341094/windows-2025/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-5341094/windows-2025/official-applications.json",
+      "sha256": "b66fdf45a0ad81d4eebc7a1898e1c6e7367665ed960f1c91fc9c564dc457cce3",
+      "size": 1918
+    },
+    {
+      "path": "investigation-5341094/windows-2025/last-native-refusal.json",
+      "sha256": "373ef629b764b03dfbe65717609ea57bad53159575f6f85ce85285b3de6f9c22",
+      "size": 112
     }
   ],
   "note": "P09 gate remains blocked pending actual native product results and matching P03 through P08 regressions. First lab initialization failure retained separately.",
@@ -89,6 +159,13 @@
       "run_id": 38785005254,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38785005254",
       "note": "Official packages and normal release preparation succeeded. Both standard-user actors received a backend refusal during environment seeding; product UX cases did not execute. Next fixture retains the minimized backend refusal code."
+    },
+    {
+      "tested_commit": "53410943b28f54b8dfb2859446f0a5bf1950ee6d",
+      "result": "FAILED",
+      "run_id": 38787517417,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38787517417",
+      "note": "Server refused environment 06 with SIBLING_RECONCILIATION_REQUIRED; ARM refused environment 03 with NETWORK_ENFORCEMENT_FAILED. No product UX case completed. Canonical sibling ordering is reproduced and fixed in portable regression tests; subsequent native verification remains required."
     }
   ]
 }

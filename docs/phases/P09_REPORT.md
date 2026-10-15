@@ -55,6 +55,29 @@ during fixture environment seeding. No product UX case completed. The immutable
 structured results remain in `investigation-8a39608`; fixture diagnostics now
 retain only the bounded backend refusal code and numeric seed position.
 
+A subsequent run `38787517417` at `53410943b28f54b8dfb2859446f0a5bf1950ee6d`
+identified Server refusal `SIBLING_RECONCILIATION_REQUIRED` at environment 06 and
+ARM refusal `NETWORK_ENFORCEMENT_FAILED` at environment 03. Both raw structured
+investigations are retained. The fixture now retains existing minimized native
+probe result/status/evidence reports for the network investigation.
+
+A deterministic portable regression reproduced different mandatory sibling denial
+ordering during rollout and after the SQLite UUID-ordered listing. Canonical
+ordering fixes it without changing rule membership or granting access. A second
+regression creates ten environments and revalidates every existing policy after
+each creation. The adapter's 40 portable tests pass; native validation is pending.
+The reference workload also requires more than 64 architecture-specific retained
+diagnostics. The bound is now 256. Successfully verified private diagnostic
+definitions retire after fresh identity/configuration/automation/idle checks;
+root data and audit records remain, and the saved synthetic report is checked
+unchanged. Failed diagnostics stay fenced. P09 verifies these actual boundaries.
+
+Intermediate P03 run `38786046681` at `8b71cae6d9188e9d16986486893b1f5ce4c2ff74`
+passed on both targets: 19 foundation tests, 3 normal native tests, 3 foundation UI
+tests and 32 actual command-boundary cases. It is historical, not matching final
+source proof. Current product/native jobs are running at
+`c5cd614f7b98485a287cc6d489b649e095dd4157` (`38789783607` and `38789783651`).
+
 ## Validation pending
 
 Required native P09 proof: T30, T32, T41, T63 and T66; actual app versions and hashes;

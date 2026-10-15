@@ -34,12 +34,15 @@ fn open(path: &Path, access: u32, sharing: u32) -> R<File> {
         .share_mode(sharing)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(path)
-        .map_err(|_| "CLEANUP_OBJECT_HANDLE_UNAVAILABLE")?;
+        .map_err(|error| match error.raw_os_error() {
+            Some(5) => "CLEANUP_OBJECT_ACCESS_DENIED",
+            Some(32) => "CLEANUP_OBJECT_SHARING_VIOLATION",
+            _ => "CLEANUP_OBJECT_HANDLE_UNAVAILABLE",
+        })?;
     checked(&f)?;
     Ok(f)
 }
 fn checked(f: &File) -> R<BY_HANDLE_FILE_INFORMATION> {
-    identity(f)?;
     let mut info = BY_HANDLE_FILE_INFORMATION::default();
     if unsafe { GetFileInformationByHandle(f.as_raw_handle(), &mut info) } == 0 {
         return Err("CLEANUP_OBJECT_IDENTITY_UNKNOWN");
@@ -410,6 +413,12 @@ impl Seal {
             ) {
                 Ok(f) => f,
                 Err(code) => {
+                    #[cfg(test)]
+                    eprintln!(
+                        "CLEANUP_RESTORE_OPEN root={} code={}",
+                        node.relative.is_empty(),
+                        code
+                    );
                     if !path.try_exists().map_err(|_| "CLEANUP_RESTORE_UNKNOWN")? {
                         continue;
                     };

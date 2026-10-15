@@ -51,6 +51,11 @@ public sealed class P05Lab {
         if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(Enabled|AutoDelete|AutoRecover|OnBoxDelete|ClosedFilePath|ReadFilePath|OpenFilePath|FileRootPath|Template)\z"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
         if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("LAB_WRITE_REFUSED");
     }
+    // P08 disposable fixtures only; current owned marker remains mandatory.
+    public void LifecycleSetting(string box,string key,string value) {
+        if(!boxes.Contains(box)||!Regex.IsMatch(key,@"\A(UseFileImage|NeverDelete)\z")||!(value=="y"||value=="n"))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("LAB_WRITE_REFUSED");
+    }
     public void Wfp(bool enabled) {
         if(update('s',null,"GlobalSettings","NetworkEnableWFP",enabled?"y":"n")!=0||reload((uint)Process.GetCurrentProcess().SessionId,1)!=0)throw new InvalidOperationException("LAB_WFP_FIXTURE_FAILED");
     }

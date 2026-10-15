@@ -24,6 +24,9 @@ public static class P08Desktop {
             if(found!=IntPtr.Zero)return found;Thread.Sleep(100);
         }throw new InvalidOperationException("P08_DESKTOP_WINDOW_TIMEOUT");
     }
+    public static void WaitNormalWindow(Process process,string executable) {
+        Scope(process,executable);Window(process,"SecureRun",45000);Scope(process,executable);
+    }
     public static void CloseNormalWindow(Process process,string executable) {
         Scope(process,executable);var window=Window(process,"SecureRun",45000);Scope(process,executable);
         if(!PostMessage(window,0x10,IntPtr.Zero,IntPtr.Zero)||!process.WaitForExit(20000))throw new InvalidOperationException("P08_NORMAL_WINDOW_CLOSE_FAILED");

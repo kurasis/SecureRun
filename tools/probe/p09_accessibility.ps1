@@ -12,6 +12,7 @@ public static class P09Access {
  [DllImport("user32.dll")]public static extern bool IsWindowVisible(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern uint GetDpiForWindow(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool SetForegroundWindow(IntPtr hwnd);
+ [DllImport("user32.dll")]public static extern IntPtr GetForegroundWindow();
 }
 '@
 $result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true};$stage='INITIALIZED'
@@ -128,9 +129,11 @@ try{
    Need ($null -ne $language -and $language.Current.IsEnabled);$result.accessible_label_and_role=$true;$result.native_invoke_changed_real_page=$true
    if($Mode -eq 'READY'){$result.startup_interactive_upper_bound_ms=([Diagnostics.Stopwatch]::GetTimestamp()-[long]$start.ticks)*1000.0/[Diagnostics.Stopwatch]::Frequency}
    if($Mode -eq 'KEYBOARD'){
-    $stage='CHECKING_REAL_KEYBOARD';Need ([P09Access]::SetForegroundWindow($hwnd));$navigation.SetFocus();Start-Sleep -Milliseconds 100
-    [Windows.Forms.SendKeys]::SendWait('{TAB}');Start-Sleep -Milliseconds 100;$focused=[Windows.Automation.AutomationElement]::FocusedElement;Need ($focused.Current.Name -eq 'Settings');$result.tab_order_actual=$true
-    [Windows.Forms.SendKeys]::SendWait('{F6}');Start-Sleep -Milliseconds 100;Need ([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments');$result.f6_navigation_actual=$true
+    $stage='FOCUSING_OWNED_MANAGER';$null=[P09Access]::SetForegroundWindow($hwnd);$navigation.SetFocus();$focusClock=[Diagnostics.Stopwatch]::StartNew()
+    do{if([P09Access]::GetForegroundWindow() -eq $hwnd -and [Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000)
+    Need ([P09Access]::GetForegroundWindow() -eq $hwnd -and [Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments')
+    $stage='CHECKING_TAB_FOCUS';[Windows.Forms.SendKeys]::SendWait('{TAB}');$focusClock.Restart();do{$focused=[Windows.Automation.AutomationElement]::FocusedElement;if($focused.Current.Name -eq 'Settings'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000);Need ($focused.Current.Name -eq 'Settings');$result.tab_order_actual=$true
+    $stage='CHECKING_F6_FOCUS';[Windows.Forms.SendKeys]::SendWait('{F6}');$focusClock.Restart();do{if([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments'){break};Start-Sleep -Milliseconds 50}while($focusClock.ElapsedMilliseconds -lt 5000);Need ([Windows.Automation.AutomationElement]::FocusedElement.Current.Name -eq 'Environments');$result.f6_navigation_actual=$true
     [Windows.Forms.SendKeys]::SendWait('^1');Start-Sleep -Milliseconds 100;$result.ctrl_navigation_actual=$true
    }
    if($null -eq $navigation){$navigation=Find $root ([Windows.Automation.ControlType]::Button) 'Environments'};Click $navigation

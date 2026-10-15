@@ -264,3 +264,13 @@ existing Settings window before reuse, and retains each controller's fixed
 stage/result. A failed DPI case remains failed and blocks acceptance, but no
 longer prevents independent application/file workflows from collecting evidence;
 presentation reset is attempted even if display restoration fails.
+
+
+Full ARM `38811627938` refused an unreviewed live WerFault in environment 03.
+The same retained process object may now complete naturally within ten seconds;
+a timeout still refuses cleanup and never authorizes termination. Both completion
+and refusal record only the bound and typed outcome. This native adjustment
+makes previous P03/P04 proof historical until a matching regression passes.
+ARM's layout diagnostic passed overview/rename, then failed keyboard setup.
+The next UIA fixture records separate foreground/Tab/F6 stages, verifies actual
+foreground ownership and waits for actual focus instead of fixed 100 ms sleeps.

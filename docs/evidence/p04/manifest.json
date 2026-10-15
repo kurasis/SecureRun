@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
   "run_id": 38811676793,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38811676793",
@@ -964,5 +964,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Historical matching observer proof retained; a bounded natural-completion wait adjustment requires a fresh exact-source regression."
 }

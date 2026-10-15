@@ -32,7 +32,7 @@ function Register-Probe([string]$mode,[string]$leaf){$id=[Guid]::NewGuid().ToStr
 function Start-Normal-Desktop {$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$p=[Diagnostics.Process]::Start($s);$null=$p.StandardOutput.ReadToEndAsync();$null=$p.StandardError.ReadToEndAsync();return $p}
 function Native-Confirm([string]$intent,[bool]$accept){
  $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.ArgumentList.Add('--lifecycle-confirm-once');$p=[Diagnostics.Process]::Start($s)
- try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$q=@{action='ACT';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent=$intent;language='en'};$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();[P08Desktop]::Confirm($p,$script:active,$e.id,$accept);Require ($p.WaitForExit(180000)) 'NATIVE_CONFIRMATION_RESULT_TIMEOUT';Require ($p.ExitCode -eq 0) 'NATIVE_CONFIRMATION_PROCESS_FAILED';return ($read.Result|ConvertFrom-Json)}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
+ try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$q=@{action='ACT';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent=$intent;language='en'};$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();[P08Desktop]::Confirm($p,$script:active,$e.id,$accept,$intent);Require ($p.WaitForExit(180000)) 'NATIVE_CONFIRMATION_RESULT_TIMEOUT';Require ($p.ExitCode -eq 0) 'NATIVE_CONFIRMATION_PROCESS_FAILED';return ($read.Result|ConvertFrom-Json)}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
 }
 function Box-Report([string]$leaf) {
  $clock=[Diagnostics.Stopwatch]::StartNew()
@@ -63,11 +63,13 @@ try{
  if($Mode -eq 'sessions'){
   Case 'T36' 'cleanup_requires_complete_idle_across_actual_windows_sessions' {
    $probe=Register-Probe 'hold' 'session-actor.jsonl';$receipt=Launch $probe;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
+   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$sessionLab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$sessionLab.Register('SR_'+$e.id.Replace('-',''));$sessionLab.Set(('SR_'+$e.id.Replace('-','')),'Enabled','y')
    $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results
    @{box=('SR_'+$e.id.Replace('-',''));owner_sid=$who.User.Value}|ConvertTo-Json|Set-Content (Join-Path $results 'session-ready.json')
    $actor=[Diagnostics.Process]::GetCurrentProcess().SessionId;$clock=[Diagnostics.Stopwatch]::StartNew()
    do{$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;if($view.complete -and @($view.processes|Where-Object session -eq 0).Count -ge 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 60000)
    Require ($actor -ne 0 -and $view.complete -and @($view.processes|Where-Object session -eq 0).Count -ge 1 -and @($view.processes|Where-Object session -eq $actor).Count -ge 1) 'P08_ACTUAL_SESSION_MEMBERS_MISSING'
+   $sessionLab.Set(('SR_'+$e.id.Replace('-','')),'Enabled','n')
    $r=Call @{action='PREPARE';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent='RESET'} 'lifecycle' $true;Require ($r.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $r.reason
    Stop-Owned;$r=Call @{action='LIST'} 'control';$view=$r.environments|Where-Object environment_id -eq $e.id;Require ($view.complete -and $view.activity -eq 'IDLE' -and $view.processes.Count -eq 0) 'ALL_SESSION_STOP_NOT_COMPLETE';$null=Act 'RESET';Empty-Root
    @{real_windows_sessions=@(0,$actor);same_owner_members_observed=$true;cleanup_refused_while_other_session_running=$true;complete_idle_before_actual_cleanup=$true;original_native_cleanup_after_stop=$true;product_privileged_helper=$false;os_logon_policy_changed=$false}
@@ -183,6 +185,12 @@ try{
    $r=Commit $old $true;Require ($r.reason -eq 'STALE_LIFECYCLE_OPERATION') $r.reason;$r=Call $q 'files' $true;Require ($r.reason -eq 'TRANSFER_OPERATION_CONFLICT') $r.reason
    Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'old-generation.txt').Count -eq 0) 'OLD_IMPORT_REPLAYED';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'new-generation-canary.txt').Count -eq 1) 'STALE_PLAN_MUTATED_NEW_DATA'
    @{real_old_plan_refused=$true;old_import_tombstone_refused=$true;new_generation_data_preserved=$true;automatic_replay=$false}
+  }
+  Case 'T34' 'normal_binary_cannot_activate_lifecycle_fault_checkpoints' {
+   $null=Import 'normal-no-fault.txt';$before=$e.generation;$env:SECURERUN_P08_PAUSE_STAGE='Sealed'
+   try{$null=Act 'RESET'}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
+   Empty-Root;Require ($e.generation -eq ($before+1)) 'NORMAL_BINARY_ACTIVATED_LIFECYCLE_FAULT'
+   @{normal_production_binary=$true;fault_variable_supplied=$true;cleanup_completed=$true;fault_checkpoint_activated=$false}
   }
   Case 'T25' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
    $old=$e.id;$savedRoot=$root;$cancel=Native-Confirm 'REMOVE' $false;Require ($cancel.reason -eq 'LIFECYCLE_CONFIRMATION_CANCELLED') $cancel.reason;Refresh-Environment;Require ($e.id -eq $old) 'REMOVE_CANCEL_LOST_ENVIRONMENT';$r=Native-Confirm 'REMOVE' $true;Require ($r.reason -eq 'OBSERVED') $r.reason;Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'

@@ -38,3 +38,14 @@ delete-pending objects; a controller-bound pre-seal snapshot prevents the worker
 from sealing a different set of objects. COMPLETE is withheld until the controller
 restores the recorded ACLs after the held executor exits. Native verification of
 the revised protocol is pending.
+
+Full native run 38743266538 compiled the production and fault Tauri binaries on
+both platforms, but the first original cleanup returned an unresolved status;
+no P08 native scenario was accepted as passed. Its reviewed raw reports are
+retained under `evidence/p08/investigation-918f10f`. Two independent harness
+issues were identified: PowerShell concatenation collapsed the direct worker's
+three argv entries into one, and the multi-session fixture did not temporarily
+enable its original-client dispatch. The next run records bounded native status
+codes and controller stage traces instead of hiding the initial failure behind
+subsequent reconciliation refusals. Six isolated native seal cases subsequently
+passed on both targets at source 3e844cf.

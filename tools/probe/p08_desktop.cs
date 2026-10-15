@@ -31,10 +31,12 @@ public static class P08Desktop {
         Scope(process,executable);var window=Window(process,"SecureRun",45000);Scope(process,executable);
         if(!PostMessage(window,0x10,IntPtr.Zero,IntPtr.Zero)||!process.WaitForExit(20000))throw new InvalidOperationException("P08_NORMAL_WINDOW_CLOSE_FAILED");
     }
-    public static void Confirm(Process process,string executable,string environment,bool accept) {
+    public static void Confirm(Process process,string executable,string environment,bool accept,string intent) {
         Guid parsed;if(!Guid.TryParse(environment,out parsed))throw new InvalidOperationException("P08_CONFIRMATION_ENVIRONMENT_INVALID");
-        Scope(process,executable);var window=Window(process,"SecureRun — environment confirmation",60000);bool named=false;
-        EnumChildWindows(window,(child,state)=>{var text=new StringBuilder(4096);UIntPtr length;SendMessageTimeout(child,0x0d,(UIntPtr)4096,text,2,1000,out length);if(text.ToString().Contains(environment,StringComparison.OrdinalIgnoreCase))named=true;return true;},IntPtr.Zero);
+        Scope(process,executable);var window=Window(process,"SecureRun — environment confirmation",60000);bool named=false;var content=new StringBuilder();
+        EnumChildWindows(window,(child,state)=>{var text=new StringBuilder(4096);UIntPtr length;SendMessageTimeout(child,0x0d,(UIntPtr)4096,text,2,1000,out length);content.AppendLine(text.ToString());if(text.ToString().Contains(environment,StringComparison.OrdinalIgnoreCase))named=true;return true;},IntPtr.Zero);
+        string retention=intent=="RESET"?"Keep the environment definition and application records.":intent=="REMOVE"?"Keep an audit tombstone and the verified empty root identity.":null;
+        if(retention==null||!content.ToString().Contains(retention,StringComparison.Ordinal))throw new InvalidOperationException("P08_CONFIRMATION_RETENTION_NOT_VISIBLE");
         if(!named)throw new InvalidOperationException("P08_CONFIRMATION_ENVIRONMENT_NOT_VISIBLE");
         Scope(process,executable);var button=GetDlgItem(window,accept?1:2);
         if(button==IntPtr.Zero||!PostMessage(button,0x00f5,IntPtr.Zero,IntPtr.Zero))throw new InvalidOperationException("P08_CONFIRMATION_BUTTON_NOT_FOUND");

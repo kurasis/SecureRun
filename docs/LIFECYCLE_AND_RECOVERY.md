@@ -65,3 +65,9 @@ release packaging. Installed-candidate acceptance remains P12; T48 packaging
 portions remain P11. Full machine/power loss can remove the live controller's
 preauthorized restoration handle; such a case must remain visible and blocked
 for explicit manual remediation if the known ACL cannot be safely restored.
+
+To restore an archive, open Retention and recovery and Recheck the environment.
+Stop its entire box, including other relevant sessions, then choose Unarchive and
+review the native dialog's name and UUID. Current ownership, roots and policy must
+validate before managed launch becomes available. Use Files for an explicit export
+while the archive is retained; the manager performs no automatic host recovery.

@@ -12,6 +12,7 @@ IDS = {f'T{i:02}' for i in (20,21,22,23,42,43,44,45,49,63,64,65)}
 REQUIRED = {
  'production_export_correct_bytes_and_motw',
  'boxed_stage_refuses_unboxed_execution',
+ 'normal_binary_cannot_activate_transfer_fault_checkpoints',
  'import_collision_duplicate_operation_and_regular_file_only',
  'unsafe_names_and_extensions',
  'hardlinks_streams_reparse_and_sensitive_destinations_rejected',
@@ -48,6 +49,7 @@ def check_target(folder,commit,machine):
   raise ValueError('P07 native source/result invalid')
  for key in ('manager_binary_sha256','fault_binary_sha256','boxed_stage_sha256'):
   if not re.fullmatch('[0-9a-f]{64}',summary[key]):raise ValueError('P07 binary provenance missing')
+ if summary['manager_binary_sha256']==summary['fault_binary_sha256']:raise ValueError('P07 normal and fault binaries are not distinct')
  names=[c['name'] for c in cases]
  if (len(set(names))!=len(names) or not REQUIRED.issubset(names) or not IDS.issubset({c['id'] for c in cases})
      or any(c['status']!='PASSED' for c in cases) or summary['native_cases_passed']!=len(cases)):

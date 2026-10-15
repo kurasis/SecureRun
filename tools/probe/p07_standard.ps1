@@ -91,6 +91,12 @@ try{
   }
 
  }else{
+  Case 'T49' 'normal_binary_cannot_activate_transfer_fault_checkpoints' {
+   $env:SECURERUN_P07_PAUSE_STAGE='BeforeMark';$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='normal-no-fault.txt'
+   $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;foreach($arg in @('--files-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)};$p=[Diagnostics.Process]::Start($s)
+   try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(45000)) 'NORMAL_BINARY_ACTIVATED_FAULT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OBSERVED') $r.reason;Require (Test-Path -LiteralPath (Join-Path $output 'normal-no-fault.txt')) 'NORMAL_TRANSFER_NOT_COMPLETED'}finally{Remove-Item Env:/SECURERUN_P07_PAUSE_STAGE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+   @{normal_binary_tested=$true;fault_environment_supplied=$true;checkpoint_activated=$false;operation_completed=$true}
+  }
   Case 'T49' 'boxed_stage_refuses_unboxed_execution' {
    $stage=Join-Path (Split-Path $Manager) 'securerun-box-launcher.exe';$s=[Diagnostics.ProcessStartInfo]::new($stage);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.ArgumentList.Add('C:\SecureRunWorkspace\00000000000000000000000000000000\must-not-run.exe');$p=[Diagnostics.Process]::Start($s)
    try{Require ($p.WaitForExit(10000)) 'UNBOXED_STAGE_TIMEOUT';Require ($p.ExitCode -eq 91) 'UNBOXED_STAGE_ACCEPTED'}finally{if(-not $p.HasExited){$p.Kill()};$p.Dispose()}

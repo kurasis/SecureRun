@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import type { Language } from './strings';
+import {escaped} from './product';
+import {ErrorView} from './error';
 type Intent = 'RESET' | 'REMOVE' | 'ARCHIVE' | 'UNARCHIVE' | 'PERSISTENT' | 'DISPOSABLE' | 'RESUME';
 type Environment = { environment_id: string; display_name: string; revision: number; generation: number; lifecycle: 'ACTIVE' | 'ARCHIVED'; mode: 'PERSISTENT' | 'DISPOSABLE'; disposable_pending: boolean; activity: string; complete: boolean; reason: string; pending_operation: string | null };
 type Operation = { operation_id: string; environment_id: string; display_name: string; intent: Intent; generation: number; stage: string; reason: string };
 type Reply = { reason: string; environments: Environment[]; operations: Operation[] };
-export function Lifecycle({ language }: { language: Language }) {
+export function Lifecycle({ language,environmentId }: { language: Language;environmentId?:string }) {
   const ru = language === 'ru'; const [reply, setReply] = useState<Reply | null>(null); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [fresh, setFresh] = useState(false);
   const serial = useRef(0); const active = useRef(false); const observed = useRef(0); const engine = useRef(-1);
   async function request(request: object) {
@@ -30,9 +32,9 @@ export function Lifecycle({ language }: { language: Language }) {
     <p>{ru ? 'Экспорт доступен в разделе «Файлы». Сброс удаляет содержимое и сохраняет приложения; удаление очищает содержимое до удаления определения. Каждое изменение подтверждается отдельным системным диалогом с именем среды.' : 'Use Files to export first. Reset clears contents and keeps applications; Remove clears contents before deleting the definition. Each change requires a separate native confirmation naming the environment.'}</p>
     <button disabled={busy} onClick={() => void request({ action: 'LIST' }).catch(() => { setError('BACKEND_UNAVAILABLE'); setFresh(false); })}>{ru ? 'Перепроверить' : 'Recheck'}</button>
     {!fresh && <p role="status">{ru ? 'Состояние устарело или неизвестно. Изменения недоступны.' : 'State is stale or unknown. Changes are unavailable.'}</p>}
-    {error && <p role="alert">{error}</p>}
-    {reply?.environments.map(e => { const stopped = fresh && e.complete && e.activity === 'IDLE' && !e.pending_operation;
-      return <article key={e.environment_id}><h3>{e.display_name}</h3><p>{e.lifecycle} · {e.mode} · {e.activity} · {ru ? 'поколение' : 'generation'} {e.generation}</p>
+    {error && <ErrorView language={language} code={error} action={ru?'Хранение':'Retention'}/>}
+    {reply?.environments.filter(e=>!environmentId||e.environment_id===environmentId).map(e => { const stopped = fresh && e.complete && e.activity === 'IDLE' && !e.pending_operation;
+      return <article key={e.environment_id}><h3>{escaped(e.display_name)}</h3><p>{e.lifecycle} · {e.mode} · {e.activity} · {ru ? 'поколение' : 'generation'} {e.generation}</p>
         {e.reason !== 'OBSERVED' && <p role="status">{e.reason}</p>}
         {e.mode === 'DISPOSABLE' && e.disposable_pending && <p role="status">{ru ? 'Осталось disposable-состояние. После завершения всех процессов выберите продолжение, экспорт или удаление. Перезапуск менеджера ничего не удаляет.' : 'Disposable state remains. After all processes exit, choose Resume, Export or Delete. Restarting the manager deletes nothing.'}</p>}
         <button disabled={busy || !stopped} onClick={() => void act(e, e.lifecycle === 'ACTIVE' ? 'ARCHIVE' : 'UNARCHIVE')}>{e.lifecycle === 'ACTIVE' ? (ru ? 'Архивировать' : 'Archive') : (ru ? 'Вернуть из архива' : 'Unarchive')}</button>
@@ -44,6 +46,6 @@ export function Lifecycle({ language }: { language: Language }) {
       </article>;
     })}
     <h3>{ru ? 'Операции' : 'Operations'}</h3><p>{ru ? 'Восстановление проверяет фактическое состояние. Оно не повторяет удаление, не запускает приложения и не удаляет временные файлы по имени.' : 'Recovery inspects actual state. It never repeats deletion, launches applications or deletes temporary files by name.'}</p>
-    {reply?.operations.map(o => <p key={o.operation_id}>{o.display_name} · {o.intent} · {o.stage} · {o.reason} <button disabled={busy} onClick={() => void recover(o.operation_id)}>{ru ? 'Проверить' : 'Inspect'}</button></p>)}
+    {reply?.operations.filter(o=>!environmentId||o.environment_id===environmentId).map(o => <p key={o.operation_id}>{escaped(o.display_name)} · {o.intent} · {o.stage} · {o.reason} <button disabled={busy} onClick={() => void recover(o.operation_id)}>{ru ? 'Проверить' : 'Inspect'}</button></p>)}
   </section>;
 }

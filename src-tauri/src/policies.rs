@@ -20,10 +20,36 @@ struct Selection {
     generation: u64,
     issued: Instant,
 }
+struct QueuedPolicy {
+    environment: Uuid,
+    revision: u64,
+    generation: u64,
+    engine_generation: u64,
+    desired: DesiredPolicy,
+    held: Vec<Selection>,
+    view_ack: bool,
+    created: Instant,
+}
+#[derive(Serialize)]
+pub struct QueuedView {
+    queue_id: Uuid,
+    environment_id: Uuid,
+    revision: u64,
+    generation: u64,
+    desired: DesiredPolicy,
+    expires_in_seconds: u64,
+}
+#[derive(Serialize)]
+pub struct PolicyReply {
+    #[serde(flatten)]
+    reply: Reply,
+    queued_policies: Vec<QueuedView>,
+}
 #[derive(Default)]
 pub struct PolicyState(
     Mutex<HashMap<Uuid, Selection>>,
     std::sync::atomic::AtomicU64,
+    Mutex<HashMap<Uuid, QueuedPolicy>>,
 );
 fn authorize(window: &WebviewWindow) -> Result<()> {
     let url = window
@@ -153,6 +179,22 @@ pub struct UiGrant {
 )]
 pub enum UiRequest {
     List,
+    Queue {
+        environment_id: Uuid,
+        expected_revision: u64,
+        preset: Preset,
+        grants: Vec<UiGrant>,
+        operation_id: Uuid,
+        acknowledge_view_change: bool,
+    },
+    ApplyQueued {
+        queue_id: Uuid,
+        operation_id: Uuid,
+    },
+    DiscardQueued {
+        queue_id: Uuid,
+    },
+
     Create {
         display_name: String,
         preset: Preset,
@@ -246,8 +288,7 @@ async fn grants(
     }
     Ok((result, held))
 }
-#[tauri::command]
-pub async fn policy_request(
+async fn policy_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiRequest,
@@ -255,6 +296,9 @@ pub async fn policy_request(
     authorize(&window)?;
     let mut held = vec![];
     let request = match request {
+        UiRequest::Queue { .. }
+        | UiRequest::ApplyQueued { .. }
+        | UiRequest::DiscardQueued { .. } => return err(ErrorCode::InvalidInput),
         UiRequest::List => Request::List,
         UiRequest::Create {
             display_name,
@@ -368,8 +412,7 @@ pub struct ControlReply {
     engine_generation: u64,
     sequence: u64,
 }
-#[tauri::command]
-pub async fn control_request(
+async fn control_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiControlRequest,
@@ -525,8 +568,7 @@ pub struct FilesReply {
     reply: securerun_sandboxie_adapter::files::Reply,
     engine_generation: u64,
 }
-#[tauri::command]
-pub async fn files_request(
+async fn files_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiFilesRequest,
@@ -792,8 +834,7 @@ pub fn perform_lifecycle(
         }
     }
 }
-#[tauri::command]
-pub async fn lifecycle_request(
+async fn lifecycle_request_inner(
     window: WebviewWindow,
     request: UiLifecycleRequest,
     backend: State<'_, crate::app::AppState>,
@@ -824,4 +865,317 @@ pub async fn lifecycle_request(
         reply,
         engine_generation: generation,
     })
+}
+
+// History accepts typed manager events only; no target arguments or error text.
+fn event_outcome(reason: Option<&str>) -> securerun_sandboxie_adapter::product::Outcome {
+    use securerun_sandboxie_adapter::product::Outcome;
+    match reason {
+        Some("OBSERVED") => Outcome::Observed,
+        Some(r) if !r.contains("UNKNOWN") => Outcome::Refused,
+        _ => Outcome::Unknown,
+    }
+}
+#[tauri::command]
+pub async fn policy_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<PolicyReply> {
+    authorize(&window)?;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiRequest::Apply { environment_id, .. }
+        | UiRequest::Queue { environment_id, .. }
+        | UiRequest::Inspect { environment_id }
+        | UiRequest::Repair { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiRequest::List => None,
+        UiRequest::Create { .. } => Some(A::PolicyCreate),
+        UiRequest::Inspect { .. } => Some(A::PolicyInspect),
+        UiRequest::Repair { .. } => Some(A::PolicyRepair),
+        _ => Some(A::PolicyApply),
+    };
+    let engine_generation = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    let result: Result<Reply> = match request {
+        UiRequest::Queue {
+            environment_id,
+            expected_revision,
+            preset,
+            grants: requested,
+            operation_id,
+            acknowledge_view_change,
+        } => {
+            let (grants, held) = grants(
+                &state,
+                requested,
+                operation_id,
+                Some(environment_id),
+                expected_revision,
+            )
+            .await?;
+            let current = tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+            if current.reason != "OBSERVED" {
+                return err(ErrorCode::ManagerContextUnsafe);
+            }
+            let e = current
+                .environments
+                .iter()
+                .find(|e| e.id == environment_id && e.revision == expected_revision)
+                .ok_or_else(|| AppError::new(ErrorCode::RevisionConflict))?;
+            let generation = e.generation;
+            let mut queues = state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?;
+            queues.retain(|_, q| {
+                q.created.elapsed() < Duration::from_secs(60) && q.environment != environment_id
+            });
+            if queues.len() >= 12 {
+                return err(ErrorCode::OperationConflict);
+            }
+            queues.insert(
+                operation_id,
+                QueuedPolicy {
+                    environment: environment_id,
+                    revision: expected_revision,
+                    generation,
+                    engine_generation,
+                    desired: DesiredPolicy {
+                        schema: 1,
+                        preset,
+                        grants,
+                    },
+                    held,
+                    view_ack: acknowledge_view_change,
+                    created: Instant::now(),
+                },
+            );
+            Ok(current)
+        }
+        UiRequest::ApplyQueued {
+            queue_id,
+            operation_id,
+        } => {
+            let queued = state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+                .remove(&queue_id)
+                .ok_or_else(|| AppError::new(ErrorCode::SelectionExpired))?;
+            if queued.created.elapsed() >= Duration::from_secs(60)
+                || queued.engine_generation != engine_generation
+                || queued.held.iter().any(|s| {
+                    s.issued.elapsed() >= Duration::from_secs(60)
+                        || native::identify(&s._lease.file).ok() != Some(s._lease.identity.clone())
+                })
+            {
+                return err(ErrorCode::SelectionExpired);
+            }
+            let current = tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+            if current.reason != "OBSERVED"
+                || !current.environments.iter().any(|e| {
+                    e.id == queued.environment
+                        && e.revision == queued.revision
+                        && e.generation == queued.generation
+                })
+            {
+                return err(ErrorCode::StaleOperation);
+            }
+            tauri::async_runtime::spawn_blocking(move || {
+                let _held = queued.held;
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(
+                    &Request::Apply {
+                        environment_id: queued.environment,
+                        expected_revision: queued.revision,
+                        policy: queued.desired,
+                        operation_id,
+                        acknowledge_view_change: queued.view_ack,
+                    },
+                )
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))
+        }
+        UiRequest::DiscardQueued { queue_id } => {
+            state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+                .remove(&queue_id);
+            tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))
+        }
+        other => policy_request_inner(window, state.clone(), other).await,
+    };
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reason.as_str())),
+            environment_id,
+        )
+        .await;
+    }
+    let reply = result?;
+    let queued_policies = {
+        let mut queues = state
+            .2
+            .lock()
+            .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?;
+        queues.retain(|_, q| {
+            q.created.elapsed() < Duration::from_secs(60)
+                && q.engine_generation == engine_generation
+                && reply.environments.iter().any(|e| {
+                    e.id == q.environment
+                        && e.revision == q.revision
+                        && e.generation == q.generation
+                })
+        });
+        queues
+            .iter()
+            .map(|(id, q)| QueuedView {
+                queue_id: *id,
+                environment_id: q.environment,
+                revision: q.revision,
+                generation: q.generation,
+                desired: q.desired.clone(),
+                expires_in_seconds: 60 - q.created.elapsed().as_secs(),
+            })
+            .collect()
+    };
+    Ok(PolicyReply {
+        reply,
+        queued_policies,
+    })
+}
+#[tauri::command]
+pub async fn control_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiControlRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<ControlReply> {
+    authorize(&window)?;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiControlRequest::Register { environment_id, .. }
+        | UiControlRequest::Launch { environment_id, .. }
+        | UiControlRequest::Stop { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiControlRequest::List => None,
+        UiControlRequest::Register { .. } => Some(A::Register),
+        UiControlRequest::Launch { .. } => Some(A::Launch),
+        UiControlRequest::Stop { .. } => Some(A::Stop),
+        UiControlRequest::StopManaged { .. } => Some(A::StopManaged),
+        UiControlRequest::Reconcile { .. } => Some(A::LifecycleInspect),
+    };
+    let result = control_request_inner(window, state, request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+        )
+        .await;
+    }
+    result
+}
+#[tauri::command]
+pub async fn files_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiFilesRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<FilesReply> {
+    authorize(&window)?;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiFilesRequest::List { environment_id, .. }
+        | UiFilesRequest::Import { environment_id, .. }
+        | UiFilesRequest::Export { environment_id, .. }
+        | UiFilesRequest::Register { environment_id, .. }
+        | UiFilesRequest::Recover { environment_id, .. }
+        | UiFilesRequest::Discard { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiFilesRequest::List { .. } => None,
+        UiFilesRequest::Import { .. } => Some(A::Import),
+        UiFilesRequest::Export { .. } => Some(A::Export),
+        UiFilesRequest::Register { .. } => Some(A::Register),
+        UiFilesRequest::Recover { .. } => Some(A::TransferInspect),
+        UiFilesRequest::Discard { .. } | UiFilesRequest::Cancel { .. } => Some(A::TransferDiscard),
+    };
+    let result = files_request_inner(window, state, request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+        )
+        .await;
+    }
+    result
+}
+#[tauri::command]
+pub async fn lifecycle_request(
+    window: WebviewWindow,
+    request: UiLifecycleRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<LifecycleReply> {
+    authorize(&window)?;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiLifecycleRequest::Act { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiLifecycleRequest::List => None,
+        UiLifecycleRequest::Act { .. } => Some(A::RetentionChange),
+        UiLifecycleRequest::Recover { .. } => Some(A::LifecycleInspect),
+    };
+    let result = lifecycle_request_inner(window, request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+        )
+        .await;
+    }
+    result
 }

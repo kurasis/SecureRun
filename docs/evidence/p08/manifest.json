@@ -1,6 +1,6 @@
 {
   "phase": "P08",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
   "run_id": 38763860037,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38763860037",
@@ -788,7 +788,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production lifecycle paths; T48 packaging finishes in P11 and installed-candidate acceptance remains P12.",
+  "note": "P09 runtime changes require matching current-source regression evidence; prior results remain historical.",
   "historical_runs": [
     {
       "tested_commit": "3e844cf42ba8434f506a2a3132eec419c4fe6c8f",

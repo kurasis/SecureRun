@@ -3,6 +3,7 @@ pub mod control;
 pub mod files;
 pub mod lifecycle;
 pub mod policy;
+pub mod product;
 pub mod provision;
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};

@@ -1,6 +1,6 @@
 {
   "phase": "P07",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
   "run_id": 38763966380,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38763966380",
@@ -1003,7 +1003,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production file paths; reset-invalidates-reference finishes in P08 and installed-candidate acceptance remains P12.",
+  "note": "P09 runtime changes require matching current-source regression evidence; prior results remain historical.",
   "historical_runs": [
     {
       "tested_commit": "fc083e5e20196a18a955d46e50aff97083db7c01",

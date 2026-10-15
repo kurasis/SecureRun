@@ -8,6 +8,7 @@ pub mod control;
 pub mod files;
 pub mod lifecycle;
 mod network;
+pub mod product;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
     UI::Shell::*,

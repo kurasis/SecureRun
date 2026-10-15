@@ -1,18 +1,19 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P08.
+Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P09.
 
 | Phase | Status | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
-| P03 | DONE | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
-| P04 | DONE | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | DONE | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | DONE | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
-| P09–P12 | NOT_STARTED | P09 is the next eligible phase |
+| P03 | BLOCKED — P09 regression pending | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
+| P04 | BLOCKED — P09 regression pending | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
+| P05 | BLOCKED — P09 regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | BLOCKED — P09 regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | BLOCKED — P09 regression pending | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | BLOCKED — P09 regression pending | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P09 | IN_PROGRESS | Product UX, application compatibility and measured diagnostics |
+| P10–P12 | NOT_STARTED | Depend on P09 |
 
 Current tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

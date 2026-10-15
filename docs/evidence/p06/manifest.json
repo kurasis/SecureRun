@@ -1,6 +1,6 @@
 {
   "phase": "P06",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
   "run_id": 38763961970,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38763961970",
@@ -1204,7 +1204,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production phase paths; final installed-candidate acceptance remains P12.",
+  "note": "P09 runtime changes require matching current-source regression evidence; prior results remain historical.",
   "historical_runs": [
     {
       "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",

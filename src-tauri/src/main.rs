@@ -7,10 +7,43 @@ mod ci;
 mod native;
 #[cfg(windows)]
 mod policies;
+#[cfg(windows)]
+mod product;
 
 #[cfg(windows)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("--product-worker")
+        || (args.len() == 2 && args[1] == "--product-once")
+    {
+        use std::io::Read;
+        std::panic::set_hook(Box::new(|_| {}));
+        let mut data = Vec::new();
+        if std::io::stdin().take(2049).read_to_end(&mut data).is_err() || data.len() > 2048 {
+            std::process::exit(64);
+        }
+        let Ok(request) =
+            serde_json::from_slice::<securerun_sandboxie_adapter::product::Request>(&data)
+        else {
+            std::process::exit(64);
+        };
+        use securerun_sandboxie_adapter::windows::provisioning::product as service;
+        let reply = if args[1] == "--product-once" {
+            service::bounded_request(&request)
+        } else {
+            if args.len() != 4 {
+                std::process::exit(64);
+            }
+            let (Ok(pid), Ok(birth)) = (args[2].parse(), args[3].parse()) else {
+                std::process::exit(64);
+            };
+            service::execute(pid, birth, request)
+        };
+        if let Ok(text) = serde_json::to_string(&reply) {
+            println!("{text}");
+        }
+        return;
+    }
     if args.len() == 2 && args[1] == "--lifecycle-confirm-once" {
         use std::io::Read;
         std::panic::set_hook(Box::new(|_| {}));

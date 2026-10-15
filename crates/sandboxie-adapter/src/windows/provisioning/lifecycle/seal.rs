@@ -487,6 +487,38 @@ impl Drop for Seal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[link(name = "ntdll")]
+    unsafe extern "system" {
+        fn NtDeleteFile(attributes: *const NtAttributes) -> i32;
+    }
+    #[test]
+    fn inspect_delete_with_pre_authorized_metadata_handle() {
+        let (_directory, path, owner, id) = fixture();
+        std::fs::write(path.join("keep.txt"), b"SYNTHETIC").unwrap();
+        let seal = Seal::capture_path(path.clone(), &owner, &id).unwrap();
+        let text: Vec<u16> = "keep.txt".encode_utf16().collect();
+        let name = NtName {
+            length: (text.len() * 2) as u16,
+            maximum: (text.len() * 2) as u16,
+            buffer: text.as_ptr(),
+        };
+        let attributes = NtAttributes {
+            length: std::mem::size_of::<NtAttributes>() as u32,
+            root: seal.root(),
+            name: &name,
+            flags: 0x40,
+            security: ptr::null_mut(),
+            qos: ptr::null_mut(),
+        };
+        let status = unsafe { NtDeleteFile(&attributes) };
+        eprintln!(
+            "METADATA_DELETE_NATIVE status={status:08x} entries={}",
+            std::fs::read_dir(&path).unwrap().count()
+        );
+        assert_eq!(status, 0);
+        drop(seal);
+        assert_eq!(std::fs::read_dir(&path).unwrap().count(), 0);
+    }
     fn fixture() -> (tempfile::TempDir, PathBuf, String, String) {
         let owner = process_sid(unsafe { GetCurrentProcess() }).unwrap();
         let directory = tempfile::tempdir_in(profile_path().unwrap().parent().unwrap()).unwrap();

@@ -33,6 +33,26 @@ function Native-Confirm([string]$intent,[bool]$accept){
  $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.ArgumentList.Add('--lifecycle-confirm-once');$p=[Diagnostics.Process]::Start($s)
  try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$q=@{action='ACT';environment_id=$e.id;expected_revision=$e.revision;expected_generation=$e.generation;operation_id=[Guid]::NewGuid().ToString();intent=$intent;language='en'};$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();[P08Desktop]::Confirm($p,$script:active,$e.id,$accept);Require ($p.WaitForExit(180000)) 'NATIVE_CONFIRMATION_RESULT_TIMEOUT';Require ($p.ExitCode -eq 0) 'NATIVE_CONFIRMATION_PROCESS_FAILED';return ($read.Result|ConvertFrom-Json)}finally{if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
 }
+function Box-Report([string]$leaf) {
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do {
+  $files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf)
+  Require ($files.Count -le 1) 'DUPLICATE_TARGET_REPORT'
+  if($files.Count -eq 1){
+   $contents=$null;$stream=$null;$reader=$null
+   try{$stream=[IO.File]::Open($files[0].FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read);Require ($stream.Length -le 4096) 'TARGET_REPORT_BOUND';$reader=[IO.StreamReader]::new($stream,[Text.UTF8Encoding]::new($false,$true));$contents=$reader.ReadToEnd()}catch [IO.IOException]{}finally{if($null -ne $reader){$reader.Dispose()}elseif($null -ne $stream){$stream.Dispose()}}
+   if($null -ne $contents -and $contents.EndsWith("`n")){return ($contents|ConvertFrom-Json)}
+  }
+  Start-Sleep -Milliseconds 100
+ }while($clock.ElapsedMilliseconds -lt 15000)
+ throw 'COMPLETE_BOXED_REPORT_TIMEOUT'
+}
+function Crash-Worker($request,[string]$kind,[string]$stage){
+ $key=if($kind -eq 'files'){'SECURERUN_P07_PAUSE_STAGE'}else{'SECURERUN_P06_PAUSE_STAGE'};[Environment]::SetEnvironmentVariable($key,$stage)
+ $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false)
+ foreach($arg in @('--'+$kind+'-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
+ $p=[Diagnostics.Process]::Start($s);try{$line=$p.StandardOutput.ReadLineAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'CHECKPOINT_TIMEOUT';Require ($line.Result -eq "CHECKPOINT_$stage") 'CHECKPOINT_NOT_REACHED';if($kind -eq 'control' -and $stage -eq 'Accepted'){$report=Box-Report $script:uncertainLeaf;Require ($report.boxed) 'UNCERTAIN_TARGET_NOT_BOXED'};$p.Kill();Require ($p.WaitForExit(10000)) 'HELD_WORKER_NOT_EXITED'}finally{[Environment]::SetEnvironmentVariable($key,$null);if(-not $p.HasExited){$p.Kill();$null=$p.WaitForExit(10000)};$p.Dispose()}
+}
 try{
  $who=[Security.Principal.WindowsIdentity]::GetCurrent();Require (-not ([Security.Principal.WindowsPrincipal]::new($who)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_USER_REQUIRED'
  $script:active=if($Mode -eq 'fault'){$FaultManager}else{$Manager}
@@ -105,7 +125,7 @@ try{
    $exe=Join-Path (Split-Path $script:active) 'securerun-launch-probe.exe';$q=@{action='IMPORT';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();source=$exe;name='P08 imported Программа.exe'};$null=Call $q 'files';$w=Workspace;$entry=$w.entries|Where-Object name -eq 'P08 imported Программа.exe';Require ($null -ne $entry) 'BOXED_EXE_IMPORT_MISSING'
    $id=[Guid]::NewGuid().ToString();$output=Join-Path $Fixture 'boxed-before-reset.jsonl';$q=@{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$id;file_id=$entry.id;arguments=@('short',$output)};$r=Call $q 'files';Require ($r.application_id -eq $id) 'BOXED_REGISTER_FAILED'
    $c=Call @{action='LIST'} 'control';$boxed=$c.applications|Where-Object {$_.environment_id -eq $e.id -and $_.boxed};$receipt=Launch $boxed;Require ($receipt.state -in @('BOXED_STAGE_RUNNING','BOXED_STAGE_EXITED')) $receipt.reason
-   $clock=[Diagnostics.Stopwatch]::StartNew();do{$reports=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'boxed-before-reset.jsonl');if($reports.Count -eq 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 10000);Require ($reports.Count -eq 1 -and -not(Test-Path -LiteralPath $output)) 'BOXED_LOGICAL_LAUNCH_MISSING';Stop-Owned
+   $report=Box-Report 'boxed-before-reset.jsonl';Require ($report.boxed -and -not(Test-Path -LiteralPath $output)) 'BOXED_LOGICAL_LAUNCH_MISSING';Stop-Owned
    $generation=$e.generation;$null=Act 'RESET';$r=Call @{action='LIST'} 'control';$stale=$r.applications|Where-Object id -eq $boxed.id;Require (-not $stale.available -and $e.generation -eq ($generation+1)) 'RESET_BOXED_REFERENCE_STILL_AVAILABLE'
    $receipt=Launch $boxed;Require ($receipt.state -eq 'REFUSED' -and $receipt.reason -eq 'BOX_EXECUTABLE_GENERATION_CHANGED') $receipt.reason
    $destination=Join-Path ([Environment]::GetFolderPath('UserProfile')) 'SecureRun-P08-Output';$null=New-Item -ItemType Directory -Path $destination -Force
@@ -157,6 +177,12 @@ try{
    try{$null=$gui.WaitForInputIdle(15000);Require (-not $gui.HasExited) 'ORIGINAL_SANDMAN_NOT_RUNNING';$null=Act 'ARCHIVE';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'sandman-keep.txt').Count -eq 1) 'SANDMAN_AUTO_RECOVERED_OR_DELETED';$null=Act 'RESET';Empty-Root;$null=Act 'UNARCHIVE'}finally{if(-not $gui.HasExited){$gui.Kill();$null=$gui.WaitForExit(10000)};$gui.Dispose()}
    @{original_gui_running=$true;auto_recovery_and_delete_disabled=$true;archive_retained_data=$true;original_native_cleanup_completed=$true;host_auto_recovery=$false}
   }
+  Case 'T56' 'old_confirmation_and_import_operation_cannot_mutate_reset_generation' {
+   $q=@{action='IMPORT';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();source=$source;name='old-generation.txt'};$null=Call $q 'files';$old=Prepare 'RESET';$null=Act 'RESET';$null=Import 'new-generation-canary.txt'
+   $r=Commit $old $true;Require ($r.reason -eq 'STALE_LIFECYCLE_OPERATION') $r.reason;$r=Call $q 'files' $true;Require ($r.reason -eq 'TRANSFER_OPERATION_CONFLICT') $r.reason
+   Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'old-generation.txt').Count -eq 0) 'OLD_IMPORT_REPLAYED';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'new-generation-canary.txt').Count -eq 1) 'STALE_PLAN_MUTATED_NEW_DATA'
+   @{real_old_plan_refused=$true;old_import_tombstone_refused=$true;new_generation_data_preserved=$true;automatic_replay=$false}
+  }
   Case 'T25' 'remove_clears_before_definition_deletion_and_keeps_audit_tombstone' {
    $old=$e.id;$savedRoot=$root;$r=Act 'REMOVE';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'REMOVED_ENVIRONMENT_STILL_ACTIVE';Require (@(Get-ChildItem -LiteralPath $savedRoot -Force).Count -eq 0) 'REMOVAL_LEFT_DATA'
    Require (@($r.operations|Where-Object {$_.environment_id -eq $old -and $_.intent -eq 'REMOVE' -and $_.stage -eq 'COMPLETE'}).Count -eq 1) 'REMOVAL_TOMBSTONE_MISSING'
@@ -164,12 +190,41 @@ try{
    @{contents_cleared_before_definition_delete=$true;original_section_delete_read_back_absent=$true;known_empty_root_recorded=$true;unrelated_boxes_untouched=$true;audit_tombstone=$true}
   }
  }else{
+  foreach($launchStage in @('Reserved','Accepted')){
+   Case 'T61' ('reset_reconciles_uncertain_launch_without_replay_'+$launchStage) {
+    $script:uncertainLeaf='uncertain-'+$launchStage+'.jsonl';$app=Register-Host (Join-Path $Fixture $script:uncertainLeaf);$id=[Guid]::NewGuid().ToString();$q=@{action='LAUNCH';environment_id=$e.id;expected_revision=$e.revision;application_id=$app.id;operation_id=$id};Crash-Worker $q 'control' $launchStage
+    $r=Call $q 'control';Require (($r.receipts|Where-Object operation_id -eq $id).state -eq 'UNKNOWN') 'UNCERTAINTY_ERASED';Stop-Owned
+    $before=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $script:uncertainLeaf).Count;Require ($before -eq $(if($launchStage -eq 'Accepted'){1}else{0})) 'UNCERTAIN_EXECUTION_COUNT_WRONG'
+    $null=Act 'RESET';$r=Call $q 'control' $true;Require ($r.reason -eq 'OPERATION_CONFLICT') $r.reason
+    $r=Call @{action='LIST'} 'control';Require (($r.receipts|Where-Object operation_id -eq $id).state -eq 'UNKNOWN') 'RESET_ERASED_UNKNOWN_RECEIPT';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $script:uncertainLeaf).Count -eq 0) 'OLD_LAUNCH_REPLAYED_AFTER_RESET'
+    $receipt=Launch $app;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason;$report=Box-Report $script:uncertainLeaf;Require ($report.boxed) 'FRESH_LAUNCH_NOT_BOXED';Stop-Owned
+    @{actual_worker_killed=$true;checkpoint=$launchStage;executions_before_reset=$before;unknown_receipt_preserved=$true;old_operation_refused=$true;fresh_explicit_launch_boxed=$true;automatic_replay=$false}
+   }
+  }
+  foreach($exportStage in @('AfterRename','MidCopy')){
+   $scenario=if($exportStage -eq 'AfterRename'){'T64'}else{'T65'}
+   Case $scenario ('reset_refuses_stale_export_recovery_'+$exportStage) {
+    $null=Import 'export-generation.txt';$entry=(Workspace).entries|Where-Object name -eq 'export-generation.txt';$output=Join-Path ([Environment]::GetFolderPath('UserProfile')) ('SecureRun-P08-Export-'+$exportStage);$null=New-Item -ItemType Directory -Path $output
+    $q=@{action='EXPORT';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();file_id=$entry.id;destination=$output;name='published.txt'};Crash-Worker $q 'files' $exportStage
+    $recovery=@{action='RECOVER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$q.operation_id}
+    if($exportStage -eq 'AfterRename'){
+     $artifact=Join-Path $output 'published.txt';$r=Call $recovery 'files';Require (($r.transfers|Where-Object operation_id -eq $q.operation_id).stage -eq 'COMPLETE_RECOVERED') 'POST_RENAME_NOT_RECONCILED';$zone=Get-Content -LiteralPath $artifact -Stream Zone.Identifier -Raw;Require ($zone.Contains('ZoneId=3')) 'PUBLISHED_FILE_UNMARKED'
+    }else{
+     $staging=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-',''));$artifact=Join-Path $staging 'payload.part';$original=Join-Path $staging 'original.part';Move-Item -LiteralPath $artifact -Destination $original;[IO.File]::WriteAllText($artifact,'SUBSTITUTED_EXPORT_CANARY');$originalHash=(Get-FileHash -LiteralPath $original).Hash
+    }
+    $artifactHash=(Get-FileHash -LiteralPath $artifact).Hash;$null=Act 'RESET'
+    foreach($action in @('RECOVER','DISCARD')){$recovery.action=$action;$r=Call $recovery 'files' $true;Require ($r.reason -eq 'ARTIFACT_GENERATION_CHANGED') $r.reason}
+    Require ((Get-FileHash -LiteralPath $artifact).Hash -eq $artifactHash) 'STALE_RECOVERY_MUTATED_ARTIFACT'
+    if($exportStage -eq 'AfterRename'){Require ((Get-Content -LiteralPath $artifact -Stream Zone.Identifier -Raw) -eq $zone) 'STALE_RECOVERY_CHANGED_MOTW'}else{Require ((Get-FileHash -LiteralPath $original).Hash -eq $originalHash) 'ORIGINAL_STAGING_MUTATED'}
+    @{actual_worker_killed=$true;checkpoint=$exportStage;generation_changed=$true;recovery_and_discard_refused=$true;host_artifact_unchanged=$true;post_rename_reconciled_before_reset=($exportStage -eq 'AfterRename');substituted_file_preserved=($exportStage -eq 'MidCopy');path_pattern_delete=$false;automatic_replay=$false}
+   }
+  }
   foreach($point in @('SnapshotCaptured','Fenced','Sealed','DispatchReserved','NativeReturned','Cleared','MetadataCommitted')){
    Case 'T34' ('real_cleanup_executor_interruption_'+$point) {
     if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'}
     $null=Import ('crash-'+$point+'.txt');$plan=Prepare 'RESET';$env:SECURERUN_P08_PAUSE_STAGE=$point
     try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
-    $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.checkpoint -eq $point) 'ACTUAL_KILL_PROOF_MISSING'
+    $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_KILL_PROOF_MISSING'
     $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id
     Require ($record.stage -eq $(if($point -in @('Cleared','MetadataCommitted')){'COMPLETE_RECOVERED'}else{'INTERRUPTED_RETAINED_ARCHIVED'})) 'RECOVERY_STATE_WRONG'
     Refresh-Environment
@@ -179,11 +234,16 @@ try{
     @{real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
    }
   }
-  Case 'T34' 'real_remove_interruption_after_definition_readback' {
-   if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'};$null=Import 'remove-crash.txt';$plan=Prepare 'REMOVE';$env:SECURERUN_P08_PAUSE_STAGE='DefinitionRemoved'
-   try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
-   $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id;Require ($record.stage -eq 'COMPLETE_RECOVERED') 'REMOVE_RECOVERY_NOT_VERIFIED'
-   @{real_executor_killed=$true;checkpoint='DefinitionRemoved';actual_definition_absent=$true;metadata_reconciled_without_delete_replay=$true;known_empty_root_retained=$true}
+  foreach($point in @('Cleared','DefinitionRemoved','MetadataCommitted')){
+   Case 'T34' ('real_remove_interruption_'+$point) {
+    if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'};$null=Import 'remove-crash.txt';$old=$e.id;$plan=Prepare 'REMOVE';$env:SECURERUN_P08_PAUSE_STAGE=$point
+    try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
+    $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_REMOVE_KILL_PROOF_MISSING'
+    $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id
+    if($point -eq 'Cleared'){Require ($record.stage -eq 'INTERRUPTED_RETAINED_ARCHIVED') 'REMOVE_RECOVERY_REPLAYED_DEFINITION_DELETE';Refresh-Environment;Require ($e.lifecycle -eq 'ARCHIVED') 'PARTIAL_REMOVE_NOT_ARCHIVED';$null=Act 'REMOVE'}else{Require ($record.stage -eq 'COMPLETE_RECOVERED') 'REMOVE_RECOVERY_NOT_VERIFIED';Require (@($r.environments|Where-Object environment_id -eq $old).Count -eq 0) 'DELETED_DEFINITION_METADATA_REMAIN'}
+    Empty-Root;$duplicate=Commit $plan;Require ($duplicate.reason -eq 'OBSERVED') $duplicate.reason;New-Environment
+    @{real_executor_killed=$true;checkpoint=$point;competing_manager_refused=$true;actual_definition_absent=$true;metadata_reconciled_without_delete_replay=$true;known_empty_root_retained=$true;fresh_intent_required_before_definition_delete=($point -eq 'Cleared')}
+   }
   }
  }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;@{status=$(if($failed -eq 0){'PASSED'}else{'FAILED'});mode=$Mode;standard_user=$true;failed=$failed}|ConvertTo-Json|Set-Content (Join-Path $Fixture ('standard-'+$Mode+'.json'));if($failed -ne 0){exit 1}

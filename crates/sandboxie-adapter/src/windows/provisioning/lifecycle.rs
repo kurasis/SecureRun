@@ -834,6 +834,10 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         let clock = Instant::now();
         let mut output = None;
         let mut interrupted = false;
+        #[cfg(feature = "policy-ci")]
+        let mut observed_checkpoint = None;
+        #[cfg(feature = "policy-ci")]
+        let mut competing_manager_refused = false;
         while clock.elapsed() < Duration::from_secs(180) {
             if let Ok(line) = rx.recv_timeout(Duration::from_millis(50)) {
                 if line.len() > 2 * 1024 * 1024 {
@@ -842,6 +846,14 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                 if line.starts_with("CHECKPOINT_") {
                     #[cfg(feature = "policy-ci")]
                     if std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true") {
+                        let stage = line.trim().strip_prefix("CHECKPOINT_").unwrap_or_default();
+                        if std::env::var("SECURERUN_P08_PAUSE_STAGE").as_deref() != Ok(stage) {
+                            return Err("LIFECYCLE_TEST_CHECKPOINT_MISMATCH");
+                        }
+                        observed_checkpoint = Some(stage.to_owned());
+                        competing_manager_refused = bounded_request(&contract::Request::List)
+                            .reason
+                            == "NAMESPACE_OPERATION_BUSY";
                         child.kill().map_err(|_| "LIFECYCLE_TEST_KILL_FAILED")?;
                         interrupted = true;
                     }
@@ -883,9 +895,10 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         #[cfg(feature = "policy-ci")]
         if interrupted
             && std::env::var("GITHUB_ACTIONS").as_deref() == Ok("true")
+            && let Some(checkpoint) = observed_checkpoint
             && let contract::Request::Commit { operation_id, .. } = &request
         {
-            let proof = serde_json::json!({"real_executor_killed":true,"held_exit_wait_completed":true,"controller_restored_known_acl":true,"checkpoint":std::env::var("SECURERUN_P08_PAUSE_STAGE").unwrap_or_default(),"product_privileged_helper":false});
+            let proof = serde_json::json!({"real_executor_killed":true,"held_exit_wait_completed":true,"controller_restored_known_acl":true,"checkpoint":checkpoint,"competing_manager_refused":competing_manager_refused,"product_privileged_helper":false});
             let path = engine
                 .profile
                 .join("metadata")

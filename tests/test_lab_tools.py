@@ -110,5 +110,27 @@ class IntegrityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'P07 DONE requires matching current P03/P04/P05/P06 regression'):
                 validator.validate(copy)
 
+    def test_p08_cannot_close_without_current_file_regression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'docs/evidence/p08/manifest.json'
+            manifest = json.loads(path.read_text())
+            manifest['result'] = 'DONE'
+            path.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'P08 DONE requires matching current P03/P04/P05/P06/P07 regression'):
+                validator.validate(copy)
+
+    def test_p08_cleanup_component_pins_cannot_be_substituted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy = Path(tmp) / 'repo'
+            shutil.copytree(ROOT, copy, ignore=shutil.ignore_patterns('.git', 'artifacts', '__pycache__', 'node_modules', 'target', 'dist', 'gen'))
+            path = copy / 'crates/sandboxie-adapter/cleanup-compatibility-v1.json'
+            pins = json.loads(path.read_text())
+            pins['targets'][0]['components'][0]['sha256'] = '0' * 64
+            path.write_text(json.dumps(pins))
+            with self.assertRaisesRegex(ValueError, 'P08 cleanup component pins differ'):
+                validator.validate(copy)
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,25 @@
+name: P08 native seal contract
+on:
+  push:
+    branches: ['p08/**']
+    paths: ['crates/sandboxie-adapter/src/windows/provisioning/lifecycle/seal.rs', '.github/workflows/p08-seal.yml']
+permissions:
+  contents: read
+jobs:
+  seal:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - shell: pwsh
+        run: |
+          $target=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aarch64-pc-windows-msvc'}else{'x86_64-pc-windows-msvc'}
+          $env:RUSTUP_TOOLCHAIN="1.90.0-$target"
+          rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal
+          if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+          cargo test --locked -p securerun-sandboxie-adapter lifecycle::seal::tests -- --nocapture
+          exit $LASTEXITCODE

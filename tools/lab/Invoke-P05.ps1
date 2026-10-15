@@ -293,7 +293,19 @@ try {
         $p=Start-Standard $account 'p05_sessions.ps1' @('-Manager',$app,'-EngineHome',$engine,'-Fixture',$account.fixture)
         try{
             $ready=Join-Path $account.fixture 'results/session-ready.json';$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path $ready) -and -not $p.HasExited -and $clock.ElapsedMilliseconds -lt 150000){Start-Sleep -Milliseconds 100}
-            Require (Test-Path $ready) 'SESSION_PROVISIONING_NOT_READY';$r=Get-Content $ready -Raw|ConvertFrom-Json
+            if(-not(Test-Path $ready)){
+                $resultPath=Join-Path $account.fixture 'results/cross-session.json'
+                $code='SESSION_PROVISIONING_NOT_READY'
+                if(Test-Path -LiteralPath $resultPath){
+                    $failed=Get-Content -LiteralPath $resultPath -Raw|ConvertFrom-Json
+                    Copy-Item -LiteralPath $resultPath -Destination (Join-Path $out 'cross-session.json')
+                    if($failed.PSObject.Properties['code'] -and $failed.code -cmatch '^[A-Z][A-Z0-9_]{3,80}$'){$code=$failed.code}
+                }
+                Get-ChildItem (Join-Path $account.fixture 'results') -Filter 'session-*.json' -File|Where-Object Length -LE 8192|ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $out $_.Name)}
+                @{stage='BEFORE_SESSION_READY';actor_exited=$p.HasExited;code=$code}|ConvertTo-Json|Set-Content (Join-Path $out 'session-setup-status.json') -Encoding utf8
+                throw $code
+            }
+            $r=Get-Content $ready -Raw|ConvertFrom-Json
             $password=([pscredential]::new($account.name,$account.secure)).GetNetworkCredential().Password
             try{$transport=$transportBridge.SendFixtureLogon([Action]{Start-ScheduledTask -TaskName $task},$pipe,$account.name,$password,$r.owner_sid,$account.fixture,$r.box,$probe)}finally{$password=$null}
             Require ($p.WaitForExit(60000)) 'SESSION_PRODUCTION_GATE_TIMEOUT';$file=Join-Path $account.fixture 'results/cross-session.json';$worker=Get-Content $file -Raw|ConvertFrom-Json;Copy-Item $file (Join-Path $out 'cross-session.json');$code=if($worker.PSObject.Properties['code']){$worker.code}else{'CROSS_SESSION_GATE_FAILED'};Require ($p.ExitCode -eq 0 -and $worker.status -eq 'PASSED') $code

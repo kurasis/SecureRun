@@ -28,5 +28,12 @@ try{
     $after=Observe;$live=@($after.boxes|Where-Object name -eq $box);Require ($live.Count -eq 1 -and $live[0].complete -and @($live[0].processes|Where-Object session -eq 0).Count -ge 1) 'OTHER_SESSION_PROCESS_WAS_TERMINATED'
     $result=@{status='PASSED';standard_user=$true;actor_session=$actorSession;target_session=0;same_owner_verified=$true;real_windows_sessions=$true;all_session_complete=$true;apply_reason=$a.reason;create_reason=$c.reason;new_storage_absent=$true;held_process_not_terminated=$true;production_target_launches=0;credential_values_retained=$false}
 }catch{$result.status='FAILED';$result.exception_type=$_.Exception.GetBaseException().GetType().FullName;$result.script_line=$_.InvocationInfo.ScriptLineNumber;$result.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CROSS_SESSION_GATE_FAILED'}}
+# Preserve only bounded structured diagnostic classifications; never private paths.
+$metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+if(Test-Path -LiteralPath $metadata){
+ foreach($prefix in @('image-status-','probe-result-','probe-evidence-')){
+  Get-ChildItem -LiteralPath $metadata -Filter ($prefix+'*.json') -File | Where-Object Length -LE 8192 | ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $Fixture ('results/session-'+$_.Name))}
+ }
+}
 $result|ConvertTo-Json -Depth 6|Set-Content (Join-Path $Fixture 'results/cross-session.json') -Encoding utf8
 if($result.status -ne 'PASSED'){exit 1}

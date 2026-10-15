@@ -1,61 +1,125 @@
 # P08 — Lifecycle, cleanup and recovery
 
-Status: IN_PROGRESS. Requested scope: P08 only. Dependency: P07 completed at
-runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68`; current regressions are pending.
+Status: IN_PROGRESS — both P08 native matrices passed; final P05 regression retry
+and workflow completion are pending. Scope is P08 only.
 
-The implementation introduces explicit Persistent/Disposable retention, native
-confirmation, Archive/Unarchive, Reset and removal after verified cleanup.
-Reset preserves the definition and host application records, advances environment
-generation and invalidates boxed executable references and selection tokens.
-Disposable leftovers are offered for Resume, Export or Delete; nothing is
-cleaned or exported automatically at startup or manager exit.
+Runtime source: `2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd`.
+Laboratories: Windows Server 2025 x64 and Windows 11 ARM64, with original Sandboxie
+Plus 1.18.6 / core 5.73.6 / ABI `0x57230`, upstream
+`cdba7096240b93d79c5373aa81a75a1c5c71b883`.
 
-Cleanup uses only the pinned original QSbieAPI native export proven in P02.
-A bounded namespace/ACL seal precedes dispatch; all-session idle, current roots,
-ownership, configuration and automation are checked. A separate unboxed ordinary-
-user controller retains root restoration authority across executor/UI loss.
-The executor has a 128 MiB job limit, one process and a bounded native callback.
-A failed operation remains journaled; recovery inspects actual identities and
-postconditions without replaying destructive actions or adopting replacement roots.
+## Resulting behavior
 
-Portable tests, strict i686 metadata checking and UI checks are being executed.
-Real Server 2025 x64 and Windows 11 ARM64 proof is pending. No native success,
-phase DONE, installed-candidate acceptance or release certification is claimed.
-All 26 original specification documents and 66 final acceptance statuses remain
-unchanged. Packaging-related T48 portions finish in P11. Next eligible phase only
-after the complete P08 gate: P09.
+Persistent environments keep their workloads and data after manager exit.
+Disposable environments keep data until an explicit Resume, Export or Delete
+choice. Pending state is durable before import/dispatch and after independently
+observed original-client activity. Existing data survives a mode change; no
+startup/exit cleanup or host recovery is automatic.
 
-Initial ARM run 38736673131 passed 40 adapter tests and failed three new seal tests
-before any engine mutation: joining an empty root-relative component introduced
-a trailing separator rejected by strict local-file grammar. Root resolution now
-keeps the original canonical root spelling. No path validation was weakened.
+Archive preserves the definition, data and application records and disables
+managed launch/import. Unarchive revalidates current ownership, root and policy.
+Reset retains the definition and application records, clears verified contents
+and advances the environment generation. Boxed executable references become
+unavailable until explicitly reimported. Remove clears contents before deleting
+the original definition and owned application records; audit and the verified
+empty root identity remain. Exact retention and archive restoration are described
+in [Lifecycle and recovery](../LIFECYCLE_AND_RECOVERY.md).
 
-Runs 38741141781 and 38742057167 disproved restoration by root inheritance alone.
-The isolated native deletion probe also confirmed that retaining child metadata
-handles delays namespace unlink until their final close. The revised protocol
-retains restoration handles for survivors and releases only kernel-confirmed
-delete-pending objects; a controller-bound pre-seal snapshot prevents the worker
-from sealing a different set of objects. COMPLETE is withheld until the controller
-restores the recorded ACLs after the held executor exits. Native verification of
-the revised protocol is pending.
+The renderer supplies identifiers and intent. A native OS dialog names the
+specific environment and UUID and states retention; Cancel consumes the private
+plan without dispatch. The renderer cannot supply a confirmation boolean, raw
+root, Prepare/Commit request or backend capability. Plans are bound to the current
+owner, engine, generation, revision, roots and policy and expire after 60 seconds.
 
-Full native run 38743266538 compiled the production and fault Tauri binaries on
-both platforms, but the first original cleanup returned an unresolved status;
-no P08 native scenario was accepted as passed. Its reviewed raw reports are
-retained under `evidence/p08/investigation-918f10f`. Two independent harness
-issues were identified: PowerShell concatenation collapsed the direct worker's
-three argv entries into one, and the multi-session fixture did not temporarily
-enable its original-client dispatch. The next run records bounded native status
-codes and controller stage traces instead of hiding the initial failure behind
-subsequent reconciliation refusals. Six isolated native seal cases subsequently
-passed on both targets at source 3e844cf.
+## Cleanup and recovery protocol
 
-Run 38745494066 passed all 19 production fault-mode scenarios on both targets,
-including seven Reset and eight Remove executor kills, both uncertain-launch
-windows and both export/reset recovery scenarios. Server passed 32/35 total
-cases; ARM passed 31/35. Remaining failures are retained as historical proof:
-the PowerShell caller cannot resolve the bridge's internal junction type; the
-second-session fixture needs an explicit original-client launch window; the
-desktop fixture can inspect a MessageBox before its body/children are ready.
-Native production cleanup, persistent/disposable UI-loss behavior and original
-fenced-dispatch refusal passed. These partial results do not close P08.
+Only the P02-proven original QSbieAPI native deletion ABI is called. Its original
+local DLL dependencies must match authenticated P02 hashes and valid signatures.
+An independently owned namespace seal retains preauthorized metadata handles,
+excludes existing writers, rejects hardlinks/reparse traversal and pins nonempty
+directories against movement. Only kernel-confirmed delete-pending handles are
+released. Bounded drain passes remain inside the active confirmed dispatch.
+
+The ordinary-user controller survives UI exit, bounds the executor to one process
+and 128 MiB and waits for its held process on every exit path before restoration.
+Surviving objects retain original ACL/attribute restoration authority. COMPLETE
+is published after controller restoration. There is no generic recursive root
+deletion, custom shell delete, hook execution, host fallback, engine bundle or
+privileged product helper.
+
+Recovery inspects current identity and checked postconditions; it never replays
+cleanup, definition deletion or launch. An uncertain partial cleanup retains and
+archives data and advances its generation. A verified cleared reset or already
+absent definition can reconcile metadata. UNKNOWN launch receipts remain UNKNOWN.
+Old-generation import/export/cleanup operations cannot mutate new data, and
+substituted staging files remain untouched. Reset preserves the exact retained
+root ID on this supported upstream route; unexpected root recreation is blocked.
+
+Scoped Stop audits current automation independently of cached eligibility,
+certificates and WFP readiness. Unapproved hooks or inheritance block termination
+until reviewed repair; the manager does not silently remove external settings.
+Archive and disposable state govern managed workflows. Trusted external clients
+remain outside the manager's atomic control; observed activity is included in
+entire-box state. Full machine/power loss may remove live restoration authority;
+unknown state remains blocked for explicit remediation, without a deletion or
+forensic-erasure guarantee.
+
+## Validation
+
+All runs below use the same runtime source. Raw evidence and checksums are stored
+in the corresponding phase manifests.
+
+| Gate | Run | Native result per target |
+|---|---|---|
+| P01 | [38757714245](https://github.com/kurasis/SecureRun/actions/runs/38757714245) | Repository, portable and UI checks passed |
+| P03 | [38757776148](https://github.com/kurasis/SecureRun/actions/runs/38757776148) | 19 foundation, 2 normal native, 3 UI and 29 command-boundary cases passed |
+| P04 | [38757779840](https://github.com/kurasis/SecureRun/actions/runs/38757779840) | 48 adapter tests and 19 observation cases passed |
+| P05 | [38760761111](https://github.com/kurasis/SecureRun/actions/runs/38760761111) | Identical-source fresh-run retry pending |
+| P06 | [38757790771](https://github.com/kurasis/SecureRun/actions/runs/38757790771) | 21 Server / 22 ARM cases passed |
+| P07 | [38757796223](https://github.com/kurasis/SecureRun/actions/runs/38757796223) | 28 Server / 29 ARM cases passed |
+| P08 | [38757714452](https://github.com/kurasis/SecureRun/actions/runs/38757714452) | 38/38 native cases passed on each target; workflow post-steps pending |
+
+Local validation passed: 36 portable adapter tests, three UI tests/build, strict
+Windows i686 metadata Clippy with `policy-ci`, PowerShell parsing/C# fixture
+compilation, repository validation and 12 tooling tests. Native Windows execution
+is established by Actions, not by Linux metadata compilation.
+
+| Scenario | Applicable production proof |
+|---|---|
+| T06 | Background descendants keep the environment Running and prevent cleanup. |
+| T18 | Seven Reset and eight Remove phases kill real held executors; recovery never replays deletion. |
+| T24 | Native confirmation, hardlinks, junctions, existing writers and locked files fail safely; outside canaries survive. |
+| T25 | Real normal-UI close/crash preserves workloads; imported and independently observed disposable state survives restart. |
+| T26 | Forged/stale plans and a competing manager are refused; duplicate delivery does not mutate data. |
+| T28 | Missing ownership and corrupt/foreign/future journals cannot adopt or delete an existing environment. |
+| T33 | Direct/inherited automation and drift after confirmation are refused; actual host marker remains absent; unsafe Stop is blocked. |
+| T34 | Moved/replaced roots are not adopted or cleared. |
+| T36 | Actual same-owner session 0 and interactive-session members must both stop before cleanup. |
+| T42 | Original SandMan coexists without automatic recovery/delete; independent original dispatch is refused while fenced. |
+| T43 | A real imported boxed executable runs logically before Reset; its old reference cannot launch afterward. |
+| T48 | Archive/Unarchive retain definition/data and revalidate restoration; packaging portions remain P11. |
+| T55 | Missing/recreated roots remain blocked; provisioning regressions retain PendingRoot safeguards. |
+| T56 | Old-generation requests/results cannot overwrite or mutate current state. |
+| T61 | Reserved/accepted lost receipts retain UNKNOWN and never dispatch twice, including after Reset. |
+| T64 | Actual post-rename export reconciles before Reset; stale recovery cannot alter the marked host file. |
+| T65 | Substituted staging and stale import/export/cleanup journals leave replacement and new-generation canaries unchanged. |
+
+## Investigations retained
+
+Initial seal tests rejected a root with an appended empty component and disproved
+restoration through root inheritance alone. Native tests established retaining
+survivor authority and closing only delete-pending objects. Historical full runs
+also exposed inaccessible fixture types, collapsed PowerShell worker argv and
+native-dialog readiness races. Those raw reports remain under the P08
+`investigation-*` directories and are not relabeled as successful current proof.
+
+P05 run 38757785675 passed Server but refused ARM cleanup of an unreviewed
+`WerFault.exe` in a fresh diagnostic scope. Its 43 passed/two failed ARM results
+and safe refusal are retained under `p05/investigation-p08-2dcc0d6`. A fresh retry
+uses the identical source, with process-image checks unchanged.
+
+The original 26 specification documents and all 66 final installed-candidate
+acceptance entries remain unchanged. T48 packaging finishes in P11; final
+installed-candidate acceptance remains P12. P09 is eligible only after this gate
+closes. No P09 implementation, encrypted boxes, snapshots, root relocation or
+engine uninstall is included.

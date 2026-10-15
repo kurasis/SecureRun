@@ -1,7 +1,7 @@
 # Disposable official application fixtures; this is not product installation code.
-param([Parameter(Mandatory)][string]$Home,[Parameter(Mandatory)][string]$Out)
+param([Parameter(Mandatory)][string]$productHome,[Parameter(Mandatory)][string]$Out)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
-if($env:GITHUB_ACTIONS -ne 'true' -or $Home -notmatch '^C:\\Program Files\\SecureRun-P09-[0-9a-f]{32}$'){throw 'P09_DISPOSABLE_SCOPE_REQUIRED'}
+if($env:GITHUB_ACTIONS -ne 'true' -or $productHome -notmatch '^C:\\Program Files\\SecureRun-P09-[0-9a-f]{32}$'){throw 'P09_DISPOSABLE_SCOPE_REQUIRED'}
 $pins=Get-Content (Join-Path $PSScriptRoot 'p09-applications.json') -Raw|ConvertFrom-Json
 $arch=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'arm64'}else{'x64'}
 $downloads=Join-Path $env:RUNNER_TEMP ('SecureRunP09Downloads-'+[Guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $downloads
@@ -13,7 +13,7 @@ foreach($kind in @('editor','archive','browser')){
  if($hash -cne $pin.$arch.hash){throw 'OFFICIAL_APP_HASH_MISMATCH'}
  $records+=@{kind=$kind;product=$pin.product;version=$pin.version;architecture=$arch;source=$pin.source;url=$pin.$arch.url;hash_algorithm=$pin.algorithm;package_hash=$hash;bytes=(Get-Item -LiteralPath $package).Length}
 }
-$archiveHome=Join-Path $Home 'applications/archive';$editorHome=Join-Path $Home 'applications/editor';$browserHome=Join-Path $Home 'applications/browser'
+$archiveHome=Join-Path $productHome 'applications/archive';$editorHome=Join-Path $productHome 'applications/editor';$browserHome=Join-Path $productHome 'applications/browser'
 $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $downloads 'archive.exe'));$start.UseShellExecute=$false;$start.ArgumentList.Add('/S');$start.ArgumentList.Add('/D='+$archiveHome)
 $p=[Diagnostics.Process]::Start($start);try{if(-not $p.WaitForExit(60000) -or $p.ExitCode -ne 0){throw 'ARCHIVE_FIXTURE_INSTALL_FAILED'}}finally{$p.Dispose()}
 if(-not(Test-Path -LiteralPath (Join-Path $archiveHome '7z.exe'))){throw 'ARCHIVE_EXECUTABLE_MISSING'}

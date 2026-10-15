@@ -2,6 +2,26 @@
   "phase": "P09",
   "result": "BLOCKED",
   "tested_commit": "ef2c4bd85830b6e1a486c0646e4e2e045f74a811",
-  "files": [],
-  "note": "Implementation and compile checks are provisional. Actual release UI/application/performance evidence and matching P03\u2013P08 regressions are pending. GitHub authorization restored; full native laboratory is being submitted."
+  "files": [
+    {
+      "path": "investigation-53c8e58/windows-11-arm/stage.json",
+      "sha256": "1d2674916d21efb5f24dca3b561132a08290b89cf82162e29d259f9ec8148467",
+      "size": 112
+    },
+    {
+      "path": "investigation-53c8e58/windows-2025/stage.json",
+      "sha256": "5f1b163ab0fe6f4c00f80c3debcc4e72df60dbdac30339f78f5416e1601321e0",
+      "size": 112
+    }
+  ],
+  "note": "P09 gate remains blocked pending actual native product results and matching P03 through P08 regressions. First lab initialization failure retained separately.",
+  "historical_runs": [
+    {
+      "tested_commit": "53c8e58c1e4866fa02a417b44697e65443cbc2b9",
+      "result": "FAILED",
+      "run_id": 38782723570,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38782723570",
+      "note": "Normal release compilation succeeded on both targets; lab initialization stopped because PowerShell HOME is read-only. No native product cases executed."
+    }
+  ]
 }

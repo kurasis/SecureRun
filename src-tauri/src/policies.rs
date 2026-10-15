@@ -981,6 +981,8 @@ pub async fn policy_request(
         UiRequest::List => None,
         UiRequest::Create { .. } => Some(A::PolicyCreate),
         UiRequest::Rename { .. } => Some(A::Rename),
+        UiRequest::Queue { .. } => Some(A::PolicyQueue),
+        UiRequest::DiscardQueued { .. } => Some(A::PolicyDraftDiscard),
         UiRequest::Inspect { .. } => Some(A::PolicyInspect),
         UiRequest::Repair { .. } => Some(A::PolicyRepair),
         _ => Some(A::PolicyApply),

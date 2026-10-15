@@ -38,8 +38,8 @@ try{
  $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData');$env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
  foreach($name in @('p05_lab.cs','p09_desktop.cs','p09_browser.cs')){Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)))}
  . (Join-Path $PSScriptRoot 'p09_cdp.ps1')
- $home=Split-Path $Manager;$lab=[P05Lab]::new($EngineHome,$Fixture,$home)
- $editor=Join-Path $home 'applications/editor/notepad++.exe';$archive=Join-Path $home 'applications/archive/7z.exe';$browser=Join-Path $home 'applications/browser/core/firefox.exe'
+ $productHome=Split-Path $Manager;$lab=[P05Lab]::new($EngineHome,$Fixture,$productHome)
+ $editor=Join-Path $productHome 'applications/editor/notepad++.exe';$archive=Join-Path $productHome 'applications/archive/7z.exe';$browser=Join-Path $productHome 'applications/browser/core/firefox.exe'
  $hostProfile=Join-Path $Fixture 'host-browser-profile';$boxedProfile=Join-Path $Fixture 'boxed-browser-profile';$protocolBase=Join-Path $env:LOCALAPPDATA 'SecureRunP09Protocol';foreach($path in @($hostProfile,$boxedProfile,$protocolBase)){$null=New-Item -ItemType Directory -Path $path}
  $prefs=@'
 user_pref("browser.shell.checkDefaultBrowser", false);
@@ -109,7 +109,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  Case 'T63' 'ten_thousand_files_bounded_ui_and_complete_pagination' {$r=Invoke-P09Stage 'FILE_LIST' @{environment_id=$first.id};$r.metrics|ConvertTo-Json|Set-Content (Join-Path $results 'file-workload.json') -Encoding utf8;$r.metrics}
  Case 'T66' 'synthetic_argv_and_environment_do_not_enter_manager_logs' {
-  $pending=Access 'PICKER' $gui.ProcessId (Join-Path $home 'p09-protocol-probe.exe') -Async
+  $pending=Access 'PICKER' $gui.ProcessId (Join-Path $productHome 'p09-protocol-probe.exe') -Async
   try{$null=Invoke-P09Stage 'SECRET_PICK';$null=Complete-Access $pending;$pending=$null;$null=Invoke-P09Stage 'SECRET_REGISTER';$marker=Find-BoxFile $first 'secret-result.json';$proof=Get-Content -LiteralPath $marker.FullName -Raw|ConvertFrom-Json;Require ($proof.boxed -and $proof.argv_secret_received -and $proof.inherited_environment_secret_absent) 'P09_SECRET_TARGET_PROOF_MISSING';@{real_boxed_target_executed=$true;synthetic_argv_received=$true;inherited_environment_secret_absent=$true;raw_target_errors_not_manager_events=$true}}
   finally{if($null -ne $pending){$null=Complete-Access $pending}}
  }
@@ -159,7 +159,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  Case 'T41' 'browser_reachable_protocol_handler_does_not_escape' {
   Require ($null -ne $browserProof) 'P09_BROWSER_PREREQUISITE_MISSING';$registry='HKCU:\Software\Classes\securerun-p09';Require (-not(Test-Path -LiteralPath $registry)) 'P09_PREEXISTING_PROTOCOL_NOT_CHANGED'
-  $null=New-Item -Path $registry;$script:registryCreated=$true;Set-Item -LiteralPath $registry -Value 'URL:SecureRun P09 synthetic protocol';$null=New-ItemProperty -LiteralPath $registry -Name 'URL Protocol' -Value '' -PropertyType String;$null=New-Item -Path ($registry+'\shell\open\command') -Force;Set-Item -LiteralPath ($registry+'\shell\open\command') -Value ('"'+(Join-Path $home 'p09-protocol-probe.exe')+'" "%1"')
+  $null=New-Item -Path $registry;$script:registryCreated=$true;Set-Item -LiteralPath $registry -Value 'URL:SecureRun P09 synthetic protocol';$null=New-ItemProperty -LiteralPath $registry -Name 'URL Protocol' -Value '' -PropertyType String;$null=New-Item -Path ($registry+'\shell\open\command') -Force;Set-Item -LiteralPath ($registry+'\shell\open\command') -Value ('"'+(Join-Path $productHome 'p09-protocol-probe.exe')+'" "%1"')
   $positive=[Guid]::NewGuid().ToString();$ps=[Diagnostics.ProcessStartInfo]::new(('securerun-p09:'+$positive));$ps.UseShellExecute=$true;$control=[Diagnostics.Process]::Start($ps);if($null -ne $control){$null=$control.WaitForExit(10000);$control.Dispose()}
   $clock=[Diagnostics.Stopwatch]::StartNew();$positivePath=Join-Path $protocolBase ($positive+'.json');while(-not(Test-Path -LiteralPath $positivePath) -and $clock.ElapsedMilliseconds -lt 15000){Start-Sleep -Milliseconds 100};Require (Test-Path -LiteralPath $positivePath) 'P09_HOST_PROTOCOL_POSITIVE_CONTROL_MISSING';$positiveProof=Get-Content -LiteralPath $positivePath -Raw|ConvertFrom-Json;Require ($positiveProof.invoked -and -not $positiveProof.boxed) 'P09_HOST_PROTOCOL_SCOPE_INVALID'
   $nonce=[Guid]::NewGuid().ToString();$null=Access 'BROWSER_PROTOCOL' $script:browserGuiPid '' ('securerun-p09:'+$nonce)
@@ -178,7 +178,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  Case 'T32' 'launch_overhead_observed_against_same_fixed_original_dispatch' {
   $box='SR_'+$apps.id.Replace('-','');$lab.Register($box);$clock=[Diagnostics.Stopwatch]::StartNew();$direct=$lab.HoldProductionProbe($box);$directMs=$clock.Elapsed.TotalMilliseconds
   try{Require ($lab.HeldMemberAlive($direct,$box)) 'P09_DIRECT_BASELINE_NOT_BOXED'}finally{[P05Lab]::Stop($direct);$lab.FenceFixture($box)}
-  $application=Register-App $apps 'P09 launch budget' (Join-Path $home 'securerun-launch-probe.exe') @('hold',(Join-Path $Fixture 'managed-launch.jsonl'));$clock.Restart();$receipt=Launch-App $apps $application;$managedMs=$clock.Elapsed.TotalMilliseconds;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
+  $application=Register-App $apps 'P09 launch budget' (Join-Path $productHome 'securerun-launch-probe.exe') @('hold',(Join-Path $Fixture 'managed-launch.jsonl'));$clock.Restart();$receipt=Launch-App $apps $application;$managedMs=$clock.Elapsed.TotalMilliseconds;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
   @{same_fixed_benign_probe=$true;original_dispatch_ms=$directMs;production_manager_dispatch_ms=$managedMs;manager_added_upper_bound_ms=[Math]::Max(0,$managedMs-$directMs);target_startup_included_in_both=$true;target_met=($managedMs-$directMs -lt 1000);no_required_check_removed=$true}
  }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count

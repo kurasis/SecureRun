@@ -22,6 +22,8 @@ pub enum Action {
     Rename,
     PolicyCreate,
     PolicyApply,
+    PolicyQueue,
+    PolicyDraftDiscard,
     PolicyInspect,
     PolicyRepair,
     Register,

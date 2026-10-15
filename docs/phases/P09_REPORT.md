@@ -44,7 +44,9 @@ adapter metadata Clippy and PowerShell/C# compile checks are recorded separately
 from native execution. Earlier product builds passed on both Windows targets at
 `ef2c4bd85830b6e1a486c0646e4e2e045f74a811` (Actions `38773439542`).
 Full native product lab `38782723570` was submitted at
-`53c8e58c1e4866fa02a417b44697e65443cbc2b9`; its outcome is pending.
+`53c8e58c1e4866fa02a417b44697e65443cbc2b9`; both release builds passed, then fixture setup failed because a script variable
+conflicted with PowerShell HOME. No native product case executed. Original stage
+JSON is retained under `investigation-53c8e58`; the fixture variable is renamed.
 
 ## Validation pending
 

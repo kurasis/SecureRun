@@ -513,6 +513,56 @@
       "path": "completion-74d86db/windows-11-arm/standard-normal.json",
       "size": 91,
       "sha256": "99c9bc0b5b081a4e61477cba3d02b63b4402dd1e86672d7e41083826ef361b49"
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/file-cases.json",
+      "sha256": "facd100aba5a64feb7d6cab09a37a8717ad98a90e8b9315460e6e5455b8fa232",
+      "size": 9504
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/run-summary.json",
+      "sha256": "981cfc3e7d7522d95f8f0a64bcc24cc6fc9fe61ee25de778d3af3ed811892a41",
+      "size": 653
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/stage.json",
+      "sha256": "b401fcd5d8c814856b160c99e35613fdb01fdd9f63d31714e3a1e3588dbdfcf4",
+      "size": 112
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/standard-fault.json",
+      "sha256": "5309818e4d8a58624895afeddd304fced85726a827f97a0a6815bfeb3867cc47",
+      "size": 90
+    },
+    {
+      "path": "investigation-eaab83c/windows-11-arm/standard-normal.json",
+      "sha256": "d683f4146a5edef165e2c404ef777f0e70b6216165077fe2a8a8fe5da324890a",
+      "size": 91
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/file-cases.json",
+      "sha256": "d0b898f644658b7b0c122e9e2286bbe0a4aa4f1f53857070e92819f8d5ece632",
+      "size": 8928
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/run-summary.json",
+      "sha256": "ba6c66a82df5a98c6709d790f5cc70fcc2e250f4f4fc5fa3eea46ab86ff793c2",
+      "size": 653
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/stage.json",
+      "sha256": "618864d16b4592f493113b35e452d19f1cbdd2dbab025d4865a8004c61d3cb2b",
+      "size": 112
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/standard-fault.json",
+      "sha256": "0bae80c213f3894ef57ac8ad27d95541feb83506c727383413725630bd2f3564",
+      "size": 90
+    },
+    {
+      "path": "investigation-eaab83c/windows-2025/standard-normal.json",
+      "sha256": "d387e6689eb4c26aeb43a90d25ce725dcdd543e5abc627f2b2fb19fc054251a5",
+      "size": 91
     }
   ],
   "tested_sources": [
@@ -1065,6 +1115,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38729086335",
       "result": "BLOCKED",
       "note": "P08 lifecycle implementation changed current runtime sources. Matching exact-source regressions are required; historical proof is retained."
+    },
+    {
+      "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
+      "run_id": 38811686369,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38811686369",
+      "result": "PASSED",
+      "note": "Historical actual native results. Later source changes require matching regressions; diagnostic/measurement modes cannot close P09."
     }
   ]
 }

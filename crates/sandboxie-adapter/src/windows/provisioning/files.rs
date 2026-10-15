@@ -25,13 +25,14 @@ unsafe extern "system" {
         class: u32,
     ) -> i32;
 }
-fn generation(e: &OwnedEnvironment) -> String {
+pub(super) fn generation(e: &OwnedEnvironment) -> String {
     fingerprint(&(
         &e.id,
         &e.owner_sid,
         &e.engine_identity,
         &e.root_identity,
         e.revision,
+        e.generation,
     ))
 }
 fn scope(
@@ -854,6 +855,13 @@ pub fn execute(
             .iter()
             .find(|e| e.id == environment_id)
             .ok_or("OWNERSHIP_NOT_FOUND")?;
+        if matches!(
+            request,
+            contract::Request::Import { .. } | contract::Request::Register { .. }
+        ) && e.lifecycle != crate::lifecycle::State::Active
+        {
+            return Err("LIFECYCLE_NOT_ACTIVE");
+        }
         if e.revision != revision || e.stage != Stage::Verified {
             return Err("REVISION_CONFLICT");
         }

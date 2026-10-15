@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38729076831,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38729076831",
   "tested_commit": "bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68",
@@ -907,5 +907,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "P08 lifecycle implementation changed current runtime sources. Matching exact-source regressions are required; historical proof is retained."
 }

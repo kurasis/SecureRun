@@ -17,6 +17,7 @@ struct Selection {
     operation: Uuid,
     environment: Option<Uuid>,
     revision: u64,
+    generation: u64,
     issued: Instant,
 }
 #[derive(Default)]
@@ -120,6 +121,15 @@ pub async fn select_policy_path(
             operation: request.operation_id,
             environment: request.environment_id,
             revision: request.expected_revision,
+            generation: request
+                .environment_id
+                .and_then(|id| {
+                    list.environments
+                        .iter()
+                        .find(|e| e.id == id)
+                        .map(|e| e.generation)
+                })
+                .unwrap_or(0),
             issued: Instant::now(),
         },
     );
@@ -168,7 +178,7 @@ pub enum UiRequest {
         acknowledge_view_change: bool,
     },
 }
-fn grants(
+async fn grants(
     state: &PolicyState,
     requested: Vec<UiGrant>,
     operation: Uuid,
@@ -178,6 +188,38 @@ fn grants(
     if requested.len() > 24 {
         return err(ErrorCode::InvalidInput);
     }
+    {
+        let selections = state
+            .0
+            .lock()
+            .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?;
+        if requested
+            .iter()
+            .any(|r| !selections.contains_key(&r.selection_id))
+        {
+            return err(ErrorCode::SelectionExpired);
+        }
+    }
+    let current_generation = if let Some(id) = environment {
+        let current = tauri::async_runtime::spawn_blocking(|| {
+            securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+        })
+        .await
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+        if current.reason != "OBSERVED" {
+            return err(ErrorCode::ManagerContextUnsafe);
+        }
+        Some(
+            current
+                .environments
+                .iter()
+                .find(|e| e.id == id)
+                .ok_or_else(|| AppError::new(ErrorCode::SelectionScopeMismatch))?
+                .generation,
+        )
+    } else {
+        None
+    };
     let mut selections = state
         .0
         .lock()
@@ -192,6 +234,7 @@ fn grants(
             || s.operation != operation
             || s.environment != environment
             || s.revision != revision
+            || current_generation.is_some_and(|g| g != s.generation)
         {
             return err(ErrorCode::SelectionScopeMismatch);
         }
@@ -219,7 +262,7 @@ pub async fn policy_request(
             grants: requested,
             operation_id,
         } => {
-            let (g, h) = grants(&state, requested, operation_id, None, 0)?;
+            let (g, h) = grants(&state, requested, operation_id, None, 0).await?;
             held = h;
             Request::Create {
                 display_name,
@@ -245,7 +288,8 @@ pub async fn policy_request(
                 operation_id,
                 Some(environment_id),
                 expected_revision,
-            )?;
+            )
+            .await?;
             held = h;
             Request::Apply {
                 environment_id,
@@ -369,7 +413,8 @@ pub async fn control_request(
                 operation_id,
                 Some(environment_id),
                 expected_revision,
-            )?;
+            )
+            .await?;
             held = leases;
             Control::Register {
                 environment_id,
@@ -525,7 +570,8 @@ pub async fn files_request(
                 operation_id,
                 Some(environment_id),
                 expected_revision,
-            )?;
+            )
+            .await?;
             held = leases;
             F::Import {
                 environment_id,
@@ -552,7 +598,8 @@ pub async fn files_request(
                 operation_id,
                 Some(environment_id),
                 expected_revision,
-            )?;
+            )
+            .await?;
             held = leases;
             F::Export {
                 environment_id,
@@ -613,6 +660,162 @@ pub async fn files_request(
         return err(ErrorCode::StaleOperation);
     }
     Ok(FilesReply {
+        reply,
+        engine_generation: generation,
+    })
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(
+    tag = "action",
+    rename_all = "SCREAMING_SNAKE_CASE",
+    deny_unknown_fields
+)]
+pub enum UiLifecycleRequest {
+    List,
+    Act {
+        environment_id: Uuid,
+        expected_revision: u64,
+        expected_generation: u64,
+        operation_id: Uuid,
+        intent: securerun_sandboxie_adapter::lifecycle::Action,
+        language: String,
+    },
+    Recover {
+        operation_id: Uuid,
+    },
+}
+#[derive(Serialize)]
+pub struct LifecycleReply {
+    reply: securerun_sandboxie_adapter::lifecycle::Reply,
+    engine_generation: u64,
+}
+static LIFECYCLE_DIALOG: Mutex<()> = Mutex::new(());
+pub fn perform_lifecycle(
+    request: UiLifecycleRequest,
+) -> Result<securerun_sandboxie_adapter::lifecycle::Reply> {
+    use securerun_sandboxie_adapter::{
+        lifecycle::{Action, Request as L},
+        windows::provisioning::lifecycle::bounded_request,
+    };
+    match request {
+        UiLifecycleRequest::List => Ok(bounded_request(&L::List)),
+        UiLifecycleRequest::Recover { operation_id } => {
+            Ok(bounded_request(&L::Recover { operation_id }))
+        }
+        UiLifecycleRequest::Act {
+            environment_id,
+            expected_revision,
+            expected_generation,
+            operation_id,
+            intent,
+            language,
+        } => {
+            if !matches!(language.as_str(), "en" | "ru") {
+                return err(ErrorCode::InvalidInput);
+            }
+            let _dialog = LIFECYCLE_DIALOG
+                .try_lock()
+                .map_err(|_| AppError::new(ErrorCode::OperationConflict))?;
+            let prepared = bounded_request(&L::Prepare {
+                environment_id,
+                expected_revision,
+                expected_generation,
+                operation_id,
+                intent,
+            });
+            if prepared.reason != "OBSERVED" {
+                return Ok(prepared);
+            }
+            let Some(plan) = prepared.plan else {
+                return err(ErrorCode::OperationConflict);
+            };
+            let russian = language == "ru";
+            let retention = if russian {
+                match intent {
+                    Action::Reset => {
+                        "Удалить всё содержимое песочницы. Определение среды и записи приложений сохранятся. Импортированные EXE нужно будет импортировать заново."
+                    }
+                    Action::Remove => {
+                        "Удалить всё содержимое, затем определение среды и записи приложений. Сохранить историю и идентичность проверенного пустого корня."
+                    }
+                    Action::Archive => {
+                        "Сохранить определение, приложения и данные. Запуск через менеджер будет запрещён. Экспорт и сброс останутся доступны."
+                    }
+                    Action::Unarchive => {
+                        "Сохранить данные. Перед разрешением запуска заново проверить владельца, корень и политику."
+                    }
+                    Action::Persistent => {
+                        "Сохранять данные и процессы после закрытия менеджера. Не выполнять автоматическую очистку."
+                    }
+                    Action::Disposable => {
+                        "Использовать отдельную приватную среду. После завершения всех процессов предложить продолжение, экспорт или удаление. Не экспортировать и не очищать автоматически."
+                    }
+                    Action::Resume => {
+                        "Сохранить оставшиеся данные disposable-среды и разрешить новый явный запуск. Предыдущий запуск повторно не выполняется."
+                    }
+                }
+            } else {
+                intent.retention()
+            };
+            let name = securerun_sandboxie_adapter::files::display(&plan.display_name);
+            let title = if russian {
+                "SecureRun — подтверждение среды"
+            } else {
+                "SecureRun — environment confirmation"
+            };
+            let body = format!("{}\n{}\n\n{}", name, environment_id, retention);
+            let accepted = rfd::MessageDialog::new()
+                .set_title(title)
+                .set_description(&body)
+                .set_level(if intent.destructive() {
+                    rfd::MessageLevel::Warning
+                } else {
+                    rfd::MessageLevel::Info
+                })
+                .set_buttons(rfd::MessageButtons::OkCancel)
+                .show();
+            if accepted != rfd::MessageDialogResult::Ok {
+                return Ok(securerun_sandboxie_adapter::lifecycle::Reply::failure(
+                    "LIFECYCLE_CONFIRMATION_CANCELLED",
+                ));
+            }
+            Ok(bounded_request(&L::Commit {
+                operation_id,
+                plan_id: plan.plan_id,
+            }))
+        }
+    }
+}
+#[tauri::command]
+pub async fn lifecycle_request(
+    window: WebviewWindow,
+    request: UiLifecycleRequest,
+    backend: State<'_, crate::app::AppState>,
+) -> Result<LifecycleReply> {
+    authorize(&window)?;
+    let generation = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    let reply = tauri::async_runtime::spawn_blocking(move || perform_lifecycle(request))
+        .await
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))??;
+    if generation
+        != backend
+            .0
+            .lock()
+            .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+            .health
+            .view(Instant::now())
+            .generation
+    {
+        return err(ErrorCode::CapabilityUnavailable);
+    }
+    Ok(LifecycleReply {
         reply,
         engine_generation: generation,
     })

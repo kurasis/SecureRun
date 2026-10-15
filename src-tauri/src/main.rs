@@ -11,6 +11,65 @@ mod policies;
 #[cfg(windows)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if args.len() == 2 && args[1] == "--lifecycle-confirm-once" {
+        use std::io::Read;
+        std::panic::set_hook(Box::new(|_| {}));
+        let mut data = Vec::new();
+        if std::io::stdin().take(16385).read_to_end(&mut data).is_err() || data.len() > 16384 {
+            std::process::exit(64)
+        }
+        let Ok(request) = serde_json::from_slice::<policies::UiLifecycleRequest>(&data) else {
+            std::process::exit(64)
+        };
+        match policies::perform_lifecycle(request) {
+            Ok(reply) => {
+                if let Ok(text) = serde_json::to_string(&reply) {
+                    println!("{text}")
+                }
+            }
+            Err(_) => std::process::exit(65),
+        }
+        return;
+    }
+    if matches!(
+        args.get(1).map(String::as_str),
+        Some("--lifecycle-worker" | "--lifecycle-supervisor" | "--lifecycle-once")
+    ) {
+        use std::io::Read;
+        std::panic::set_hook(Box::new(|_| {}));
+        let mut data = Vec::new();
+        if std::io::stdin().take(16385).read_to_end(&mut data).is_err() || data.len() > 16384 {
+            std::process::exit(64)
+        }
+        let Ok(request) =
+            serde_json::from_slice::<securerun_sandboxie_adapter::lifecycle::Request>(&data)
+        else {
+            std::process::exit(64)
+        };
+        use securerun_sandboxie_adapter::windows::provisioning::lifecycle as service;
+        let reply = if args[1] == "--lifecycle-once" {
+            if args.len() != 2 {
+                std::process::exit(64)
+            }
+            service::bounded_request(&request)
+        } else {
+            if args.len() != 4 {
+                std::process::exit(64)
+            }
+            let (Ok(pid), Ok(birth)) = (args[2].parse(), args[3].parse()) else {
+                std::process::exit(64)
+            };
+            if args[1] == "--lifecycle-supervisor" {
+                service::supervise(pid, birth, request)
+            } else {
+                service::execute(pid, birth, request)
+            }
+        };
+        if let Ok(text) = serde_json::to_string(&reply) {
+            println!("{text}")
+        }
+        return;
+    }
     if args.get(1).map(String::as_str) == Some("--files-worker")
         || (args.len() == 2 && args[1] == "--files-once")
     {

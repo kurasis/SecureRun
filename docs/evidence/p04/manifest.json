@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68",
   "run_id": 38729079754,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38729079754",
@@ -659,5 +659,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "P08 lifecycle implementation changed current runtime sources. Matching exact-source regressions are required; historical proof is retained."
 }

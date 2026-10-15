@@ -1,20 +1,21 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P07.
+Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P08.
 
 | Phase | Status | Evidence |
 |---|---|---|
 | P01 | DONE — owner-selected Windows 11 ARM64 lab | [P01 report](phases/P01_REPORT.md) |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | DONE — current P07 dependency regression | [P03 report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
-| P04 | DONE — current P07 dependency regression | [P04 report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | DONE — current P07 dependency regression | [P05 report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE — current P07 dependency regression | [P06 report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE | [Safe file protocol](SAFE_FILE_WORKFLOWS.md), [P07 report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08–P12 | NOT_STARTED | Next eligible phase: P08 |
+| P03 | BLOCKED — P08 regression pending | [P03 report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
+| P04 | BLOCKED — P08 regression pending | [P04 report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
+| P05 | BLOCKED — P08 regression pending | [P05 report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | BLOCKED — P08 regression pending | [P06 report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | BLOCKED — P08 regression pending | [Safe file protocol](SAFE_FILE_WORKFLOWS.md), [P07 report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | IN_PROGRESS | Lifecycle service, native cleanup and recovery verification |
+| P09–P12 | NOT_STARTED | Depend on P08 |
 
-Current tested runtime: `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68`.
-All P03–P07 gates bind this same commit and current runtime-file hashes.
+Last completed P07 runtime: `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68`.
+P08 changes invalidate the current source binding; matching regressions are pending.
 Reviewed original JSON, binary provenance and failed investigations are retained
 with checksums; historical reports are never relabeled as current proof.
 

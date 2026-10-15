@@ -143,6 +143,15 @@ impl NativeEngine {
         all: &[OwnedEnvironment],
         dispatched: &mut bool,
     ) -> R<(String, Option<ProcessIdentity>)> {
+        if e.lifecycle != crate::lifecycle::State::Active || e.lifecycle_operation.is_some() {
+            return Err("LIFECYCLE_NOT_ACTIVE");
+        }
+        if e.mode == crate::lifecycle::Mode::Disposable
+            && e.disposable_pending
+            && self.api.processes(&e.name())?.is_empty()
+        {
+            return Err("DISPOSABLE_LEFTOVER_RESUME_EXPORT_OR_DELETE");
+        }
         if e.stage != Stage::Verified || e.revision != a.revision {
             return Err("LAUNCH_REVISION_NOT_VERIFIED");
         }
@@ -302,7 +311,7 @@ impl NativeEngine {
             Err(code) => Err(code),
         }
     }
-    fn stop_environment(&self, e: &OwnedEnvironment) -> R<()> {
+    pub(super) fn stop_environment(&self, e: &OwnedEnvironment) -> R<()> {
         let _root = self.control_scope(e)?;
         if self
             .api
@@ -406,7 +415,7 @@ pub fn execute(
         if policy_path.exists() {
             let _ = lease(&policy_path, true)?;
         }
-        let journal = Journal::open(&policy_path, &engine.owner)?;
+        let mut journal = Journal::open(&policy_path, &engine.owner)?;
         let all = journal.list()?;
         let path = meta.join("control.sqlite");
         if path.exists() {
@@ -444,10 +453,19 @@ pub fn execute(
             } => {
                 let e = find(*environment_id)?;
                 if control
-                    .reserve(*operation_id, &request, &(&e.owner_sid, &e.root_identity))?
+                    .reserve(
+                        *operation_id,
+                        &request,
+                        &(&e.owner_sid, &e.root_identity, e.generation),
+                    )?
                     .is_none()
                 {
                     let registration = (|| -> R<Application> {
+                        if e.lifecycle != crate::lifecycle::State::Active
+                            || e.lifecycle_operation.is_some()
+                        {
+                            return Err("LIFECYCLE_NOT_ACTIVE");
+                        }
                         if e.revision != *expected_revision || e.stage != Stage::Verified {
                             return Err("REVISION_CONFLICT");
                         }
@@ -512,7 +530,7 @@ pub fn execute(
                     .reserve(
                         *operation_id,
                         &request,
-                        &(&e.owner_sid, &e.root_identity, &a.identity),
+                        &(&e.owner_sid, &e.root_identity, e.generation, &a.identity),
                     )?
                     .is_none()
                 {
@@ -523,6 +541,13 @@ pub fn execute(
                     } else if e.revision != *expected_revision {
                         Err("REVISION_CONFLICT")
                     } else {
+                        // Reserve disposable leftovers before target dispatch, even
+                        // if the target exits before the next process observation.
+                        if e.mode == crate::lifecycle::Mode::Disposable {
+                            let mut pending = e.clone();
+                            pending.disposable_pending = true;
+                            journal.save(&pending)?;
+                        }
                         engine.launch_application(e, &a, &all, &mut dispatched)
                     };
                     let (state, reason, process) = match result {
@@ -556,7 +581,11 @@ pub fn execute(
             } => {
                 let e = find(*environment_id)?;
                 if control
-                    .reserve(*operation_id, &request, &(&e.owner_sid, &e.root_identity))?
+                    .reserve(
+                        *operation_id,
+                        &request,
+                        &(&e.owner_sid, &e.root_identity, e.generation),
+                    )?
                     .is_none()
                 {
                     let result = engine.stop_environment(e);
@@ -572,7 +601,7 @@ pub fn execute(
             contract::Request::StopManaged { operation_id } => {
                 let scope = all
                     .iter()
-                    .map(|e| (e.id, &e.owner_sid, &e.root_identity))
+                    .map(|e| (e.id, &e.owner_sid, &e.root_identity, e.generation))
                     .collect::<Vec<_>>();
                 if control.reserve(*operation_id, &request, &scope)?.is_none() {
                     let mut result = Ok(());
@@ -594,11 +623,29 @@ pub fn execute(
         reply.applications = control
             .applications()?
             .into_iter()
-            .map(Into::into)
+            .map(|a| {
+                let valid = all
+                    .iter()
+                    .find(|e| e.id == a.environment_id)
+                    .is_some_and(|e| {
+                        a.boxed
+                            .as_ref()
+                            .is_none_or(|b| b.generation == super::files::generation(e))
+                    });
+                let mut view: contract::ApplicationView = a.into();
+                view.available = valid;
+                if !valid {
+                    view.unavailable_reason =
+                        Some("REIMPORT_REQUIRED_AFTER_RESET_OR_REMOVAL".into());
+                }
+                view
+            })
             .collect();
         reply.receipts = control.receipts()?;
         for e in &all {
-            let eligible = e.stage == Stage::Verified
+            let eligible = e.lifecycle == crate::lifecycle::State::Active
+                && e.lifecycle_operation.is_none()
+                && e.stage == Stage::Verified
                 && !control.unresolved(e.id, Uuid::nil())?
                 && validate_owned(&engine, e, &all).is_ok();
             let processes = engine

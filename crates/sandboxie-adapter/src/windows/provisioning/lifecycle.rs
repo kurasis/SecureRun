@@ -791,6 +791,28 @@ fn command(mode: &str, pid: u32, birth: u64) -> R<Command> {
     }
     Ok(c)
 }
+struct HeldExecutor(std::process::Child);
+impl std::ops::Deref for HeldExecutor {
+    type Target = std::process::Child;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for HeldExecutor {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl Drop for HeldExecutor {
+    fn drop(&mut self) {
+        // This guard is declared after restoration authority. Every error path
+        // waits for the exact executor before any seal can unwind and restore.
+        if !matches!(self.0.try_wait(), Ok(Some(_))) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+}
 #[cfg(feature = "policy-ci")]
 fn original_fenced_dispatch(engine: &NativeEngine, environment: Uuid) -> R<bool> {
     let probe = lease(&engine.probe, false)?;
@@ -862,9 +884,11 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         }
         let pid = unsafe { GetCurrentProcessId() };
         let born = process_birth(pid)?;
-        let mut child = command("--lifecycle-worker", pid, born)?
-            .spawn()
-            .map_err(|_| "LIFECYCLE_EXECUTOR_START_FAILED")?;
+        let mut child = HeldExecutor(
+            command("--lifecycle-worker", pid, born)?
+                .spawn()
+                .map_err(|_| "LIFECYCLE_EXECUTOR_START_FAILED")?,
+        );
         let job_raw = unsafe { CreateJobObjectW(ptr::null(), ptr::null()) };
         if job_raw.is_null() {
             let _ = child.kill();

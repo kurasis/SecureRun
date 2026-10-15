@@ -55,13 +55,43 @@ fn main() {
         "\\\"tail\\",
     ];
     let exact = mode != "arguments" || args[2..] == expected;
-    let report = serde_json::json!({"boxed":true,"environment_clean":std::env::var_os("SECURERUN_P06_SECRET").is_none(),"session":session,"arguments_exact":exact,"cwd_exact":mode!="cwd" || args.get(2).is_some_and(|p|std::env::current_dir().ok().is_some_and(|cwd|cwd.to_string_lossy().eq_ignore_ascii_case(p))),"mode":mode});
+    let mapping_verified = if mode == "mapping" {
+        use std::os::windows::io::AsRawHandle;
+        type Mapping = unsafe extern "system" fn(HANDLE, *mut u16, *mut u8) -> u32;
+        type Translate = unsafe extern "system" fn(*mut u16) -> u8;
+        let map = unsafe { GetProcAddress(module, c"SbieDll_GetHandlePath".as_ptr().cast()) };
+        let translate =
+            unsafe { GetProcAddress(module, c"SbieDll_TranslateNtToDosPath".as_ptr().cast()) };
+        if let (Some(map), Some(translate), Some(expected)) = (map, translate, args.get(2)) {
+            let map: Mapping = unsafe { std::mem::transmute(map) };
+            let translate: Translate = unsafe { std::mem::transmute(translate) };
+            let file = std::fs::File::open(std::env::current_exe().unwrap()).unwrap();
+            let mut path = [0u16; 4096];
+            let mut boxed = 0;
+            (unsafe { map(file.as_raw_handle(), path.as_mut_ptr(), &mut boxed) }) == 0
+                && boxed != 0
+                && unsafe { translate(path.as_mut_ptr()) } != 0
+                && String::from_utf16_lossy(
+                    &path[..path.iter().position(|c| *c == 0).unwrap_or(path.len())],
+                )
+                .eq_ignore_ascii_case(expected)
+        } else {
+            false
+        }
+    } else {
+        true
+    };
+    let report = serde_json::json!({"boxed":true,"mapping_verified":mapping_verified,"environment_clean":std::env::var_os("SECURERUN_P06_SECRET").is_none(),"session":session,"arguments_exact":exact,"cwd_exact":mode!="cwd" || args.get(2).is_some_and(|p|std::env::current_dir().ok().is_some_and(|cwd|cwd.to_string_lossy().eq_ignore_ascii_case(p))),"mode":mode});
     let mut f = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(output)
         .unwrap();
-    writeln!(f, "{report}").unwrap();
+    // One append record, including its terminator, avoids interleaving fields
+    // when synthetic descendants share the same report file.
+    let mut record = serde_json::to_vec(&report).unwrap();
+    record.push(b'\n');
+    f.write_all(&record).unwrap();
     drop(f);
     if !exact {
         std::process::exit(94)

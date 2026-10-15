@@ -86,7 +86,7 @@ Markdown and reviewed JSON evidence. Normal merge follows successful checks unde
 the owner's standing authorization. Generated executables and credentials are
 excluded. Next eligible phase: P04, not started by this request.
 
-## Current regression after P04
+## Historical regression after P04
 
 The P04 application/IPC changes supersede the original runtime hashes. Current
 source 682c3a346a46bca4fb4dfbbe07cf538d2afa8adb passed the full P03 suite in
@@ -96,7 +96,7 @@ both native Windows targets. The current manifest retains those exact sources;
 original proof remains historical. P03 does not claim P04 engine evidence, which
 is retained in the [P04 report](P04_REPORT.md).
 
-## Current regression after P05
+## Historical regression after P05
 
 Current source `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636` passes
 [run 38649287239](https://github.com/kurasis/SecureRun/actions/runs/38649287239)
@@ -107,7 +107,7 @@ current runtime hashes are retained in the manifest. Historical P03/P04-era proo
 remains immutable. Foundation tests execute no engine operations; P05 production
 mutation evidence is recorded separately in the P05 report.
 
-## Current P06 regression
+## Historical P06 regression
 
 Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
 [run 38705476301](https://github.com/kurasis/SecureRun/actions/runs/38705476301),
@@ -118,3 +118,14 @@ renderer executable paths and forged application selection tokens are refused.
 This regression executes no engine target; P06 containment proof is separate.
 [Current immutable evidence](../evidence/p03/manifest.json) binds the tested runtime
 sources. Later P06 production commands do not expand the P03 fixture protocol.
+
+## Current P07 dependency regression
+
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38729076831](https://github.com/kurasis/SecureRun/actions/runs/38729076831)
+on Server 2025 x64 and Windows 11 ARM64. Each target passed 19 foundation,
+2 normal native, 3 UI and 27 actual command-boundary cases. The expanded boundary
+includes the P07 files command, untrusted local/remote requests, forged selection
+and renderer raw-path rejection. No engine target runs in this foundation gate.
+The [manifest](../evidence/p03/manifest.json) binds the current sources and immutable
+reports; the sections above retain historical phase results.

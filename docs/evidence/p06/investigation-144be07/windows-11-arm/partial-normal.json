@@ -1,0 +1,97 @@
+[
+  {
+    "native_stage": "REGISTER_RECEIPT",
+    "line": 16,
+    "id": "T01",
+    "name": "unloaded_original_driver_refuses_production_launch",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "LAB_COORDINATION_TIMEOUT"
+  },
+  {
+    "native_stage": "CALL_control_STOP",
+    "line": 5,
+    "id": "T04",
+    "name": "exact_arguments_securerun-launch-probe-x64",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CALL_control_STOP",
+    "line": 5,
+    "id": "T04",
+    "name": "exact_arguments_securerun-launch-probe-x86",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CALL_control_STOP",
+    "line": 5,
+    "id": "T04",
+    "name": "exact_arguments_securerun-launch-probe",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CALL_control_REGISTER",
+    "line": 5,
+    "id": "T05",
+    "name": "production_child_and_grandchild_membership",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CASE",
+    "line": 132,
+    "id": "T54",
+    "name": "stop_survives_launch_policy_ineligibility_without_entitlement",
+    "status": "FAILED",
+    "exception_type": "System.InvalidOperationException",
+    "code": "LAB_WFP_FIXTURE_FAILED"
+  },
+  {
+    "native_stage": "CALL_control_REGISTER",
+    "line": 5,
+    "id": "T06",
+    "name": "background_child_keeps_environment_running",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CALL_control_REGISTER",
+    "line": 5,
+    "id": "T61",
+    "name": "duplicate_completed_launch_is_never_dispatched_twice",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "MANAGER_CONTEXT_UNSAFE"
+  },
+  {
+    "native_stage": "CASE",
+    "line": 150,
+    "id": "T19",
+    "name": "stop_managed_preserves_unmanaged_box_and_host_process",
+    "status": "FAILED",
+    "exception_type": "System.InvalidOperationException",
+    "code": "CONTROL_CASE_FAILED"
+  },
+  {
+    "native_stage": "CASE",
+    "line": 158,
+    "id": "T26",
+    "name": "rapid_launch_stop_serializes_and_duplicate_scope_conflicts",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "CONTROL_CASE_FAILED"
+  },
+  {
+    "name": "stopped_engine_service_never_dispatches_target",
+    "status": "IN_PROGRESS",
+    "id": "T01"
+  }
+]

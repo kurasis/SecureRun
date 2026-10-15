@@ -1,7 +1,9 @@
 # P06 — Isolated launch and scoped process control
 
 Status: DONE.
-Specification: 1.3. Requested scope: complete P06 only.
+Specification: 1.3. Original requested scope: complete P06.
+The sections below record the historical P06 completion; the current P07
+dependency regression is recorded separately when its native gate completes.
 
 Implementation/runtime commit: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
 [P06 native run 38705476091](https://github.com/kurasis/SecureRun/actions/runs/38705476091)
@@ -102,12 +104,12 @@ The normal manager has no checkpoint activation. A separately compiled
 its distinct binary hash is retained. Fixed original `KmdUtil` administration
 and a narrow disposable logon fixture are not product helpers.
 
-## Dependencies and checks
+## Historical P06 dependencies and checks
 
 P05 was complete before P06 began, with runtime `a6cdbd1` and matching P03/P04
 proof. Changes require current regression evidence for the final P06 source.
 
-| Check | Current result |
+| Check | Historical P06 result |
 |---|---|
 | Portable Rust | 19 foundation and 28 adapter tests passed |
 | Windows metadata-only strict i686 clippy | Passed; not Windows execution evidence |
@@ -160,3 +162,14 @@ the completed wait on that same object. Numeric status-only diagnostics distingu
 dispatch failure from incomplete exit. All current phase gates have been revalidated for this shared dependency
 correction; no earlier source is relabeled DONE. The final source passes the
 complete P03–P06 gates on both owner-selected laboratories.
+
+
+## Current P07 dependency regression
+
+Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes
+[run 38729083037](https://github.com/kurasis/SecureRun/actions/runs/38729083037)
+on Server 2025 x64 and Windows 11 ARM64. Server passed all 21 and ARM all 22 native launch/receipt/Stop cases, with zero failures. Actual original-driver unload is a bootstrap negative control before provisioning: the utility exits 0, the driver is stopped and the standard-user production route returns exactly MANAGER_CONTEXT_UNSAFE without a dispatch reservation. Registered-target service loss is tested separately. Coordination covers the bounded utility operation; the production launch/Stop gates are unchanged.
+The [manifest](../evidence/p06/manifest.json) binds this same source as P03/P04/P05/P06/P07.
+Earlier sections describe historical phase scope; P07 adds the separately verified
+safe-file and boxed-reference services. Current status and the next eligible P08
+are recorded in [the P07 report](P07_REPORT.md).

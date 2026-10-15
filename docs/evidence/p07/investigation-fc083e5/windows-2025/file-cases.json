@@ -1,0 +1,219 @@
+[
+  {
+    "evidence": {
+      "production_route": true,
+      "auto_open": false,
+      "internet_zone": true,
+      "same_bytes": true
+    },
+    "id": "T21",
+    "name": "production_export_correct_bytes_and_motw",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "folder_rejected": true,
+      "duplicate_not_replayed": true,
+      "collision_no_replace": true
+    },
+    "id": "T20",
+    "name": "import_collision_duplicate_operation_and_regular_file_only",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "full_extensions": true,
+      "normal_unicode": true,
+      "unsafe_names_rejected": 9
+    },
+    "id": "T63",
+    "name": "unsafe_names_and_extensions",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "hardlink_rejected": true,
+      "arbitrary_ads_rejected": true,
+      "destination_junction_rejected": true,
+      "sensitive_destination_rejected": true
+    },
+    "id": "T22",
+    "name": "hardlinks_streams_reparse_and_sensitive_destinations_rejected",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "host_execution": false,
+      "preview_handler_invoked": false,
+      "metadata_only": true,
+      "files": 4
+    },
+    "id": "T23",
+    "name": "inert_metadata_for_html_svg_shortcut_and_executable",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "frontend_paths_not_authority": true,
+      "forged_id_refused": true
+    },
+    "id": "T49",
+    "name": "forged_file_and_raw_path_fields_rejected",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "url_not_copied": true,
+      "restricted_zone_preserved": true,
+      "collision_preserved": true
+    },
+    "id": "T44",
+    "name": "existing_destination_and_restricted_zone_preserved",
+    "status": "PASSED"
+  },
+  {
+    "code": "BOX_LOGICAL_LAUNCH_FAILED",
+    "id": "T43",
+    "line": 5,
+    "name": "imported_boxed_exe_securerun-launch-probe-x86",
+    "status": "FAILED"
+  },
+  {
+    "code": "STOP_REQUIRED_ALL_SESSIONS",
+    "id": "T43",
+    "line": 5,
+    "name": "imported_boxed_exe_securerun-launch-probe",
+    "status": "FAILED"
+  },
+  {
+    "evidence": {
+      "busy_refused": true,
+      "external_engine_processes_observed": true
+    },
+    "id": "T42",
+    "name": "running_environment_blocks_file_mutation",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "automatic_deletion_disabled": true,
+      "export_correct": true,
+      "automatic_recovery_disabled": true,
+      "source_preserved": true,
+      "original_gui_running": true
+    },
+    "id": "T42",
+    "name": "original_sandman_open_does_not_recover_or_delete_managed_data",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "chunk_bytes": 1048576,
+      "logical_size": "4296015873",
+      "actual_sparse_source": true,
+      "greater_than_four_gib": true,
+      "equal_hash": true
+    },
+    "id": "T45",
+    "name": "greater_than_four_gib_streamed_with_bounded_memory",
+    "status": "PASSED"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T64",
+    "name": "real_crash_BeforeMark"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T64",
+    "name": "real_crash_AfterMark"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T64",
+    "name": "real_crash_MidCopy"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T64",
+    "name": "real_crash_BeforeRename"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T64",
+    "name": "real_crash_AfterRename"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T65",
+    "name": "replaced_staging_file_never_deleted_or_adopted"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T65",
+    "name": "discard_only_verified_staging_identity"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T44",
+    "name": "actual_collision_inserted_before_no_replace_rename"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T20",
+    "name": "actual_transfer_cancel_retains_marked_partial"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T44",
+    "name": "marker_failure_before_any_payload"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T42",
+    "name": "external_engine_launch_mid_export_aborts_without_publication"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T45",
+    "name": "actual_ntfs_disk_full_during_streaming_copy"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T22",
+    "name": "source_and_destination_replacement_denied_while_copy_handles_held"
+  },
+  {
+    "status": "FAILED",
+    "code": "TRANSFER_CHECKPOINT_NOT_REACHED",
+    "line": 5,
+    "id": "T65",
+    "name": "old_generation_transfer_never_mutates_recreated_root"
+  }
+]

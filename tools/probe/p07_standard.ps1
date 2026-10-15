@@ -1,0 +1,160 @@
+param([string]$Manager,[string]$Fixture,[string]$EngineHome,[string]$FaultManager,[string]$Mode='normal')
+$ErrorActionPreference='Stop';Set-StrictMode -Version Latest
+$cases=[Collections.Generic.List[object]]::new()
+function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 10|Set-Content (Join-Path $Fixture 'file-cases.json') -Encoding utf8}
+function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
+function Case([string]$scenarioId,[string]$name,[scriptblock]$body){$c=@{id=$scenarioId;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'FILE_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
+function Call($request,[string]$kind='files',[bool]$allowFailure=$false){
+ $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
+ $p=[Diagnostics.Process]::Start($s);try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(900000)) 'FILES_TIMEOUT';Require ($p.ExitCode -eq 0) 'FILES_WORKER_FAILED';$r=$read.Result|ConvertFrom-Json;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+}
+function Request([string]$action){return @{action=$action;environment_id=$script:e.id;expected_revision=$script:e.revision}}
+function Import([string]$source,[string]$name,[bool]$allowFailure=$false){$q=Request 'IMPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.source=$source;$q.name=$name;$r=Call $q 'files' $allowFailure;return @{reply=$r;request=$q}}
+function List([string]$node=$null,[int]$offset=0){$q=Request 'LIST';$q.node_id=$(if([string]::IsNullOrEmpty($node)){$null}else{$node});$q.offset=$offset;return (Call $q)}
+function Workspace {
+ $r=List;$drive=($r.entries|Where-Object name -eq 'drive');Require ($null -ne $drive) 'DRIVE_VIEW_MISSING'
+ $r=List $drive.id;$letter=$env:SystemRoot.Substring(0,1);$r=List ($r.entries|Where-Object name -eq $letter).id;$r=List ($r.entries|Where-Object name -eq 'SecureRunWorkspace').id;$r=List ($r.entries|Where-Object name -eq $script:e.id.Replace('-','')).id;return $r
+}
+function Export($entry,[string]$name,[bool]$allowFailure=$false,[string]$destination=$script:output){$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$destination;$q.name=$name;return @{reply=(Call $q 'files' $allowFailure);request=$q}}
+function Box-Report([string]$leaf) {
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do {
+  $files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf)
+  Require ($files.Count -le 1) 'DUPLICATE_TARGET_REPORT'
+  if($files.Count -eq 1){
+   $contents=$null;$stream=$null;$reader=$null
+   try{$stream=[IO.File]::Open($files[0].FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read);Require ($stream.Length -le 4096) 'TARGET_REPORT_BOUND';$reader=[IO.StreamReader]::new($stream,[Text.UTF8Encoding]::new($false,$true));$contents=$reader.ReadToEnd()}catch [IO.IOException]{}finally{if($null -ne $reader){$reader.Dispose()}elseif($null -ne $stream){$stream.Dispose()}}
+   if($null -ne $contents -and $contents.EndsWith("`n")){return ($contents|ConvertFrom-Json)}
+  }
+  Start-Sleep -Milliseconds 100
+ }while($clock.ElapsedMilliseconds -lt 15000)
+ throw 'COMPLETE_BOXED_REPORT_TIMEOUT'
+}
+function Stop-Owned {$q=@{action='STOP';environment_id=$script:e.id;operation_id=[Guid]::NewGuid().ToString()};$r=Call $q 'control';$op=$r.receipts|Where-Object operation_id -eq $q.operation_id;Require ($op.state -eq 'STOPPED') $op.reason}
+function Crash($q,[string]$stage,[scriptblock]$whilePaused={}){
+ $env:SECURERUN_P07_PAUSE_STAGE=$stage;$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
+ foreach($arg in @('--files-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
+ $p=[Diagnostics.Process]::Start($s);try{$line=$p.StandardOutput.ReadLineAsync();$readerr=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'TRANSFER_CHECKPOINT_TIMEOUT';if($line.Result -ne "CHECKPOINT_$stage"){$diagnostic='CHECKPOINT_NO_STRUCTURED_REPLY';try{$reason=($line.Result|ConvertFrom-Json).reason;if($reason -cmatch '^[A-Z][A-Z0-9_]{2,70}$'){$diagnostic=$reason}}catch{};throw $diagnostic};& $whilePaused;$p.Kill($true);Require ($p.WaitForExit(10000)) 'WORKER_KILL_FAILED'}finally{Remove-Item Env:/SECURERUN_P07_PAUSE_STAGE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+}
+Add-Type -TypeDefinition @'
+using System;using System.IO;using System.Runtime.InteropServices;using Microsoft.Win32.SafeHandles;
+public static class P07Sparse {
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern uint GetShortPathName(string path,System.Text.StringBuilder result,uint size);
+ public static string Short(string path){var buffer=new System.Text.StringBuilder(1024);uint n=GetShortPathName(path,buffer,1024);if(n==0||n>=1024)throw new InvalidOperationException("SHORT_ALIAS_QUERY_FAILED");return buffer.ToString();}
+ [DllImport("kernel32.dll",SetLastError=true)]static extern bool DeviceIoControl(SafeFileHandle file,uint code,IntPtr input,uint inputSize,IntPtr output,uint outputSize,out uint returned,IntPtr overlapped);
+ public static void Mark(FileStream file){uint n;if(!DeviceIoControl(file.SafeFileHandle,0x900c4,IntPtr.Zero,0,IntPtr.Zero,0,out n,IntPtr.Zero))throw new InvalidOperationException("SPARSE_FIXTURE_FAILED");}
+}
+'@
+function Paused($q,[string]$stage,[scriptblock]$body) {
+ $flag=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/resume-'+$stage+'.flag');if(Test-Path -LiteralPath $flag){Remove-Item -LiteralPath $flag}
+ $env:SECURERUN_P07_PAUSE_STAGE=$stage;$env:SECURERUN_P07_PAUSE_MODE='resume';$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
+ foreach($arg in @('--files-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)}
+ $p=[Diagnostics.Process]::Start($s);try{$line=$p.StandardOutput.ReadLineAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'TRANSFER_CHECKPOINT_TIMEOUT';if($line.Result -ne "CHECKPOINT_$stage"){$diagnostic='CHECKPOINT_NO_STRUCTURED_REPLY';try{$reason=($line.Result|ConvertFrom-Json).reason;if($reason -cmatch '^[A-Z][A-Z0-9_]{2,70}$'){$diagnostic=$reason}}catch{};throw $diagnostic};& $body;[IO.File]::WriteAllText($flag,'RESUME_SYNTHETIC_WORKER');$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(60000)) 'RESUMED_WORKER_TIMEOUT';Require ($p.ExitCode -eq 0) 'RESUMED_WORKER_FAILED';return ($read.Result|ConvertFrom-Json)}finally{Remove-Item Env:/SECURERUN_P07_PAUSE_STAGE,Env:/SECURERUN_P07_PAUSE_MODE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();if(Test-Path -LiteralPath $flag){Remove-Item -LiteralPath $flag}}
+}
+try{
+ $who=[Security.Principal.WindowsIdentity]::GetCurrent();Require (-not ([Security.Principal.WindowsPrincipal]::new($who)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_USER_REQUIRED'
+ $script:active=if($Mode -eq 'fault'){$FaultManager}else{$Manager}
+ $r=Call @{action='CREATE';display_name='P07 file fixture';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} 'policy';$script:e=$r.environments[0];Require ($e.stage -eq 'VERIFIED') 'P05_GATE_REQUIRED';$script:root=$e.compiled.section.FileRootPath[0]
+ $script:output=Join-Path ([Environment]::GetFolderPath('UserProfile')) 'SecureRun-P07-Output';$null=New-Item -ItemType Directory -Path $output
+ $source=Join-Path $Fixture 'synthetic.txt';[IO.File]::WriteAllText($source,('SYNTHETIC_P07_CONTENT Привет 🧪'*90000));$sourceHash=(Get-FileHash -LiteralPath $source).Hash
+ $initial=Import $source 'Привет 🧪.txt';$view=Workspace;$script:entry=$view.entries|Where-Object name -eq 'Привет 🧪.txt';Require ($null -ne $entry) 'IMPORTED_FILE_NOT_LISTED'
+ if($Mode -eq 'fault'){
+  foreach($stage in @('BeforeMark','AfterMark','MidCopy','BeforeRename','AfterRename')){
+   Case 'T64' ('real_crash_'+$stage) {
+    $name='crash-'+$stage+'.txt';$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name=$name;Crash $q $stage
+    $staging=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-',''));$payload=Join-Path $staging 'payload.part';$final=Join-Path $output $name
+    if($stage -eq 'BeforeMark'){Require ((Get-Item -LiteralPath $payload).Length -eq 0) 'UNMARKED_PAYLOAD_COPIED'}
+    elseif($stage -eq 'AfterRename'){Require (Test-Path -LiteralPath $final) 'PUBLISHED_FILE_MISSING'}
+    else{Require (-not(Test-Path -LiteralPath $final)) 'PARTIAL_PRESENTED_COMPLETE';Require ((Get-Content -LiteralPath $payload -Stream Zone.Identifier -Raw).Contains('ZoneId=3')) 'PARTIAL_UNMARKED'}
+    $recover=Request 'RECOVER';$recover.operation_id=$q.operation_id;$r=Call $recover;$op=$r.transfers|Where-Object operation_id -eq $q.operation_id;Require ($op.stage -eq $(if($stage -eq 'AfterRename'){'COMPLETE_RECOVERED'}else{'INCOMPLETE_RETAINED'})) 'RECOVERY_STATE_INCORRECT'
+    $again=Call $q;Require (($again.transfers|Where-Object operation_id -eq $q.operation_id).stage -eq $op.stage) 'TRANSFER_REPLAYED'
+    @{real_worker_killed=$true;checkpoint=$stage;replayed=$false;payload_before_marker=$false;recovered_state=$op.stage;no_overwrite=$true}
+   }
+  }
+  Case 'T65' 'replaced_staging_file_never_deleted_or_adopted' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='replaced.txt';Crash $q 'AfterMark';$staging=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-',''));$payload=Join-Path $staging 'payload.part';Move-Item -LiteralPath $payload -Destination (Join-Path $staging 'original.part');[IO.File]::WriteAllText($payload,'REPLACEMENT_CANARY');$recover=Request 'RECOVER';$recover.operation_id=$q.operation_id;$r=Call $recover 'files' $true;Require ($r.reason -eq 'ARTIFACT_IDENTITY_CHANGED') $r.reason;$discard=Request 'DISCARD';$discard.operation_id=$q.operation_id;$r=Call $discard 'files' $true;Require ($r.reason -eq 'ARTIFACT_IDENTITY_CHANGED') $r.reason;Require ([IO.File]::ReadAllText($payload) -eq 'REPLACEMENT_CANARY') 'REPLACEMENT_MUTATED';@{identity_mismatch_refused=$true;replacement_unchanged=$true;path_only_delete=$false}
+  }
+  Case 'T65' 'discard_only_verified_staging_identity' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='discard.txt';Crash $q 'MidCopy';$discard=Request 'DISCARD';$discard.operation_id=$q.operation_id;$r=Call $discard;Require (($r.transfers|Where-Object operation_id -eq $q.operation_id).stage -eq 'DISCARDED') 'DISCARD_NOT_RECORDED';$stage=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-',''));Require (-not(Test-Path -LiteralPath $stage)) 'STAGING_NOT_REMOVED';$r=Call $q;Require (-not(Test-Path -LiteralPath $stage)) 'DISCARDED_TRANSFER_REPLAYED';@{held_file_identity_verified=$true;held_parent_identity_verified=$true;current_generation_verified=$true;no_recursive_delete=$true;permanent_tombstone=$true}
+  }
+  Case 'T44' 'actual_collision_inserted_before_no_replace_rename' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='race.txt';$r=Paused $q 'BeforeRename' {[IO.File]::WriteAllText((Join-Path $output 'race.txt'),'COLLISION_CANARY')};Require ($r.reason -in @('DESTINATION_COLLISION_RENAME_OR_SKIP','PUBLISH_NO_REPLACE_FAILED')) $r.reason;Require ([IO.File]::ReadAllText((Join-Path $output 'race.txt')) -eq 'COLLISION_CANARY') 'COLLISION_REPLACED';@{existing_output_preserved=$true;actual_no_replace_dispatch=$true;unrelated_identity_not_adopted=$true}
+  }
+  Case 'T20' 'actual_transfer_cancel_retains_marked_partial' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='cancelled.txt';$r=Paused $q 'MidCopy' {$null=Call @{action='CANCEL';operation_id=$q.operation_id}};Require ($r.reason -eq 'TRANSFER_CANCELLED') $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'cancelled.txt'))) 'CANCEL_PUBLISHED';$payload=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');$size=(Get-Item -LiteralPath $payload).Length;Require ($size -gt 0 -and $size -lt (Get-Item -LiteralPath $source).Length) 'NOT_ACTUAL_MID_COPY';Require ((Get-Content -LiteralPath $payload -Stream Zone.Identifier -Raw).Contains('ZoneId=3')) 'CANCEL_PARTIAL_UNMARKED';@{actual_cancel_command=$true;partial_marked=$true;partial_bytes=$size;final_absent=$true}
+  }
+  Case 'T44' 'marker_failure_before_any_payload' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='unmarked.txt';$r=Paused $q 'BeforeMark' {$payload=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');$ads=[IO.File]::Open(($payload+':Zone.Identifier'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete));try{$bytes=[Text.Encoding]::UTF8.GetBytes('UNTRUSTED_PREEXISTING_MARKER');$ads.Write($bytes,0,$bytes.Length)}finally{$ads.Dispose()}};Require ($r.reason -eq 'PROVENANCE_WRITE_FAILED') $r.reason;$payload=Join-Path $output ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');Require ((Get-Item -LiteralPath $payload).Length -eq 0) 'PAYLOAD_BEFORE_MARKER';Require (-not(Test-Path -LiteralPath (Join-Path $output 'unmarked.txt'))) 'UNMARKED_PUBLISHED';@{actual_ads_creation_failure=$true;copied_payload_bytes=0;final_absent=$true}
+  }
+  Case 'T42' 'external_engine_launch_mid_export_aborts_without_publication' {
+   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box);
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='external-busy.txt';$script:external=$null
+   try{$r=Paused $q 'MidCopy' {$script:external=$lab.HoldProductionProbe($box);Require ($lab.HeldMemberAlive($script:external,$box)) 'EXTERNAL_TARGET_NOT_RUNNING'};Require ($r.reason -in @('STOP_REQUIRED_ALL_SESSIONS','CONFIGURATION_CONFLICT')) $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'external-busy.txt'))) 'EXTERNAL_BUSY_PUBLISHED'}finally{if($null -ne $script:external){[P05Lab]::Stop($script:external)};$lab.FenceFixture($box)}
+   @{independent_original_engine_dispatch=$true;process_started_during_copy=$true;actual_member_alive_before_resume=$true;held_birth_and_owner_verified=$true;safe_abort_reason=$r.reason;copy_aborted=$true;final_absent=$true}
+  }
+  Case 'T45' 'actual_ntfs_disk_full_during_streaming_copy' {
+   $small=Join-Path 'R:/' ('P07-'+$Mode);$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$small;$q.name='disk-full.txt';$r=Paused $q 'AfterMark' {
+    $f=[IO.File]::Open((Join-Path $small 'filler.bin'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write);try{$chunk=[byte[]]::new(65536);while($true){$f.Write($chunk,0,$chunk.Length)}}catch [IO.IOException]{}finally{try{$f.Dispose()}catch [IO.IOException]{}}
+   };Require ($r.reason -eq 'COPY_WRITE_FAILED_OR_DISK_FULL') $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $small 'disk-full.txt'))) 'DISK_FULL_PUBLISHED';$payload=Join-Path $small ('.securerun-'+$q.operation_id.Replace('-','')+'/payload.part');Require ((Get-Content -LiteralPath $payload -Stream Zone.Identifier -Raw).Contains('ZoneId=3')) 'DISK_FULL_PARTIAL_UNMARKED';Remove-Item -LiteralPath (Join-Path $small 'filler.bin');@{real_local_fixed_ntfs_volume=$true;actual_write_failed=$true;final_absent=$true;partial_marked=$true;no_mock=$true}
+  }
+  Case 'T22' 'source_and_destination_replacement_denied_while_copy_handles_held' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='held.txt';$r=Paused $q 'MidCopy' {$sourcePhysical=Join-Path $root ('drive/'+$env:SystemRoot.Substring(0,1)+'/SecureRunWorkspace/'+$e.id.Replace('-','')+'/Привет 🧪.txt');$blocked=0;try{$f=[IO.File]::Open($sourcePhysical,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$f.Dispose()}catch [IO.IOException]{$blocked++};try{[IO.Directory]::Move($output,($output+'-replaced'))}catch [IO.IOException]{$blocked++};Require ($blocked -eq 2) 'LEASE_ALLOWED_PATH_SWAP'};Require ($r.reason -eq 'OBSERVED') $r.reason;@{source_mutation_denied=$true;destination_replacement_denied=$true;original_identity_retained=$true}
+  }
+  Case 'T65' 'old_generation_transfer_never_mutates_recreated_root' {
+   $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='stale-generation.txt';Crash $q 'AfterMark';$original=$root+'-original';[IO.Directory]::Move($root,$original);$missing=Export $entry 'missing-root.txt' $true;Require ($missing.reply.reason -eq 'ROOT_IDENTITY_CHANGED') $missing.reply.reason;$null=[IO.Directory]::CreateDirectory($root)
+   try{$recover=Request 'RECOVER';$recover.operation_id=$q.operation_id;$r=Call $recover 'files' $true;Require ($r.reason -eq 'ROOT_IDENTITY_CHANGED') $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'stale-generation.txt'))) 'STALE_OUTPUT_PUBLISHED';Require (@(Get-ChildItem -LiteralPath $root).Count -eq 0) 'RECREATED_ROOT_MUTATED'}finally{[IO.Directory]::Delete($root,$false);[IO.Directory]::Move($original,$root)}
+   @{actual_root_recreated=$true;missing_root_refused=$true;old_identity_rejected=$true;recreated_root_unchanged=$true;old_generation_mutation=$false}
+  }
+
+ }else{
+  Case 'T49' 'normal_binary_cannot_activate_transfer_fault_checkpoints' {
+   $env:SECURERUN_P07_PAUSE_STAGE='BeforeMark';$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='normal-no-fault.txt'
+   $s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true;foreach($arg in @('--files-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)};$p=[Diagnostics.Process]::Start($s)
+   try{$read=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $q -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(45000)) 'NORMAL_BINARY_ACTIVATED_FAULT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OBSERVED') $r.reason;Require (Test-Path -LiteralPath (Join-Path $output 'normal-no-fault.txt')) 'NORMAL_TRANSFER_NOT_COMPLETED'}finally{Remove-Item Env:/SECURERUN_P07_PAUSE_STAGE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+   @{normal_binary_tested=$true;fault_environment_supplied=$true;checkpoint_activated=$false;operation_completed=$true}
+  }
+  Case 'T49' 'boxed_stage_refuses_unboxed_execution' {
+   $stage=Join-Path (Split-Path $Manager) 'securerun-box-launcher.exe';$s=[Diagnostics.ProcessStartInfo]::new($stage);$s.UseShellExecute=$false;$s.WorkingDirectory=Join-Path $env:SystemRoot 'System32';$s.ArgumentList.Add('C:\SecureRunWorkspace\00000000000000000000000000000000\must-not-run.exe');$p=[Diagnostics.Process]::Start($s)
+   try{Require ($p.WaitForExit(10000)) 'UNBOXED_STAGE_TIMEOUT';Require ($p.ExitCode -eq 91) 'UNBOXED_STAGE_ACCEPTED'}finally{if(-not $p.HasExited){$p.Kill()};$p.Dispose()}
+   @{unboxed_refused_before_target_io=$true;exit_code=91;host_dispatch=$false}
+  }
+  Case 'T21' 'production_export_correct_bytes_and_motw' {$x=Export $entry 'export.html';$p=Join-Path $output 'export.html';Require ((Get-FileHash -LiteralPath $p).Hash -eq $sourceHash) 'EXPORT_BYTES_WRONG';Require ((Get-Content -LiteralPath $p -Stream Zone.Identifier -Raw).Contains('ZoneId=3')) 'EXPORT_MARKER_MISSING';@{same_bytes=$true;internet_zone=$true;auto_open=$false;production_route=$true}}
+  Case 'T20' 'import_collision_duplicate_operation_and_regular_file_only' {$r=Call $initial.request;Require (($r.transfers|Where-Object operation_id -eq $initial.request.operation_id).stage -eq 'COMPLETE') 'IMPORT_REPLAY_BAD';$x=Import $source 'Привет 🧪.txt' $true;Require ($x.reply.reason -in @('DESTINATION_COLLISION_RENAME_OR_SKIP','PUBLISH_NO_REPLACE_FAILED')) $x.reply.reason;$x=Import $Fixture 'folder.txt' $true;Require ($x.reply.reason -eq 'REGULAR_FILE_REQUIRED') $x.reply.reason;@{duplicate_not_replayed=$true;collision_no_replace=$true;folder_rejected=$true}}
+  Case 'T63' 'unsafe_names_and_extensions' {foreach($name in @('..','../escape.txt','NUL.txt','COM1.exe','LPT².txt','a:stream','trail.','trail ',"deceptive$([char]0x202e)exe.txt")){ $x=Export $entry $name $true;Require ($x.reply.reason -like 'OUTPUT_LEAF_*') 'UNSAFE_NAME_ACCEPTED'};$x=Export $entry 'Обычный, 10% 🧪.html.svg';Require (Test-Path -LiteralPath (Join-Path $output 'Обычный, 10% 🧪.html.svg')) 'UNICODE_REJECTED';@{unsafe_names_rejected=9;full_extensions=$true;normal_unicode=$true}}
+  Case 'T22' 'hardlinks_streams_reparse_and_sensitive_destinations_rejected' {
+   $hard=Join-Path $Fixture 'hard.txt';$null=New-Item -ItemType HardLink -Path $hard -Target $source;$x=Import $hard 'hard.txt' $true;Require ($x.reply.reason -eq 'REPARSE_OR_HARDLINK_REJECTED') $x.reply.reason;Remove-Item -LiteralPath $hard
+   $ads=Join-Path $Fixture 'stream.txt';[IO.File]::WriteAllText($ads,'SYNTHETIC');Set-Content -LiteralPath $ads -Stream extra -Value 'UNSUPPORTED';$x=Import $ads 'stream.txt' $true;Require ($x.reply.reason -eq 'SOURCE_STREAM_UNSUPPORTED') $x.reply.reason
+   $junction=Join-Path $Fixture 'junction';$null=New-Item -ItemType Junction -Path $junction -Target $output;$x=Export $entry 'escape.txt' $true $junction;Require ($x.reply.reason -eq 'REPARSE_OR_HARDLINK_REJECTED') $x.reply.reason
+   $x=Export $entry 'bad.txt' $true (Join-Path $env:SystemRoot 'System32');Require ($x.reply.reason -eq 'DESTINATION_SENSITIVE_SCOPE') $x.reply.reason
+   @{hardlink_rejected=$true;arbitrary_ads_rejected=$true;destination_junction_rejected=$true;sensitive_destination_rejected=$true}
+  }
+  Case 'T23' 'inert_metadata_for_html_svg_shortcut_and_executable' {foreach($name in @('malicious.html','malicious.svg','malicious.lnk','malicious.exe')){$x=Import $source $name};$r=Workspace;Require (@($r.entries|Where-Object name -like 'malicious.*').Count -eq 4) 'INERT_FILES_NOT_LISTED';@{files=4;metadata_only=$true;preview_handler_invoked=$false;host_execution=$false}}
+  Case 'T49' 'forged_file_and_raw_path_fields_rejected' {$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=[Guid]::NewGuid().ToString();$q.destination=$output;$q.name='forged.txt';$r=Call $q 'files' $true;Require ($r.reason -eq 'FILE_REFERENCE_NOT_FOUND') $r.reason;@{forged_id_refused=$true;frontend_paths_not_authority=$true}}
+  Case 'T44' 'existing_destination_and_restricted_zone_preserved' {[IO.File]::WriteAllText((Join-Path $output 'existing.txt'),'EXISTING_CANARY');$x=Export $entry 'existing.txt' $true;Require ([IO.File]::ReadAllText((Join-Path $output 'existing.txt')) -eq 'EXISTING_CANARY') 'EXISTING_OVERWRITTEN';$case=Export $entry 'EXISTING.TXT' $true;Require ($case.reply.reason -eq 'DESTINATION_COLLISION_RENAME_OR_SKIP') $case.reply.reason;Require ([IO.File]::ReadAllText((Join-Path $output 'existing.txt')) -eq 'EXISTING_CANARY') 'CASE_ALIAS_OVERWROTE';$long=Join-Path $output 'Long explicit collision filename.txt';[IO.File]::WriteAllText($long,'SHORT_ALIAS_CANARY');$short=[P07Sparse]::Short($long);$shortAvailable=-not ([IO.Path]::GetFileName($short)).Equals([IO.Path]::GetFileName($long),[StringComparison]::OrdinalIgnoreCase);if($shortAvailable){$x=Export $entry ([IO.Path]::GetFileName($short)) $true;Require ($x.reply.reason -eq 'DESTINATION_COLLISION_RENAME_OR_SKIP') $x.reply.reason;Require ([IO.File]::ReadAllText($long) -eq 'SHORT_ALIAS_CANARY') 'SHORT_ALIAS_OVERWROTE'};Set-Content -LiteralPath $source -Stream Zone.Identifier -Value "[ZoneTransfer]`r`nZoneId=4`r`nHostUrl=DO_NOT_COPY";$x=Import $source 'zone4.txt';$r=Workspace;$zone=$r.entries|Where-Object name -eq 'zone4.txt';$x=Export $zone 'zone4.txt';$marker=Get-Content -LiteralPath (Join-Path $output 'zone4.txt') -Stream Zone.Identifier -Raw;Require ($marker.Contains('ZoneId=4') -and -not $marker.Contains('HostUrl')) 'ZONE_REDUCED_OR_URL_COPIED';@{collision_preserved=$true;case_alias_collision_preserved=$true;short_alias_generated=$shortAvailable;short_alias_collision_preserved=$(if($shortAvailable){$true}else{$null});restricted_zone_preserved=$true;url_not_copied=$true}}
+  foreach($probe in @(Get-ChildItem (Split-Path $Manager) -Filter 'securerun-launch-probe*.exe')){
+   Case 'T43' ('imported_boxed_exe_'+$probe.BaseName) {
+    $peBytes=[IO.File]::ReadAllBytes($probe.FullName);$peOffset=[BitConverter]::ToInt32($peBytes,0x3c);$peMachine=[BitConverter]::ToUInt16($peBytes,$peOffset+4).ToString('x4');$expectedMachine=if($probe.BaseName.EndsWith('-x86')){'014c'}elseif($probe.BaseName.EndsWith('-x64')){'8664'}elseif($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'};Require ($peMachine -eq $expectedMachine) 'TARGET_PE_ARCHITECTURE_WRONG';$probeHash=(Get-FileHash -LiteralPath $probe.FullName).Hash.ToLowerInvariant()
+    try {
+    $name=$probe.BaseName+' Программа, %SystemRoot%.exe';$x=Import $probe.FullName $name;$r=Workspace;$exe=$r.entries|Where-Object name -eq $name;Require ($exe.executable) 'BOX_EXE_MAPPING_UNAVAILABLE';$report=Join-Path $Fixture ($probe.BaseName+'-boxed.jsonl');$q=Request 'REGISTER';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$exe.id;$physical=Join-Path $root ('drive/'+$env:SystemRoot.Substring(0,1)+'/SecureRunWorkspace/'+$e.id.Replace('-','')+'/'+$name);$q.arguments=@('mapping',$report,$physical);$r=Call $q;Require ($null -ne $r.application_id) 'BOX_REGISTRATION_FAILED'
+    $op=[Guid]::NewGuid().ToString();$r=Call @{action='LAUNCH';application_id=$r.application_id;environment_id=$e.id;expected_revision=$e.revision;operation_id=$op} 'control';$receipt=$r.receipts|Where-Object operation_id -eq $op;Require ($receipt.state -in @('BOXED_STAGE_RUNNING','BOXED_STAGE_EXITED')) $receipt.reason
+    $data=Box-Report ($probe.BaseName+'-boxed.jsonl');Require (-not(Test-Path -LiteralPath $report)) 'HOST_REPORT_PRESENT';Require ($data.boxed -and $data.mapping_verified) 'IMPORTED_EXE_MAPPING_UNVERIFIED'
+
+    @{actual_pe=$probe.BaseName;pe_machine=$peMachine;probe_sha256=$probeHash;boxed=$true;logical_launch=$true;original_get_handle_path_verified=$true;literal_percent_environment_name=$true;no_shell_associations=$true;physical_host_fallback=$false;host_report_absent=$true}
+    }finally{Stop-Owned}
+   }
+  }
+  Case 'T42' 'running_environment_blocks_file_mutation' {
+   $probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe';$op=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$op;display_name='Busy fixture';executable=$probe;arguments=@('hold',(Join-Path $Fixture 'busy.jsonl'));working_directory=$null} 'control';$app=$r.applications|Where-Object display_name -eq 'Busy fixture';$op=[Guid]::NewGuid().ToString();$r=Call @{action='LAUNCH';application_id=$app.id;environment_id=$e.id;expected_revision=$e.revision;operation_id=$op} 'control';$x=Export $entry 'busy.txt' $true;Require ($x.reply.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $x.reply.reason;Stop-Owned;@{busy_refused=$true;external_engine_processes_observed=$true}
+  }
+  Case 'T42' 'original_sandman_open_does_not_recover_or_delete_managed_data' {
+   $sandman=Join-Path $EngineHome 'SandMan.exe';Require ((Get-AuthenticodeSignature $sandman).Status -eq 'Valid') 'ORIGINAL_SANDMAN_UNTRUSTED';$s=[Diagnostics.ProcessStartInfo]::new($sandman);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$gui=[Diagnostics.Process]::Start($s)
+   try{Start-Sleep -Seconds 2;Require (-not $gui.HasExited) 'SANDMAN_NOT_RUNNING';$x=Export $entry 'sandman-open.txt';Require ((Get-FileHash -LiteralPath (Join-Path $output 'sandman-open.txt')).Hash -eq $sourceHash) 'SANDMAN_RACED_EXPORT';$r=Workspace;Require (@($r.entries|Where-Object name -eq 'Привет 🧪.txt').Count -eq 1) 'SANDMAN_DELETED_SOURCE'}finally{if(-not $gui.HasExited){$gui.Kill($true);$null=$gui.WaitForExit(10000)};$gui.Dispose()}
+   @{original_gui_running=$true;automatic_recovery_disabled=$true;automatic_deletion_disabled=$true;source_preserved=$true;export_correct=$true}
+  }
+  Case 'T45' 'greater_than_four_gib_streamed_with_bounded_memory' {
+   $large=Join-Path $Fixture 'large.bin';$f=[IO.File]::Open($large,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write);try{[P07Sparse]::Mark($f);$f.SetLength(4296015873)}finally{$f.Dispose()};$x=Import $large 'large.bin';$r=Workspace;$largeEntry=$r.entries|Where-Object name -eq 'large.bin';Require ($largeEntry.size -eq '4296015873') 'LARGE_SIZE_TRUNCATED';$x=Export $largeEntry 'large.bin';$final=Join-Path $output 'large.bin';Require ((Get-Item -LiteralPath $final).Length -eq 4296015873 -and (Get-FileHash -LiteralPath $large).Hash -eq (Get-FileHash -LiteralPath $final).Hash) 'LARGE_COPY_WRONG';Remove-Item -LiteralPath $large,$final
+   @{logical_size='4296015873';greater_than_four_gib=$true;actual_sparse_source=$true;chunk_bytes=1048576;equal_hash=$true}
+  }
+ }
+ $failed=@($cases|Where-Object status -ne 'PASSED').Count;@{status=$(if($failed -eq 0){'PASSED'}else{'FAILED'});mode=$Mode;standard_user=$true;failed=$failed}|ConvertTo-Json|Set-Content (Join-Path $Fixture ('standard-'+$Mode+'.json'));if($failed -ne 0){exit 1}
+}catch{$metadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata';if(Test-Path -LiteralPath $metadata){Get-ChildItem -LiteralPath $metadata -Filter 'image-status-*.json'|Where-Object Length -LE 4096|Select-Object -First 64|ForEach-Object {Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $Fixture ($Mode+'-'+$_.Name))}};@{status='FAILED';standard_user=$true;code=$(if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'ACTOR_FAILED'});line=$_.InvocationInfo.ScriptLineNumber}|ConvertTo-Json|Set-Content (Join-Path $Fixture ('standard-'+$Mode+'.json'));Save;exit 1}

@@ -40,6 +40,8 @@ pub struct PickerRequest {
     environment_id: Option<Uuid>,
     expected_revision: u64,
     directory: bool,
+    #[serde(default)]
+    file_transfer: bool,
 }
 #[derive(Serialize)]
 pub struct PickerReply {
@@ -89,14 +91,19 @@ pub async fn select_policy_path(
         .to_str()
         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?
         .to_owned();
-    literal_path(&path).map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    if request.file_transfer {
+        securerun_sandboxie_adapter::files::local_path(&path)
+            .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    } else {
+        literal_path(&path).map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+    }
     let lease = native::capture(&selected)?;
     let selection_id = Uuid::new_v4();
     let display_name = selected
         .file_name()
         .and_then(|s| s.to_str())
-        .unwrap_or("Selected resource")
-        .to_owned();
+        .unwrap_or("Selected resource");
+    let display_name = securerun_sandboxie_adapter::files::display(display_name);
     let mut selections = state
         .0
         .lock()
@@ -415,5 +422,198 @@ pub async fn control_request(
         reply,
         engine_generation,
         sequence: ticket,
+    })
+}
+
+#[derive(Deserialize)]
+#[serde(
+    tag = "action",
+    rename_all = "SCREAMING_SNAKE_CASE",
+    deny_unknown_fields
+)]
+pub enum UiFilesRequest {
+    List {
+        environment_id: Uuid,
+        expected_revision: u64,
+        node_id: Option<Uuid>,
+        offset: u32,
+    },
+    Import {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+        source_selection: Uuid,
+        name: String,
+    },
+    Export {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+        file_id: Uuid,
+        destination_selection: Uuid,
+        name: String,
+    },
+    Register {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+        file_id: Uuid,
+        arguments: Vec<String>,
+    },
+    Recover {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+    },
+    Discard {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+    },
+    Cancel {
+        operation_id: Uuid,
+    },
+}
+#[derive(Serialize)]
+pub struct FilesReply {
+    #[serde(flatten)]
+    reply: securerun_sandboxie_adapter::files::Reply,
+    engine_generation: u64,
+}
+#[tauri::command]
+pub async fn files_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiFilesRequest,
+    backend: State<'_, crate::app::AppState>,
+) -> Result<FilesReply> {
+    authorize(&window)?;
+    let generation = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    use securerun_sandboxie_adapter::files::Request as F;
+    let mut held = vec![];
+    let request = match request {
+        UiFilesRequest::List {
+            environment_id,
+            expected_revision,
+            node_id,
+            offset,
+        } => F::List {
+            environment_id,
+            expected_revision,
+            node_id,
+            offset,
+        },
+        UiFilesRequest::Import {
+            environment_id,
+            expected_revision,
+            operation_id,
+            source_selection,
+            name,
+        } => {
+            let (paths, leases) = grants(
+                &state,
+                vec![UiGrant {
+                    selection_id: source_selection,
+                    permission: Permission::Block,
+                }],
+                operation_id,
+                Some(environment_id),
+                expected_revision,
+            )?;
+            held = leases;
+            F::Import {
+                environment_id,
+                expected_revision,
+                operation_id,
+                source: paths[0].path.clone(),
+                name,
+            }
+        }
+        UiFilesRequest::Export {
+            environment_id,
+            expected_revision,
+            operation_id,
+            file_id,
+            destination_selection,
+            name,
+        } => {
+            let (paths, leases) = grants(
+                &state,
+                vec![UiGrant {
+                    selection_id: destination_selection,
+                    permission: Permission::Block,
+                }],
+                operation_id,
+                Some(environment_id),
+                expected_revision,
+            )?;
+            held = leases;
+            F::Export {
+                environment_id,
+                expected_revision,
+                operation_id,
+                file_id,
+                destination: paths[0].path.clone(),
+                name,
+            }
+        }
+        UiFilesRequest::Register {
+            environment_id,
+            expected_revision,
+            operation_id,
+            file_id,
+            arguments,
+        } => F::Register {
+            environment_id,
+            expected_revision,
+            operation_id,
+            file_id,
+            arguments,
+        },
+        UiFilesRequest::Recover {
+            environment_id,
+            expected_revision,
+            operation_id,
+        } => F::Recover {
+            environment_id,
+            expected_revision,
+            operation_id,
+        },
+        UiFilesRequest::Discard {
+            environment_id,
+            expected_revision,
+            operation_id,
+        } => F::Discard {
+            environment_id,
+            expected_revision,
+            operation_id,
+        },
+        UiFilesRequest::Cancel { operation_id } => F::Cancel { operation_id },
+    };
+    let reply = tauri::async_runtime::spawn_blocking(move || {
+        let _held = held;
+        securerun_sandboxie_adapter::windows::provisioning::files::bounded_request(&request)
+    })
+    .await
+    .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))?;
+    let current = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    if current != generation {
+        return err(ErrorCode::StaleOperation);
+    }
+    Ok(FilesReply {
+        reply,
+        engine_generation: generation,
     })
 }

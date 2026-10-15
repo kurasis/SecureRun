@@ -1,8 +1,9 @@
 # Launch and process control
 
-P06 implements user-owned host-EXE registration and environment Stop. Imported
-or boxed executable references remain P07 work. The application is a manager of
-the separately installed original engine; it supplies no security driver.
+P06 implements user-owned host-EXE registration and environment Stop. P07 adds
+identity-bound imported executable references through the
+[safe file protocol](SAFE_FILE_WORKFLOWS.md). The application manages the
+separately installed original engine; it supplies no security driver.
 
 ## Application registration and execution
 
@@ -38,6 +39,21 @@ component hashes, original injected libraries, SCM configuration and parent/self
 unboxed context use the P04/P05 validated route. ABI calling convention is WINAPI,
 including real Win32 probes. The paired policy verifier and original engine must
 remain protected and unchanged.
+
+## Imported executable dispatch
+
+A BoxExecutableRef binds the private workspace mapping, environment generation,
+physical file identity/content hash and protected native boxed-stage identity.
+Launch revalidates those bindings and dispatches the stage suspended through the
+original SDK. The stage verifies its injected-engine box before any target I/O,
+then uses explicit `CreateProcessW` with the logical EXE and structured argv. It
+verifies the suspended child before resume. Shell associations and environment
+expansion are absent; the physical storage path is never a host launch target.
+
+`BOXED_STAGE_RUNNING` and `BOXED_STAGE_EXITED` describe only the stage. The
+registered target outcome remains `TARGET_OUTCOME_UNOBSERVED`; stage exit is not
+target completion. Current all-session driver membership and the same independent
+Stop gate apply. Reset invalidation completes in P08.
 
 ## Action prerequisites
 

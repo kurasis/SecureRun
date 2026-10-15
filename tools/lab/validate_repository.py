@@ -276,6 +276,47 @@ def validate(root: Path) -> None:
                     raise ValueError('Unsafe P06 source path')
                 verify_file(path, entry['sha256'], entry['size'])
 
+    p07_path = root / 'docs/evidence/p07/manifest.json'
+    if p07_path.exists():
+        p07 = json.loads(p07_path.read_text())
+        if p07['phase'] != 'P07' or p07['result'] not in {'DONE', 'BLOCKED'} or not re.fullmatch('[0-9a-f]{40}', p07['tested_commit']):
+            raise ValueError('Invalid P07 phase/source')
+        seen = set()
+        for entry in p07['files']:
+            path = (p07_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p07_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P07 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if p07['result'] == 'DONE':
+            for phase in ('p03', 'p04', 'p05', 'p06'):
+                dependency = json.loads((root / f'docs/evidence/{phase}/manifest.json').read_text())
+                if dependency['result'] != 'DONE' or dependency['tested_commit'] != p07['tested_commit']:
+                    raise ValueError('P07 DONE requires matching current P03/P04/P05/P06 regression')
+            if p07['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p07['run_id']}" or p07['run_id'] <= 0:
+                raise ValueError('Invalid P07 run provenance')
+            if len(p07['targets']) != 2 or {t['runner'] for t in p07['targets']} != {'windows-2025', 'windows-11-arm'}:
+                raise ValueError('P07 requires both Windows laboratories')
+            import importlib.util
+            module_spec = importlib.util.spec_from_file_location('p07_gate', root / 'tools/lab/retain_p07_evidence.py')
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            for target in p07['targets']:
+                folder = (p07_path.parent / target['evidence_directory']).resolve()
+                if not folder.is_relative_to(p07_path.parent.resolve()):
+                    raise ValueError('Unsafe P07 target directory')
+                for name in ('run-summary.json', 'file-cases.json', 'standard-normal.json', 'standard-fault.json'):
+                    if (folder / name).relative_to(p07_path.parent.resolve()).as_posix() not in seen:
+                        raise ValueError('P07 required report is not checksum-bound')
+                module.check_target(folder, p07['tested_commit'], 'aa64' if target['runner'] == 'windows-11-arm' else '8664')
+            if not p07['tested_sources']:
+                raise ValueError('P07 tested source bindings absent')
+            for entry in p07['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P07 source path')
+                verify_file(path, entry['sha256'], entry['size'])
+
 
 if __name__ == '__main__':
     try:

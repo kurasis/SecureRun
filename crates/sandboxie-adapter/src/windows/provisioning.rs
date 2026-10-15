@@ -5,6 +5,7 @@ use std::{io::Write, os::windows::io::FromRawHandle};
 use uuid::Uuid;
 mod aliases;
 pub mod control;
+pub mod files;
 mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
@@ -145,6 +146,10 @@ pub fn profile_path() -> R<PathBuf> {
 fn fixed_ntfs(path: &Path) -> R<()> {
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     literal_path(value)?;
+    fixed_ntfs_volume(path)
+}
+fn fixed_ntfs_volume(path: &Path) -> R<()> {
+    let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
     let volume = wide(&value[..3]);
     let drive = wide(&value[..2]);
     let mut mapping = [0u16; 1024];
@@ -179,7 +184,21 @@ fn fixed_ntfs(path: &Path) -> R<()> {
     Ok(())
 }
 fn canonical(path: &Path) -> R<Vec<File>> {
-    fixed_ntfs(path)?;
+    canonical_sharing(path, FILE_SHARE_READ)
+}
+// Transfer directory leases exclude DELETE while permitting the kernel's
+// rename-target directory open. Existing provisioning callers keep their
+// original stricter sharing mode.
+fn canonical_sharing(path: &Path, sharing: u32) -> R<Vec<File>> {
+    canonical_validated(path, sharing, false)
+}
+fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<File>> {
+    if file_names {
+        crate::files::local_path(path.to_str().ok_or("FILE_PATH_GRAMMAR_UNSUPPORTED")?)?;
+        fixed_ntfs_volume(path)?;
+    } else {
+        fixed_ntfs(path)?;
+    }
     let mut paths = path.ancestors().collect::<Vec<_>>();
     paths.reverse();
     let held = paths
@@ -187,7 +206,7 @@ fn canonical(path: &Path) -> R<Vec<File>> {
         .map(|p| {
             let f = OpenOptions::new()
                 .access_mode(FILE_READ_ATTRIBUTES | READ_CONTROL)
-                .share_mode(FILE_SHARE_READ)
+                .share_mode(sharing)
                 .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
                 .open(p)
                 .map_err(|_| "PATH_LEASE_UNAVAILABLE")?;
@@ -340,9 +359,25 @@ unsafe extern "system" {
     ) -> i32;
 }
 fn fresh_directory(path: &Path, owner: &str) -> R<File> {
-    fixed_ntfs(path)?;
+    fresh_directory_validated(path, owner, false)
+}
+fn fresh_directory_validated(path: &Path, owner: &str, file_names: bool) -> R<File> {
+    if file_names {
+        crate::files::local_path(path.to_str().ok_or("FILE_PATH_GRAMMAR_UNSUPPORTED")?)?;
+        fixed_ntfs_volume(path)?;
+    } else {
+        fixed_ntfs(path)?;
+    }
     let parent = path.parent().ok_or("ROOT_PARENT_UNSAFE")?;
-    let held = canonical(parent)?;
+    let held = canonical_validated(
+        parent,
+        if file_names {
+            FILE_SHARE_READ | FILE_SHARE_WRITE
+        } else {
+            FILE_SHARE_READ
+        },
+        file_names,
+    )?;
     let leaf = path
         .file_name()
         .and_then(|s| s.to_str())
@@ -752,6 +787,8 @@ impl NativeEngine {
                         "GITHUB_ACTIONS"
                             | "SECURERUN_P05_PAUSE_STAGE"
                             | "SECURERUN_P06_PAUSE_STAGE"
+                            | "SECURERUN_P07_PAUSE_STAGE"
+                            | "SECURERUN_P07_PAUSE_MODE"
                     )
                 );
             if !keep {
@@ -1909,6 +1946,23 @@ impl NativeEngine {
                         QueryFullProcessImageNameW(held.0, 0, path.as_mut_ptr(), &mut length)
                     } == 0
                     {
+                        let error = unsafe { GetLastError() };
+                        // Image teardown can precede process-object signaling.
+                        // Only completion of this retained object permits skip;
+                        // no live unknown image is authorized for termination.
+                        let waited = unsafe { WaitForSingleObject(held.0, 5000) };
+                        if waited == WAIT_OBJECT_0 {
+                            continue;
+                        }
+                        let status = serde_json::json!({"schema":1,"query_error":error,"wait_status":waited,"complete":false});
+                        std::fs::write(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("image-status-{}.json", diagnostic.id.simple())),
+                            serde_json::to_vec(&status)
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                         return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
                     }
                     let image = PathBuf::from(text(&path)?);

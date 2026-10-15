@@ -14,6 +14,7 @@ fn main() {
                 "diagnostic_summary",
                 "policy_request",
                 "control_request",
+                "files_request",
                 "select_policy_path",
                 "ci_report",
             ]),

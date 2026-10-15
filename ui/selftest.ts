@@ -5,7 +5,7 @@ export async function run(unauthorized: boolean) {
   if (window.__foundationTestsStarted) return; window.__foundationTestsStarted = true;
   if (unauthorized) {
     let denied = true;
-    for (const command of ['get_snapshot', 'create_draft', 'reserve_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path', 'control_request']) {
+    for (const command of ['get_snapshot', 'create_draft', 'reserve_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path', 'control_request', 'files_request']) {
       try { await invoke(command, { request: { display_name: 'UNAUTHORIZED' }, cases: [] }); denied = false; } catch (error) { denied &&= typeof error === 'string' && /not allowed|permission|capability|scope/i.test(error); }
     }
     window.__foundationAclDenied = denied; return;
@@ -29,6 +29,8 @@ export async function run(unauthorized: boolean) {
     check('T28', 'typed_metadata_draft_never_claims_ready', environment.lifecycle === 'UNCONFIGURED' && environment.activity === 'UNKNOWN' && environment.eligibility === 'UNVERIFIED');
     check('T49','launch_renderer_paths_cannot_bypass_registration',await denied('control_request',{request:{action:'LAUNCH',environment_id:crypto.randomUUID(),application_id:crypto.randomUUID(),expected_revision:1,operation_id:crypto.randomUUID(),executable:'C:\\UNAUTHORIZED.exe'}}));
     check('T49','application_selection_token_required',await deniedCode('control_request',{request:{action:'REGISTER',environment_id:crypto.randomUUID(),expected_revision:1,operation_id:crypto.randomUUID(),display_name:'P06 boundary',executable_selection:crypto.randomUUID(),arguments:[],directory_selection:null}},'SELECTION_EXPIRED'));
+    check('T49','file_transfer_raw_paths_rejected',await denied('files_request',{request:{action:'IMPORT',environment_id:crypto.randomUUID(),expected_revision:1,operation_id:crypto.randomUUID(),source:'C:\\UNAUTHORIZED.txt',name:'x.txt'}}));
+    check('T49','file_transfer_selection_token_required',await deniedCode('files_request',{request:{action:'IMPORT',environment_id:crypto.randomUUID(),expected_revision:1,operation_id:crypto.randomUUID(),source_selection:crypto.randomUUID(),name:'x.txt'}},'SELECTION_EXPIRED'));
     check('T59','policy_renderer_paths_cannot_bypass_picker',await denied('policy_request',{request:{action:'CREATE',display_name:'P05 boundary',preset:'STANDARD_OFFLINE',grants:[],operation_id:crypto.randomUUID(),path:'C:\\UNAUTHORIZED',confirmed:true}}));
     check('T53','policy_selection_token_required',await deniedCode('policy_request',{request:{action:'CREATE',display_name:'P05 boundary',preset:'STANDARD_OFFLINE',grants:[{selection_id:crypto.randomUUID(),permission:'READ_ONLY'}],operation_id:crypto.randomUUID()}},'SELECTION_EXPIRED'));
     check('T49', 'forged_path_and_confirmation_rejected', await denied('create_draft', { request: { display_name: 'P03_SYNTHETIC_SECRET', path: 'P03_SYNTHETIC_SECRET_PATH', confirmed: true } }));
@@ -55,3 +57,4 @@ export async function run(unauthorized: boolean) {
   window.__foundationReportStarted = true;
   await invoke('ci_report', { cases });
 }
+

@@ -94,8 +94,22 @@ retained even on an actor timeout. Current runs at
 
 Required native P09 proof: T30, T32, T41, T63 and T66; actual app versions and hashes;
 keyboard/screen-reader semantics, themes, scaling and measured manager resource
-budgets across Rust/UI/WebView processes. Full matching P03–P08 regressions remain
-pending. Compile-only checks do not close the production phase gate.
+budgets across Rust/UI/WebView processes. Matching P03/P04 regressions passed on both targets at `ce6098f`;
+P05–P08 remain pending. Compile-only checks do not close the production phase gate.
 
 P10 is eligible only after P09 closes. Packaging remains P11 and installed-candidate
 acceptance remains P12. Original specification and acceptance entries are unchanged.
+
+## Native display-scaling investigation
+
+The actual Windows Settings provider exists on both hosted runners. Initial
+discovery run `38794729595` passed. Run `38794886663` selected 100 percent and
+observed 96 DPI, but the current virtual display advertised only 100/125 percent.
+It therefore failed to establish required Windows 150/200 percent coverage.
+The next read/select-only public-provider investigation (`38795120675`) checks
+advertised display resolutions before selecting scale. These disposable display
+changes do not modify Windows security settings. WebView content zoom remains
+separate and does not satisfy this missing native DPI evidence.
+
+All 212 retained P09 investigation files were checked against their committed
+Git blob bytes and manifest SHA-256 hashes after publication.

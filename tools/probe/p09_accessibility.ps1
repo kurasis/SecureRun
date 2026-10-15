@@ -1,5 +1,5 @@
 # Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('READY','KEYBOARD','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite)
+param([ValidateSet('READY','KEYBOARD','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,WindowsBase,System.Windows.Forms
@@ -35,9 +35,9 @@ function Picker([int]$id,[string]$path){
  Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name
  Need ($title -in @('SecureRun resource selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit));$edit=$null
- foreach($item in $edits){if($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name')){$edit=$item;break}}
+ foreach($item in $edits){if($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder')){$edit=$item;break}}
  Need ($null -ne $edit);$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path)
- $button=Find $root ([Windows.Automation.ControlType]::Button) 'Open';if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Save'};Click $button
+ $button=Find $root ([Windows.Automation.ControlType]::Button) 'Open';if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Save'};if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Select Folder'};Click $button
  if($AllowOverwrite){Start-Sleep -Milliseconds 300;$confirm=Window $id $true;if($confirm -ne [IntPtr]::Zero){$confirmRoot=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($confirmRoot.Current.Name -eq 'Confirm Save As');Click (Find $confirmRoot ([Windows.Automation.ControlType]::Button) 'Yes')}}
  return @{real_native_picker=$true;value_pattern_used=$true;explicit_button_invoked=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
@@ -51,6 +51,13 @@ try{
  while($hwnd -eq [IntPtr]::Zero -and $clock.ElapsedMilliseconds -lt 45000){$hwnd=Window $ManagerPid;if($hwnd -eq [IntPtr]::Zero){Start-Sleep -Milliseconds 100}}
  Need ($hwnd -ne [IntPtr]::Zero);$result.native_window_dpi=[P09Access]::GetDpiForWindow($hwnd);$root=[Windows.Automation.AutomationElement]::FromHandle($hwnd)
  switch($Mode){
+  'CONFIRM' {
+   $stage='CONFIRMING_EXACT_ENVIRONMENT';Need ($EnvironmentId -cmatch '^[0-9a-f-]{36}$');$expected=switch($Intent){'ARCHIVE'{'Keep the definition, applications and all data.'};'UNARCHIVE'{'Keep all data. Revalidate ownership, roots and policy'};'RESET'{'Keep the environment definition and application records.'};default{throw 'P09_CONFIRMATION_INTENT_INVALID'}}
+   $clock=[Diagnostics.Stopwatch]::StartNew();$confirm=[IntPtr]::Zero
+   do{$confirm=Window $ManagerPid $true;if($confirm -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+   Need ($confirm -ne [IntPtr]::Zero);$dialog=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($dialog.Current.Name -eq 'SecureRun — environment confirmation')
+   $elements=$dialog.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);$content=($elements|ForEach-Object {$_.Current.Name}) -join "`n";Need ($content.Contains($EnvironmentId) -and $content.Contains($expected));Click (Find $dialog ([Windows.Automation.ControlType]::Button) 'OK');$result.exact_environment_and_retention_verified=$true;$result.native_confirmation_accepted=$true
+  }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
   'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^+s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
   'BROWSER_PROTOCOL' {$stage='REQUESTING_SYNTHETIC_PROTOCOL';Need ($ProtocolUri -cmatch '^securerun-p09:[0-9a-f-]{36}$');Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait($ProtocolUri);[Windows.Forms.SendKeys]::SendWait('{ENTER}');$result.actual_browser_address_action=$true}

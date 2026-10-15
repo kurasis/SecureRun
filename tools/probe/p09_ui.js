@@ -9,7 +9,7 @@ window.__p09_run=async function(stage,config={}) {
  const click=async(label,scope=document)=>{const e=await wait(()=>button(label,scope));if(e.disabled)throw Error('P09_UI_ACTION_DISABLED');e.click();return e;};
  const set=(e,value)=>{const type=e instanceof HTMLSelectElement?HTMLSelectElement:e instanceof HTMLTextAreaElement?HTMLTextAreaElement:HTMLInputElement;Object.getOwnPropertyDescriptor(type.prototype,'value').set.call(e,value);e.dispatchEvent(new Event(e instanceof HTMLSelectElement?'change':'input',{bubbles:true}));};
  const check=(id,name,condition)=>{cases.push({id,name,passed:!!condition});if(!condition)throw Error('P09_UI_ASSERTION_FAILED');};
- const nav=async()=>{await click('Environments',document.querySelector('nav'));await wait(()=>document.querySelector('.cards'));};
+ const nav=async()=>{await click('Environments',document.querySelector('nav'));await wait(()=>button('Environments',document.querySelector('nav'))?.getAttribute('aria-current')==='page');const back=button('All environments');if(back)back.click();await wait(()=>document.querySelector('.cards'));};
  const open=async()=>{await nav();await click(config.environment_name,document.querySelector('.cards'));await wait(()=>document.querySelector('[role=tablist]'));};
  const tab=async name=>{await click(name,document.querySelector('[role=tablist]'));await pause(100);};
  const readyPolicy=()=>native({action:'LIST'},'policy_request');
@@ -82,6 +82,23 @@ window.__p09_run=async function(stage,config={}) {
     check('T63','all_ten_thousand_entries_reachable_without_unbounded_dom',total===10000&&seen.size===10000&&maximum<=128&&pages===79&&offset===null&&document.querySelectorAll('tbody tr').length<=128);
     check('T63','deceptive_suffix_and_direction_controls_visible',state.deceptiveName?.endsWith('fdp.exe')&&/\\u\{?202e\}?|U\+202E/i.test(state.deceptiveName));
     return {status:'PASSED',cases,metrics:{first_ui_list_ms:state.listFirstMs,all_page_walk_ms:performance.now()-walk,total_files:total,pages,maximum_page:maximum,maximum_dom_rows:128}};
+   }
+   case 'TRANSFER_IMPORT_PICK':{await open();await tab('Files');await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Import file');break;}
+   case 'TRANSFER_EXPORT_PICK':{
+    await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Storage root');
+    for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){const e=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>text(e).endsWith(name)));e.click();await pause(100);}
+    const item=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>text(e).endsWith('workflow-source.txt')));item.click();await pause(50);check('T32','actual_ui_import_is_visible_without_opening',!!document.querySelector('fieldset legend')?.textContent.includes('workflow-source.txt'));await click('Export to selected folder');break;
+   }
+   case 'TRANSFER_COLLISION_PICK':{await pause(150);await click('Export to selected folder');break;}
+   case 'TRANSFER_RENAME_PICK':{
+    const dialog=await wait(()=>document.querySelector('dialog[open]'));check('T32','export_collision_offers_only_rename_and_skip',!!button('Rename and export',dialog)&&!!button('Skip',dialog)&&!button('Replace',dialog));set(dialog.querySelector('input'),'workflow-renamed.txt');await click('Rename and export',dialog);break;
+   }
+   case 'LIFECYCLE_PICK':{
+    await tab('Retention and recovery');const label={ARCHIVE:'Archive',UNARCHIVE:'Unarchive',RESET:'Reset contents'}[config.intent];const b=await wait(()=>button(label)&&!button(label).disabled&&button(label));b.click();break;
+   }
+   case 'LIFECYCLE_CHECK':{
+    await wait(()=>Array.from(document.querySelectorAll('button')).every(b=>!['Archive','Unarchive','Reset contents'].includes(text(b))||!b.disabled));
+    const r=await native({action:'LIST'},'lifecycle_request');const e=r.reply.environments.find(e=>e.environment_id===config.environment_id);check('T32',`actual_ui_${config.intent.toLowerCase()}_verified`,r.reply.reason==='OBSERVED'&&e?.lifecycle===(config.intent==='ARCHIVE'?'ARCHIVED':'ACTIVE')&&(config.intent!=='RESET'||e.generation===config.generation+1));break;
    }
    case 'DIAGNOSTIC_PREVIEW':{
     await click('Settings',document.querySelector('nav'));await click('Review diagnostic bundle');const pre=await wait(()=>document.querySelector('.diagnosticPreview pre'));state.bundle=pre.textContent;const value=JSON.parse(state.bundle);

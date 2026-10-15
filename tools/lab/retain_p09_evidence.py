@@ -10,6 +10,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 IDS = {'T30', 'T32', 'T41', 'T63', 'T66'}
 REQUIRED = {
+    'actual_ui_import_export_collision_archive_and_reset_workflow',
     'metadata_rename_preserves_identity_and_never_replays',
     'ten_real_idle_environments_and_populated_box',
     'normal_manager_startup_and_complete_process_group_idle_budget',
@@ -70,6 +71,7 @@ def check_target(folder, commit, machine):
         raise ValueError('P09 actual bilingual/theme/scaling UI proof is incomplete')
     by_name = {c['name']: c['evidence'] for c in cases}
     keys = {
+        'actual_ui_import_export_collision_archive_and_reset_workflow': ('actual_product_ui','real_native_pickers','import_export_sha256_equal','collision_rename_preserved_original','archive_preserved_data','native_confirmations_scoped','reset_generation_incremented','reset_root_empty','host_input_and_exports_unchanged'),
         'real_keyboard_and_windows_screen_reader_provider': ('real_windows_uia', 'tab_order_actual', 'f6_navigation_actual', 'accessible_labels_and_roles', 'native_invoke_changed_page'),
         'running_policy_diff_queue_requires_explicit_stopped_apply': ('real_native_picker', 'queued_in_backend', 'explicit_whole_box_stop', 'independent_policy_readback'),
         'synthetic_argv_and_environment_do_not_enter_manager_logs': ('real_boxed_target_executed', 'synthetic_argv_received', 'inherited_environment_secret_absent', 'raw_target_errors_not_manager_events'),

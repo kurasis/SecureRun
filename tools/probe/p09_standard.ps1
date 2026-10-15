@@ -25,7 +25,7 @@ function Wait-Launched($Receipt){
 function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.WorkingDirectory=$EngineHome
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode',$Mode,'-ManagerPid',[string]$ProcessId,'-ResultFile',$result)){$ps.ArgumentList.Add($arg)}
- if($Path){$ps.ArgumentList.Add('-SelectedPath');$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add('-ProtocolUri');$ps.ArgumentList.Add($Uri)}
+ if($Path){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-EnvironmentId'}else{'-SelectedPath'}));$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-Intent'}else{'-ProtocolUri'}));$ps.ArgumentList.Add($Uri)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
  try{Require ($p.WaitForExit(90000)) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
@@ -117,6 +117,28 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   $destination=Join-Path $Fixture 'reviewed-diagnostics.json';$pending=Access 'PICKER' $gui.ProcessId $destination -Async
   try{$null=Invoke-P09Stage 'DIAGNOSTIC_PREVIEW';$picker=Complete-Access $pending;$pending=$null;$r=Invoke-P09Stage 'DIAGNOSTIC_SAVED';Require (([IO.File]::ReadAllText($destination)) -ceq $r.reviewed_bundle) 'P09_DIAGNOSTIC_REVIEW_BYTES_CHANGED';Require (Clean ([IO.File]::ReadAllText($destination))) 'P09_SECRET_IN_SHARED_BUNDLE';Copy-Item -LiteralPath $destination -Destination (Join-Path $results 'reviewed-diagnostic-example.json');@{real_native_picker=$picker.picker.real_native_picker;explicit_review_before_save=$true;reviewed_bytes_equal_saved=$true;automatic_upload=$false;automatic_open=$false;secret_canaries_absent=$true}}
   finally{if($null -ne $pending){$null=Complete-Access $pending}}
+ }
+ Case 'T32' 'actual_ui_import_export_collision_archive_and_reset_workflow' {
+  $workflow=(Native @{action='LIST'}).environments|Where-Object display_name -eq 'P09 reference 10';Require ($null -ne $workflow) 'P09_WORKFLOW_ENVIRONMENT_MISSING'
+  $inputFile=Join-Path $Fixture 'workflow-source.txt';[IO.File]::WriteAllText($inputFile,'P09_UI_TRANSFER_CANARY');$hash=(Get-FileHash -LiteralPath $inputFile).Hash;$destination=Join-Path $Fixture 'workflow-export';$null=New-Item -ItemType Directory -Path $destination
+  $pending=Access 'PICKER' $gui.ProcessId $inputFile -Async
+  try{$null=Invoke-P09Stage 'TRANSFER_IMPORT_PICK' @{environment_id=$workflow.id;environment_name=$workflow.display_name};$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
+  $pending=Access 'PICKER' $gui.ProcessId $destination -Async
+  try{$null=Invoke-P09Stage 'TRANSFER_EXPORT_PICK' @{environment_id=$workflow.id};$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
+  $exported=Join-Path $destination 'workflow-source.txt';$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path -LiteralPath $exported) -and $clock.ElapsedMilliseconds -lt 30000){Start-Sleep -Milliseconds 100};Require ((Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_EXPORT_BYTES_DIFFER'
+  $pending=Access 'PICKER' $gui.ProcessId $destination -Async
+  try{$null=Invoke-P09Stage 'TRANSFER_COLLISION_PICK';$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
+  $pending=Access 'PICKER' $gui.ProcessId $destination -Async
+  try{$null=Invoke-P09Stage 'TRANSFER_RENAME_PICK';$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
+  $renamed=Join-Path $destination 'workflow-renamed.txt';$clock.Restart();while(-not(Test-Path -LiteralPath $renamed) -and $clock.ElapsedMilliseconds -lt 30000){Start-Sleep -Milliseconds 100};Require ((Get-FileHash -LiteralPath $renamed).Hash -eq $hash -and (Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_COLLISION_OVERWROTE_OUTPUT'
+  foreach($intent in @('ARCHIVE','UNARCHIVE','RESET')){
+   $pending=Access 'CONFIRM' $gui.ProcessId $workflow.id $intent -Async
+   try{$null=Invoke-P09Stage 'LIFECYCLE_PICK' @{intent=$intent};$confirmation=Complete-Access $pending;$pending=$null;Require $confirmation.exact_environment_and_retention_verified 'P09_UI_CONFIRMATION_SCOPE_UNVERIFIED';$null=Invoke-P09Stage 'LIFECYCLE_CHECK' @{intent=$intent;environment_id=$workflow.id;generation=$workflow.generation}}finally{if($null -ne $pending){$null=Complete-Access $pending}}
+   if($intent -eq 'ARCHIVE'){$null=Find-BoxFile $workflow 'workflow-source.txt'}
+  }
+  $current=(Native @{action='LIST'}).environments|Where-Object id -eq $workflow.id;Require ($current.generation -eq ($workflow.generation+1) -and @(Get-ChildItem -LiteralPath $current.compiled.section.FileRootPath[0] -Force).Count -eq 0) 'P09_UI_RESET_CONTENTS_REMAIN'
+  Require ((Get-FileHash -LiteralPath $inputFile).Hash -eq $hash -and (Get-FileHash -LiteralPath $exported).Hash -eq $hash -and (Get-FileHash -LiteralPath $renamed).Hash -eq $hash) 'P09_UI_WORKFLOW_CHANGED_HOST_DATA'
+  @{actual_product_ui=$true;real_native_pickers=$true;import_export_sha256_equal=$true;collision_rename_preserved_original=$true;archive_preserved_data=$true;native_confirmations_scoped=$true;reset_generation_incremented=$true;reset_root_empty=$true;host_input_and_exports_unchanged=$true;automatic_open=$false}
  }
  $null=Invoke-P09Stage 'RESET_PRESENTATION';Close-P09Cdp;$gui.Dispose();$gui=$null
  Case 'T66' 'local_history_and_debug_error_capture_remain_minimized' {

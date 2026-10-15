@@ -48,6 +48,13 @@ Full native product lab `38782723570` was submitted at
 conflicted with PowerShell HOME. No native product case executed. Original stage
 JSON is retained under `investigation-53c8e58`; the fixture variable is renamed.
 
+The subsequent run `38785005254` at `8a396083d79403ccca35a623beb5cef99ad7305f`
+verified official application packages/signatures and prepared normal release
+binaries on both targets. Each standard-user actor was refused by the backend
+during fixture environment seeding. No product UX case completed. The immutable
+structured results remain in `investigation-8a39608`; fixture diagnostics now
+retain only the bounded backend refusal code and numeric seed position.
+
 ## Validation pending
 
 Required native P09 proof: T30, T32, T41, T63 and T66; actual app versions and hashes;

@@ -1,7 +1,7 @@
 {
   "phase": "P09",
   "result": "BLOCKED",
-  "tested_commit": "ef2c4bd85830b6e1a486c0646e4e2e045f74a811",
+  "tested_commit": "2bf02dc01164908ac8e5af3a8e578dd9f12621bb",
   "files": [
     {
       "path": "investigation-53c8e58/windows-11-arm/stage.json",
@@ -12,6 +12,66 @@
       "path": "investigation-53c8e58/windows-2025/stage.json",
       "sha256": "5f1b163ab0fe6f4c00f80c3debcc4e72df60dbdac30339f78f5416e1601321e0",
       "size": 112
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/standard-product.json",
+      "sha256": "405c8964bb69dc59ac1649806689e6f552f046498365649b8a332064fe11ee99",
+      "size": 289
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/stage.json",
+      "sha256": "7e6bc09b11c7b5caf1ebe5bf50ec37e123f053e9f6aab65434c59a0d85be02c2",
+      "size": 112
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/run-summary.json",
+      "sha256": "27610241f4a4571f7b8a7cfbb05918c6794f51bed58fc94ec70f44e98d8e219c",
+      "size": 583
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/official-applications.json",
+      "sha256": "0f14d5ece69bcd9c1d3fb3fb7771a9925af3c2fcde01cc47875c61068bbe163b",
+      "size": 1918
+    },
+    {
+      "path": "investigation-8a39608/windows-2025/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/ui-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/standard-product.json",
+      "sha256": "4c95e671394a794d15004be668eccb04c245feec81801f7bb42c8e52020c6399",
+      "size": 289
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/stage.json",
+      "sha256": "cda0bdf6f966df04047e8aea209041af95f1b9149ed7ff9be24f83462fa59e87",
+      "size": 112
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/product-cases.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "size": 4
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/run-summary.json",
+      "sha256": "0998452df8fedbaecacb0f61801b6d140da95d4e8af743982884355c92a5d3d2",
+      "size": 583
+    },
+    {
+      "path": "investigation-8a39608/windows-11-arm/official-applications.json",
+      "sha256": "3d70466c6fe28563a9d415e9f781221a4084027b7acfa34e85d431742365e33e",
+      "size": 1936
     }
   ],
   "note": "P09 gate remains blocked pending actual native product results and matching P03 through P08 regressions. First lab initialization failure retained separately.",
@@ -22,6 +82,13 @@
       "run_id": 38782723570,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38782723570",
       "note": "Normal release compilation succeeded on both targets; lab initialization stopped because PowerShell HOME is read-only. No native product cases executed."
+    },
+    {
+      "tested_commit": "8a396083d79403ccca35a623beb5cef99ad7305f",
+      "result": "FAILED",
+      "run_id": 38785005254,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38785005254",
+      "note": "Official packages and normal release preparation succeeded. Both standard-user actors received a backend refusal during environment seeding; product UX cases did not execute. Next fixture retains the minimized backend refusal code."
     }
   ]
 }

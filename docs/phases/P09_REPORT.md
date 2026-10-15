@@ -78,6 +78,18 @@ tests and 32 actual command-boundary cases. It is historical, not matching final
 source proof. Current product/native jobs are running at
 `c5cd614f7b98485a287cc6d489b649e095dd4157` (`38789783607` and `38789783651`).
 
+Both native product builds at `c5cd614f7b98485a287cc6d489b649e095dd4157`
+passed 52 adapter tests per target. The full run `38789783651` reached environment
+08 on Server, then hit the 120-second policy deadline. ARM environment 03 failed
+an unboxed endpoint positive control before that canary was dispatched. Original
+minimized numeric/boolean probe reports remain in `investigation-c5cd614`.
+No product UX case completed. The next run uses a bounded 600-second full-rollout
+deadline, a three-second unboxed control handshake with no request retry, and
+safe endpoint-kind/stage/numeric failure evidence. Partial actor results are now
+retained even on an actor timeout. Current runs at
+`ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae` are `38792628918` (build) and
+`38792629133` (full native lab).
+
 ## Validation pending
 
 Required native P09 proof: T30, T32, T41, T63 and T66; actual app versions and hashes;

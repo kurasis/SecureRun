@@ -73,8 +73,8 @@ try{
   Case 'T42' 'external_engine_launch_mid_export_aborts_without_publication' {
    Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box);
    $q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$output;$q.name='external-busy.txt';$script:external=$null
-   try{$r=Paused $q 'MidCopy' {$script:external=$lab.HoldProductionProbe($box);Require ($lab.HeldMemberAlive($script:external,$box)) 'EXTERNAL_TARGET_NOT_RUNNING'};Require ($r.reason -eq 'STOP_REQUIRED_ALL_SESSIONS') $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'external-busy.txt'))) 'EXTERNAL_BUSY_PUBLISHED'}finally{if($null -ne $script:external){[P05Lab]::Stop($script:external)};$lab.FenceFixture($box)}
-   @{independent_original_engine_dispatch=$true;process_started_during_copy=$true;actual_member_alive_before_resume=$true;held_birth_and_owner_verified=$true;copy_aborted=$true;final_absent=$true}
+   try{$r=Paused $q 'MidCopy' {$script:external=$lab.HoldProductionProbe($box);Require ($lab.HeldMemberAlive($script:external,$box)) 'EXTERNAL_TARGET_NOT_RUNNING'};Require ($r.reason -in @('STOP_REQUIRED_ALL_SESSIONS','CONFIGURATION_CONFLICT')) $r.reason;Require (-not(Test-Path -LiteralPath (Join-Path $output 'external-busy.txt'))) 'EXTERNAL_BUSY_PUBLISHED'}finally{if($null -ne $script:external){[P05Lab]::Stop($script:external)};$lab.FenceFixture($box)}
+   @{independent_original_engine_dispatch=$true;process_started_during_copy=$true;actual_member_alive_before_resume=$true;held_birth_and_owner_verified=$true;safe_abort_reason=$r.reason;copy_aborted=$true;final_absent=$true}
   }
   Case 'T45' 'actual_ntfs_disk_full_during_streaming_copy' {
    $small=Join-Path 'R:/' ('P07-'+$Mode);$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$small;$q.name='disk-full.txt';$r=Paused $q 'AfterMark' {

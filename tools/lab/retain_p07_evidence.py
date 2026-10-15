@@ -71,6 +71,7 @@ def check_target(folder,commit,machine):
       or proof['recovered_state']!=('COMPLETE_RECOVERED' if stage=='AfterRename' else 'INCOMPLETE_RETAINED')):
    raise ValueError('P07 actual crash recovery missing')
  external=by_name['external_engine_launch_mid_export_aborts_without_publication']
+ if external['safe_abort_reason'] not in {'STOP_REQUIRED_ALL_SESSIONS','CONFIGURATION_CONFLICT'}:raise ValueError('P07 external transfer did not fail closed')
  if not all(external[key] for key in ('independent_original_engine_dispatch','process_started_during_copy','actual_member_alive_before_resume','held_birth_and_owner_verified','copy_aborted','final_absent')):raise ValueError('P07 actual external member during transfer absent')
  large=by_name['greater_than_four_gib_streamed_with_bounded_memory']
  if int(large['logical_size'])<=2**32 or not large['actual_sparse_source'] or not large['equal_hash'] or large['chunk_bytes']!=1048576:

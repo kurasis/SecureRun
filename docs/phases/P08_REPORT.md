@@ -1,9 +1,8 @@
 # P08 — Lifecycle, cleanup and recovery
 
-Status: IN_PROGRESS — both P08 native matrices passed; final P05 regression retry
-and workflow completion are pending. Scope is P08 only.
+Status: DONE. Scope is P08 only. Matching P03–P07 regressions passed.
 
-Runtime source: `2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd`.
+Runtime source: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`.
 Laboratories: Windows Server 2025 x64 and Windows 11 ARM64, with original Sandboxie
 Plus 1.18.6 / core 5.73.6 / ABI `0x57230`, upstream
 `cdba7096240b93d79c5373aa81a75a1c5c71b883`.
@@ -64,6 +63,20 @@ entire-box state. Full machine/power loss may remove live restoration authority;
 unknown state remains blocked for explicit remediation, without a deletion or
 forensic-erasure guarantee.
 
+## Implementation map
+
+- `crates/sandboxie-adapter/src/lifecycle.rs`: versioned contracts, retention rules,
+  single-use intent and private durable operation journal.
+- `crates/sandboxie-adapter/src/windows/provisioning/lifecycle.rs` and its `seal`
+  module: original native cleanup, held restoration authority and recovery.
+- Provisioning, control and file services plus native pickers: current lifecycle,
+  generation, automation and disposable-state gates.
+- `src-tauri` lifecycle commands and `ui/lifecycle.tsx`: constrained IPC, native
+  confirmation and EN/RU retention/recovery controls.
+- `.github/workflows/p08.yml`, `tools/lab/Invoke-P08.ps1`, `tools/probe/p08*` and
+  `retain_p08_evidence.py`: actual Windows actors, interruption proof and strict
+  source-bound retention. P03–P07 harnesses remain independently gated.
+
 ## Validation
 
 All runs below use the same runtime source. Raw evidence and checksums are stored
@@ -71,18 +84,39 @@ in the corresponding phase manifests.
 
 | Gate | Run | Native result per target |
 |---|---|---|
-| P01 | [38757714245](https://github.com/kurasis/SecureRun/actions/runs/38757714245) | Repository, portable and UI checks passed |
-| P03 | [38757776148](https://github.com/kurasis/SecureRun/actions/runs/38757776148) | 19 foundation, 2 normal native, 3 UI and 29 command-boundary cases passed |
-| P04 | [38757779840](https://github.com/kurasis/SecureRun/actions/runs/38757779840) | 48 adapter tests and 19 observation cases passed |
-| P05 | [38760761111](https://github.com/kurasis/SecureRun/actions/runs/38760761111) | Identical-source fresh-run retry pending |
-| P06 | [38757790771](https://github.com/kurasis/SecureRun/actions/runs/38757790771) | 21 Server / 22 ARM cases passed |
-| P07 | [38757796223](https://github.com/kurasis/SecureRun/actions/runs/38757796223) | 28 Server / 29 ARM cases passed |
-| P08 | [38757714452](https://github.com/kurasis/SecureRun/actions/runs/38757714452) | 38/38 native cases passed on each target; workflow post-steps pending |
+| P03 | [38763953821](https://github.com/kurasis/SecureRun/actions/runs/38763953821) | 19 foundation, 2 normal native, 3 UI and 29 actual command-boundary cases passed |
+| P04 | [38763957687](https://github.com/kurasis/SecureRun/actions/runs/38763957687) | 48 adapter tests and 19 native observation cases passed |
+| P05 | [38763825315](https://github.com/kurasis/SecureRun/actions/runs/38763825315) | 48 adapter tests and 45 applicable native cases passed; one absent different-admin UAC route is Not applicable |
+| P06 | [38763961970](https://github.com/kurasis/SecureRun/actions/runs/38763961970) | 21 Server / 22 ARM launch/control cases passed; zero failures |
+| P07 | [38763966380](https://github.com/kurasis/SecureRun/actions/runs/38763966380) | 28 Server / 29 ARM file/boxed-EXE cases passed; zero failures or actor failures |
+| P08 | [38763860037](https://github.com/kurasis/SecureRun/actions/runs/38763860037) | 38/38 native lifecycle and recovery cases passed on each target; zero failures or actor failures |
 
 Local validation passed: 36 portable adapter tests, three UI tests/build, strict
 Windows i686 metadata Clippy with `policy-ci`, PowerShell parsing/C# fixture
 compilation, repository validation and 12 tooling tests. Native Windows execution
 is established by Actions, not by Linux metadata compilation.
+The final publication changes documentation, evidence and portable validator test
+fixtures only; all recorded native runtime/harness source hashes remain exact.
+Two negative tests were made independent of the prior BLOCKED phase state:
+one explicitly blocks P07, and one verifies that even self-consistent altered
+source checksums cannot replace the authenticated P02 cleanup inventory.
+
+Reproduction commands:
+
+```sh
+python3 tools/lab/validate_repository.py
+python3 -m unittest discover -s tests -v
+cargo test --locked -p securerun-foundation
+cargo test --locked -p securerun-sandboxie-adapter
+npm run build
+npm test
+```
+
+The native workflows execute `tools/lab/Invoke-P03.ps1` through `Invoke-P08.ps1`
+on both owner-selected Windows runners. `retain_p03_evidence.py` through
+`retain_p08_evidence.py` require `--download-directory`, `--tested-commit` and
+`--run-id` and reject incomplete, failed or mismatched dependencies.
+
 
 | Scenario | Applicable production proof |
 |---|---|
@@ -115,8 +149,12 @@ native-dialog readiness races. Those raw reports remain under the P08
 
 P05 run 38757785675 passed Server but refused ARM cleanup of an unreviewed
 `WerFault.exe` in a fresh diagnostic scope. Its 43 passed/two failed ARM results
-and safe refusal are retained under `p05/investigation-p08-2dcc0d6`. A fresh retry
-uses the identical source, with process-image checks unchanged.
+and safe refusal are retained under `p05/investigation-p08-2dcc0d6`. The identical-source retry (38760761111) passed standard-user provisioning but
+failed the independent session setup (44 passed / one failed on ARM). Its raw
+reports are retained under `p05/investigation-p08-2dcc0d6-retry`. The parent lacked
+the actor failure report before session-ready; bounded diagnostic retention was
+added in `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. No process-image allowance or
+safety gate was changed. Current-source regressions are pending.
 
 The original 26 specification documents and all 66 final installed-candidate
 acceptance entries remain unchanged. T48 packaging finishes in P11; final

@@ -132,3 +132,10 @@ entrypoint refusing before metadata. The [manifest](../evidence/p04/manifest.jso
 binds current source hashes and immutable reports. An earlier ARM desktop-startup
 30-second timeout is retained as failed investigation; its cause was not
 established. The fresh complete run passed the unchanged refusal condition.
+
+## P08 integration regression
+
+The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this phase on both owner-selected
+laboratories in [run 38763957687](https://github.com/kurasis/SecureRun/actions/runs/38763957687): 48 adapter tests and 19 native observation cases passed.
+The [manifest](../evidence/p04/manifest.json) binds the current source and
+original structured evidence; earlier results above remain historical.

@@ -82,13 +82,13 @@ source-bound immutable evidence. Current runtime checks remain mandatory on ever
 action. No historical candidate flag or accepted INI setting grants availability.
 
 
-## Current P07 implementation evidence
+## Historical P07 implementation evidence
 
 Runtime `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68` passes matching P03–P07 gates
 on Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200 with the pinned
 original engine above. These remain pre-release laboratory tuples.
 
-| Production component | Current proof |
+| Production component | Historical P07 proof |
 |---|---|
 | Main-window IPC and native selections | P03: 27 command-boundary cases per target |
 | Trusted observation and safe NTFS primitives | P04: 38 adapter tests and 19 native scenarios per target |
@@ -98,7 +98,7 @@ original engine above. These remain pre-release laboratory tuples.
 | Paid profiles | Disabled without verified entitlement |
 | Lifecycle/reset and packaging | P08/P11 remain pending |
 
-[Current status](STATUS.md) and the [P07 report](phases/P07_REPORT.md) link exact
+[Current status](STATUS.md) and the historical [P07 report](phases/P07_REPORT.md) link exact
 successful runs and immutable source-bound proof. Full Windows 11 x64 release
 compatibility and installed-candidate acceptance remain unclaimed. Runtime trust,
 ownership, policy and identity checks still execute independently on every action.
@@ -106,5 +106,16 @@ ownership, policy and identity checks still execute independently on every actio
 ## P08 lifecycle integration
 
 See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
-confirmation, generation invalidation and inspect-only recovery. P08 native
-verification is in progress; the phase report retains the current gate status.
+confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
+[the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.
+
+## Current P08 implementation evidence
+
+Runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed matching P03–P08 gates on both
+owner-selected laboratory tuples. P08 adds 38 native cases per target covering
+confirmed lifecycle changes, retention, original native cleanup, all-session
+fencing, generation invalidation and recovery without replay.
+The [current status](STATUS.md) links all six successful exact-source runs.
+Historical tables above describe their original phase snapshots. Packaging remains
+P11 and installed-candidate acceptance P12. These laboratory results do not add a
+Windows 11 x64 release tuple or paid entitlement.

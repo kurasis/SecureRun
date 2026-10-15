@@ -1,7 +1,8 @@
 # Lifecycle and recovery
 
-P08 adds an ordinary-user lifecycle service. Native verification is in progress;
-see [the phase report](phases/P08_REPORT.md) for the current gate.
+P08 supplies the ordinary-user lifecycle service. Both owner-selected Windows
+laboratories passed native verification; see [the phase report](phases/P08_REPORT.md)
+for exact-source evidence and limitations.
 
 | Explicit action | Retention |
 |---|---|
@@ -41,8 +42,7 @@ original upstream native routine; surviving objects retain restoration authority
 Bounded drain passes inside the active dispatch allow pending child handles to
 close before the original routine removes their directories. Recovery never
 re-enters those passes. The controller waits for the held executor, restores the
-known ACLs and only then publishes COMPLETE. Native faults and ACL restoration must pass the phase's Windows tests before
-this protocol can be described as complete.
+known ACLs and only then publishes COMPLETE. Actual executor interruption and ACL restoration passed on both Windows targets.
 
 On restart, Inspect reads the journal and current identities. It never replays a
 cleanup or definition deletion. A verified completed reset can reconcile its

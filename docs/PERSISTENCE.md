@@ -56,7 +56,7 @@ identities, owner and artifact role. No general root path or recursive deletion
 API is provided. Reconciliation compares current identity/generation to the record;
 a replacement or stale generation remains unresolved. Matching identity only
 permits later inspection, not deletion. Metadata records are observations and
-cannot supply elevated authority. P07/P08 must additionally enforce their actual
+cannot supply elevated authority. P07/P08 additionally enforce their actual
 transfer/recovery ancestry, roles, journal and postconditions at use.
 
 The Windows test creates an actual operation-owned file, records its NTFS identity,
@@ -83,5 +83,5 @@ identity-verified staging in the current generation. See
 ## P08 lifecycle integration
 
 See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
-confirmation, generation invalidation and inspect-only recovery. P08 native
-verification is in progress; the phase report retains the current gate status.
+confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
+[the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.

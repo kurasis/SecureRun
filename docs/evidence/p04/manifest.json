@@ -1,46 +1,46 @@
 {
   "phase": "P04",
-  "result": "BLOCKED",
-  "tested_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
-  "run_id": 38757779840,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38757779840",
+  "result": "DONE",
+  "tested_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
+  "run_id": 38763957687,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38763957687",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-2dcc0d6/windows-2025",
+      "evidence_directory": "completion-74d86db/windows-2025",
       "summary": {
+        "phase": "P04",
         "result": "PASSED",
-        "manager_binary_sha256": "1e3e040fb5cc74ffedd227bb71ad4ba423644ddd086b91752d2cf60d90284ae8",
+        "teardown": "DISCARD_ACTIONS_VM",
+        "target": "x86_64-pc-windows-msvc",
+        "production_mutations": 0,
         "native_cases_passed": 19,
         "pe_machine": "8664",
+        "adapter_tests_passed": 48,
+        "manager_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
+        "manager_binary_sha256": "1b3ef46c65e4abe238ebc0b21f67e1f0cb38fa86fa5c760f7d5ccfc247cb03d4",
         "os_build": "10.0.26100.0",
-        "manager_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
-        "phase": "P04",
-        "target": "x86_64-pc-windows-msvc",
-        "teardown": "DISCARD_ACTIONS_VM",
         "production_target_launches": 0,
-        "os_security_settings_modified": false,
-        "production_mutations": 0,
-        "adapter_tests_passed": 48
+        "os_security_settings_modified": false
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-2dcc0d6/windows-11-arm",
+      "evidence_directory": "completion-74d86db/windows-11-arm",
       "summary": {
-        "manager_commit": "2dcc0d67d2d3bfef4fdc7f0ffd1ed72324b96ccd",
-        "pe_machine": "aa64",
-        "production_target_launches": 0,
-        "os_security_settings_modified": false,
-        "adapter_tests_passed": 48,
-        "native_cases_passed": 19,
-        "teardown": "DISCARD_ACTIONS_VM",
         "target": "aarch64-pc-windows-msvc",
-        "result": "PASSED",
-        "manager_binary_sha256": "1cc8b170abc9f88017651643a1d0888d185f66db445df32bd3ac7c5bbe7d6ee3",
+        "manager_binary_sha256": "f5f6d2293b58e7b21b461b62dec368aa50bcde1d97073a3301b37c0760865ab5",
         "os_build": "10.0.26200.0",
+        "production_target_launches": 0,
+        "pe_machine": "aa64",
+        "os_security_settings_modified": false,
+        "result": "PASSED",
+        "phase": "P04",
         "production_mutations": 0,
-        "phase": "P04"
+        "manager_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
+        "teardown": "DISCARD_ACTIONS_VM",
+        "adapter_tests_passed": 48,
+        "native_cases_passed": 19
       }
     }
   ],
@@ -464,6 +464,46 @@
       "path": "completion-2dcc0d6/windows-11-arm/standard-user.json",
       "sha256": "9baeda8d3f21033b1d27fee87b3b8c4eeb1c399ba10071ebf3ec06e96ea9f21f",
       "size": 430
+    },
+    {
+      "path": "completion-74d86db/windows-2025/stage.json",
+      "sha256": "f3328633d508839168afdb030946d99b8a7d76fe47f61578102b956dcc061370",
+      "size": 152
+    },
+    {
+      "path": "completion-74d86db/windows-2025/run-summary.json",
+      "sha256": "a5d0c108589329ad5f1aefd04196ed3d168b23c1ca5ab62a2ec889d838360738",
+      "size": 510
+    },
+    {
+      "path": "completion-74d86db/windows-2025/observation-cases.json",
+      "sha256": "a1508000b079c4e2e64979cb6173503bf9578de7a1be6e93f8b3381821cc917d",
+      "size": 7320
+    },
+    {
+      "path": "completion-74d86db/windows-2025/standard-user.json",
+      "sha256": "5fd00bfc5ba53f45c5d2c70bb88f7bbe4fa67d927439d7d73f277f384effe33e",
+      "size": 430
+    },
+    {
+      "path": "completion-74d86db/windows-11-arm/stage.json",
+      "sha256": "7e7d21b9fdc6fcde60a5161931e6eb383410ee3bbd8918175e5faef37bec1816",
+      "size": 152
+    },
+    {
+      "path": "completion-74d86db/windows-11-arm/run-summary.json",
+      "sha256": "f3c9f76304b004890e9008de0a98297b1bb722b0f658bff55ce4eed1b6225fdf",
+      "size": 511
+    },
+    {
+      "path": "completion-74d86db/windows-11-arm/observation-cases.json",
+      "sha256": "0af93e7b863cc1f617ac61434518a4f37f9644d43593aa6b09e59fa71aa7be28",
+      "size": 7320
+    },
+    {
+      "path": "completion-74d86db/windows-11-arm/standard-user.json",
+      "sha256": "fcf5e344e10f979eaf76ce3a5e7046c878255c447eb2c61a919d3612dbac31b2",
+      "size": 430
     }
   ],
   "tested_sources": [
@@ -724,5 +764,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P08 final P05 session diagnostics changed; matching final-source regressions are pending. Successful 2dcc0d6 proof remains historical."
+  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
 }

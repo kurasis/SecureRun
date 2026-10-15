@@ -138,3 +138,10 @@ candidate acceptance entries remain NOT_STARTED until P12. Reset advancement and
 T43 reset-invalidates-reference finish in P08; packaging remains P11. Windows 11
 x64 release compatibility, paid entitlement and final release certification are
 not established by Server/ARM phase proof. Next eligible phase after P07: P08.
+
+## P08 integration regression
+
+The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this phase on both owner-selected
+laboratories in [run 38763966380](https://github.com/kurasis/SecureRun/actions/runs/38763966380): 28 Server / 29 ARM file/boxed-EXE cases passed; zero failures or actor failures.
+The [manifest](../evidence/p07/manifest.json) binds the current source and
+original structured evidence; earlier results above remain historical.

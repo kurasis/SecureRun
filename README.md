@@ -3,14 +3,15 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01–P07 are complete on the owner-selected Server 2025 x64 and Windows 11 ARM64
-laboratories. P07 adds [safe file workflows](docs/SAFE_FILE_WORKFLOWS.md): metadata-only
-browsing, explicit regular-file import/export, validated boxed-EXE launch and
-identity-bound partial-operation recovery. Current source, exact native runs and
-limitations are in [STATUS](docs/STATUS.md) and [the P07 report](docs/phases/P07_REPORT.md).
-See [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md) and
-[policy/provisioning](docs/POLICY_PROVISIONING.md) for action prerequisites.
-Lifecycle/reset, final acceptance and packaging remain later phases.
+P01–P08 are complete on the owner-selected laboratories. P08 adds [lifecycle and recovery](docs/LIFECYCLE_AND_RECOVERY.md): persistent and
+disposable retention, archive/unarchive, explicitly confirmed Reset/Remove and
+journal inspection without replay. It builds on [safe file workflows](docs/SAFE_FILE_WORKFLOWS.md),
+[launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md) and
+[policy/provisioning](docs/POLICY_PROVISIONING.md).
+Current validation on the owner-selected Server 2025 x64 and Windows 11 ARM64
+laboratories is tracked in [STATUS](docs/STATUS.md) and
+[the P08 report](docs/phases/P08_REPORT.md). Final acceptance and packaging remain
+later phases.
 
 The complete, unchanged specification is in
 [docs/specification/00_README.md](docs/specification/00_README.md).
@@ -56,7 +57,7 @@ npm run tauri -- build --debug --no-bundle
 ```
 
 The normal configuration includes only the bundled main-window capability.
-It exposes constrained policy/provisioning, safe file and registered application/Stop commands,
+It exposes constrained policy/provisioning, safe file, lifecycle and registered application/Stop commands,
 with fresh native authorization. It grants no generic shell/filesystem API or
 test-report command. Engine control requires a protected application installation
 and matching validated prerequisites; a development checkout is not trusted as
@@ -77,7 +78,7 @@ npm test
 
 The Linux cloud uses [setup-cloud.sh](tools/setup-cloud.sh); it pins and verifies
 Rust installation, activates workspace-local caches and executes these checks.
-Native Windows validation is reproduced by the P03–P07 Actions workflows on
+Native Windows validation is reproduced by the P03–P08 Actions workflows on
 Server 2025 x64 and Windows 11 ARM64, with actual x86/x64 target PEs.
 The [observation contract](docs/ENGINE_OBSERVATION.md) describes the versioned
 compatibility manifest, trust/context gates, private local diagnostics and bounded

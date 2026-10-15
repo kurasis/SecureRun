@@ -436,3 +436,14 @@ unchanged-host checks still determine workflow completion, with no redispatch.
 The accessibility helper chooses the largest visible owned non-dialog window,
 records exact editor provider/point/focus stages and has a UTF-8 BOM for Windows
 PowerShell 5.1, preserving Unicode confirmation captions.
+
+The application fixture now selects GUI processes only after a fresh complete
+native membership list and a held-object birth, expected official executable path
+and liveness comparison. A helper or error window in the same box cannot stand
+in for the selected editor, archive manager or Firefox. The native picker fixture
+also recognizes the actual fixed production file-transfer title. These are lab
+corrections; fresh native application results are still required.
+The Firefox fixture preserves the external-protocol warning preference. It may
+explicitly invoke the owned Open Link provider only when the prompt contains the
+fixed synthetic protocol, and it never toggles a persistent allow permission.
+Actual boxed handler execution and the unchanged host marker remain mandatory.

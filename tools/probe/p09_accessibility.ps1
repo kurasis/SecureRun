@@ -82,8 +82,8 @@ function Picker([int]$id,[string]$path){
  while($window -eq [IntPtr]::Zero -and $clock.ElapsedMilliseconds -lt 45000){$window=Window $id $true;if($window -eq [IntPtr]::Zero){Start-Sleep -Milliseconds 100}}
  Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name;$script:stage='VERIFYING_NATIVE_PICKER_TITLE'
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
- $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','Save reviewed diagnostics','Save As','Save as','Save File'))
- Need ($title -in @('SecureRun resource selection','Save reviewed diagnostics','Save As','Save as','Save File'))
+ $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
+ Need ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit));$edit=$null
  foreach($item in $edits){if($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder')){$edit=$item;break}}
  Need ($null -ne $edit);$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path)
@@ -180,7 +180,20 @@ try{
   }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
   'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';$editor=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.AndCondition]::new([Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ClassNameProperty,'Scintilla'),[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::IsOffscreenProperty,$false)));Focus-OwnedProvider $editor $root $hwnd $ManagerPid;$result.exact_editor_focus_verified=$true;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^+s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
-  'BROWSER_PROTOCOL' {$stage='REQUESTING_SYNTHETIC_PROTOCOL';Need ($ProtocolUri -cmatch '^securerun-p09:[0-9a-f-]{36}$');Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait($ProtocolUri);[Windows.Forms.SendKeys]::SendWait('{ENTER}');$result.actual_browser_address_action=$true}
+  'BROWSER_PROTOCOL' {$stage='REQUESTING_SYNTHETIC_PROTOCOL';Need ($ProtocolUri -cmatch '^securerun-p09:[0-9a-f-]{36}$');Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait($ProtocolUri);[Windows.Forms.SendKeys]::SendWait('{ENTER}');$result.actual_browser_address_action=$true
+   # Preserve Firefox's protocol warning. Confirm only this synthetic protocol,
+   # through its owned native provider; never toggle a persistent permission.
+   $stage='CONFIRMING_SYNTHETIC_PROTOCOL_PROMPT';$clock=[Diagnostics.Stopwatch]::StartNew();$result.browser_protocol_confirmation_invoked=$false
+   do{
+    $open=Find $root ([Windows.Automation.ControlType]::Button) 'Open Link'
+    if($null -ne $open -and $open.Current.IsEnabled){
+     $labels=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)
+     Need ($labels.Count -le 10000);$content=($labels|ForEach-Object {$_.Current.Name}) -join "`n"
+     Need ($content.Contains('securerun-p09'));Click $open;$result.browser_protocol_confirmation_invoked=$true;break
+    }
+    Start-Sleep -Milliseconds 100
+   }while($clock.ElapsedMilliseconds -lt 10000)
+  }
   'BROWSER_CHILD' {
    $stage='BROWSER_OWN_CHILD_ACTION';$clock=[Diagnostics.Stopwatch]::StartNew();$link=$null
    do{$link=Owned-Link $ManagerPid 'Open boxed child';if($null -ne $link){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)

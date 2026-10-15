@@ -18,6 +18,7 @@ public sealed class P09Desktop : IDisposable {
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcess(string application,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string cwd,ref Startup startup,out Info info);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern IntPtr CreateFile(string path,uint access,uint sharing,ref Security security,uint creation,uint flags,IntPtr template);
  [DllImport("kernel32.dll",SetLastError=true)] static extern IntPtr OpenProcess(uint access,bool inherit,int pid);
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool QueryFullProcessImageName(IntPtr process,uint flags,StringBuilder image,ref uint size);
  [DllImport("kernel32.dll")] static extern bool GetExitCodeProcess(IntPtr process,out uint code);
  [DllImport("kernel32.dll")] static extern bool GetProcessTimes(IntPtr handle,out long created,out long exited,out long kernel,out long user);
  [DllImport("kernel32.dll")] static extern uint ResumeThread(IntPtr thread);
@@ -51,6 +52,16 @@ public sealed class P09Desktop : IDisposable {
   process=info.process;ProcessId=(int)info.pid;
   if(!AssignProcessToJobObject(job,process)){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_JOB_ASSIGN_FAILED");}
   if(ResumeThread(info.thread)==uint.MaxValue){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_GUI_RESUME_FAILED");}CloseHandle(info.thread);
+ }
+ // The caller supplies a member from a fresh complete original-driver list.
+ // Keep one process object held while matching birth, image and live state.
+ public static bool IsExpectedMember(int pid,long expectedBirth,string executable) {
+  if(pid<=0||expectedBirth<=0||!Path.IsPathRooted(executable))throw new InvalidOperationException("P09_TARGET_IDENTITY_INVALID");
+  IntPtr held=OpenProcess(0x00101000,false,pid);if(held==IntPtr.Zero)return false;
+  try{long born,exited,kernel,user;if(!GetProcessTimes(held,out born,out exited,out kernel,out user)||born!=expectedBirth||WaitForSingleObject(held,0)!=258)return false;
+   uint length=32768;var image=new StringBuilder((int)length);if(!QueryFullProcessImageName(held,0,image,ref length))return false;
+   return String.Equals(Path.GetFullPath(executable),Path.GetFullPath(image.ToString()),StringComparison.OrdinalIgnoreCase)&&WaitForSingleObject(held,0)==258;
+  }finally{CloseHandle(held);}
  }
  public static Dictionary<string,object> WaitMemberExit(int pid,long expectedBirth,uint timeout) {
   if(pid<=0||expectedBirth<=0||timeout>45000)throw new InvalidOperationException("P09_APPLICATION_IDENTITY_INVALID");

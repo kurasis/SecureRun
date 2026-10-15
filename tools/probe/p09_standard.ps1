@@ -45,7 +45,7 @@ function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',
 }
 function Complete-Access($Pending){try{Require ($Pending.process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($Pending.process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}finally{if(-not $Pending.process.HasExited){$Pending.process.Kill($true)};$Pending.process.Dispose()}}
 function Find-BoxFile($Environment,[string]$Name){$root=$Environment.compiled.section.FileRootPath[0];$found=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $Name);Require ($found.Count -eq 1 -and $found[0].FullName.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) 'P09_BOXED_FILE_NOT_UNIQUE';return $found[0]}
-function Wait-GuiPid($Environment){$clock=[Diagnostics.Stopwatch]::StartNew();do{$r=Native @{action='LIST'} 'control';$scope=@($r.environments|Where-Object environment_id -eq $Environment.id);if($scope.Count -eq 1 -and $scope[0].complete){foreach($member in $scope[0].processes){try{$p=[Diagnostics.Process]::GetProcessById($member.pid);try{if($p.MainWindowHandle -ne [IntPtr]::Zero){return [int]$member.pid}}finally{$p.Dispose()}}catch [ArgumentException]{}}};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000);throw 'P09_TARGET_GUI_NOT_OBSERVED'}
+function Wait-GuiPid($Environment,[string]$Executable){$clock=[Diagnostics.Stopwatch]::StartNew();do{$r=Native @{action='LIST'} 'control';$scope=@($r.environments|Where-Object environment_id -eq $Environment.id);if($scope.Count -eq 1 -and $scope[0].complete){foreach($member in $scope[0].processes){if(-not [P09Desktop]::IsExpectedMember($member.pid,[long]$member.creation_time,$Executable)){continue};try{$p=[Diagnostics.Process]::GetProcessById($member.pid);try{if($p.MainWindowHandle -ne [IntPtr]::Zero){return [int]$member.pid}}finally{$p.Dispose()}}catch [ArgumentException]{}}};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000);throw 'P09_TARGET_GUI_NOT_OBSERVED'}
 $gui=$null;$hostBrowser=$null;$browserProof=$null;$held=$null;$lab=$null;$registryCreated=$false
 try{
  $identity=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($identity);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'P09_STANDARD_USER_REQUIRED'
@@ -69,7 +69,6 @@ user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("toolkit.telemetry.enabled", false);
 user_pref("toolkit.telemetry.unified", false);
 user_pref("network.protocol-handler.external.securerun-p09", true);
-user_pref("network.protocol-handler.warn-external.securerun-p09", false);
 '@
  [IO.File]::WriteAllText((Join-Path $hostProfile 'user.js'),$prefs);[IO.File]::WriteAllText((Join-Path $boxedProfile 'user.js'),$prefs)
  $all=@();$environmentCount=if($LayoutOnly){1}elseif($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
@@ -235,14 +234,14 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  }
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash
-  $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps
+  $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps $editor
   $access=Access 'EDITOR' $pidValue $outputFile;Start-Sleep -Milliseconds 500;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
   $saved=Find-BoxFile $apps 'editor-output.txt';Require (([IO.File]::ReadAllText($saved.FullName)).Trim() -ceq 'P09_EDITOR_CANARY') 'P09_EDITOR_BYTES_DIFFER';Require (-not(Test-Path -LiteralPath $outputFile) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $before) 'P09_EDITOR_CHANGED_HOST'
   @{official_executable=$true;real_gui_editor=$true;actual_keyboard_edit_and_save=$access.real_keyboard_edit;original_driver_member_observed=$true;boxed_saved_bytes_verified=$true;host_input_unchanged=$true;host_output_absent=$true;clean_portable_profile=$true;plugins_and_host_update_integrations_outside_validated_workflow=$true}
  }
  Stop-Box $apps
  Case 'T30' 'official_archive_gui_and_create_extract_round_trip' {
-  $guiApp=Register-App $apps 'P09 archive file manager' (Join-Path (Split-Path $archive) '7zFM.exe') @($Fixture);$guiReceipt=Launch-App $apps $guiApp;$null=Wait-GuiPid $apps;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$guiReceipt.operation_id} 'control'
+  $guiApp=Register-App $apps 'P09 archive file manager' (Join-Path (Split-Path $archive) '7zFM.exe') @($Fixture);$guiReceipt=Launch-App $apps $guiApp;$null=Wait-GuiPid $apps (Join-Path (Split-Path $archive) '7zFM.exe');Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$guiReceipt.operation_id} 'control'
   $inputFile=Join-Path $Fixture 'archive-source.txt';$zip=Join-Path $Fixture 'created-archive.zip';$unpack=Join-Path $Fixture 'archive-unpacked';[IO.File]::WriteAllText($inputFile,'P09_ARCHIVE_ROUND_TRIP');$hash=(Get-FileHash -LiteralPath $inputFile).Hash
   $archiveGui=Join-Path (Split-Path $archive) '7zG.exe';Require (Test-Path -LiteralPath $archiveGui -PathType Leaf) 'P09_OFFICIAL_ARCHIVE_GUI_MISSING'
   $create=Register-App $apps 'P09 archive create' $archiveGui @('a','-tzip',$zip,$inputFile,'-y');$receipt=Launch-App $apps $create
@@ -258,7 +257,7 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
   $script:hostBrowser=[P09Desktop]::new($browser,$EngineHome,(Join-Path $Fixture 'host-browser.log'),0,[string[]]@('-no-remote','-profile',$hostProfile,('http://127.0.0.1:'+$browserProof.Port+'/host/'+$nonce)))
   $clock=[Diagnostics.Stopwatch]::StartNew();do{$records=@($browserProof.Snapshot());$hostRequests=@($records|Where-Object {$_.request_kind -eq 'HOST_POSITIVE_CONTROL'});if($hostRequests.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
   Require ($hostRequests.Count -gt 0 -and @($hostRequests|Where-Object {-not $_.source_scope_verified -or -not $_.source_unboxed}).Count -eq 0) 'P09_HOST_BROWSER_POSITIVE_CONTROL_MISSING'
-  $application=Register-App $web 'P09 official browser isolated profile' $browser @('-no-remote','-profile',$boxedProfile,('http://127.0.0.1:'+$browserProof.Port+'/main/'+$nonce));$script:browserReceipt=Launch-App $web $application;$script:browserGuiPid=Wait-GuiPid $web
+  $application=Register-App $web 'P09 official browser isolated profile' $browser @('-no-remote','-profile',$boxedProfile,('http://127.0.0.1:'+$browserProof.Port+'/main/'+$nonce));$script:browserReceipt=Launch-App $web $application;$script:browserGuiPid=Wait-GuiPid $web $browser
   $clock=[Diagnostics.Stopwatch]::StartNew();do{$records=@($browserProof.Snapshot());$main=@($records|Where-Object {$_.request_kind -eq 'BOXED_MAIN'});if($main.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
   Require ($main.Count -gt 0 -and @($main|Where-Object {-not $_.source_scope_verified -or -not $_.source_boxed -or $_.host_profile_cookie_present}).Count -eq 0) 'P09_BROWSER_HANDOFF_OR_MEMBERSHIP_UNVERIFIED'
   @{preexisting_host_browser_verified=$true;separate_clean_profiles=$true;explicit_profile_and_no_remote=$true;actual_http_requests=$main;socket_owner_and_held_birth_verified=$true;host_profile_cookie_absent_in_boxed_request=$true;host_profile_read_blocked_by_reviewed_rule=$true;unboxed_handoff=$false;browser_sandbox_disabled=$false}

@@ -74,11 +74,16 @@ try {
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
  $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
  $controller=[Diagnostics.Process]::Start($display)
- if([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[3..4],90000) -ne 0 -or $controller.HasExited){throw 'P09_DISPLAY_SERVER_NOT_READY'}
+ $readyClock=[Diagnostics.Stopwatch]::StartNew();$readyIndex=258
+ do{$readyIndex=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[3..4],250);if($readyIndex -lt 2 -or $controller.HasExited){break}}while($readyClock.ElapsedMilliseconds -lt 90000)
+ $controllerReady=($readyIndex -eq 0 -and -not $controller.HasExited)
+ if(-not $controllerReady -and -not $controller.HasExited){$controller.Kill($true);$null=$controller.WaitForExit(10000)}
+ @{startup_ready=$controllerReady;process_completed=$controller.HasExited;exit_code=$(if($controller.HasExited){$controller.ExitCode}else{$null});fixture_only=$true;independent_product_cases_continue=$true}|ConvertTo-Json|Set-Content (Join-Path $out 'display-controller.lifecycle.json') -Encoding utf8
  $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew()
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}
-  if($controller.HasExited){$null=$displayEvents[4].Set();throw 'P09_DISPLAY_SERVER_EXITED'}
+  if($controller.HasExited){$controllerReady=$false}
+  if(-not $controllerReady){$index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[0..2],0);if($index -lt 3){$null=$displayEvents[4].Set()}}
  }
  $resultHome=Join-Path $owned 'results';if(Test-Path -LiteralPath $resultHome){Get-ChildItem -LiteralPath $resultHome -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}
  if(-not(Test-Path -LiteralPath (Join-Path $out 'standard-product.json'))){throw 'P09_ACTOR_REPORT_MISSING'}

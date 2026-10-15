@@ -336,3 +336,11 @@ The fixture now raises only its own manager window without activation and
 checks the actual Windows root-owner chain before a real click. Complete kernel
 job CPU remains authoritative. Additional fixed counters attribute only completed
 held observation workers' CPU/frames and are explicitly incomplete diagnostics.
+
+
+A failed display-server bootstrap now retains its readiness/held-process exit
+status and continues the independent standard-user product actor. The parent
+answers fixed display requests with failure when that owned controller has
+failed; it never substitutes a successful DPI result. The mandatory DPI case
+still fails and blocks acceptance. Application, file, history and performance
+evidence no longer depends on this unrelated fixture bootstrap succeeding.

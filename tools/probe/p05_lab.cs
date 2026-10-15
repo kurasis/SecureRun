@@ -75,6 +75,26 @@ public sealed class P05Lab {
         string command=Quote(probe)+" hold-session "+Quote(fixture)+" "+box+" p05-hold "+Quote(engine);
         if(!run(box,command,engine,0,ref startup,out receipt))throw new InvalidOperationException("LAB_HOLD_REFUSED");return receipt;
     }
+    // P07-only synthetic external actor. The P02 fixture requires inherited
+    // ProgramData; this fixed production probe establishes membership itself
+    // and uses only the explicitly supplied synthetic report path.
+    public Receipt HoldProductionProbe(string box) {
+        if(!boxes.Contains(box))throw new InvalidOperationException("LAB_SCOPE_REJECTED");
+        string probe=Path.Combine(code,"securerun-launch-probe.exe");
+        if(!File.Exists(probe))throw new InvalidOperationException("LAB_FIXED_PROBE_MISSING");
+        Set(box,"Enabled","y");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;
+        string command=Quote(probe)+" hold "+Quote(Path.Combine(fixture,"external-held.jsonl"));
+        if(!run(box,command,engine,0x08000000U,ref startup,out receipt))throw new InvalidOperationException("LAB_HOLD_REFUSED");
+        return receipt;
+    }
+    public bool HeldMemberAlive(Receipt receipt,string expectedBox) {
+        long born,exited,kernel,user,driverBorn;uint session;var box=new StringBuilder(40);var sid=new StringBuilder(96);
+        return boxes.Contains(expectedBox)&&WaitForSingleObject(receipt.process,100)==258
+            &&GetProcessTimes(receipt.process,out born,out exited,out kernel,out user)
+            &&query((IntPtr)receipt.pid,0,box,null,sid,out session,out driverBorn)==0
+            &&box.ToString()==expectedBox&&sid.ToString()==WindowsIdentity.GetCurrent().User.Value
+            &&born!=0&&born==driverBorn;
+    }
     static string Quote(string value) {
         if(value.IndexOfAny(new[]{'\0','\r','\n','"'})>=0||value.EndsWith("\\",StringComparison.Ordinal))throw new InvalidOperationException("LAB_ARGUMENT_REJECTED");
         return "\""+value+"\"";

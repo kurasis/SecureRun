@@ -29,7 +29,7 @@ function Register-App($Environment,[string]$Name,[string]$Executable,[string[]]$
 function Launch-App($Environment,$Application){$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$Environment.id;expected_revision=$Environment.revision;application_id=$Application.id;operation_id=$op} 'control';$receipt=@($r.receipts|Where-Object operation_id -eq $op);Require ($receipt.Count -eq 1 -and $null -ne $receipt[0].process -and $receipt[0].state -ne 'REFUSED') 'P09_NATIVE_LAUNCH_NOT_OBSERVED';return $receipt[0]}
 function Wait-Launched($Receipt){
  $p=$null
- try{$p=[Diagnostics.Process]::GetProcessById($Receipt.process.pid);if([string]$p.StartTime.ToFileTimeUtc() -eq [string]$Receipt.process.creation_time){Require ($p.WaitForExit(45000)) 'P09_APPLICATION_EXIT_TIMEOUT';Require ($p.ExitCode -eq 0) 'P09_APPLICATION_EXIT_FAILED'}}catch [ArgumentException]{}finally{if($null -ne $p){$p.Dispose()}}
+ try{$p=[Diagnostics.Process]::GetProcessById($Receipt.process.pid);if([string]$p.StartTime.ToFileTimeUtc() -eq [string]$Receipt.process.creation_time){Require ($p.WaitForExit(45000)) 'P09_APPLICATION_EXIT_TIMEOUT';@{case=$script:stage;exit_code=$p.ExitCode;held_birth_matched=$true;synthetic_fixture_only=$true}|ConvertTo-Json|Set-Content (Join-Path $results 'application-exit.json') -Encoding utf8;Require ($p.ExitCode -eq 0) 'P09_APPLICATION_EXIT_FAILED'}}catch [ArgumentException]{}finally{if($null -ne $p){$p.Dispose()}}
 }
 function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.WorkingDirectory=$EngineHome
@@ -240,12 +240,13 @@ user_pref("network.protocol-handler.warn-external.securerun-p09", false);
  Case 'T30' 'official_archive_gui_and_create_extract_round_trip' {
   $guiApp=Register-App $apps 'P09 archive file manager' (Join-Path (Split-Path $archive) '7zFM.exe') @($Fixture);$guiReceipt=Launch-App $apps $guiApp;$null=Wait-GuiPid $apps;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$guiReceipt.operation_id} 'control'
   $inputFile=Join-Path $Fixture 'archive-source.txt';$zip=Join-Path $Fixture 'created-archive.zip';$unpack=Join-Path $Fixture 'archive-unpacked';[IO.File]::WriteAllText($inputFile,'P09_ARCHIVE_ROUND_TRIP');$hash=(Get-FileHash -LiteralPath $inputFile).Hash
-  $create=Register-App $apps 'P09 archive create' $archive @('a','-tzip',$zip,$inputFile,'-y');$receipt=Launch-App $apps $create
+  $archiveGui=Join-Path (Split-Path $archive) '7zG.exe';Require (Test-Path -LiteralPath $archiveGui -PathType Leaf) 'P09_OFFICIAL_ARCHIVE_GUI_MISSING'
+  $create=Register-App $apps 'P09 archive create' $archiveGui @('a','-tzip',$zip,$inputFile,'-y');$receipt=Launch-App $apps $create
   Wait-Launched $receipt;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$created=Find-BoxFile $apps 'created-archive.zip';Require ($created.Length -gt 0 -and -not(Test-Path -LiteralPath $zip)) 'P09_ARCHIVE_NOT_BOXED'
-  $extract=Register-App $apps 'P09 archive extract' $archive @('x',$zip,('-o'+$unpack),'-y');$receipt=Launch-App $apps $extract
+  $extract=Register-App $apps 'P09 archive extract' $archiveGui @('x',$zip,('-o'+$unpack),'-y');$receipt=Launch-App $apps $extract
   Wait-Launched $receipt;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$output=Find-BoxFile $apps 'archive-source.txt'
   Require ((Get-FileHash -LiteralPath $output.FullName).Hash -eq $hash -and -not(Test-Path -LiteralPath $unpack) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $hash) 'P09_ARCHIVE_ROUND_TRIP_DIFFER'
-  @{official_gui_observed_boxed=$true;actual_archive_created=$true;actual_archive_extracted=$true;round_trip_sha256_matches=$true;host_input_unchanged=$true;host_zip_and_extraction_absent=$true;engine_hooks_or_security_exceptions_added=$false}
+  @{official_gui_observed_boxed=$true;gui_operation_executable_sha256=(Get-FileHash -LiteralPath $archiveGui).Hash.ToLowerInvariant();actual_gui_create_and_extract=$true;actual_archive_created=$true;actual_archive_extracted=$true;round_trip_sha256_matches=$true;host_input_unchanged=$true;host_zip_and_extraction_absent=$true;engine_hooks_or_security_exceptions_added=$false}
  }
  Stop-Box $apps
  Case 'T41' 'official_browser_existing_host_instance_no_url_or_cookie_handoff' {

@@ -404,3 +404,16 @@ the point, not a matching caption. Foreground ownership and actual focus are
 checked before keys. Ctrl+comma and Ctrl+1 additionally require the actual
 Settings language control and environment search page, respectively. No Windows
 security setting or broad foreground permission is changed.
+
+
+Four-environment Server `38819558103` measured 0.985937681% complete-job CPU and
+224065273-byte average working set. One completed sixty-frame observer used
+0.390625 CPU seconds; this is four-box diagnostic evidence, not the ten-box gate.
+Actual Firefox main HTTP attribution with an existing clean host instance passed.
+Editor focus, archive exit and the browser child-link action failed. The next
+fixture focuses the exact owned Scintilla provider before typing; child-link
+lookup waits across only the verified browser PID's visible windows and uses its
+supported native Invoke or MSAA default action. Archive creation/extraction uses
+the official package's GUI worker 7zG.exe and retains its hash; nonzero exits
+remain failures and retain only their numeric code. No engine exception or
+browser security preference changed.

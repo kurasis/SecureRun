@@ -54,6 +54,24 @@ function Find($root,$type,[string]$name){
  $condition=[Windows.Automation.AndCondition]::new([Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,$type),[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::NameProperty,$name))
  return $root.FindFirst([Windows.Automation.TreeScope]::Descendants,$condition)
 }
+function Focus-OwnedProvider($element,$root,[IntPtr]$hwnd,[int]$id){
+ Need ($null -ne $element -and $element.Current.IsEnabled)
+ $root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal)
+ Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd);$element.SetFocus();Start-Sleep -Milliseconds 100
+ $clickable=$element.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
+ Need ([P09Access]::OwnedWindow([P09Access]::WindowFromPoint($point),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $element))
+ Need ([P09Access]::SetCursorPos($point.X,$point.Y));try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
+ $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FocusedElement) $element)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
+ Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FocusedElement) $element))
+}
+function Owned-Link([int]$id,[string]$name){
+ $script:matchedLink=$null
+ $null=[P09Access]::EnumWindows({param($window,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($window,[ref]$owner)
+  if($owner -eq $id -and [P09Access]::IsWindowVisible($window)){$candidate=[Windows.Automation.AutomationElement]::FromHandle($window);$link=Find $candidate ([Windows.Automation.ControlType]::Hyperlink) $name;if($null -ne $link){$script:matchedLink=$link;return $false}}
+  return $true
+ },[IntPtr]::Zero)
+ return $script:matchedLink
+}
 function Click($element){Need ($null -ne $element -and $element.Current.IsEnabled);$pattern=$element.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern);$pattern.Invoke()}
 function Picker([int]$id,[string]$path){
  Need ([IO.Path]::IsPathRooted($path));$clock=[Diagnostics.Stopwatch]::StartNew();$window=[IntPtr]::Zero
@@ -155,9 +173,16 @@ try{
    $elements=$dialog.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);$content=($elements|ForEach-Object {$_.Current.Name}) -join "`n";Need ($content.Contains($EnvironmentId) -and $content.Contains($expected));Click (Find $dialog ([Windows.Automation.ControlType]::Button) 'OK');$result.exact_environment_and_retention_verified=$true;$result.native_confirmation_accepted=$true
   }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
-  'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^+s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
+  'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';$editor=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ClassNameProperty,'Scintilla'));Focus-OwnedProvider $editor $root $hwnd $ManagerPid;$result.exact_editor_focus_verified=$true;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^+s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
   'BROWSER_PROTOCOL' {$stage='REQUESTING_SYNTHETIC_PROTOCOL';Need ($ProtocolUri -cmatch '^securerun-p09:[0-9a-f-]{36}$');Need ([P09Access]::SetForegroundWindow($hwnd));Start-Sleep -Milliseconds 200;[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait($ProtocolUri);[Windows.Forms.SendKeys]::SendWait('{ENTER}');$result.actual_browser_address_action=$true}
-  'BROWSER_CHILD' {$stage='BROWSER_OWN_CHILD_ACTION';Click (Find $root ([Windows.Automation.ControlType]::Hyperlink) 'Open boxed child');$result.actual_browser_child_action=$true}
+  'BROWSER_CHILD' {
+   $stage='BROWSER_OWN_CHILD_ACTION';$clock=[Diagnostics.Stopwatch]::StartNew();$link=$null
+   do{$link=Owned-Link $ManagerPid 'Open boxed child';if($null -ne $link){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)
+   Need ($null -ne $link -and $link.Current.IsEnabled);$pattern=$null
+   if($link.TryGetCurrentPattern([Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke();$result.native_link_invoke_used=$true}
+   else{Need ($link.TryGetCurrentPattern([Windows.Automation.LegacyIAccessiblePattern]::Pattern,[ref]$pattern));$pattern.DoDefaultAction();$result.native_legacy_default_action_used=$true}
+   $result.actual_browser_child_action=$true
+  }
   'BROWSER_SANDBOX' {
    $stage='READING_BROWSER_SANDBOX_STATE';Need ([P09Access]::SetForegroundWindow($hwnd));[Windows.Forms.Clipboard]::Clear();[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait('about:support');[Windows.Forms.SendKeys]::SendWait('{ENTER}')
    $clock=[Diagnostics.Stopwatch]::StartNew();$copy=$null

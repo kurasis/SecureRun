@@ -102,3 +102,9 @@ original engine above. These remain pre-release laboratory tuples.
 successful runs and immutable source-bound proof. Full Windows 11 x64 release
 compatibility and installed-candidate acceptance remain unclaimed. Runtime trust,
 ownership, policy and identity checks still execute independently on every action.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 native
+verification is in progress; the phase report retains the current gate status.

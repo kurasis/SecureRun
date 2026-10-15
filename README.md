@@ -83,3 +83,5 @@ The [observation contract](docs/ENGINE_OBSERVATION.md) describes the versioned
 compatibility manifest, trust/context gates, private local diagnostics and bounded
 native worker. Its observation-only interface cannot authorize launch; P06
 uses the separate registration/dispatch service and durable operation journal.
+
+Lifecycle implementation and current validation: [retention and recovery](docs/LIFECYCLE_AND_RECOVERY.md), [P08 report](docs/phases/P08_REPORT.md).

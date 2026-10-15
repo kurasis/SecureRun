@@ -148,3 +148,9 @@ Transfer directory leases share read/write while excluding DELETE, permitting
 the kernel's rename-target directory open. Provisioning retains its previous
 stricter directory-sharing mode; payload/source data leases continue to deny
 writers. Replacement, POSIX overwrite and ignore-read-only flags are absent.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 native
+verification is in progress; the phase report retains the current gate status.

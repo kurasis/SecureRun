@@ -135,3 +135,9 @@ The native file worker uses bounded JSON (16 KiB request, 2 MiB reply), a 128 Mi
 OS job memory ceiling and a one-hour cancellable transfer bound. It cannot launch
 content. Boxed registration creates a typed reference consumed by the existing
 launch-reservation path. See [safe file workflows](SAFE_FILE_WORKFLOWS.md).
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 native
+verification is in progress; the phase report retains the current gate status.

@@ -107,3 +107,9 @@ activation. Evidence distinguishes real killed workers, actual all-session Stop,
 short-lived receipts and changed-scope refusal from portable tests. No raw target
 arguments, environments, private paths or account credentials are collected.
 See the [phase report](phases/P06_REPORT.md) for current results and limitations.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 native
+verification is in progress; the phase report retains the current gate status.

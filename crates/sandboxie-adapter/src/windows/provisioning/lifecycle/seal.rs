@@ -281,19 +281,29 @@ impl Seal {
         }
         let path = self.resolve(relative);
         crate::files::local_path(path.to_str().ok_or("CLEANUP_PATH_INVALID")?)?;
-        let file = open(
-            &path,
-            READ_CONTROL
-                | WRITE_DAC
-                | FILE_READ_ATTRIBUTES
-                | FILE_WRITE_ATTRIBUTES
-                | if relative.as_os_str().is_empty() {
-                    FILE_LIST_DIRECTORY
-                } else {
-                    0
-                },
-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        )?;
+        let access = READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES;
+        let file = if relative.as_os_str().is_empty() {
+            // The canonical root and every ancestor are already pinned without
+            // delete sharing. Verify the opened identity before retaining this
+            // handle for the inherited-ACL restoration path.
+            let file = OpenOptions::new()
+                .access_mode(access | FILE_LIST_DIRECTORY)
+                .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+                .open(&path)
+                .map_err(|_| "CLEANUP_ROOT_SECURITY_UNAVAILABLE")?;
+            checked(&file)?;
+            if identity(&file)? != self.snapshot.root_identity {
+                return Err("CLEANUP_ROOT_CHANGED");
+            }
+            file
+        } else {
+            open(
+                &path,
+                access,
+                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            )?
+        };
         let info = checked(&file)?;
         let sd = descriptor(&file)?;
         *bytes += sd.len();

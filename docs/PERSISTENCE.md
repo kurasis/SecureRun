@@ -79,3 +79,9 @@ Recovery inspects actual current identities and exact provenance; it never
 replays a copy or publishes a partial file. Explicit Discard can remove only
 identity-verified staging in the current generation. See
 [safe file workflows](SAFE_FILE_WORKFLOWS.md) for crash windows and limits.
+
+## P08 lifecycle integration
+
+See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
+confirmation, generation invalidation and inspect-only recovery. P08 native
+verification is in progress; the phase report retains the current gate status.

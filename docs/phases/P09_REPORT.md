@@ -385,3 +385,12 @@ through a fresh original-driver-backed native list. UI Stop and explicit stopped
 Apply remain required. No journal state or conflict check is bypassed. Failure
 diagnostics now retain only selected policy stage/reason and editor-presence
 booleans to distinguish native refusal from a missing UI.
+
+
+The next runtime keeps one bounded conditional health read and publishes full
+observations every 1.7 seconds. This removes the client's extra polling delay
+without caching configuration or dropping any per-frame trust/context/root/
+process check. The same command/output remains; there is no new IPC permission.
+Two portable tests cover notification-before-wait and single-reservation release
+on timeout/drop. Native adapter Clippy, frontend compilation and four product
+tests pass locally; actual Windows CPU/update results remain pending.

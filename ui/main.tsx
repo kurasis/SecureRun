@@ -42,7 +42,7 @@ function App() {
  const [environments,setEnvironments]=useState<Owned[]>([]);const [controls,setControls]=useState<Control[]>([]);const [selected,setSelected]=useState('');const [search,setSearch]=useState('');
  const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [creation,setCreation]=useState(false);const [clock,setClock]=useState(Date.now());
  const [routeAt,setRouteAt]=useState(0);const [routeGeneration,setRouteGeneration]=useState(0);const healthGeneration=useRef(0);healthGeneration.current=health?.generation??0;
- const [renaming,setRenaming]=useState<Owned|null>(null);const [stopPlan,setStopPlan]=useState<Owned[]|null>(null);const stopDialog=useRef<HTMLDialogElement>(null);const serial=useRef(0);const observer=useRef(false);const loading=useRef(false);const metadataAt=useRef(0);const controlPolling=useRef(false);const reloadPending=useRef(false);const [controlGeneration,setControlGeneration]=useState(0);const [controlAt,setControlAt]=useState(0);
+ const [renaming,setRenaming]=useState<Owned|null>(null);const [stopPlan,setStopPlan]=useState<Owned[]|null>(null);const stopDialog=useRef<HTMLDialogElement>(null);const serial=useRef(0);const observer=useRef(false);const healthSequence=useRef<number|undefined>(undefined);const loading=useRef(false);const metadataAt=useRef(0);const controlPolling=useRef(false);const reloadPending=useRef(false);const [controlGeneration,setControlGeneration]=useState(0);const [controlAt,setControlAt]=useState(0);
  const t=strings[language];const p=productText[language];const fresh=!!health?.fresh&&clock-health.observation.observed_unix_ms<15000;const setup=setupState(health,fresh,routeAt>0&&routeGeneration===health?.generation&&clock-routeAt<15000);
  const canBrowse=fresh&&health?.observation.trust==='VERIFIED'&&health.observation.reason==='OBSERVED'&&health.observation.manager_context==='UNBOXED'&&health.observation.bridge_context==='UNBOXED'&&health.observation.service_running&&health.observation.driver_running;
  const env=environments.find(e=>e.id===selected);
@@ -61,8 +61,8 @@ function App() {
  }
  async function observe() {
   if(observer.current)return;observer.current=true;
-  try {const value=await invoke<EngineHealth>('get_engine_health');setHealth(old=>old&&(old.generation>value.generation||(old.generation===value.generation&&old.sequence>value.sequence))?old:value);}
-  catch{setHealth(null);}finally{observer.current=false;}
+  try {const value=await invoke<EngineHealth>('get_engine_health',healthSequence.current===undefined?undefined:{afterSequence:healthSequence.current});healthSequence.current=value.sequence;setHealth(old=>old&&(old.generation>value.generation||(old.generation===value.generation&&old.sequence>value.sequence))?old:value);}
+  catch{healthSequence.current=undefined;setHealth(null);}finally{observer.current=false;}
  }
  useEffect(()=>{void invoke<Snapshot>('get_snapshot').then(setSnapshot).catch(()=>setError('BACKEND_UNAVAILABLE'));void observe();const timer=setInterval(()=>{setClock(Date.now());void observe();},1000);const resume=()=>{setRouteAt(0);setHealth(null);metadataAt.current=0;void observe();};window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);return()=>{serial.current++;clearInterval(timer);window.removeEventListener('focus',resume);document.removeEventListener('visibilitychange',resume);};},[]);
  useEffect(()=>{if(canBrowse&&metadataAt.current===0)void refreshMetadata();if(!canBrowse)return;const timer=setInterval(()=>void pollControls(),10000);return()=>clearInterval(timer);},[canBrowse]);

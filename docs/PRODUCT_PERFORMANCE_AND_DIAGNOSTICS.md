@@ -14,7 +14,7 @@ the performance gate.
 
 The next revision uses a bounded read-only observation worker: authenticated
 component file objects remain held against writes/deletion for at most 60 seconds.
-Each one-second snapshot still checks SCM configuration/status, protected object
+Each 1.7-second snapshot still checks SCM configuration/status, protected object
 ownership/DACL/link identity, current driver ABI, manager/worker context, boxes,
 processes, roots and configuration. A stale, changed or failed observation clears
 availability. Every mutation independently repeats its full native checks; the
@@ -74,3 +74,12 @@ arguments and raw errors are never copied into retained evidence. A real reviewe
 redacted example is retained only after its native save succeeds.
 
 Current result: pending [P09 manifest](evidence/p09/manifest.json).
+
+
+The next observer revision combines a complete snapshot every 1.7 seconds with
+one bounded conditional status request, returning immediately on publication.
+It reduces full-snapshot work while removing the extra client polling delay;
+configuration checks are not cached or omitted. Native scope/context checks for
+every operation remain independent. One reserved waiter and a three-second
+deadline bound this read-only wait; resource and update budgets still require
+actual matching Windows measurements.

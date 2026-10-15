@@ -2,6 +2,7 @@
 pub mod control;
 pub mod files;
 pub mod lifecycle;
+pub mod live_wait;
 pub mod policy;
 pub mod product;
 pub mod provision;

@@ -33,7 +33,7 @@ pub fn worker(manager_pid: u32, manager_birth: u64) -> i32 {
             if !okay {
                 return Ok(());
             }
-            std::thread::sleep(Duration::from_secs(1).saturating_sub(frame_started.elapsed()));
+            std::thread::sleep(Duration::from_millis(1700).saturating_sub(frame_started.elapsed()));
         }
         Ok(())
     })();

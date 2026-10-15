@@ -97,7 +97,7 @@ installation identity changes, context/health transitions, expiry and the Window
 GetTickCount64 versus QueryUnbiasedInterruptTime suspend delta invalidate health.
 The desktop checks host transitions every second, expires observations after 15
 seconds, clears selection leases and increments the persistence connection
-generation. The UI reads current health every second, rejects older generation/
+generation. The UI keeps one conditional health read outstanding, rejects older generation/
 sequence views and independently ages displayed activity. Separate production
 control summaries refresh every ten seconds and after managed mutations; their
 eligibility expires after fifteen seconds and cannot cross a health generation. Resume/focus invalidates the
@@ -142,7 +142,7 @@ operation still performs its independent native authorization and verification.
 P09's passive observer holds authenticated component and ancestor file objects
 for at most sixty seconds. Initial discovery performs the same hash, architecture,
 Authenticode and protected ownership/DACL checks as one-shot observation. While
-those no-write/no-delete handles remain held, each one-second frame checks current
+those no-write/no-delete handles remain held, each 1.7-second frame checks current
 SCM service/driver status and configuration, held component ownership/DACL/link
 identity, native ABI/version, held manager identity/context, worker context and
 the complete box/process/root/configuration snapshot. It does not reuse a prior
@@ -159,3 +159,14 @@ Generation changes discard pending frames and invalidate selections/handles.
 
 Production mutation workers retain their independent fresh discovery, context,
 policy and target checks. The continuous observer cannot authorize an operation.
+
+
+A conditional `get_engine_health` call may supply its last sequence. If that
+sequence is still current, a single reserved waiter sleeps until a complete new
+snapshot or a three-second deadline. Reservation precedes thread scheduling and
+Drop releases it on completion/cancellation; no backend lock crosses the wait.
+Publication stores the new sequence before notification, so early updates are
+not lost. The invoking window is authorized again before returning. No new
+command, event-bus permission or renderer callback queue is introduced. Every
+1.7-second worker frame still collects the complete live configuration/context/
+root/process snapshot. The actual two-second process-update gate must pass.

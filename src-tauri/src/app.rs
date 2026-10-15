@@ -1,8 +1,13 @@
 use crate::native;
 use securerun_foundation::{binding::*, *};
-use securerun_sandboxie_adapter::{Health, HealthView};
+use securerun_sandboxie_adapter::{Health, HealthView, live_wait::HealthUpdates};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs::File, sync::Mutex, time::Instant};
+use std::{
+    collections::HashMap,
+    fs::File,
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 use tauri::{Manager, State, WebviewWindow};
 use uuid::Uuid;
 
@@ -76,6 +81,7 @@ impl From<Operation> for OperationView {
 }
 pub struct Backend {
     pub health: Health,
+    pub health_updates: Arc<HealthUpdates>,
     pub state_channels: HashMap<Uuid, tauri::ipc::Channel<StateEvent>>,
     pub store: Store,
     pub selections: Selections,
@@ -191,9 +197,34 @@ fn get_snapshot(window: WebviewWindow, state: State<AppState>) -> Result<Snapsho
 async fn get_engine_health(
     window: WebviewWindow,
     state: State<'_, AppState>,
+    after_sequence: Option<u64>,
 ) -> Result<HealthView> {
+    let lease = {
+        let backend = locked(&window, &state)?;
+        let view = backend.health.view(Instant::now());
+        if backend.fixture || after_sequence != Some(view.sequence) {
+            return Ok(view);
+        }
+        backend
+            .health_updates
+            .reserve(view.sequence)
+            .map_err(|reason| {
+                AppError::new(if reason == "HEALTH_WAIT_BUSY" {
+                    ErrorCode::OperationConflict
+                } else {
+                    ErrorCode::CapabilityUnavailable
+                })
+            })?
+    };
+    // The reservation exists before scheduling and its Drop releases the one
+    // slot even when the caller disappears. No backend lock crosses the wait.
+    tauri::async_runtime::spawn_blocking(move || lease.wait(std::time::Duration::from_secs(3)))
+        .await
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
     Ok(locked(&window, &state)?.health.view(Instant::now()))
 }
+
 #[derive(Serialize)]
 pub struct SubscriptionView {
     id: Uuid,
@@ -511,8 +542,10 @@ pub fn run() {
         Ok(v) => v,
         Err(_) => return,
     };
+    let health_updates = Arc::new(HealthUpdates::new(health.view(Instant::now()).sequence));
     let backend = Backend {
         health,
+        health_updates,
         store,
         state_channels: HashMap::new(),
         selections: Selections::default(),
@@ -564,6 +597,9 @@ pub fn run() {
                                 backend.health.invalidate("HOST_TRANSITION");
                             }
                             if changed || expired {
+                                let _ = backend
+                                    .health_updates
+                                    .publish(backend.health.view(Instant::now()).sequence);
                                 let _ = backend.store.reconnect();
                                 backend.handles.clear();
                                 backend.selections = Selections::default();
@@ -648,7 +684,13 @@ pub fn run() {
                                 break;
                             }
                             backend.health.accept(ticket, observation, Instant::now());
-                            let changed = backend.health.view(Instant::now()).generation != before;
+                            let view = backend.health.view(Instant::now());
+                            let notify_failed =
+                                backend.health_updates.publish(view.sequence).is_err();
+                            if notify_failed {
+                                backend.health.invalidate("HEALTH_WAIT_UNAVAILABLE");
+                            }
+                            let changed = notify_failed || view.generation != before;
                             if changed {
                                 backend.handles.clear();
                                 backend.selections = Selections::default();
@@ -689,6 +731,7 @@ mod normal_configuration_tests {
     fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
         let backend = Backend {
             health: Health::default(),
+            health_updates: Arc::new(HealthUpdates::new(0)),
             state_channels: HashMap::new(),
             store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
             selections: Selections::default(),

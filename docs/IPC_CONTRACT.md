@@ -174,3 +174,12 @@ history persistence is explicitly identified in the product UI.
 See [product UX](PRODUCT_UX.md) and
 [minimized diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). P09 native proof
 remains pending until its evidence gate and matching regressions pass.
+
+
+`get_engine_health` accepts an optional unsigned `afterSequence` argument. With
+the current sequence, one outstanding main-window request can wait for a complete
+new observation, bounded to three seconds. Missing/different sequences return
+the same current HealthView immediately; the fixture remains immediate. The
+reservation is bounded before scheduling and released by its guard, and the
+main-window origin is checked again after waiting. It creates no event-emission,
+generic event-listening, path, shell or operation capability.

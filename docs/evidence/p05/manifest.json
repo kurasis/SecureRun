@@ -2130,6 +2130,21 @@
       "path": "completion-a6cdbd1/windows-11-arm/standard-user.json",
       "sha256": "bea0d4ec09f48299de931b764858fac1ff84268653afc763d2f107650a85cce4",
       "size": 279
+    },
+    {
+      "path": "investigation-4ef10e8/windows-2025/policy-cases.json",
+      "sha256": "e3f98f38ccf0a13a4bf7f9f0f40bd4ab77969f89707f2a51f388303d61e06eb8",
+      "size": 73898
+    },
+    {
+      "path": "investigation-4ef10e8/windows-2025/run-summary.json",
+      "sha256": "7a290be396dfbe0003d03d6c71a914a5013d1b86ce7c7ade2445a4852ad6a380",
+      "size": 702
+    },
+    {
+      "path": "investigation-4ef10e8/windows-2025/stage.json",
+      "sha256": "4c83af8ba6590f34fb464db5e9bf12c4c72231e84558c562b53c88eebd8e65b6",
+      "size": 152
     }
   ],
   "tested_sources": [
@@ -2491,5 +2506,14 @@
   ],
   "production_acceptance_scenarios_passed": 0,
   "note": "P05 production policy/provisioning paths and fixed synthetic diagnostics only; user-target launch remains unavailable until P06.",
-  "current_blocker": "P06 runtime changes require matching native regression evidence"
+  "current_blocker": "Final-source revalidation after a retained-object natural-exit correction in the shared P05 diagnostic dependency",
+  "historical_runs": [
+    {
+      "tested_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+      "run_id": 38703112142,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38703112142",
+      "result": "BLOCKED",
+      "note": "Server 44 passed, one future-sibling provisioning case failed on DIAGNOSTIC_STOP_UNCONFIRMED, one absent UAC route Not applicable. Shared diagnostic completion now waits on the same retained process object even if termination races natural exit."
+    }
+  ]
 }

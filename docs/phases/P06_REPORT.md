@@ -1,69 +1,160 @@
 # P06 — Isolated launch and scoped process control
 
-Status: IN_PROGRESS. Requested scope: complete P06.
+Status: IN_PROGRESS — prior P06 source passed both laboratories; final shared-dependency correction requires matching revalidation.
+Specification: 1.3. Requested scope: complete P06 only.
 
-P05 originally passed on runtime a6cdbd1 (run 38648135812), with matching
-P03/P04 regressions. P06 changes require fresh matching regression evidence;
-historical raw evidence is preserved unchanged.
+Implementation/runtime commit: `4ef10e8a6b831707544325fa89f3e8cd743d59b2`.
+[P06 native run 38702307806](https://github.com/kurasis/SecureRun/actions/runs/38702307806)
+completed successfully on both owner-selected laboratories. The retainer has
+independently checked every mandatory case; it will publish DONE only after the
+matching P05 dependency completes. Reviewed reports are in the
+[evidence manifest](../evidence/p06/manifest.json).
 
-Implemented: one-use native registration, private application records, bounded
-original SDK launch, durable dispatch reservations, CRT quoting, suspended
-pre-execution membership checks, immutable launch receipts, all-session process
-observation, independent held-object Stop/Stop managed, basic English/Russian UI.
-Custom target CWD is carried separately by the SDK; host workers use System32.
-No shell, imported/boxed EXE mapping, target elevation or host launch fallback.
+## Outputs
 
-Local checks: 19 foundation, 28 adapter, 9 tooling and 3 UI tests pass; UI build
-passes; i686 Windows metadata-only strict clippy passes (not Windows execution).
-Native production-path proof is in progress on both owner-selected laboratories.
-Phase completion, P07 eligibility and release acceptance are not claimed yet.
+- `crates/sandboxie-adapter/src/control.rs`: private, identity-bound application
+  registration; structured argv/CWD; WAL/FULL durable dispatch reservations,
+  permanent operation/scope signatures, immutable receipts and explicit
+  reconciliation without automatic replay.
+- `crates/sandboxie-adapter/src/windows/provisioning/control.rs`: trusted original
+  SDK dispatch, suspended pre-execution membership checks, fresh policy/storage
+  prerequisites, complete all-session observations and held-object environment
+  Stop/Stop managed with completed waits.
+- `src-tauri/src/policies.rs`, `main.rs`, application ACL/build registration:
+  authorized main-window commands, one-use native picker capabilities, bounded
+  normal worker/CLI framing and backend generation/sequence rejection.
+- `ui/controls.tsx`: English/Russian application registration, optional target CWD,
+  argument editor, launch, current process views, Stop and explicit reconciliation.
+  Background polling cannot supersede an active user operation; stale views age
+  to Unknown and old async responses cannot restore them.
+- `tools/lab/Invoke-P06.ps1`, `retain_p06_evidence.py`, fixed launch probe and
+  disposable-only scripts: production-path native proof, real process interruption,
+  genuine/emulated PE coverage and strict source/checksum/dependency retention.
+- [Launch/control contract](../LAUNCH_AND_PROCESS_CONTROL.md), updated
+  [IPC contract](../IPC_CONTRACT.md), phase status and immutable reviewed evidence.
+
+No imported/boxed EXE mapping, target elevation, general PID-kill command, host
+fallback, cleanup implementation, product privileged helper or engine bundling
+was introduced.
+
+## Requirements and action gates
+
+PR-03 through PR-06 are implemented through normal production services.
+Registration accepts canonical local host EXEs and structured arguments/CWD;
+renderer paths cannot bypass the native selection book. The original SDK receives
+target command/CWD separately, while host workers start in System32 with a minimal
+OS-derived environment. CRT quoting is tested through the actual engine parser.
+
+Launch requires verified ownership, immutable root/ACL, current revision and
+configuration/inheritance fingerprint, supported constrained policy family,
+matching actual kernel/product/engine tuple and current manager/verifier binding.
+Complete owner-matched session enumeration precedes the launch fence. The original
+service creates the target suspended; driver membership and held OS birth are
+verified before resuming its primary thread. Short-lived confirmed boxed receipts
+remain distinct from lost outcomes; children keep environment activity Running.
+
+Each launch reserves durable intent before dispatch. A crash before dispatch or
+a lost accepted receipt stays Unknown even when enumeration is empty. Duplicate
+IPC/restart delivery never dispatches that operation again. Unknown launches
+block a new operation until explicit reconciliation; reconciliation preserves
+Unknown and does not imply nonexecution.
+
+Stop requires its own trusted context, current owned marker/root and complete
+all-session scope. It does not depend on launch eligibility, network enforcement,
+registration or optional entitlement. It retains authorized noncritical process
+objects through dispatch and completed waits, rechecking membership/scope at use.
+Membership retirement during natural exit is reconciled by waiting on the same
+held object; a live mismatch remains refused. No numeric-PID fallback exists.
+Stop managed resolves explicit journaled identities, never a box-name prefix.
+
+## Native verification
+
+Original Sandboxie Plus 1.18.6 / core 5.73.6 / ABI `0x57230`, pinned upstream
+`cdba7096240b93d79c5373aa81a75a1c5c71b883`.
+
+| Laboratory | Actual target PEs | P06 passed | Failed / blocked / skipped |
+|---|---|---:|---:|
+| Windows Server 2025 x64, build 26100 | x64 and genuine x86 | 21 | 0 / 0 / 0 |
+| Windows 11 ARM64, build 26200 | ARM64 and emulated x86/x64 | 22 | 0 / 0 / 0 |
+
+Every applicable P06 scenario is present on both targets: T01–T07, T19, T26,
+T36, T50, T54, T56, T61 and T62. Proof includes missing engine, stopped service,
+actual original-driver unload, changed signed component, exact Unicode paths/argv,
+invalid/replaced EXEs, child/grandchild and background activity, unmanaged box/host
+process survival, competing managers, hostile target CWD/PATH/DLL fixtures,
+current-policy-ineligible Stop and stale application revision refusal.
+
+Five actual standard-user actors per target exercise normal control, reservation
+interruption, accepted-dispatch interruption, held-object races and real Windows
+sessions 0/2. The missing-engine bootstrap check and disposable engine setup are
+separate lab administration. No Windows security setting is relaxed.
+
+T61 kills real workers at Reserved and Accepted checkpoints. Three duplicate
+restart deliveries execute zero and one target respectively; a separate normal
+operation delivered five times executes once. Explicit reconciliation retains
+Unknown. T62 changes real scope after retaining handles and proves the target
+survives refusal. The natural-exit case retains a live primary until it exits,
+confirms scoped completion and preserves an unrelated host process.
+
+The normal manager has no checkpoint activation. A separately compiled
+`policy-ci` binary is used only for disposable Actions interruption/race fixtures;
+its distinct binary hash is retained. Fixed original `KmdUtil` administration
+and a narrow disposable logon fixture are not product helpers.
+
+## Dependencies and checks
+
+P05 was complete before P06 began, with runtime `a6cdbd1` and matching P03/P04
+proof. Changes require current regression evidence for the final P06 source.
+
+| Check | Current result |
+|---|---|
+| Portable Rust | 19 foundation and 28 adapter tests passed |
+| Windows metadata-only strict i686 clippy | Passed; not Windows execution evidence |
+| Tooling integrity | 9 tests passed |
+| UI | 3 state/localization tests and production asset build passed |
+| P03, run 38702972635 | Both targets: 19 foundation, 2 normal native, 3 UI, 25 actual command-boundary cases passed |
+| P04, run 38702976356 | Both targets: 31 adapter tests and 19 native observation cases passed |
+| P05, run 38703112142 | Pending; must pass before P06 DONE |
+| P06, run 38702307806 | Both targets passed; source-bound retention awaits P05 |
+
+Commands executed include `cargo test --locked`, strict adapter clippy for native
+Windows and metadata-only i686, `npm test`, `npm run build`,
+`python3 tools/lab/validate_repository.py`,
+`python3 -m unittest discover -s tests -p 'test_*.py'`, and the P03–P06 Actions
+workflows on this branch. Retainers require successful exact-source runs,
+matching P03/P04/P05 dependency commits, every named native case and immutable raw
+report checksums. Reports contain no raw arguments, environments, credentials,
+private paths or SIDs.
+
+## Scope, limitations and investigation history
+
+T26 import/export/reset portions belong to P07/P08. P06 covers launch/Stop
+serialization, duplicate/conflicting operations and competing managers. T54's
+actual paid-certificate-expiry subcase is Not applicable: no paid preset or
+entitlement-dependent launch route is enabled. Baseline Stop while launch is
+ineligible is proven; no substitute certificate or expiry bypass is fabricated.
+
+The manager lock does not serialize a trusted administrator/SandMan. External
+scope/policy changes are detected and refused; atomic protection against a
+concurrently editing trusted administrator is not claimed. Registration must be
+renewed after its policy revision changes. Root relocation remains unsupported.
+
+Minimized historical failures remain in the P06 manifest: initial SMB/account
+setup, optional-CWD/UTF-8/scenario-variable/PATH/session fixture defects and the
+natural-exit Stop race. They were corrected without exclusions or relaxed gates.
+P03/P04 regression evidence for the intermediate source is preserved separately.
+
+All 26 original specification documents are unchanged. All 66 final installed-
+candidate acceptance entries remain NOT_STARTED. No Windows 11 x64 release tuple,
+paid feature, production file workflow, installer or release certification is
+claimed. The next phase is P07 after the matching P05 regression closes.
 
 
-Initial investigation run 38696611210 (3822c22) failed in the new harness before
-launch: its mandatory synthetic SMB positive control was missing and a later
-account name exceeded Windows' 20-character limit. Both setup defects were fixed;
-reviewed minimized reports remain under `docs/evidence/p06/investigation-3822c22`.
-No test exclusion or product security relaxation was used to bypass these failures.
-
-The next investigation (572592d, run 38697466505) proved actual custom-CWD boxed
-launch on both targets. Most other cases were refused because the PowerShell
-client serialized its absent optional CWD as an empty string; the unmanaged
-fixture also enabled its root before creating it. Those client/setup defects
-were corrected, preserving minimized raw failures as historical evidence.
-
-Server investigation 91cd662 / run 38698529104 passed actual child/grandchild
-membership, background activity, duplicate suppression, safe Stop with ineligible
-launch, real changed-scope refusal after retaining handles, serialization,
-service/component refusal, hostile CWD and stale revision checks. UTF-8 pipe
-encoding, a PowerShell scenario/operation variable collision, the fixture's
-absolute PowerShell path and enabling its deliberate other-session probe were
-corrected. The complete gate remains pending on both platforms.
-
-## Scope and interpretation
-
-- PR-03 through PR-06 are implemented through the normal production adapter and
-  scoped main-window command. The normal CLI framing exercises the same service.
-- P06 owns T01–T07, T19, T26, T36, T50, T54, T56, T61 and T62. The retainer refuses
-  completion unless every applicable named production case passes on both
-  owner-selected targets, including actual native/x86 and ARM x64 emulation.
-- T26 import/export/reset subcases belong to P07/P08 and are not claimed here.
-  P06 covers rapid launch/Stop, duplicate/conflicting operations and competing
-  manager processes through the real namespace lock.
-- T54 covers baseline Stop while current launch eligibility fails. Actual paid
-  certificate expiry is Not applicable: no paid preset or entitlement-dependent
-  route is enabled. No replacement certificate, grace period or expiry bypass
-  is fabricated. Stop has no optional-entitlement dependency.
-- Target CWD is independently selected and identity-bound; host workers remain
-  in System32. Native protocol input is UTF-8, distinct from Windows target argv.
-- Retained scoped receipts are historical dispatch facts; current activity comes
-  from complete engine membership. Empty enumeration never proves nonexecution.
-- All T01–T66 final installed-candidate acceptance entries remain NOT_STARTED.
-  P07 mapping/transfer and P08 cleanup/recovery are not implemented by P06.
-
-The c8b8d46 Server investigation additionally passed Unicode/x86 argv, genuine
-original-driver unload, real session 0/2 Stop, killed-worker reservation recovery
-and both held-object termination races. A natural short-lived exit could retire
-driver membership before the held OS object signaled; Stop now performs a bounded
-wait on that same object before treating the mismatch as live scope uncertainty.
-The UI polling lifecycle was also corrected so background refresh cannot supersede
-an active user operation. Matching final-source regressions are required again.
+Final dependency investigation: P05 run 38703112142 passed 44 applicable Server
+cases and failed one future-sibling provisioning case on diagnostic stop
+completion; one absent UAC route was accurately Not applicable. The existing
+private P05 diagnostic stop still rejected a failed termination dispatch even
+when its retained process had naturally exited. Its postcondition now requires
+the completed wait on that same object. Numeric status-only diagnostics distinguish
+dispatch failure from incomplete exit. All current phase gates are revalidated
+for this shared dependency correction; no earlier source is relabeled DONE.

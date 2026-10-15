@@ -1989,9 +1989,30 @@ impl NativeEngine {
                     }
                     return Err("DIAGNOSTIC_PROCESS_SCOPE_CHANGED");
                 }
-                if unsafe { TerminateProcess(held.0, 79) } == 0
-                    || unsafe { WaitForSingleObject(held.0, 5000) } != WAIT_OBJECT_0
-                {
+                // A process can finish after membership validation. Windows
+                // then refuses TerminateProcess even though this same retained
+                // object is already exiting. Completion is the signaled object,
+                // never a successful dispatch alone or another numeric PID.
+                let dispatched = unsafe { TerminateProcess(held.0, 79) } != 0;
+                let error = if dispatched {
+                    0
+                } else {
+                    unsafe { GetLastError() }
+                };
+                let waited = unsafe { WaitForSingleObject(held.0, 5000) };
+                if !dispatched || waited != WAIT_OBJECT_0 {
+                    // Bounded OS statuses only: no identities, paths or target data.
+                    let status = serde_json::json!({"schema":1,"operation":"DIAGNOSTIC_STOP","termination_dispatched":dispatched,"termination_error":error,"wait_status":waited,"complete":waited==WAIT_OBJECT_0});
+                    std::fs::write(
+                        self.profile
+                            .join("metadata")
+                            .join(format!("scope-status-{}.json", diagnostic.id.simple())),
+                        serde_json::to_vec(&status)
+                            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                    )
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                }
+                if waited != WAIT_OBJECT_0 {
                     return Err("DIAGNOSTIC_STOP_UNCONFIRMED");
                 }
             }

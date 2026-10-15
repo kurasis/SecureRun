@@ -114,8 +114,9 @@ available transport. Minimized
 probe results, verified receipts and numeric failed exit statuses contain no paths, arguments, SIDs,
 environment variables or configuration passwords. The phase report must identify
 remaining DNS/broker, SMB/mapped-drive, ICMP, alias and interruption coverage until
-their actual production-path tests pass. User targets remain unavailable until
-P06.
+their actual production-path tests pass. P06 now supplies user-target dispatch
+through a separate [launch/control gate](LAUNCH_AND_PROCESS_CONTROL.md). Policy
+records and the observation-only availability field cannot authorize launch.
 
 Source review is pinned to Sandboxie commit
 `cdba7096240b93d79c5373aa81a75a1c5c71b883`:

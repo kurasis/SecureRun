@@ -106,3 +106,15 @@ paths and forged native-picker IDs. Generated ACLs, actual outcomes and the full
 current runtime hashes are retained in the manifest. Historical P03/P04-era proof
 remains immutable. Foundation tests execute no engine operations; P05 production
 mutation evidence is recorded separately in the P05 report.
+
+## Current P06 regression
+
+Runtime `4ef10e8a6b831707544325fa89f3e8cd743d59b2`,
+[run 38702972635](https://github.com/kurasis/SecureRun/actions/runs/38702972635),
+passed on Server 2025 x64 and Windows 11 ARM64: 19 foundation, 2 normal native,
+3 UI and 25 actual WebView2/native-picker command-boundary cases per target.
+The new control command is explicitly scoped to the main origin/window; raw
+renderer executable paths and forged application selection tokens are refused.
+This regression executes no engine target; P06 containment proof is separate.
+[Current immutable evidence](../evidence/p03/manifest.json) binds the tested runtime
+sources. Later P06 production commands do not expand the P03 fixture protocol.

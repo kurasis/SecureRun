@@ -1,10 +1,49 @@
 {
   "phase": "P06",
   "result": "BLOCKED",
-  "tested_commit": "3822c22850f92433ea275137c65673f2b9057a25",
-  "run_id": 38696611210,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38696611210",
-  "targets": [],
+  "tested_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+  "run_id": 38702307806,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38702307806",
+  "targets": [
+    {
+      "runner": "windows-2025",
+      "evidence_directory": "completion-4ef10e8/windows-2025",
+      "summary": {
+        "standard_user": true,
+        "os_build": 26100,
+        "fault_feature_release_enabled": false,
+        "result": "PASSED",
+        "phase": "P06",
+        "fault_binary_sha256": "9eeb409677e525ca3e58a605dbcc8ada8ac4de51f31acca2b508c383022eb2ed",
+        "manager_binary_sha256": "175d07fb0d95078d582bdeff65f6f8bac9886a424a68d4929f5666395cdb1fb9",
+        "manager_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+        "pe_machine": "8664",
+        "elevated_helper": false,
+        "native_cases_passed": 21,
+        "os_security_settings_modified": false,
+        "failed": 0
+      }
+    },
+    {
+      "runner": "windows-11-arm",
+      "evidence_directory": "completion-4ef10e8/windows-11-arm",
+      "summary": {
+        "phase": "P06",
+        "os_build": 26200,
+        "elevated_helper": false,
+        "os_security_settings_modified": false,
+        "standard_user": true,
+        "native_cases_passed": 22,
+        "result": "PASSED",
+        "manager_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+        "fault_binary_sha256": "95a2914215bf8f8f81579f83d26568fa16a2eb1351db9dd8bd2876467ffc672b",
+        "fault_feature_release_enabled": false,
+        "pe_machine": "aa64",
+        "failed": 0,
+        "manager_binary_sha256": "6e01457fd98026940283f1c0438b53fb7504cbf46616e757a2fa0b579888aa89"
+      }
+    }
+  ],
   "files": [
     {
       "path": "investigation-3822c22/windows-2025/standard-normal.json",
@@ -170,10 +209,89 @@
       "path": "investigation-c8b8d46/windows-2025/control-cases.json",
       "sha256": "c114f7627b29891d7841b3e94f8515f0f07afd3eee7e12d353f9c0b5bb877864",
       "size": 6319
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/control-cases.json",
+      "sha256": "39df94899f7701edca8fb4511b36aa4740b0a29838da701ce5b7ac454f7d2a7e",
+      "size": 6653
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/run-summary.json",
+      "sha256": "38a5dd9f2796f20973a904b2bdfb8ee45a0c693afcfb5520dda651174420282e",
+      "size": 536
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/stage.json",
+      "sha256": "76f8bb12899a7d0b4f38789af7c46963da8a2707443fc150c792ed2bfb1ace5f",
+      "size": 112
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/standard-accepted.json",
+      "sha256": "a36bb5fab67925e7219446819a794882fbffe7fcda7856a07ee1c87864cecb0f",
+      "size": 489
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/standard-normal.json",
+      "sha256": "97086e9ea9db5051183fa5a52ffdbf9adfe3a8279721378976fee393d78524d5",
+      "size": 4876
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/standard-reserved.json",
+      "sha256": "e0623bafcb33989f9cd7f29445a1aebc3984da585b68465b6ccf71fc8f24260f",
+      "size": 489
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/standard-scope.json",
+      "sha256": "f3c8d0c723e00d410bb5237044af526892d8cb332d1ba3eafcdad52f9fb06129",
+      "size": 913
+    },
+    {
+      "path": "completion-4ef10e8/windows-2025/standard-sessions.json",
+      "sha256": "829cfdaca4bd5e54aaba925afc7c86aaa5f2f54fd919c045c699867d3b48742a",
+      "size": 549
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/control-cases.json",
+      "sha256": "a68a72c99603b0f54d5bfd1f010380ebf25319fadb8c46477314de903bdf542a",
+      "size": 6967
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/run-summary.json",
+      "sha256": "ee9f34472f0e507c1d674526ecdf7ccacb62f4842417664cbdb43538c4043338",
+      "size": 536
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/stage.json",
+      "sha256": "4f3459adb7aa81be5d43874ae769a744379274a371eaed4d291f9cda81857326",
+      "size": 112
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/standard-accepted.json",
+      "sha256": "e7527ec8a90e17cd4967deb0366d58b867ee9728225d01a247b260dcbc799349",
+      "size": 489
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/standard-normal.json",
+      "sha256": "3364104289376a926b96e16b45a2551733feda84417533562470b0e7d8b9ac1f",
+      "size": 5214
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/standard-reserved.json",
+      "sha256": "6b3dcde64f42936373b9f01464619bc1fb0d69124c03c0fe818967e9c8122287",
+      "size": 489
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/standard-scope.json",
+      "sha256": "88b6b9316775c13dcca017386afa8270863c47cc4c100a555fe5aae28f35a465",
+      "size": 913
+    },
+    {
+      "path": "completion-4ef10e8/windows-11-arm/standard-sessions.json",
+      "sha256": "68316a7d6d9597968ddf023e62413c9de4b881d7af0fb8ebce2fb5ae499e084b",
+      "size": 549
     }
   ],
   "tested_sources": [],
-  "note": "First investigation: mandatory SMB positive control missing in new harness; reserved account name exceeded Windows length. Neither run closes any P06 gate.",
   "historical_runs": [
     {
       "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",
@@ -195,6 +313,15 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38700856884",
       "result": "BLOCKED",
       "note": "Server passed genuine x86/Unicode arguments, actual original-driver unload, both Windows sessions, killed-reservation recovery and held-object exit/scope cases. Short-lived cleanup exposed a membership-retirement versus process-signal Stop race; fixed through a bounded wait on the same held object."
+    },
+    {
+      "tested_commit": "3822c22850f92433ea275137c65673f2b9057a25",
+      "run_id": 38696611210,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38696611210",
+      "result": "BLOCKED",
+      "note": "First investigation: mandatory SMB positive control missing in new harness; reserved account name exceeded Windows length. Neither run closes any P06 gate."
     }
-  ]
+  ],
+  "note": "Both native P06 targets passed all required production cases. Matching final-source P05 regression is still pending; DONE is not claimed.",
+  "current_blocker": "Final-source revalidation after a retained-object natural-exit correction in the shared P05 diagnostic dependency"
 }

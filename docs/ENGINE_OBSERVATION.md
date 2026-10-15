@@ -107,7 +107,9 @@ containing observation. Unknown/unavailable reasons and their provenance are
 explicit. QueryDrvInfo's certificate-state low 32 bits are status only; neither a
 certificate file nor accepted settings enable paid profiles. Paid enforcement stays
 unverified; no certificate data, substitute certificate or bypass is introduced.
-Production launch remains unavailable. Failed/absent observations represent optional
+This read-only observation protocol never authorizes production launch. P06 uses
+the separate [launch/control service](LAUNCH_AND_PROCESS_CONTROL.md) with fresh
+action-specific checks. Failed/absent observations represent optional
 capabilities as Unknown rather than silently making them available.
 
 The debug executable's --observation-once and bounded six-snapshot

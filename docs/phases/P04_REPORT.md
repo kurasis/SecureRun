@@ -110,3 +110,14 @@ Current manifests bind the actual reports and unchanged runtime sources; earlier
 proof remains historical. Ordinary-user service-process birth remains Unknown
 where access is denied, and boxed startup still exits before metadata/WebView.
 The separate P05 suite validates user-owned policy/provisioning mutation.
+
+## Current P06 regression
+
+Runtime `4ef10e8a6b831707544325fa89f3e8cd743d59b2`,
+[run 38702976356](https://github.com/kurasis/SecureRun/actions/runs/38702976356),
+passed both owner-selected targets: 31 adapter tests and all 19 production
+observation scenarios per target. Current [source-bound evidence](../evidence/p04/manifest.json)
+preserves all prior raw reports. This observation protocol stays read-only and
+cannot authorize launch; the separate P06 service independently checks its
+current owner/root/policy and action-specific prerequisites. Ordinary-user
+service-process identity uncertainty remains explicit rather than fabricated.

@@ -39,8 +39,9 @@ boxed normal desktop startup exits before metadata/WebView creation. Unknown
 context exposes minimum read-only setup; no control/elevation or self-escape is
 available. A small in-memory store supplies setup state; real engine observations
 come from the isolated backend worker, never mocks. P05 exposes constrained
-user-owned provisioning separately through policy_request. User-target dispatch,
-import/export and lifecycle cleanup remain unavailable.
+user-owned provisioning separately through policy_request. P06 adds registered
+host-EXE dispatch and scoped Stop through control_request; import/export and
+lifecycle cleanup remain later-phase work.
 See [observation contract](ENGINE_OBSERVATION.md) and
 [policy contract](POLICY_PROVISIONING.md).
 

@@ -363,3 +363,12 @@ is removed; no benefit is inferred from that experiment. Standard-user fixtures
 now set their profile variables from loaded Windows known folders and use a
 private writable fixture TEMP, verified before cases. Parent profile/temp values
 are not carried into that actor. New native measurements remain required.
+
+
+The four-environment diagnostic now also samples the normal inspector-free
+manager's complete kernel job for sixty seconds, after independently observing
+all four environments idle. `performance-diagnostic.json` explicitly declares
+four reference environments and no performance-gate claim; the full ten-box
+acceptance requirement is unchanged. This obtains completed-observer CPU/frames
+earlier for profiling. The single-environment layout diagnostic remains short.
+Case diagnostics clear the previous UI stage before each new case.

@@ -155,8 +155,9 @@ try{
     $null=Call @{action='RECOVER';operation_id=$confirmedBeforeDrift.operation_id}
    }
    $confirmedBeforeDrift=Prepare 'RESET';$lab.LifecycleHookTemplate($box,$true)
+   # Pinned api_flags.h: NO_EXPAND=0x20000000; include globals and templates.
    try{
-    Require ($lab.Read($box,'OnBoxDelete',0x40000000) -eq $hook) 'INHERITED_HOOK_FIXTURE_NOT_EFFECTIVE';$r=Commit $confirmedBeforeDrift $true;Require ($r.reason -ne 'OBSERVED') 'INHERITED_HOOK_ACCEPTED';Require (-not(Test-Path -LiteralPath $marker)) 'INHERITED_HOST_HOOK_EXECUTED'
+    Require ($lab.Read($box,'OnBoxDelete',0x20000000) -eq $hook) 'INHERITED_HOOK_FIXTURE_NOT_EFFECTIVE';$r=Commit $confirmedBeforeDrift $true;Require ($r.reason -ne 'OBSERVED') 'INHERITED_HOOK_ACCEPTED';Require (-not(Test-Path -LiteralPath $marker)) 'INHERITED_HOST_HOOK_EXECUTED'
    }finally{$lab.LifecycleHookTemplate($box,$false)}
    $null=Call @{action='RECOVER';operation_id=$confirmedBeforeDrift.operation_id}
    Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'hooks-canary.txt').Count -eq 1) 'HOOK_REFUSAL_DELETED_DATA'

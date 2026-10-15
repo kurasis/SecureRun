@@ -789,6 +789,7 @@ impl NativeEngine {
                             | "SECURERUN_P05_PAUSE_STAGE"
                             | "SECURERUN_P06_PAUSE_STAGE"
                             | "SECURERUN_P07_PAUSE_STAGE"
+                            | "SECURERUN_P08_PAUSE_STAGE"
                             | "SECURERUN_P07_PAUSE_MODE"
                     )
                 );

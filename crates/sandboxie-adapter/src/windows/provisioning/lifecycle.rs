@@ -569,7 +569,8 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
         );
     }
     unchanged(engine, &e, &r)?;
-    scope(engine, &e, &j.list()?)?;
+    engine.idle(&e.name())?;
+    let policy_matches = scope(engine, &e, &j.list()?).is_ok_and(|current| current == r.scope);
     if r.stage == "PREPARED" && e.lifecycle_operation != Some(id) {
         return stage(ops, &mut r, "EXPIRED_UNDISPATCHED", "NO_MUTATION_REPLAYED");
     }
@@ -596,10 +597,14 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
     if e.lifecycle_operation != Some(id) {
         return Err("LIFECYCLE_OPERATION_BINDING_CHANGED");
     }
-    let mut seal = seal::Seal::capture(engine, &e)?;
+    let empty = std::fs::read_dir(engine.root_for(e.id))
+        .map_err(|_| "CLEANUP_ENUMERATION_UNKNOWN")?
+        .next()
+        .is_none();
     if r.stage == "CLEARED"
         && r.intent == Action::Reset
-        && seal.empty().is_ok()
+        && policy_matches
+        && empty
         && matches!(r.native_status, Some(0 | 0xc0000043))
     {
         e.generation = e
@@ -619,7 +624,8 @@ fn recover(engine: &NativeEngine, j: &mut Journal, ops: &mut contract::Journal, 
     }
     // No irreversible retry: preserve possibly partial data, invalidate references
     // and require a fresh explicit intent before any further cleanup or launch.
-    seal.restore()?;
+    // Root identity/private ACL and complete idle were checked above. Do not
+    // traverse retained contents or repair external configuration during inspect.
     e.generation = e
         .generation
         .checked_add(1)
@@ -656,6 +662,25 @@ pub fn execute(
             } => commit(&engine, &mut j, &mut ops, *operation_id, *plan_id)?,
             contract::Request::Recover { operation_id } => {
                 recover(&engine, &mut j, &mut ops, *operation_id)?
+            }
+            contract::Request::Cancel {
+                operation_id,
+                plan_id,
+            } => {
+                let mut record = ops
+                    .get(*operation_id)?
+                    .ok_or("LIFECYCLE_OPERATION_NOT_FOUND")?;
+                if record.plan_id != *plan_id {
+                    return Err("LIFECYCLE_CONFIRMATION_INVALID");
+                }
+                if record.stage == "PREPARED" {
+                    stage(
+                        &mut ops,
+                        &mut record,
+                        "CANCELLED_UNDISPATCHED",
+                        "NATIVE_CONFIRMATION_CANCELLED",
+                    )?;
+                }
             }
         }
         for e in j.list()? {

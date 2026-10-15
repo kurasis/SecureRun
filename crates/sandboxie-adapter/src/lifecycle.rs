@@ -40,7 +40,7 @@ impl Action {
                 "Delete all boxed contents. Keep the environment definition and application records. Imported executable references become unavailable."
             }
             Self::Remove => {
-                "Delete all boxed contents, then remove the engine definition. Keep an audit tombstone and the verified empty root identity."
+                "Delete all boxed contents, then remove the engine definition and application records. Keep an audit tombstone and the verified empty root identity."
             }
             Self::Archive => {
                 "Keep the definition, applications and all data. Disable manager launch. Export and Reset remain available."
@@ -81,6 +81,10 @@ pub enum Request {
     },
     Recover {
         operation_id: Uuid,
+    },
+    Cancel {
+        operation_id: Uuid,
+        plan_id: Uuid,
     },
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

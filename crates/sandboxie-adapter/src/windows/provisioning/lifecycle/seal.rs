@@ -50,6 +50,21 @@ fn checked(f: &File) -> R<BY_HANDLE_FILE_INFORMATION> {
     if info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY == 0 && info.nNumberOfLinks != 1 {
         return Err("CLEANUP_HARDLINK_REJECTED");
     }
+    if info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0 {
+        let mut flags = 0u32;
+        if unsafe {
+            GetFileInformationByHandleEx(
+                f.as_raw_handle(),
+                FileCaseSensitiveInfo,
+                &mut flags as *mut _ as _,
+                4,
+            )
+        } == 0
+            || flags != 0
+        {
+            return Err("CASE_SENSITIVE_PATH_UNSUPPORTED");
+        }
+    }
     Ok(info)
 }
 fn descriptor(f: &File) -> R<Vec<u8>> {
@@ -250,11 +265,18 @@ impl Seal {
         result.capture_node(Path::new(""), 0, &mut 0)?;
         Ok(result)
     }
+    fn resolve(&self, relative: &Path) -> PathBuf {
+        if relative.as_os_str().is_empty() {
+            self.path.clone()
+        } else {
+            self.path.join(relative)
+        }
+    }
     fn capture_node(&mut self, relative: &Path, depth: usize, bytes: &mut usize) -> R<()> {
         if depth > 32 || self.snapshot.nodes.len() >= MAX_NODES {
             return Err("CLEANUP_TREE_BOUND");
         }
-        let path = self.path.join(relative);
+        let path = self.resolve(relative);
         crate::files::local_path(path.to_str().ok_or("CLEANUP_PATH_INVALID")?)?;
         let file = open(
             &path,
@@ -331,7 +353,7 @@ impl Seal {
             return Err("CLEANUP_TREE_BOUND");
         }
         let file = open(
-            &self.path.join(relative),
+            &self.resolve(relative),
             FILE_READ_ATTRIBUTES,
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         )?;
@@ -341,7 +363,7 @@ impl Seal {
             identity(&file)?,
         );
         if info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0 {
-            for c in std::fs::read_dir(self.path.join(relative))
+            for c in std::fs::read_dir(self.resolve(relative))
                 .map_err(|_| "CLEANUP_ENUMERATION_UNKNOWN")?
             {
                 self.snapshot_current(
@@ -380,7 +402,7 @@ impl Seal {
         }
         let mut result = Ok(());
         for node in &self.snapshot.nodes {
-            let path = self.path.join(&node.relative);
+            let path = self.resolve(Path::new(&node.relative));
             let file = match open(
                 &path,
                 READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,

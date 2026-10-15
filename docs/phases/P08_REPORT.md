@@ -24,3 +24,8 @@ phase DONE, installed-candidate acceptance or release certification is claimed.
 All 26 original specification documents and 66 final acceptance statuses remain
 unchanged. Packaging-related T48 portions finish in P11. Next eligible phase only
 after the complete P08 gate: P09.
+
+Initial ARM run 38736673131 passed 40 adapter tests and failed three new seal tests
+before any engine mutation: joining an empty root-relative component introduced
+a trailing separator rejected by strict local-file grammar. Root resolution now
+keeps the original canonical root spelling. No path validation was weakened.

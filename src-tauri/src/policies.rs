@@ -776,9 +776,14 @@ pub fn perform_lifecycle(
                 .set_buttons(rfd::MessageButtons::OkCancel)
                 .show();
             if accepted != rfd::MessageDialogResult::Ok {
-                return Ok(securerun_sandboxie_adapter::lifecycle::Reply::failure(
-                    "LIFECYCLE_CONFIRMATION_CANCELLED",
-                ));
+                let mut cancelled = bounded_request(&L::Cancel {
+                    operation_id,
+                    plan_id: plan.plan_id,
+                });
+                if cancelled.reason == "OBSERVED" {
+                    cancelled.reason = "LIFECYCLE_CONFIRMATION_CANCELLED".into();
+                }
+                return Ok(cancelled);
             }
             Ok(bounded_request(&L::Commit {
                 operation_id,

@@ -191,3 +191,9 @@ The next lab revision retains only onboarding state, fixed backend reason codes
 and environment counts on failure. It never retains raw UI/JavaScript exceptions.
 Dependent UI scenarios stop after their first failed prerequisite; a measured
 performance-budget failure still allows independent product checks to run.
+
+Full run `38799721407` at `8398582` stopped before seeding on both targets:
+the PowerShell 7 actor used the .NET Framework event-opening overload. The ACL
+channel was created, but its standard-user self-check raised InvalidCastException.
+The actor now uses EventWaitHandleAcl.OpenExisting; the Windows PowerShell 5.1
+UIA helper retains its correct framework overload. No permission was broadened.

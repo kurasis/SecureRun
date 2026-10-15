@@ -39,7 +39,7 @@ try{
  $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData');$env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
  $displayPrefix=$env:SECURERUN_P09_DISPLAY_EVENTS;Require ($displayPrefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$') 'P09_LAB_DISPLAY_CHANNEL_MISSING'
  $displayRights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
- foreach($suffix in @('100','150','200','done','failed')){$event=[Threading.EventWaitHandle]::OpenExisting($displayPrefix+'-'+$suffix,$displayRights);$event.Dispose()}
+ foreach($suffix in @('100','150','200','done','failed')){$event=[Threading.EventWaitHandleAcl]::OpenExisting($displayPrefix+'-'+$suffix,$displayRights);$event.Dispose()}
  @{schema=1;standard_user_event_access_verified=$true;fixed_display_actions_only=$true;event_count=5;normal_product_receives_channel=$false}|ConvertTo-Json|Set-Content (Join-Path $results 'lab-display-channel.json') -Encoding utf8
  foreach($name in @('p05_lab.cs','p09_desktop.cs','p09_browser.cs')){Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)))}
  . (Join-Path $PSScriptRoot 'p09_cdp.ps1')

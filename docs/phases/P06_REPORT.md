@@ -1,13 +1,14 @@
 # P06 — Isolated launch and scoped process control
 
-Status: IN_PROGRESS — prior P06 source passed both laboratories; final shared-dependency correction requires matching revalidation.
+Status: DONE.
 Specification: 1.3. Requested scope: complete P06 only.
 
-Implementation/runtime commit: `4ef10e8a6b831707544325fa89f3e8cd743d59b2`.
-[P06 native run 38702307806](https://github.com/kurasis/SecureRun/actions/runs/38702307806)
-completed successfully on both owner-selected laboratories. The retainer has
-independently checked every mandatory case; it will publish DONE only after the
-matching P05 dependency completes. Reviewed reports are in the
+Implementation/runtime commit: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
+[P06 native run 38705476091](https://github.com/kurasis/SecureRun/actions/runs/38705476091)
+completed successfully on both owner-selected laboratories. The retainers
+independently checked every mandatory case, exact runtime source, raw report
+checksum and matching P03/P04/P05 dependency. No gate remains blocked.
+Reviewed reports are in the
 [evidence manifest](../evidence/p06/manifest.json).
 
 ## Outputs
@@ -112,10 +113,10 @@ proof. Changes require current regression evidence for the final P06 source.
 | Windows metadata-only strict i686 clippy | Passed; not Windows execution evidence |
 | Tooling integrity | 9 tests passed |
 | UI | 3 state/localization tests and production asset build passed |
-| P03, run 38702972635 | Both targets: 19 foundation, 2 normal native, 3 UI, 25 actual command-boundary cases passed |
-| P04, run 38702976356 | Both targets: 31 adapter tests and 19 native observation cases passed |
-| P05, run 38703112142 | Pending; must pass before P06 DONE |
-| P06, run 38702307806 | Both targets passed; source-bound retention awaits P05 |
+| P03, run 38705476301 | Both targets: 19 foundation, 2 normal native, 3 UI, 25 actual command-boundary cases passed |
+| P04, run 38705479692 | Both targets: 31 adapter tests and 19 native observation cases passed |
+| P05, run 38705482872 | Both targets: 31 adapter tests and 45 applicable native policy/provisioning cases passed; one accurate Not applicable UAC route |
+| P06, run 38705476091 | Both targets passed; complete source/checksum-bound retention |
 
 Commands executed include `cargo test --locked`, strict adapter clippy for native
 Windows and metadata-only i686, `npm test`, `npm run build`,
@@ -147,7 +148,7 @@ P03/P04 regression evidence for the intermediate source is preserved separately.
 All 26 original specification documents are unchanged. All 66 final installed-
 candidate acceptance entries remain NOT_STARTED. No Windows 11 x64 release tuple,
 paid feature, production file workflow, installer or release certification is
-claimed. The next phase is P07 after the matching P05 regression closes.
+claimed. The next eligible phase is P07. The requested P06 scope is complete.
 
 
 Final dependency investigation: P05 run 38703112142 passed 44 applicable Server
@@ -156,5 +157,6 @@ completion; one absent UAC route was accurately Not applicable. The existing
 private P05 diagnostic stop still rejected a failed termination dispatch even
 when its retained process had naturally exited. Its postcondition now requires
 the completed wait on that same object. Numeric status-only diagnostics distinguish
-dispatch failure from incomplete exit. All current phase gates are revalidated
-for this shared dependency correction; no earlier source is relabeled DONE.
+dispatch failure from incomplete exit. All current phase gates have been revalidated for this shared dependency
+correction; no earlier source is relabeled DONE. The final source passes the
+complete P03–P06 gates on both owner-selected laboratories.

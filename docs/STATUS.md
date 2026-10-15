@@ -6,14 +6,13 @@ Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P06.
 |---|---|---|
 | P01 | DONE — owner-selected Windows 11 ARM64 lab | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | BLOCKED — final shared-dependency regression pending | [P03 report](phases/P03_REPORT.md), [current evidence](evidence/p03/manifest.json) |
-| P04 | BLOCKED — final shared-dependency regression pending | [P04 report](phases/P04_REPORT.md), [current evidence](evidence/p04/manifest.json) |
-| P05 | BLOCKED — matching final-source regression pending | [P05 report](phases/P05_REPORT.md), [evidence](evidence/p05/manifest.json) |
-| P06 | IN_PROGRESS — prior native source passed; final revalidation pending | [P06 report](phases/P06_REPORT.md), [raw evidence](evidence/p06/manifest.json) |
-| P07–P12 | NOT_STARTED | P07 becomes eligible after P06 closes |
+| P03 | DONE — current P06 regression verified | [P03 report](phases/P03_REPORT.md), [current evidence](evidence/p03/manifest.json) |
+| P04 | DONE — current P06 regression verified | [P04 report](phases/P04_REPORT.md), [current evidence](evidence/p04/manifest.json) |
+| P05 | DONE — current P06 regression verified | [P05 report](phases/P05_REPORT.md), [evidence](evidence/p05/manifest.json) |
+| P06 | DONE | [P06 report](phases/P06_REPORT.md), [raw evidence](evidence/p06/manifest.json) |
+| P07–P12 | NOT_STARTED | P07 is the next eligible phase; requested P06 scope is complete |
 
-Prior checked runtime: `4ef10e8a6b831707544325fa89f3e8cd743d59b2`.
-A shared P05 diagnostic natural-exit correction now requires fresh matching checks.
+Final checked runtime: `c8d135da5ce403148e3e903036951ab9c947d8c1`.
 All current phase gates must bind that same source and runtime-file hashes.
 Historical raw evidence is immutable and remains separately retained.
 
@@ -21,10 +20,10 @@ Historical raw evidence is immutable and remains separately retained.
 
 | Phase | Actions run | Result on each owner-selected target |
 |---|---|---|
-| P03 | [38702972635](https://github.com/kurasis/SecureRun/actions/runs/38702972635) | 19 foundation, 2 normal native, 3 UI and 25 actual command-boundary cases passed |
-| P04 | [38702976356](https://github.com/kurasis/SecureRun/actions/runs/38702976356) | 31 adapter tests and 19 native observation cases passed |
-| P05 | [38703112142](https://github.com/kurasis/SecureRun/actions/runs/38703112142) | Server: 44 passed, one diagnostic-stop failure, one Not applicable; correction requires revalidation |
-| P06 | [38702307806](https://github.com/kurasis/SecureRun/actions/runs/38702307806) | 21 Server / 22 ARM production launch/control cases passed; zero failed/blocked/skipped |
+| P03 | [38705476301](https://github.com/kurasis/SecureRun/actions/runs/38705476301) | 19 foundation, 2 normal native, 3 UI and 25 actual command-boundary cases passed |
+| P04 | [38705479692](https://github.com/kurasis/SecureRun/actions/runs/38705479692) | 31 adapter tests and 19 native observation cases passed |
+| P05 | [38705482872](https://github.com/kurasis/SecureRun/actions/runs/38705482872) | 31 adapter tests and 45 applicable native policy/provisioning cases passed; one absent different-admin UAC route is Not applicable |
+| P06 | [38705476091](https://github.com/kurasis/SecureRun/actions/runs/38705476091) | 21 Server / 22 ARM production launch/control cases passed; zero failed/blocked/skipped |
 
 Laboratories: Windows Server 2025 x64, build 26100, with actual x64/x86 target PEs;
 Windows 11 ARM64, build 26200, with ARM64 and emulated x86/x64 target PEs.

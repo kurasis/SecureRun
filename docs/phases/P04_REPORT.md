@@ -113,8 +113,8 @@ The separate P05 suite validates user-owned policy/provisioning mutation.
 
 ## Current P06 regression
 
-Runtime `4ef10e8a6b831707544325fa89f3e8cd743d59b2`,
-[run 38702976356](https://github.com/kurasis/SecureRun/actions/runs/38702976356),
+Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
+[run 38705479692](https://github.com/kurasis/SecureRun/actions/runs/38705479692),
 passed both owner-selected targets: 31 adapter tests and all 19 production
 observation scenarios per target. Current [source-bound evidence](../evidence/p04/manifest.json)
 preserves all prior raw reports. This observation protocol stays read-only and

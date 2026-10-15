@@ -1,50 +1,50 @@
 {
   "phase": "P03",
-  "result": "BLOCKED",
-  "run_id": 38702972635,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38702972635",
-  "tested_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+  "result": "DONE",
+  "run_id": 38705476301,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38705476301",
+  "tested_commit": "c8d135da5ce403148e3e903036951ab9c947d8c1",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-4ef10e8/windows-2025",
+      "evidence_directory": "completion-c8d135d/windows-2025",
       "summary": {
-        "pe_machine": "8664",
-        "frontend_tests_passed": 3,
-        "teardown": "DISCARD_ACTIONS_VM",
-        "foundation_tests_passed": 19,
-        "target": "x86_64-pc-windows-msvc",
-        "engine_operations_executed": 0,
-        "os_build": "10.0.26100.0",
-        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
-        "result": "PASSED",
-        "normal_native_tests_passed": 2,
-        "manager_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
-        "windows_command_cases_passed": 25,
-        "os_security_settings_modified": false,
         "node_version": "v24.19.0",
-        "phase": "P03"
+        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+        "normal_native_tests_passed": 2,
+        "os_security_settings_modified": false,
+        "manager_commit": "c8d135da5ce403148e3e903036951ab9c947d8c1",
+        "foundation_tests_passed": 19,
+        "os_build": "10.0.26100.0",
+        "target": "x86_64-pc-windows-msvc",
+        "pe_machine": "8664",
+        "phase": "P03",
+        "teardown": "DISCARD_ACTIONS_VM",
+        "windows_command_cases_passed": 25,
+        "result": "PASSED",
+        "frontend_tests_passed": 3,
+        "engine_operations_executed": 0
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-4ef10e8/windows-11-arm",
+      "evidence_directory": "completion-c8d135d/windows-11-arm",
       "summary": {
         "normal_native_tests_passed": 2,
-        "manager_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
-        "result": "PASSED",
-        "target": "aarch64-pc-windows-msvc",
         "frontend_tests_passed": 3,
         "engine_operations_executed": 0,
-        "node_version": "v24.19.0",
-        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
         "os_security_settings_modified": false,
-        "os_build": "10.0.26200.0",
+        "foundation_tests_passed": 19,
         "pe_machine": "aa64",
         "teardown": "DISCARD_ACTIONS_VM",
+        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
         "windows_command_cases_passed": 25,
-        "foundation_tests_passed": 19,
-        "phase": "P03"
+        "manager_commit": "c8d135da5ce403148e3e903036951ab9c947d8c1",
+        "node_version": "v24.19.0",
+        "os_build": "10.0.26200.0",
+        "result": "PASSED",
+        "phase": "P03",
+        "target": "aarch64-pc-windows-msvc"
       }
     }
   ],
@@ -288,6 +288,46 @@
       "path": "completion-4ef10e8/windows-11-arm/run-summary.json",
       "sha256": "51edf0f80899bcc0edf9f33c193c258d8aae259aa17a0e694478b9208fef5b4a",
       "size": 553
+    },
+    {
+      "path": "completion-c8d135d/windows-2025/acl-manifests.json",
+      "sha256": "3d14d83360b065144316f43b1ca02db81a6af4dc1167a0f1a0e62d4c8290706f",
+      "size": 72336
+    },
+    {
+      "path": "completion-c8d135d/windows-2025/capabilities.json",
+      "sha256": "d0f2f9f0b45e453a2a9b8ff4411276fc1dbb76705074c838ec2e1fe122223846",
+      "size": 688
+    },
+    {
+      "path": "completion-c8d135d/windows-2025/command-boundary.json",
+      "sha256": "4d6a614fa33b8fde460c9f9ff57f756feee8c8be5d30dcba2f78caeaf34cbd9f",
+      "size": 2927
+    },
+    {
+      "path": "completion-c8d135d/windows-2025/run-summary.json",
+      "sha256": "8f1112f77c5dad6a8896f6daf0b4e98c03994db3a5a61aa6c4e90c4bc9fdddac",
+      "size": 552
+    },
+    {
+      "path": "completion-c8d135d/windows-11-arm/acl-manifests.json",
+      "sha256": "3d14d83360b065144316f43b1ca02db81a6af4dc1167a0f1a0e62d4c8290706f",
+      "size": 72336
+    },
+    {
+      "path": "completion-c8d135d/windows-11-arm/capabilities.json",
+      "sha256": "d0f2f9f0b45e453a2a9b8ff4411276fc1dbb76705074c838ec2e1fe122223846",
+      "size": 688
+    },
+    {
+      "path": "completion-c8d135d/windows-11-arm/command-boundary.json",
+      "sha256": "4d6a614fa33b8fde460c9f9ff57f756feee8c8be5d30dcba2f78caeaf34cbd9f",
+      "size": 2927
+    },
+    {
+      "path": "completion-c8d135d/windows-11-arm/run-summary.json",
+      "sha256": "a8ace12f03024c8b49c7dc6da5d26b16da12480ab470a52d815fe1f61c68f46b",
+      "size": 553
     }
   ],
   "tested_sources": [
@@ -448,8 +488,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning.rs",
-      "sha256": "29f8e2f62151b168a9229ccfa212b5085a7b136b2702432a48b162ff19db1a45",
-      "size": 95737
+      "sha256": "c0399e01626e274005651aa56d6d6a2a73670ee790c76d3198dcf628ab430459",
+      "size": 97047
     },
     {
       "path": "crates/sandboxie-adapter/src/windows.rs",
@@ -602,9 +642,15 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38701032871",
       "result": "BLOCKED",
       "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+    },
+    {
+      "tested_commit": "4ef10e8a6b831707544325fa89f3e8cd743d59b2",
+      "run_id": 38702972635,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38702972635",
+      "result": "BLOCKED",
+      "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed.",
-  "current_blocker": "Final-source revalidation after a retained-object natural-exit correction in the shared P05 diagnostic dependency"
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
 }

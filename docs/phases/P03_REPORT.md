@@ -109,8 +109,8 @@ mutation evidence is recorded separately in the P05 report.
 
 ## Current P06 regression
 
-Runtime `4ef10e8a6b831707544325fa89f3e8cd743d59b2`,
-[run 38702972635](https://github.com/kurasis/SecureRun/actions/runs/38702972635),
+Runtime `c8d135da5ce403148e3e903036951ab9c947d8c1`,
+[run 38705476301](https://github.com/kurasis/SecureRun/actions/runs/38705476301),
 passed on Server 2025 x64 and Windows 11 ARM64: 19 foundation, 2 normal native,
 3 UI and 25 actual WebView2/native-picker command-boundary cases per target.
 The new control command is explicitly scoped to the main origin/window; raw

@@ -53,7 +53,9 @@ independent from each environment's lifetime generation.
 
 Policy requests use an isolated same-executable worker with an OS-captured parent
 PID/birth, a private bounded inherited pipe, job containment established before
-request release, 16 KiB request/2 MiB response limits and a 120-second deadline.
+request release, 16 KiB request/2 MiB response limits and a 600-second deadline
+for complete multi-box, multi-architecture policy verification. Individual
+observation, launch/control and file-worker bounds remain separate.
 Worker context and original owner are independently checked before profile access.
 Only the fixed protected diagnostic executable can be dispatched, in a fresh
 generated diagnostic scope. Current manager/probe and engine identities bind the

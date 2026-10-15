@@ -130,3 +130,10 @@ Source review is pinned to Sandboxie commit
 [templates](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/install/Templates.ini),
 [driver flags](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/core/drv/api_flags.h).
 No SandMan implementation or engine binary is copied or bundled.
+
+A full policy namespace rollout has a finite 600-second worker deadline. Up to
+12 owned environments and all required native/x86/x64 fixed diagnostics are
+verified; shortening a rollout by omitting enforcement checks is not permitted.
+The unboxed endpoint positive-control handshake has a three-second read/connect
+bound and records only endpoint index, fixed stage and numeric status on failure.
+There is one control request per endpoint, with no retry inflating traffic counts.

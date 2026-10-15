@@ -1285,7 +1285,9 @@ pub fn bounded_request(request: &Request) -> Reply {
         // The request is bounded before dispatch; the same job/output/timeout
         // machinery as observation kills the narrow worker on failure.
         let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-        let bytes = capture_child(child, Duration::from_secs(120), Some(data))?;
+        // A full 12-box rollout performs up to 36 fixed architecture-specific
+        // enforcement diagnostics. Keep a finite deadline without dropping checks.
+        let bytes = capture_child(child, Duration::from_secs(600), Some(data))?;
         let reply: Reply = serde_json::from_slice(&bytes).map_err(|_| "POLICY_RESPONSE_INVALID")?;
         if reply.protocol != 1
             || reply.production_launch_available
@@ -1669,7 +1671,7 @@ struct Endpoints {
     threads: Vec<std::thread::JoinHandle<()>>,
 }
 impl Endpoints {
-    fn new() -> R<Self> {
+    fn new(metadata: &Path, nonce: &str) -> R<Self> {
         use std::sync::{
             Arc,
             atomic::{AtomicBool, AtomicUsize, Ordering},
@@ -1704,7 +1706,7 @@ impl Endpoints {
                     let deadline = Instant::now() + Duration::from_secs(60);
                     while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
                         if let Ok((mut socket, _)) = listener.accept() {
-                            let _ = socket.set_read_timeout(Some(Duration::from_secs(1)));
+                            let _ = socket.set_read_timeout(Some(Duration::from_secs(3)));
                             let mut b = [0u8; 1];
                             if socket.read_exact(&mut b).is_ok()
                                 && b == *b"P"
@@ -1757,44 +1759,61 @@ impl Endpoints {
             } else {
                 format!("[::1]:{port}")
             };
-            let mut answer = [0u8; 1];
-            if i < 2 || i == 4 {
-                let mut socket = std::net::TcpStream::connect(&address)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .set_read_timeout(Some(Duration::from_secs(1)))
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .write_all(b"P")
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .read_exact(&mut answer)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-            } else {
-                let socket = std::net::UdpSocket::bind(if i >= 4 {
-                    format!("{lan}:0")
-                } else if i % 2 == 0 {
-                    "127.0.0.1:0".into()
+            let mut stage = "ADDRESS";
+            let result = (|| -> std::io::Result<()> {
+                let mut answer = [0u8; 1];
+                if i < 2 || i == 4 {
+                    let address: std::net::SocketAddr = address
+                        .parse()
+                        .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidInput))?;
+                    stage = "TCP_CONNECT";
+                    let mut socket =
+                        std::net::TcpStream::connect_timeout(&address, Duration::from_secs(3))?;
+                    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+                    socket.set_write_timeout(Some(Duration::from_secs(3)))?;
+                    stage = "TCP_WRITE";
+                    socket.write_all(b"P")?;
+                    stage = "TCP_READ";
+                    socket.read_exact(&mut answer)?;
                 } else {
-                    "[::1]:0".into()
-                })
-                .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .set_read_timeout(Some(Duration::from_secs(1)))
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .send_to(b"P", &address)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                if socket
-                    .recv_from(&mut answer)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?
-                    .0
-                    != 1
-                {
-                    return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
+                    stage = "UDP_BIND";
+                    let socket = std::net::UdpSocket::bind(if i >= 4 {
+                        format!("{lan}:0")
+                    } else if i % 2 == 0 {
+                        "127.0.0.1:0".into()
+                    } else {
+                        "[::1]:0".into()
+                    })?;
+                    socket.set_read_timeout(Some(Duration::from_secs(3)))?;
+                    stage = "UDP_SEND";
+                    socket.send_to(b"P", &address)?;
+                    stage = "UDP_READ";
+                    if socket.recv_from(&mut answer)?.0 != 1 {
+                        return Err(std::io::ErrorKind::InvalidData.into());
+                    }
                 }
-            }
-            if answer != *b"R" {
+                stage = "ANSWER";
+                if answer != *b"R" {
+                    return Err(std::io::ErrorKind::InvalidData.into());
+                }
+                Ok(())
+            })();
+            if let Err(error) = result {
+                // Only endpoint kind, fixed phase and numeric status are retained;
+                // no IP, port, user path or OS error text enters diagnostics.
+                let report = serde_json::json!({"schema":1,"endpoint_index":i,"stage":stage,"os_error":error.raw_os_error(),"timed_out":matches!(error.kind(),std::io::ErrorKind::TimedOut|std::io::ErrorKind::WouldBlock),"positive_control":true,"target_dispatched":false});
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                    .open(metadata.join(format!("endpoint-status-{nonce}.json")))
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                file.write_all(
+                    &serde_json::to_vec(&report).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                )
+                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                file.sync_all()
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                 return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
             }
         }
@@ -2241,7 +2260,7 @@ impl NativeEngine {
         self.root_leases
             .borrow_mut()
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
-        let endpoints = Endpoints::new()?;
+        let endpoints = Endpoints::new(&self.profile.join("metadata"), &nonce)?;
         let icmp_observer = network::IcmpObserver::new(&nonce)?;
         let dns = network::DnsControl::new(&nonce, &self.profile.join("metadata"))?;
         let raw_host = network::raw_echo(&format!("control-{nonce}"));

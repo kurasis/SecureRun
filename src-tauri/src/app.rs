@@ -580,14 +580,12 @@ pub fn run() {
                 use windows::core::Interface;
                 if let Ok(core) = view.controller().CoreWebView2()
                     && let Ok(memory) = core.cast::<ICoreWebView2_19>()
-                {
-                    if memory
+                    && memory
                         .SetMemoryUsageTargetLevel(COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW)
                         .is_ok()
-                    {
-                        use std::io::Write;
-                        let _ = writeln!(std::io::stderr().lock(), "WEBVIEW_MEMORY_TARGET_LOW");
-                    }
+                {
+                    use std::io::Write;
+                    let _ = writeln!(std::io::stderr().lock(), "WEBVIEW_MEMORY_TARGET_LOW");
                 }
             });
             if !fixture {
@@ -677,7 +675,6 @@ mod normal_configuration_tests {
     fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
         let backend = Backend {
             health: Health::default(),
-            observation_inflight: false,
             state_channels: HashMap::new(),
             store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
             selections: Selections::default(),

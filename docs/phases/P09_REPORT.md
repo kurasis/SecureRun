@@ -417,3 +417,12 @@ supported native Invoke or MSAA default action. Archive creation/extraction uses
 the official package's GUI worker 7zG.exe and retains its hash; nonzero exits
 remain failures and retain only their numeric code. No engine exception or
 browser security preference changed.
+
+
+A fresh ARM diagnostic again refused a still-live unreviewed System reporter.
+Its held object now has at most sixty seconds to complete naturally; a live
+object still refuses cleanup, with no added termination whitelist or OS/WER
+setting change. The existing native policy worker remains bounded to 600 seconds.
+Only the stopped-Apply UI/transport wait is aligned to a 660-second outer bound;
+other UI/transport limits stay unchanged, and success still requires actual
+Verified policy/readback. The editor provider must also be visible.

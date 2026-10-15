@@ -10,7 +10,7 @@ function Connect-P09Cdp([int]$Port){
 }
 function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{}){
  if($null -eq $script:cdp){throw 'P09_INSPECTOR_NOT_CONNECTED'};$script:cdpId++;$id=$script:cdpId
- $json=ConvertTo-Json -InputObject @{id=$id;method=$Method;params=$Parameters} -Depth 32 -Compress;$bytes=[Text.Encoding]::UTF8.GetBytes($json);$cancel=[Threading.CancellationTokenSource]::new(300000)
+ $json=ConvertTo-Json -InputObject @{id=$id;method=$Method;params=$Parameters} -Depth 32 -Compress;$bytes=[Text.Encoding]::UTF8.GetBytes($json);$cancel=[Threading.CancellationTokenSource]::new($TimeoutMs)
  try{
   $null=$script:cdp.SendAsync([ArraySegment[byte]]::new($bytes),[Net.WebSockets.WebSocketMessageType]::Text,$true,$cancel.Token).GetAwaiter().GetResult()
   for($messages=0;$messages -lt 512;$messages++){
@@ -23,8 +23,8 @@ function Send-P09Cdp([string]$Method,[hashtable]$Parameters=@{}){
   throw 'P09_INSPECTOR_NOTIFICATION_BOUND'
  }finally{$cancel.Dispose()}
 }
-function Evaluate-P09([string]$Expression){
- $result=Send-P09Cdp 'Runtime.evaluate' @{expression=$Expression;awaitPromise=$true;returnByValue=$true}
+function Evaluate-P09([string]$Expression,[ValidateSet(300000,660000)][int]$TimeoutMs=300000){
+ $result=Send-P09Cdp 'Runtime.evaluate' @{expression=$Expression;awaitPromise=$true;returnByValue=$true} $TimeoutMs
  if($result.PSObject.Properties['exceptionDetails']){
   $detail=$result.exceptionDetails;$code='P09_INSPECTOR_EVALUATION_FAILED'
   if($detail.PSObject.Properties['exception'] -and $detail.exception.PSObject.Properties['description']){
@@ -45,7 +45,8 @@ function Wait-P09Document {
 }
 function Invoke-P09Stage([string]$Stage,[hashtable]$Config=@{}){
  $stageJson=ConvertTo-Json -InputObject $Stage -Compress;$configJson=ConvertTo-Json -InputObject $Config -Depth 8 -Compress
- $r=Evaluate-P09 "window.__p09_run($stageJson,$configJson)";$script:lastUi=$r
+ $deadline=if($Stage -eq 'STOP_AND_APPLY'){660000}else{300000}
+ $r=Evaluate-P09 "window.__p09_run($stageJson,$configJson)" $deadline;$script:lastUi=$r
  foreach($case in $r.cases){$script:uiCases.Add($case)}
  if($r.status -ne 'PASSED'){$r|ConvertTo-Json -Depth 12|Set-Content (Join-Path $results 'ui-failure.json') -Encoding utf8;if($r.code -cmatch '^P09_[A-Z0-9_]{1,100}$'){throw $r.code};throw 'P09_REAL_PRODUCT_UI_FAILED'}
  return $r

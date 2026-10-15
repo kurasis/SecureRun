@@ -2060,8 +2060,8 @@ impl NativeEngine {
                         // A short-lived OS reporter can finish while its image is
                         // being inspected. Waiting on this same held object is
                         // not authority to terminate an unreviewed live process.
-                        if unsafe { WaitForSingleObject(held.0, 10_000) } == WAIT_OBJECT_0 {
-                            let data = serde_json::json!({"schema":1,"unreviewed_process_completed":true,"natural_completion_wait_bound_ms":10000,"termination_dispatched":false});
+                        if unsafe { WaitForSingleObject(held.0, 60_000) } == WAIT_OBJECT_0 {
+                            let data = serde_json::json!({"schema":1,"unreviewed_process_completed":true,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
                             let mut record = OpenOptions::new()
                                 .write(true)
                                 .create_new(true)
@@ -2107,7 +2107,7 @@ impl NativeEngine {
                         } else {
                             "OTHER_LOCATION"
                         };
-                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location,"unreviewed_process_completed":false,"natural_completion_wait_bound_ms":10000,"termination_dispatched":false});
+                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location,"unreviewed_process_completed":false,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
                         std::fs::write(
                             self.profile
                                 .join("metadata")

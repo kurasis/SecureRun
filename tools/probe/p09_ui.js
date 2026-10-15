@@ -3,7 +3,7 @@ window.__p09_state={};
 window.__p09_run=async function(stage,config={}) {
  const cases=[];const state=window.__p09_state;const native=(request,command='product_request')=>window.__TAURI_INTERNALS__.invoke(command,{request});
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- const wait=async predicate=>{const end=performance.now()+90000;while(performance.now()<end){const value=predicate();if(value)return value;await pause(50);}throw Error('P09_UI_WAIT_EXPIRED');};
+ const wait=async(predicate,timeout=90000)=>{const end=performance.now()+timeout;while(performance.now()<end){const value=predicate();if(value)return value;await pause(50);}throw Error('P09_UI_WAIT_EXPIRED');};
  const text=element=>element.textContent.replace(/\s+/g,' ').trim();
  const button=(label,scope=document)=>Array.from(scope.querySelectorAll('button')).find(e=>text(e)===label);
  const click=async(label,scope=document)=>{const e=await wait(()=>{const candidate=button(label,scope);return candidate&&!candidate.matches(':disabled')?candidate:null;});e.click();return e;};
@@ -59,7 +59,7 @@ window.__p09_run=async function(stage,config={}) {
    }
    case 'STOP_AND_APPLY':{
     await tab('Processes');await click('Stop environment');const dialog=await wait(()=>document.querySelector('dialog[open]'));check('T32','stop_dialog_names_exact_scope',dialog.textContent.includes(config.environment_name)&&dialog.textContent.includes(config.environment_id)&&dialog.querySelectorAll('li').length===1);await click('Stop listed environments',dialog);await wait(()=>!document.querySelector('dialog[open]'));await pause(2500);
-    await tab('Permissions');const pending=await wait(()=>document.querySelector('.pendingPolicy'));await wait(()=>!button('Apply stopped policy',pending).disabled);await click('Apply stopped policy',pending);await wait(()=>!document.querySelector('.pendingPolicy'));
+    await tab('Permissions');const pending=await wait(()=>document.querySelector('.pendingPolicy'));await wait(()=>!button('Apply stopped policy',pending).disabled);await click('Apply stopped policy',pending);await wait(()=>!document.querySelector('.pendingPolicy'),660000);
     const r=await readyPolicy();const e=r.environments.find(e=>e.id===config.environment_id);check('T32','explicit_stopped_apply_verified',e.stage==='VERIFIED'&&e.desired.grants.length===1&&e.fingerprint!==state.applied.fingerprint);break;
    }
    case 'SECRET_PICK':{

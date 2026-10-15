@@ -44,11 +44,30 @@ fn journals(engine: &NativeEngine) -> R<(Journal, contract::Journal)> {
     ))
 }
 fn scope(engine: &NativeEngine, e: &OwnedEnvironment, all: &[OwnedEnvironment]) -> R<String> {
+    scope_checked(engine, e, all, false)
+}
+fn scope_sealed(
+    engine: &NativeEngine,
+    e: &OwnedEnvironment,
+    all: &[OwnedEnvironment],
+) -> R<String> {
+    scope_checked(engine, e, all, true)
+}
+fn scope_checked(
+    engine: &NativeEngine,
+    e: &OwnedEnvironment,
+    all: &[OwnedEnvironment],
+    sealed: bool,
+) -> R<String> {
     engine.mutation_context()?;
     if e.owner_sid != engine.owner || e.engine_identity != engine.engine_identity() {
         return Err("LIFECYCLE_OWNERSHIP_CHANGED");
     }
-    let _root = engine.control_scope(e)?;
+    let _root = if sealed {
+        seal::sealed_root(engine, e)?
+    } else {
+        engine.control_scope(e)?
+    };
     // Independent cleanup readiness: no paid/network-enforcement prerequisite,
     // but current complete policy/inheritance, ownership and hooks are mandatory.
     let raw = engine.section(&e.name(), false)?;
@@ -414,7 +433,7 @@ fn native_clear(
     }
     seal.empty()?;
     engine.idle(&e.name())?;
-    let _root = engine.control_scope(e)?;
+    let _root = seal::sealed_root(engine, e)?;
     stage(ops, r, "CLEARED", "VERIFIED_EMPTY_RETAINED_ROOT")?;
     checkpoint("Cleared");
     Ok(())
@@ -456,7 +475,7 @@ fn commit(
         if r.intent == Action::Remove {
             engine.mutation_context()?;
             engine.idle(&e.name())?;
-            if scope(engine, &e, &j.list()?)? != r.scope {
+            if scope_sealed(engine, &e, &j.list()?)? != r.scope {
                 return Err("LIFECYCLE_CONFIGURATION_CHANGED");
             }
             let update: Update = unsafe { bind(&engine.api, b"SbieDll_UpdateConf\0")? };
@@ -772,6 +791,42 @@ fn command(mode: &str, pid: u32, birth: u64) -> R<Command> {
     }
     Ok(c)
 }
+#[cfg(feature = "policy-ci")]
+fn original_fenced_dispatch(engine: &NativeEngine, environment: Uuid) -> R<bool> {
+    let probe = lease(&engine.probe, false)?;
+    protected(&probe)?;
+    let run: Run = unsafe { bind(&engine.api, b"SbieDll_RunSandboxed\0")? };
+    let mut startup = unsafe { std::mem::zeroed::<STARTUPINFOW>() };
+    startup.cb = std::mem::size_of_val(&startup) as u32;
+    let mut process = unsafe { std::mem::zeroed::<PROCESS_INFORMATION>() };
+    let rejected = unsafe {
+        run(
+            wide(&format!("SR_{}", environment.simple())).as_ptr(),
+            wide(&crate::control::command(
+                engine.probe.to_str().ok_or("PROBE_PATH_INVALID")?,
+                &[],
+            )?)
+            .as_ptr(),
+            wide(system_directory()?.to_str().ok_or("SYSTEM_PATH_UNKNOWN")?).as_ptr(),
+            CREATE_SUSPENDED | CREATE_NO_WINDOW,
+            &mut startup,
+            &mut process,
+        )
+    } == 0;
+    // Never resume a surprising successful dispatch; use only returned handles.
+    if !process.hThread.is_null() {
+        drop(Handle(process.hThread));
+    }
+    if !process.hProcess.is_null() {
+        let held = Handle(process.hProcess);
+        if unsafe { TerminateProcess(held.0, 1) } == 0
+            || unsafe { WaitForSingleObject(held.0, 10000) } != WAIT_OBJECT_0
+        {
+            return Err("LIFECYCLE_TEST_UNEXPECTED_DISPATCH_UNRESOLVED");
+        }
+    }
+    Ok(rejected)
+}
 /// Independent unboxed controller. Its root restoration authority outlives the
 /// destructive executor and the UI; no elevation or target execution is exposed.
 pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contract::Reply {
@@ -872,6 +927,8 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
         let mut observed_checkpoint = None;
         #[cfg(feature = "policy-ci")]
         let mut competing_manager_refused = false;
+        #[cfg(feature = "policy-ci")]
+        let mut external_original_dispatch_rejected = None;
         while clock.elapsed() < Duration::from_secs(180) {
             if let Some(seal) = &mut restoration {
                 seal.reap_deleted()?;
@@ -891,6 +948,16 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                         competing_manager_refused = bounded_request(&contract::Request::List)
                             .reason
                             == "NAMESPACE_OPERATION_BUSY";
+                        if matches!(stage, "Fenced" | "Sealed" | "DispatchReserved")
+                            && let contract::Request::Commit { operation_id, .. } = &request
+                        {
+                            let (_, ops) = journals(&engine)?;
+                            let record = ops
+                                .get(*operation_id)?
+                                .ok_or("LIFECYCLE_OPERATION_NOT_FOUND")?;
+                            external_original_dispatch_rejected =
+                                Some(original_fenced_dispatch(&engine, record.environment_id)?);
+                        }
                         child.kill().map_err(|_| "LIFECYCLE_TEST_KILL_FAILED")?;
                         interrupted = true;
                     }
@@ -935,7 +1002,7 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
             && let Some(checkpoint) = observed_checkpoint
             && let contract::Request::Commit { operation_id, .. } = &request
         {
-            let proof = serde_json::json!({"real_executor_killed":true,"held_exit_wait_completed":true,"controller_restored_known_acl":true,"checkpoint":checkpoint,"competing_manager_refused":competing_manager_refused,"product_privileged_helper":false});
+            let proof = serde_json::json!({"real_executor_killed":true,"held_exit_wait_completed":true,"controller_restored_known_acl":true,"checkpoint":checkpoint,"competing_manager_refused":competing_manager_refused,"external_original_dispatch_rejected":external_original_dispatch_rejected,"product_privileged_helper":false});
             let path = engine
                 .profile
                 .join("metadata")
@@ -986,6 +1053,8 @@ pub fn supervise(parent: u32, birth: u64, request: contract::Request) -> contrac
                         if view.environment_id == e.id {
                             view.pending_operation = None;
                             view.activity = "IDLE".into();
+                            view.complete = true;
+                            view.reason = "OBSERVED".into();
                         }
                     }
                 }

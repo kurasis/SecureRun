@@ -224,14 +224,14 @@ try{
     if($e.lifecycle -eq 'ARCHIVED'){$null=Act 'UNARCHIVE'}
     $null=Import ('crash-'+$point+'.txt');$plan=Prepare 'RESET';$env:SECURERUN_P08_PAUSE_STAGE=$point
     try{$r=Commit $plan $true;Require ($r.reason -eq 'LIFECYCLE_EXECUTOR_INTERRUPTED_RECHECK_REQUIRED') $r.reason}finally{Remove-Item Env:/SECURERUN_P08_PAUSE_STAGE -ErrorAction SilentlyContinue}
-    $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_KILL_PROOF_MISSING'
+    $proofPath=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) ('SecureRun/metadata/lifecycle-kill-'+$plan.operation_id+'.json');$proof=Get-Content -LiteralPath $proofPath -Raw|ConvertFrom-Json;Require ($proof.real_executor_killed -and $proof.held_exit_wait_completed -and $proof.controller_restored_known_acl -and $proof.competing_manager_refused -and $proof.checkpoint -eq $point) 'ACTUAL_KILL_PROOF_MISSING';if($point -in @('Fenced','Sealed','DispatchReserved')){Require ($proof.external_original_dispatch_rejected -eq $true) 'EXTERNAL_FENCED_DISPATCH_NOT_REJECTED'}
     $r=Call @{action='RECOVER';operation_id=$plan.operation_id};$record=$r.operations|Where-Object operation_id -eq $plan.operation_id
     Require ($record.stage -eq $(if($point -in @('Cleared','MetadataCommitted')){'COMPLETE_RECOVERED'}else{'INTERRUPTED_RETAINED_ARCHIVED'})) 'RECOVERY_STATE_WRONG'
     Refresh-Environment
     $before=@(Get-ChildItem -LiteralPath $root -Recurse -File).Count;$again=Commit $plan;$after=@(Get-ChildItem -LiteralPath $root -Recurse -File).Count;Require ($before -eq $after) 'DESTRUCTIVE_OPERATION_REPLAYED'
     # An explicit new intent clears retained partial data; recovery never does it.
     $null=Act 'RESET';Empty-Root
-    @{real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
+    @{real_executor_killed=$true;checkpoint=$point;controller_acl_restored=$true;competing_manager_refused=$proof.competing_manager_refused;external_original_dispatch_rejected=$proof.external_original_dispatch_rejected;recovery_inspection_only=$true;replayed=$false;recovered_state=$record.stage;fresh_explicit_cleanup=$true;privileged_helper=$false}
    }
   }
   foreach($point in @('Cleared','DefinitionRemoved','MetadataCommitted')){

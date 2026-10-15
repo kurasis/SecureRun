@@ -227,6 +227,28 @@ fn attributes(f: &File, value: u32) -> R<()> {
     }
     Ok(())
 }
+pub(super) fn sealed_root(engine: &NativeEngine, e: &OwnedEnvironment) -> R<Vec<File>> {
+    let path = PathBuf::from(engine.root_for(e.id));
+    let held = canonical_validated(&path, FILE_SHARE_READ | FILE_SHARE_WRITE, true)?;
+    let root = held.last().ok_or("CLEANUP_ROOT_UNKNOWN")?;
+    let actual = engine.api.root(&e.name());
+    if actual.path.as_deref() != path.to_str()
+        || actual.identity != e.root_identity
+        || Some(identity(root)?) != e.root_identity
+    {
+        return Err("CLEANUP_ROOT_CHANGED");
+    }
+    let sd = descriptor(root)?;
+    let mut owner = ptr::null_mut();
+    let mut defaulted = 0;
+    if unsafe { GetSecurityDescriptorOwner(sd.as_ptr() as _, &mut owner, &mut defaulted) } == 0
+        || unsafe { sid_string(owner) }? != engine.owner
+        || acl_bytes(&sd)? != acl_bytes(&frozen(&engine.owner)?)?
+    {
+        return Err("CLEANUP_SEAL_CHANGED");
+    }
+    Ok(held)
+}
 impl Seal {
     pub fn capture(engine: &NativeEngine, e: &OwnedEnvironment) -> R<Self> {
         let path = PathBuf::from(engine.root_for(e.id));

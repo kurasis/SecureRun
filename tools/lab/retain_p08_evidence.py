@@ -41,6 +41,7 @@ def check_target(folder,commit,machine):
   if (not proof['real_executor_killed'] or proof['checkpoint']!=stage or not proof['controller_acl_restored']
       or not proof['recovery_inspection_only'] or proof['replayed'] or not proof['fresh_explicit_cleanup']
       or proof['privileged_helper']):raise ValueError('P08 actual cleanup interruption/recovery absent')
+  if not proof['competing_manager_refused'] or (stage in ('Fenced','Sealed','DispatchReserved') and proof['external_original_dispatch_rejected'] is not True):raise ValueError('P08 competing original/manager dispatch not refused')
  for stage in ('Cleared','DefinitionRemoved','MetadataCommitted'):
   proof=by_name[f'real_remove_interruption_{stage}']
   if not all(proof[k] for k in ('real_executor_killed','competing_manager_refused','actual_definition_absent','metadata_reconciled_without_delete_replay','known_empty_root_retained')) or proof['checkpoint']!=stage:raise ValueError('P08 actual removal interruption absent')

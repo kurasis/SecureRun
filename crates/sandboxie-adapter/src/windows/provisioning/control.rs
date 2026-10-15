@@ -263,10 +263,12 @@ impl NativeEngine {
             }
             // A boxed receipt is valid even if the primary exits immediately.
             checkpoint("Accepted");
-            let state = if unsafe { WaitForSingleObject(process.0, 150) } == WAIT_OBJECT_0 {
-                "PRIMARY_EXITED_BOXED"
-            } else {
-                "RUNNING_BOXED"
+            let exited = unsafe { WaitForSingleObject(process.0, 150) } == WAIT_OBJECT_0;
+            let state = match (a.boxed.is_some(), exited) {
+                (true, true) => "BOXED_STAGE_EXITED",
+                (true, false) => "BOXED_STAGE_RUNNING",
+                (false, true) => "PRIMARY_EXITED_BOXED",
+                (false, false) => "RUNNING_BOXED",
             };
             Ok((state.into(), Some(member)))
         })();
@@ -524,7 +526,15 @@ pub fn execute(
                         engine.launch_application(e, &a, &all, &mut dispatched)
                     };
                     let (state, reason, process) = match result {
-                        Ok((state, p)) => (state, "ENGINE_BOXED_RECEIPT", p),
+                        Ok((state, p)) => (
+                            state,
+                            if a.boxed.is_some() {
+                                "BOXED_STAGE_RECEIPT_TARGET_OUTCOME_UNOBSERVED"
+                            } else {
+                                "ENGINE_BOXED_RECEIPT"
+                            },
+                            p,
+                        ),
                         Err(code) => (
                             if dispatched { "UNKNOWN" } else { "REFUSED" }.into(),
                             code,

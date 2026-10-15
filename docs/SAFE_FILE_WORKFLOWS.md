@@ -133,7 +133,10 @@ membership is verified before resume, and it creates the exact logical EXE
 using `CreateProcessW` with explicit application name, separately quoted argv,
 no inherited handles and no shell, associations or environment expansion.
 It verifies the suspended child's box/session before resuming target code.
-The stage has no host manager commands or elevation route. Physical
+The stage has no host manager commands or elevation route.
+Receipts explicitly identify BOXED_STAGE_RUNNING/EXITED and leave the registered
+target outcome unobserved; they never infer target completion from stage exit.
+The driver process view remains authoritative for current members. Physical
 sandbox storage never becomes a host executable. The same policy, architecture,
 argv, dispatch-reservation and safe Stop gates as P06 remain applicable.
 

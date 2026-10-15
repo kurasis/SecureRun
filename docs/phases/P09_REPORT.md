@@ -354,3 +354,12 @@ failed; explicit checked stops of that exact owned test environment separate
 the next application workflow. Missing dependent cases and any failure still
 reject P09. This collects independent compatibility proof without claiming skipped
 work or replacing any native operation guard.
+
+
+The software-composition diagnostic passed 76 Server presentation cases but
+measured a 40921.4589 ms startup upper bound (39678 ms through WebView creation).
+The zero-environment CPU fixture showed no improvement. The rendering override
+is removed; no benefit is inferred from that experiment. Standard-user fixtures
+now set their profile variables from loaded Windows known folders and use a
+private writable fixture TEMP, verified before cases. Parent profile/temp values
+are not carried into that actor. New native measurements remain required.

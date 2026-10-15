@@ -579,9 +579,6 @@ pub fn run() {
             }
             startup_mark("MANAGER_STARTUP_BEFORE_WEBVIEW_MS", startup);
             let window = tauri::WebviewWindowBuilder::from_config(app, &config)?
-                // Software composition avoids virtual D3D startup; the renderer
-                // sandbox and every IPC/origin check remain enabled.
-                .additional_browser_args("--disable-gpu")
                 .on_navigation(|url| {
                     authorized_origin("main", url.as_str(), cfg!(debug_assertions))
                 })

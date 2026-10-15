@@ -22,11 +22,12 @@ observer supplies no mutation authority. WebView2's public low-memory target
 reduces caches without changing its sandbox or excluding any child from the
 measurement. Fresh Windows measurements are required before claiming further improvement.
 Numeric startup tracing at `9daaf46` found 83 ms initial engine observation,
-90 ms to WebView construction and 4167 ms through window construction. The next
-normal build uses the sole fixed additional browser argument `--disable-gpu` to
-measure software composition on the hosted virtual display. It adds no sandbox,
-certificate, origin or other security-disable argument. Both resource and real
-UI checks must pass before this rendering choice can be accepted.
+90 ms to WebView construction and 4167 ms through window construction. A software-composition experiment did not improve the isolated CPU measurement
+and produced a 40.9-second cold-start outlier. The next build restores the normal
+WebView rendering defaults rather than accepting an unproven rendering change.
+The standard-user actor derives its profile environment from its loaded Windows
+profile and uses an owner-private writable fixture TEMP. This is measured setup,
+not a change to any engine, sandbox or Windows security setting.
 
 | Workload | Required reference budget | Measurement |
 |---|---|---|

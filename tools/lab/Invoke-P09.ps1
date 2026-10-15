@@ -66,6 +66,7 @@ try {
  foreach($suffix in @('100','150','200','done','failed')){$created=$false;$event=[Threading.EventWaitHandleAcl]::Create($false,[Threading.EventResetMode]::AutoReset,$displayPrefix+'-'+$suffix,[ref]$created,$eventAcl);if(-not $created){$event.Dispose();throw 'P09_PREEXISTING_DISPLAY_EVENT'};$displayEvents+=,$event}
  $start=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.UserName=$name;$start.Domain=[Environment]::MachineName;$start.Password=$password;$start.LoadUserProfile=$true
  $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
+ $actorTemp=Join-Path $owned 'temp';$null=New-Item -ItemType Directory -Path $actorTemp;$start.Environment['TEMP']=$actorTemp;$start.Environment['TMP']=$actorTemp
  $start.Environment['SECURERUN_P09_DISPLAY_EVENTS']=$displayPrefix
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p09_standard.ps1'),'-Manager',$app,'-Fixture',$owned,'-EngineHome',$engine,'-Commit',$commit)){$start.ArgumentList.Add($arg)}
  if($Focused){$start.ArgumentList.Add('-Focused')}

@@ -6,7 +6,7 @@ Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P09.
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
-| P03 | DONE — current production source regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
+| P03 | BLOCKED — updated P09 route status regression pending | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | BLOCKED — final matching dependency regression pending | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED — final matching dependency regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
 | P06 | BLOCKED — final matching dependency regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |

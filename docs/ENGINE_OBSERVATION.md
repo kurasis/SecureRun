@@ -117,3 +117,19 @@ The debug executable's --observation-once and bounded six-snapshot
 Their output can contain private roots/configuration/OS identities and must not be
 uploaded as shared logs. CI retains only allowlisted counts, statuses and test
 outcomes, omitting private paths, SIDs, raw arguments/environments and certificates.
+
+## Production operation route and P09 status
+
+The P04 observation flag remains false when service process image/birth is
+unavailable to a standard user. It is not a claim that P05 through P08 cannot
+operate: those workers independently validate protected SCM/component provenance,
+the authenticated original SDK/driver route and actual held manager/worker
+contexts before opening metadata or performing an action. They never invent a
+service birth or control a service process through an unverified PID.
+
+P09 browses owned metadata only with a fresh trusted Unboxed observation. It
+recognizes the basic production route only after an actual policy/control worker
+returns OBSERVED, tied to the current observation generation and a 15-second
+lifetime. Focus, stale observations or refused controls invalidate that UI proof.
+The service-process diagnostic capability remains explicitly unavailable. Every
+operation still performs its independent native authorization and verification.

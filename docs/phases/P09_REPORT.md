@@ -216,3 +216,15 @@ Fresh P04 run `38802021230` passed both targets at `d2b138a`, including both
 boxed-manager checks. Earlier timeouts remain historical. The single-environment
 layout diagnostic is separate from the four-environment application diagnostic
 and the mandatory full ten-environment gate; neither diagnostic can close P09.
+
+Focused ARM run `38801426429` at `d2b138a` identified the initial-view blocker:
+the fresh observation and direct policy worker both returned OBSERVED with four
+owned environments, but onboarding remained unavailable. P09 had treated the
+P04 service-process identity restriction as a prohibition on independently
+authenticated production SDK operations. The UI now reads owned metadata after
+fresh trusted Unboxed observation and recognizes the basic route only after
+an actual native worker returns OBSERVED. That proof expires in 15 seconds,
+is tied to the observation generation and is cleared on focus/refusal. Service
+process identity stays Unknown; native context_safe and every operation gate
+remain unchanged. Unit cases require this separate proof and reject stale,
+boxed, stopped-driver and inconsistent service-identity states.

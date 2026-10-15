@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38800451929,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38800451929",
   "tested_commit": "83985827bfb1cb55b1ebdd2071bc0fa8332a83da",
@@ -1155,5 +1155,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "P09 UI now distinguishes the independently verified production SDK route from unavailable P04 service process identity. A fresh matching native regression is required."
 }

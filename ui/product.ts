@@ -6,14 +6,18 @@ export function escaped(value: string): string {
     character => `[U+${character.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')}]`);
 }
 export type Setup = 'checking'|'missing'|'untrusted'|'unavailable'|'restart'|'untested'|'ready';
-export function setupState(health: EngineHealth | null, fresh: boolean): Setup {
+export function setupState(health: EngineHealth | null, fresh: boolean, productionRouteVerified = false): Setup {
   if (!health || !fresh) return 'checking';
   const o = health.observation;
   if (o.reason === 'ENGINE_MISSING') return 'missing';
   if (o.restart_required) return 'restart';
   if (/VERSION_UNTESTED|MANIFEST_VERSION_UNSUPPORTED/.test(o.reason)) return 'untested';
   if (/UNTRUSTED|SIGNATURE|IMAGE_MISMATCH|COMPONENT_|ACL_|SERVICE_PATH/.test(o.reason)) return 'untrusted';
-  if (o.trust !== 'VERIFIED' || !o.service_running || !o.driver_running || !o.service_identity_complete || !health.control_plane_safe) return 'unavailable';
+  const standardRoute = productionRouteVerified && !o.service_identity_complete
+    && o.service_identity_reason === 'SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN';
+  if (o.trust !== 'VERIFIED' || o.reason !== 'OBSERVED' || !o.service_running || !o.driver_running
+      || o.manager_context !== 'UNBOXED' || o.bridge_context !== 'UNBOXED'
+      || ((!o.service_identity_complete || !health.control_plane_safe) && !standardRoute)) return 'unavailable';
   return 'ready';
 }
 export const productText = {
@@ -45,7 +49,7 @@ export const productText = {
     diff:'Review effective permission changes', diffDetail:'Applying replaces editable rules with the list shown here. Any reduction of a previous exclusion can expose host reads. Desired changes to a running box remain unapplied until the whole box stops.',
     confirmDiff:'I reviewed this replacement and its host-read implications', mode:'Retention mode', persistent:'Persistent — keep data', disposable:'Disposable — explicit leftover decision',
     stopAll:'Stop managed environments…', stopTitle:'Stop exactly these managed environments', stopDetail:'Only the listed identities are requested. Each scope is independently rechecked; unrelated or newly created environments are not added.', stopAccept:'Stop listed environments',
-    configuredPreset:'Configured preset', networkPolicy:'Network policy at last check', offlineVerified:'Offline — verified for this configuration', onlineVerified:'Online — verified for this configuration',
+    serviceRestricted:'Windows does not allow this account to inspect the service process. Its identity remains unknown; supported actions are independently checked.', configuredPreset:'Configured preset', networkPolicy:'Network policy at last check', offlineVerified:'Offline — verified for this configuration', onlineVerified:'Online — verified for this configuration',
     observed:'Observed', refused:'Refused', uncertain:'Outcome unknown', scale:'Content scale', technical:'Read-only engine details',
   },
   ru: {
@@ -76,7 +80,7 @@ export const productText = {
     diff:'Проверьте изменения разрешений', diffDetail:'Применение заменит личные правила показанным списком. Ослабление прежнего запрета может раскрыть чтение хоста. Изменения работающего бокса не применяются до его полной остановки.',
     confirmDiff:'Я проверил замену правил и её влияние на чтение хоста', mode:'Режим хранения', persistent:'Persistent — сохранять данные', disposable:'Disposable — явное решение об остатках',
     stopAll:'Остановить управляемые окружения…', stopTitle:'Остановить именно эти окружения', stopDetail:'Запрашиваются только показанные идентичности. Каждый контекст перепроверяется; чужие и новые окружения не добавляются.', stopAccept:'Остановить показанные окружения',
-    configuredPreset:'Заданный профиль', networkPolicy:'Сетевая политика при последней проверке', offlineVerified:'Без сети — проверено для этой конфигурации', onlineVerified:'С сетью — проверено для этой конфигурации',
+    serviceRestricted:'Windows не разрешает этой учётной записи проверять процесс службы. Его идентичность остаётся неизвестной; поддерживаемые действия проверяются отдельно.', configuredPreset:'Заданный профиль', networkPolicy:'Сетевая политика при последней проверке', offlineVerified:'Без сети — проверено для этой конфигурации', onlineVerified:'С сетью — проверено для этой конфигурации',
     observed:'Наблюдалось', refused:'Отклонено', uncertain:'Результат неизвестен', scale:'Масштаб содержимого', technical:'Подробности движка для чтения',
   },
 } as const;

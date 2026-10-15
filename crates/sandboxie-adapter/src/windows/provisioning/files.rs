@@ -224,7 +224,10 @@ fn materialize(engine: &NativeEngine, e: &OwnedEnvironment, path: &Path) -> R<Ve
     let mut held = vec![];
     for part in tail.components() {
         current.push(part);
-        held.extend(ensure_private(&current, &engine.owner)?);
+        let verified = ensure_private(&current, &engine.owner)?;
+        let shared = transfer_canonical(&current)?;
+        drop(verified);
+        held.extend(shared);
     }
     Ok(held)
 }
@@ -278,7 +281,7 @@ fn publish(file: &File, parent: &File, name: &str) -> R<()> {
     contract::leaf(name)?;
     #[repr(C)]
     struct Rename {
-        replace: u8,
+        replace: u32, // BOOLEAN/DWORD union, all flag bytes zero (no replacement).
         root: HANDLE,
         length: u32,
         name: [u16; 181],

@@ -127,3 +127,12 @@ the original protected `Start.exe /wait <logical EXE>` stage through
 verified before resume, and only its boxed view resolves the target. Physical
 sandbox storage never becomes a host executable. The same policy, architecture,
 argv, dispatch-reservation and safe Stop gates as P06 remain applicable.
+
+The completion rename uses `NtSetInformationFile(FileRenameInformation=10)`
+with a relative leaf and held target directory (`FILE_TRAVERSE` plus read
+attributes), following Microsoft's
+[FILE_RENAME_INFORMATION contract](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information).
+Transfer directory leases share read/write while excluding DELETE, permitting
+the kernel's rename-target directory open. Provisioning retains its previous
+stricter directory-sharing mode; payload/source data leases continue to deny
+writers. Replacement, POSIX overwrite and ignore-read-only flags are absent.

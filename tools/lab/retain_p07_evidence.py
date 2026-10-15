@@ -70,6 +70,8 @@ def check_target(folder,commit,machine):
       or proof['payload_before_marker'] or not proof['no_overwrite']
       or proof['recovered_state']!=('COMPLETE_RECOVERED' if stage=='AfterRename' else 'INCOMPLETE_RETAINED')):
    raise ValueError('P07 actual crash recovery missing')
+ collision=by_name['existing_destination_and_restricted_zone_preserved']
+ if not collision['case_alias_collision_preserved'] or (collision['short_alias_generated'] and not collision['short_alias_collision_preserved']):raise ValueError('P07 case/available short alias collision was not preserved')
  external=by_name['external_engine_launch_mid_export_aborts_without_publication']
  if external['safe_abort_reason'] not in {'STOP_REQUIRED_ALL_SESSIONS','CONFIGURATION_CONFLICT'}:raise ValueError('P07 external transfer did not fail closed')
  if not all(external[key] for key in ('independent_original_engine_dispatch','process_started_during_copy','actual_member_alive_before_resume','held_birth_and_owner_verified','copy_aborted','final_absent')):raise ValueError('P07 actual external member during transfer absent')

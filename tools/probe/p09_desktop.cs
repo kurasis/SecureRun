@@ -17,6 +17,8 @@ public sealed class P09Desktop : IDisposable {
  [DllImport("kernel32.dll",SetLastError=true)] static extern bool QueryInformationJobObject(IntPtr job,int kind,IntPtr data,uint size,out uint returned);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcess(string application,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string cwd,ref Startup startup,out Info info);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern IntPtr CreateFile(string path,uint access,uint sharing,ref Security security,uint creation,uint flags,IntPtr template);
+ [DllImport("kernel32.dll",SetLastError=true)] static extern IntPtr OpenProcess(uint access,bool inherit,int pid);
+ [DllImport("kernel32.dll")] static extern bool GetExitCodeProcess(IntPtr process,out uint code);
  [DllImport("kernel32.dll")] static extern bool GetProcessTimes(IntPtr handle,out long created,out long exited,out long kernel,out long user);
  [DllImport("kernel32.dll")] static extern uint ResumeThread(IntPtr thread);
  [DllImport("kernel32.dll")] static extern bool TerminateJobObject(IntPtr job,uint code);
@@ -49,6 +51,18 @@ public sealed class P09Desktop : IDisposable {
   process=info.process;ProcessId=(int)info.pid;
   if(!AssignProcessToJobObject(job,process)){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_JOB_ASSIGN_FAILED");}
   if(ResumeThread(info.thread)==uint.MaxValue){TerminateProcess(process,90);WaitForSingleObject(process,10000);CloseHandle(info.thread);throw new InvalidOperationException("P09_GUI_RESUME_FAILED");}CloseHandle(info.thread);
+ }
+ public static Dictionary<string,object> WaitMemberExit(int pid,long expectedBirth,uint timeout) {
+  if(pid<=0||expectedBirth<=0||timeout>45000)throw new InvalidOperationException("P09_APPLICATION_IDENTITY_INVALID");
+  var result=new Dictionary<string,object>{{"exit_code_observed",false},{"exit_code",null},{"held_birth_matched",false}};
+  IntPtr held=OpenProcess(0x00101000,false,pid);
+  if(held==IntPtr.Zero){if(Marshal.GetLastWin32Error()==87)return result;throw new InvalidOperationException("P09_APPLICATION_HANDLE_UNAVAILABLE");}
+  try{long created,exited,kernel,user;if(!GetProcessTimes(held,out created,out exited,out kernel,out user))throw new InvalidOperationException("P09_APPLICATION_TIMES_UNAVAILABLE");
+   if(created!=expectedBirth)return result;result["held_birth_matched"]=true;
+   if(WaitForSingleObject(held,timeout)!=0)throw new InvalidOperationException("P09_APPLICATION_EXIT_TIMEOUT");
+   uint code;if(!GetExitCodeProcess(held,out code)||code==259)throw new InvalidOperationException("P09_APPLICATION_EXIT_UNAVAILABLE");
+   result["exit_code_observed"]=true;result["exit_code"]=code;return result;
+  }finally{CloseHandle(held);}
  }
  long ManagerCpu(){long created,exited,kernel,user;if(!GetProcessTimes(process,out created,out exited,out kernel,out user))throw new InvalidOperationException("P09_MANAGER_CPU_FAILED");return kernel+user;}
  long Cpu() {uint size=(uint)Marshal.SizeOf<Accounting>();IntPtr data=Marshal.AllocHGlobal((int)size);try{uint count;if(!QueryInformationJobObject(job,1,data,size,out count))throw new InvalidOperationException("P09_ACCOUNTING_FAILED");var value=Marshal.PtrToStructure<Accounting>(data);return value.user+value.kernel;}finally{Marshal.FreeHGlobal(data);}}

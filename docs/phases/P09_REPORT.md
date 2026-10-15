@@ -426,3 +426,13 @@ setting change. The existing native policy worker remains bounded to 600 seconds
 Only the stopped-Apply UI/transport wait is aligned to a 660-second outer bound;
 other UI/transport limits stay unchanged, and success still requires actual
 Verified policy/readback. The editor provider must also be visible.
+
+
+The archive fixture's reported ExitCode was null, not a known nonzero code.
+Waiting now uses a retained Windows process handle, actual creation-time match,
+WaitForSingleObject and GetExitCodeProcess. A process already completed before
+opening its handle has an explicitly unknown exit; actual boxed output/CRC and
+unchanged-host checks still determine workflow completion, with no redispatch.
+The accessibility helper chooses the largest visible owned non-dialog window,
+records exact editor provider/point/focus stages and has a UTF-8 BOM for Windows
+PowerShell 5.1, preserving Unicode confirmation captions.

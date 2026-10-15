@@ -1,4 +1,4 @@
-# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
+﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
 param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
@@ -36,10 +36,10 @@ $script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero
 $result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true};$stage='INITIALIZED'
 function Need([bool]$ok){if(-not $ok){throw 'P09_NATIVE_ACCESSIBILITY_FAILED'}}
 function Window([int]$id,[bool]$dialog=$false){
- $script:found=[IntPtr]::Zero
+ $script:found=[IntPtr]::Zero;$script:foundArea=0
  $null=[P09Access]::EnumWindows({param($hwnd,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($hwnd,[ref]$owner);if($owner -eq $id -and [P09Access]::IsWindowVisible($hwnd)){
   $e=[Windows.Automation.AutomationElement]::FromHandle($hwnd)
-  if(($dialog -and $e.Current.ClassName -eq '#32770') -or (-not $dialog -and $e.Current.ClassName -ne '#32770')){$script:found=$hwnd;return $false}
+  if($dialog -and $e.Current.ClassName -eq '#32770'){$script:found=$hwnd;return $false};if(-not $dialog -and $e.Current.ClassName -ne '#32770'){$rectangle=$e.Current.BoundingRectangle;$area=$rectangle.Width*$rectangle.Height;if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
  };return $true},[IntPtr]::Zero)
  return $script:found
 }
@@ -55,12 +55,15 @@ function Find($root,$type,[string]$name){
  return $root.FindFirst([Windows.Automation.TreeScope]::Descendants,$condition)
 }
 function Focus-OwnedProvider($element,$root,[IntPtr]$hwnd,[int]$id){
+$script:stage='FINDING_ENABLED_EDITOR_PROVIDER';$result.editor_provider_present=($null -ne $element)
  Need ($null -ne $element -and $element.Current.IsEnabled)
  $root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal)
  Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd);$element.SetFocus();Start-Sleep -Milliseconds 100
  $clickable=$element.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
- Need ([P09Access]::OwnedWindow([P09Access]::WindowFromPoint($point),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $element))
+$script:stage='VERIFYING_EDITOR_CLICK_POINT';$result.editor_point_owned=[P09Access]::OwnedWindow([P09Access]::WindowFromPoint($point),$id);$result.editor_exact_provider_hit=(In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $element)
+ Need ($result.editor_point_owned -and $result.editor_exact_provider_hit)
  Need ([P09Access]::SetCursorPos($point.X,$point.Y));try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
+ $script:stage='VERIFYING_EDITOR_FOREGROUND_AND_FOCUS'
  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FocusedElement) $element)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and (In-Provider ([Windows.Automation.AutomationElement]::FocusedElement) $element))
 }
@@ -74,9 +77,12 @@ function Owned-Link([int]$id,[string]$name){
 }
 function Click($element){Need ($null -ne $element -and $element.Current.IsEnabled);$pattern=$element.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern);$pattern.Invoke()}
 function Picker([int]$id,[string]$path){
+ $script:stage='WAITING_FOR_NATIVE_PICKER'
  Need ([IO.Path]::IsPathRooted($path));$clock=[Diagnostics.Stopwatch]::StartNew();$window=[IntPtr]::Zero
  while($window -eq [IntPtr]::Zero -and $clock.ElapsedMilliseconds -lt 45000){$window=Window $id $true;if($window -eq [IntPtr]::Zero){Start-Sleep -Milliseconds 100}}
- Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name
+ Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name;$script:stage='VERIFYING_NATIVE_PICKER_TITLE'
+ if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
+ $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  Need ($title -in @('SecureRun resource selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit));$edit=$null
  foreach($item in $edits){if($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder')){$edit=$item;break}}

@@ -28,8 +28,12 @@ function Register-App($Environment,[string]$Name,[string]$Executable,[string[]]$
 }
 function Launch-App($Environment,$Application){$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$Environment.id;expected_revision=$Environment.revision;application_id=$Application.id;operation_id=$op} 'control';$receipt=@($r.receipts|Where-Object operation_id -eq $op);Require ($receipt.Count -eq 1 -and $null -ne $receipt[0].process -and $receipt[0].state -ne 'REFUSED') 'P09_NATIVE_LAUNCH_NOT_OBSERVED';return $receipt[0]}
 function Wait-Launched($Receipt){
- $p=$null
- try{$p=[Diagnostics.Process]::GetProcessById($Receipt.process.pid);if([string]$p.StartTime.ToFileTimeUtc() -eq [string]$Receipt.process.creation_time){Require ($p.WaitForExit(45000)) 'P09_APPLICATION_EXIT_TIMEOUT';@{case=$script:stage;exit_code=$p.ExitCode;held_birth_matched=$true;synthetic_fixture_only=$true}|ConvertTo-Json|Set-Content (Join-Path $results 'application-exit.json') -Encoding utf8;Require ($p.ExitCode -eq 0) 'P09_APPLICATION_EXIT_FAILED'}}catch [ArgumentException]{}finally{if($null -ne $p){$p.Dispose()}}
+ $observed=[P09Desktop]::WaitMemberExit($Receipt.process.pid,[long]$Receipt.process.creation_time,45000)
+ $observed.case=$script:stage;$observed.synthetic_fixture_only=$true
+ $observed|ConvertTo-Json|Set-Content (Join-Path $results 'application-exit.json') -Encoding utf8
+ if($observed.exit_code_observed){Require ($observed.exit_code -eq 0) 'P09_APPLICATION_EXIT_FAILED'}
+ # A process already completed/reused before a handle could be held has an
+ # unknown exit code. Actual boxed output and unchanged-host checks still follow.
 }
 function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.WorkingDirectory=$EngineHome

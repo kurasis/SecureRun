@@ -49,3 +49,13 @@ enable its original-client dispatch. The next run records bounded native status
 codes and controller stage traces instead of hiding the initial failure behind
 subsequent reconciliation refusals. Six isolated native seal cases subsequently
 passed on both targets at source 3e844cf.
+
+Run 38745494066 passed all 19 production fault-mode scenarios on both targets,
+including seven Reset and eight Remove executor kills, both uncertain-launch
+windows and both export/reset recovery scenarios. Server passed 32/35 total
+cases; ARM passed 31/35. Remaining failures are retained as historical proof:
+the PowerShell caller cannot resolve the bridge's internal junction type; the
+second-session fixture needs an explicit original-client launch window; the
+desktop fixture can inspect a MessageBox before its body/children are ready.
+Native production cleanup, persistent/disposable UI-loss behavior and original
+fenced-dispatch refusal passed. These partial results do not close P08.

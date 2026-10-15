@@ -1,7 +1,7 @@
 {
   "phase": "P08",
   "result": "BLOCKED",
-  "tested_commit": "617bb47fd92653eb7c5271e8c19b430eba40109b",
+  "tested_commit": "3e844cf42ba8434f506a2a3132eec419c4fe6c8f",
   "files": [
     {
       "path": "investigation-seal-protocol/reviewed-investigation.json",
@@ -67,9 +67,69 @@
       "path": "investigation-918f10f/windows-11-arm/standard-sessions.json",
       "size": 93,
       "sha256": "9e973ced2db82f133361aff164895dca8127f5187161c8e2a97f3fad3ece9edb"
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/run-summary.json",
+      "sha256": "6efa8d36c6a298731a1100d5f9b3cdfce5ec60fb10056e37488de4942959d645",
+      "size": 653
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/stage.json",
+      "sha256": "d34572dea617388d1acb04620ccaa2bd6fb4c7c500c3042485a7ad0706dee7be",
+      "size": 112
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/lifecycle-cases.json",
+      "sha256": "7ad427ffd531fba2ad7017d8c539c2aa7dfd94ecf198f94985d5c0abfb703044",
+      "size": 16984
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/standard-normal.json",
+      "sha256": "dc7b628d4dda6c64ab05eb27be121895908cb0403ad794fc0f826ee646707a29",
+      "size": 91
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/standard-fault.json",
+      "sha256": "de7b7dd8d0989b0e3976a99bb47e68a24489abed909e32af8ca3e5a489c2adf9",
+      "size": 90
+    },
+    {
+      "path": "investigation-3e844cf/windows-2025/standard-sessions.json",
+      "sha256": "3f6005c3af9dacb39f9e00c8c0755b733860b123a90c75186f671eebb8aa494f",
+      "size": 93
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/run-summary.json",
+      "sha256": "3c7dbfb9d837cb8d4dbef360973a886868676b5923f121b481bf35d049a84fc4",
+      "size": 653
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/stage.json",
+      "sha256": "191a102e8217f7266f30d87fe1a566ee8ee13ca54c91f514f9753346fe66418e",
+      "size": 112
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/lifecycle-cases.json",
+      "sha256": "f5262f01878a43d0320203f19bd4aff3d2ed98c97e8aac54fd165ae2ed390d2a",
+      "size": 16543
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/standard-normal.json",
+      "sha256": "effffe4053842af23f98df7529ed0d8bd6528e5c1f2c038c00d6ede6a4ffb88f",
+      "size": 91
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/standard-fault.json",
+      "sha256": "e49ff967ead98fab5ec140dd47eb9b86aa9072c915556901437b73933b90a119",
+      "size": 90
+    },
+    {
+      "path": "investigation-3e844cf/windows-11-arm/standard-sessions.json",
+      "sha256": "e01a5acd8fc87f56b54c91ce4eba6a954082bd6001076b8b79cfae16c445f377",
+      "size": 93
     }
   ],
   "targets": [],
   "tested_sources": [],
-  "note": "Native lifecycle restoration and complete current regressions pending."
+  "note": "Both platforms passed all 19 native destructive interruption/recovery cases; remaining native desktop and fixture checks plus exact-source P03-P07 regressions are pending."
 }

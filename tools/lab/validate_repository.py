@@ -237,6 +237,46 @@ def validate(root: Path) -> None:
 
 
 
+    p06_path = root / 'docs/evidence/p06/manifest.json'
+    if p06_path.exists():
+        p06 = json.loads(p06_path.read_text())
+        if p06['phase'] != 'P06' or p06['result'] not in {'DONE', 'BLOCKED'} or not re.fullmatch('[0-9a-f]{40}', p06['tested_commit']):
+            raise ValueError('Invalid P06 phase/source')
+        seen = set()
+        for entry in p06['files']:
+            path = (p06_path.parent / entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p06_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P06 evidence path')
+            seen.add(entry['path'])
+            verify_file(path, entry['sha256'], entry['size'])
+        if p06['result'] == 'DONE':
+            for phase in ('p03', 'p04', 'p05'):
+                dependency = json.loads((root / f'docs/evidence/{phase}/manifest.json').read_text())
+                if dependency['result'] != 'DONE' or dependency['tested_commit'] != p06['tested_commit']:
+                    raise ValueError('P06 DONE requires matching current P03/P04/P05 regression')
+            if p06['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p06['run_id']}" or p06['run_id'] <= 0:
+                raise ValueError('Invalid P06 run provenance')
+            if len(p06['targets']) != 2 or {t['runner'] for t in p06['targets']} != {'windows-2025', 'windows-11-arm'}:
+                raise ValueError('P06 requires both Windows laboratories')
+            import importlib.util
+            module_spec = importlib.util.spec_from_file_location('p06_gate', root / 'tools/lab/retain_p06_evidence.py')
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            for target in p06['targets']:
+                folder = p06_path.parent / target['evidence_directory']
+                for name in ('run-summary.json', 'control-cases.json', *(f'standard-{mode}.json' for mode in ('normal', 'reserved', 'accepted', 'scope', 'sessions'))):
+                    if (folder / name).relative_to(p06_path.parent).as_posix() not in seen:
+                        raise ValueError('P06 required report is not checksum-bound')
+                module.check_target(folder, p06['tested_commit'], 'aa64' if target['runner'] == 'windows-11-arm' else '8664')
+            if not p06['tested_sources']:
+                raise ValueError('P06 tested source bindings absent')
+            for entry in p06['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P06 source path')
+                verify_file(path, entry['sha256'], entry['size'])
+
+
 if __name__ == '__main__':
     try:
         validate(ROOT)

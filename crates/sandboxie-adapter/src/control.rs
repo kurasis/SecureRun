@@ -143,7 +143,7 @@ impl Journal {
             if count != 0 {
                 return Err("CONTROL_FOREIGN_DATABASE");
             }
-            db.execute_batch("BEGIN IMMEDIATE; CREATE TABLE applications(id TEXT PRIMARY KEY,owner TEXT NOT NULL,document TEXT NOT NULL); CREATE TABLE dispatch(id TEXT PRIMARY KEY,owner TEXT NOT NULL,signature TEXT NOT NULL,receipt TEXT NOT NULL); PRAGMA user_version=1; COMMIT;").map_err(db_error)?;
+            db.execute_batch("BEGIN IMMEDIATE; CREATE TABLE applications(id TEXT PRIMARY KEY,owner TEXT NOT NULL,document TEXT NOT NULL); CREATE TABLE dispatch(id TEXT PRIMARY KEY,owner TEXT NOT NULL,signature TEXT NOT NULL,receipt TEXT NOT NULL,environment TEXT,launch INTEGER NOT NULL); CREATE TABLE reconciliations(id TEXT PRIMARY KEY); PRAGMA user_version=1; COMMIT;").map_err(db_error)?;
         }
         let check: String = db
             .query_row("PRAGMA quick_check(1)", [], |r| r.get(0))
@@ -253,19 +253,26 @@ impl Journal {
         }
         let receipt = Receipt {
             operation_id: id,
-            environment_id: None,
+            environment_id: match request {
+                Request::Launch { environment_id, .. }
+                | Request::Stop { environment_id, .. }
+                | Request::Register { environment_id, .. } => Some(*environment_id),
+                _ => None,
+            },
             state: "UNKNOWN".into(),
             reason: "DISPATCH_RESERVED_NO_AUTOMATIC_REPLAY".into(),
             process: None,
         };
         self.db
             .execute(
-                "INSERT INTO dispatch VALUES(?1,?2,?3,?4)",
+                "INSERT INTO dispatch VALUES(?1,?2,?3,?4,?5,?6)",
                 params![
                     id.to_string(),
                     self.owner,
                     signature,
-                    serde_json::to_string(&receipt).map_err(|_| "OPERATION_RECORD_INVALID")?
+                    serde_json::to_string(&receipt).map_err(|_| "OPERATION_RECORD_INVALID")?,
+                    receipt.environment_id.map(|id| id.to_string()),
+                    matches!(request, Request::Launch { .. })
                 ],
             )
             .map_err(db_error)?;
@@ -286,6 +293,33 @@ impl Journal {
         if changed != 1 {
             return Err("OPERATION_RECORD_INVALID");
         }
+        Ok(())
+    }
+    pub fn unresolved(&self, environment: Uuid, except: Uuid) -> PolicyResult<bool> {
+        let mut stmt=self.db.prepare("SELECT id FROM dispatch WHERE owner=?1 AND environment=?2 AND launch=1 AND id!=?3 AND id NOT IN (SELECT id FROM reconciliations)").map_err(db_error)?;
+        let rows = stmt
+            .query_map(
+                params![self.owner, environment.to_string(), except.to_string()],
+                |r| r.get::<_, String>(0),
+            )
+            .map_err(db_error)?;
+        for id in rows {
+            let id =
+                Uuid::parse_str(&id.map_err(db_error)?).map_err(|_| "OPERATION_RECORD_INVALID")?;
+            if self.receipt(id)?.ok_or("OPERATION_RECORD_INVALID")?.state == "UNKNOWN" {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+    pub fn reconcile(&mut self, id: Uuid) -> PolicyResult<()> {
+        self.receipt(id)?.ok_or("OPERATION_NOT_FOUND")?;
+        self.db
+            .execute(
+                "INSERT OR IGNORE INTO reconciliations VALUES(?1)",
+                [id.to_string()],
+            )
+            .map_err(db_error)?;
         Ok(())
     }
     pub fn receipts(&self) -> PolicyResult<Vec<Receipt>> {
@@ -379,6 +413,32 @@ mod tests {
                 .unwrap()
                 .receipt(id)
                 .is_err()
+        );
+    }
+    #[test]
+    fn uncertainty_blocks_new_operations_until_explicit_reconciliation_without_erasing_receipt() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = Journal::open(&t.path().join("control.sqlite"), "owner").unwrap();
+        let environment_id = Uuid::new_v4();
+        let operation_id = Uuid::new_v4();
+        let r = Request::Launch {
+            application_id: Uuid::new_v4(),
+            environment_id,
+            expected_revision: 1,
+            operation_id,
+        };
+        assert!(j.reserve(operation_id, &r, &"scope").unwrap().is_none());
+        assert!(j.unresolved(environment_id, Uuid::nil()).unwrap());
+        assert!(!j.unresolved(environment_id, operation_id).unwrap());
+        j.reconcile(operation_id).unwrap();
+        assert!(!j.unresolved(environment_id, Uuid::nil()).unwrap());
+        assert_eq!(j.receipt(operation_id).unwrap().unwrap().state, "UNKNOWN");
+        assert_eq!(
+            j.reserve(operation_id, &r, &"scope")
+                .unwrap()
+                .unwrap()
+                .state,
+            "UNKNOWN"
         );
     }
     #[test]

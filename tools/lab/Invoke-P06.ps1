@@ -38,13 +38,22 @@ try {
     if($LASTEXITCODE -ne 0){throw 'FAULT_BUILD_FAILED'}
     $fault=Join-Path $code 'fault';$null=New-Item -ItemType Directory -Path $fault;Copy-Item "target/$target/debug/securerun.exe" (Join-Path $fault 'securerun.exe');Get-ChildItem $code -Filter 'securerun-*-probe*.exe'|Copy-Item -Destination $fault
     & (Join-Path $PSScriptRoot 'Initialize-P02.ps1')
+    & (Join-Path $PSScriptRoot 'Build-P05-View.ps1')
+    Copy-Item (Join-Path $repo 'artifacts/p05-build/p05-session-probe.exe') $code
     $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p06-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
     $bridge=[P02Bridge]::new($engine,$fixture,[string[]]@());$bridge.EnableLabWfp()
+    # The P05 verifier needs a real benign SMB positive control before denying
+    # its fixed UNC path. This share exists only in the disposable lab.
+    $shareName='SecureRunP05Synthetic';if($null -ne (Get-SmbShare -Name $shareName -ErrorAction SilentlyContinue)){throw 'PREEXISTING_SMB_SHARE_NOT_CHANGED'}
+    $shareRoot=Join-Path $fixture 'synthetic-network';$null=New-Item -ItemType Directory -Path $shareRoot;[IO.File]::WriteAllText((Join-Path $shareRoot 'canary.txt'),'SYNTHETIC_NETWORK_CANARY')
+    $users=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value;$admins=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544')).Translate([Security.Principal.NTAccount]).Value
+    $null=New-SmbShare -Name $shareName -Path $shareRoot -ReadAccess $users -FullAccess $admins
+    if(Test-Path 'Q:/'){throw 'PREEXISTING_DRIVE_NOT_CHANGED'};$null=New-PSDrive -Name Q -PSProvider FileSystem -Root ('\\127.0.0.1\'+$shareName) -Persist -Scope Global
     foreach($file in @('p06_standard.ps1','p05_lab.cs','engine_bridge.cs')){Copy-Item (Join-Path $repo "tools/probe/$file") $code}
     $allCases=[Collections.Generic.List[object]]::new();$failedModes=0
-    foreach($mode in @('normal','reserved','accepted','scope')) {
-    $name='SRP06_'+$mode+'_'+$run.Substring(0,7);$password=ConvertTo-SecureString ('P06aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
+    foreach($mode in @('normal','reserved','accepted','scope','sessions')) {
+    $name=if($mode -eq 'sessions'){'SRP02S_'+$run.Substring(0,10)}else{'SRP06_'+$mode.Substring(0,3)+'_'+$run.Substring(0,7)};$password=ConvertTo-SecureString ('P06aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force
     $user=New-LocalUser -Name $name -Password $password -AccountNeverExpires
     $group=([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545')).Translate([Security.Principal.NTAccount]).Value.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
     $modeFixture=Join-Path $fixture $mode;$null=New-Item -ItemType Directory -Path $modeFixture
@@ -55,7 +64,30 @@ try {
     $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
     foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $code 'p06_standard.ps1'),'-Manager',$app,'-Fixture',$modeFixture,'-Mode',$mode,'-EngineHome',$engine,'-FaultManager',(Join-Path $fault 'securerun.exe'))){$start.ArgumentList.Add($arg)}
     $p=[Diagnostics.Process]::Start($start)
-    try{if(-not $p.WaitForExit(900000)){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'control-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'control-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$password.Dispose()}
+    try{
+        $clock=[Diagnostics.Stopwatch]::StartNew();$lastAction='';$sessionStarted=$false;$sessionTask='SRP06_SESSION_'+$run;$savedStart=Join-Path $code 'original-start.bin';$startPath=Join-Path $engine 'Start.exe';Copy-Item $startPath $savedStart;$savedHash=(Get-FileHash $savedStart).Hash
+        while(-not $p.HasExited -and $clock.ElapsedMilliseconds -lt 900000){
+            if($mode -eq 'sessions' -and -not $sessionStarted -and (Test-Path (Join-Path $modeFixture 'results/session-ready.json'))){
+                $ready=Get-Content (Join-Path $modeFixture 'results/session-ready.json') -Raw|ConvertFrom-Json;$sessionProbe=Join-Path $code 'p05-session-probe.exe';$pipe='SecureRunP02Logon_'+$run
+                $action=New-ScheduledTaskAction -Execute $sessionProbe -Argument ('logon-fixture '+$pipe) -WorkingDirectory $engine;$principal=New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest;$settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::FromMinutes(2));$null=Register-ScheduledTask -TaskName $sessionTask -Action $action -Principal $principal -Settings $settings
+                $transport=[P02Bridge]::new($engine,$modeFixture,[string[]]@($sessionProbe));$plain=([pscredential]::new($name,$password)).GetNetworkCredential().Password
+                try{$null=$transport.SendFixtureLogon([Action]{Start-ScheduledTask -TaskName $sessionTask},$pipe,$name,$plain,$ready.owner_sid,$modeFixture,$ready.box,$sessionProbe)}finally{$plain=$null}
+                $sessionStarted=$true
+            }
+            $requestFile=Join-Path $modeFixture 'lab-request.txt'
+            if(Test-Path $requestFile){$action=[IO.File]::ReadAllText($requestFile);if($action -ne $lastAction){
+                switch -Exact ($action){
+                    'service-off' {Stop-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Stopped',[TimeSpan]::FromSeconds(20))}
+                    'service-on' {Start-Service SbieSvc;[ServiceProcess.ServiceController]::new('SbieSvc').WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+                    'start-impostor' {Copy-Item (Join-Path $code 'securerun-launch-probe.exe') $startPath -Force}
+                    'start-restore' {Copy-Item $savedStart $startPath -Force;if((Get-FileHash $startPath).Hash -ne $savedHash){throw 'ORIGINAL_COMPONENT_RESTORE_FAILED'}}
+                    default {throw 'UNKNOWN_LAB_COORDINATION'}
+                }
+                $lastAction=$action;[IO.File]::WriteAllText((Join-Path $modeFixture 'lab-ack.txt'),$action)
+            }}
+            Start-Sleep -Milliseconds 100
+        }
+        if(-not $p.HasExited){throw 'STANDARD_CONTROL_TIMEOUT'};Get-ChildItem $modeFixture -Filter '*.json'|Where-Object Name -ne 'control-cases.json'|Copy-Item -Destination $out;$modeCases=@(Get-Content (Join-Path $modeFixture 'control-cases.json') -Raw|ConvertFrom-Json);foreach($item in $modeCases){$allCases.Add($item)};if($p.ExitCode -ne 0){$failedModes++}}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$password.Dispose();if($mode -eq 'sessions'){Unregister-ScheduledTask -TaskName $sessionTask -Confirm:$false -ErrorAction SilentlyContinue};if(Test-Path $savedStart){Copy-Item $savedStart $startPath -Force};Start-Service SbieSvc}
     }
     ConvertTo-Json -InputObject @($allCases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'control-cases.json') -Encoding utf8
     $cases=@(Get-Content (Join-Path $out 'control-cases.json') -Raw|ConvertFrom-Json)

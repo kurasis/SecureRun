@@ -1,0 +1,32 @@
+{
+  "phase": "P06",
+  "result": "BLOCKED",
+  "tested_commit": "3822c22850f92433ea275137c65673f2b9057a25",
+  "run_id": 38696611210,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38696611210",
+  "targets": [],
+  "files": [
+    {
+      "path": "investigation-3822c22/windows-2025/standard-normal.json",
+      "sha256": "e2f8dbc0f620a3930e20f48bcea817a2a38fdf2840a18f98979b04c9d9511d44",
+      "size": 331
+    },
+    {
+      "path": "investigation-3822c22/windows-2025/stage.json",
+      "sha256": "c9563accccff398669735eac99d1e29454505e1a2c6b716f507069873a666b83",
+      "size": 112
+    },
+    {
+      "path": "investigation-3822c22/windows-11-arm/standard-normal.json",
+      "sha256": "2a237bcf08075d0d89221c04b23f8ae002c2fc0c61a279d2d1b4174eea64a1be",
+      "size": 331
+    },
+    {
+      "path": "investigation-3822c22/windows-11-arm/stage.json",
+      "sha256": "170d460597b0d31b872bd8a7240f7ce6c2e341feb0e7ab32e8b82e73c71b21d7",
+      "size": 112
+    }
+  ],
+  "tested_sources": [],
+  "note": "First investigation: mandatory SMB positive control missing in new harness; reserved account name exceeded Windows length. Neither run closes any P06 gate."
+}

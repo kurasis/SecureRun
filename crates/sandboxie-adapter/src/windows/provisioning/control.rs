@@ -10,7 +10,7 @@ fn checkpoint(stage: &str) {
         println!("CHECKPOINT_{stage}");
         let _ = std::io::stdout().flush();
         if stage == "StopHeld" {
-            std::thread::sleep(Duration::from_secs(3));
+            std::thread::sleep(Duration::from_secs(6));
         } else {
             loop {
                 std::thread::park();
@@ -133,6 +133,7 @@ impl NativeEngine {
         e: &OwnedEnvironment,
         a: &Application,
         all: &[OwnedEnvironment],
+        dispatched: &mut bool,
     ) -> R<(String, Option<ProcessIdentity>)> {
         if e.stage != Stage::Verified || e.revision != a.revision {
             return Err("LAUNCH_REVISION_NOT_VERIFIED");
@@ -179,6 +180,7 @@ impl NativeEngine {
             let mut si = unsafe { std::mem::zeroed::<STARTUPINFOW>() };
             si.cb = std::mem::size_of_val(&si) as u32;
             let mut pi = unsafe { std::mem::zeroed::<PROCESS_INFORMATION>() };
+            *dispatched = true;
             if unsafe {
                 run(
                     wide(&e.name()).as_ptr(),
@@ -330,9 +332,21 @@ pub fn execute(
         match &request {
             contract::Request::List => {}
             contract::Request::Reconcile { operation_id } => {
-                if control.receipt(*operation_id)?.is_none() {
-                    return Err("OPERATION_NOT_FOUND");
+                let receipt = control
+                    .receipt(*operation_id)?
+                    .ok_or("OPERATION_NOT_FOUND")?;
+                if let Some(id) = receipt.environment_id {
+                    let e = find(id)?;
+                    let _scope = engine.control_scope(e)?;
+                    engine.api.processes(&e.name())?;
+                } else {
+                    for e in &all {
+                        let _scope = engine.control_scope(e)?;
+                        engine.api.processes(&e.name())?;
+                    }
                 }
+                // Observing an empty scope never converts Unknown into Not run.
+                control.reconcile(*operation_id)?;
             }
             contract::Request::Register {
                 environment_id,
@@ -414,14 +428,21 @@ pub fn execute(
                     .is_none()
                 {
                     checkpoint("Reserved");
-                    let result = if e.revision != *expected_revision {
+                    let mut dispatched = false;
+                    let result = if control.unresolved(e.id, *operation_id)? {
+                        Err("UNCERTAIN_LAUNCH_RECONCILIATION_REQUIRED")
+                    } else if e.revision != *expected_revision {
                         Err("REVISION_CONFLICT")
                     } else {
-                        engine.launch_application(e, &a, &all)
+                        engine.launch_application(e, &a, &all, &mut dispatched)
                     };
                     let (state, reason, process) = match result {
                         Ok((state, p)) => (state, "ENGINE_BOXED_RECEIPT", p),
-                        Err(code) => ("UNKNOWN".into(), code, None),
+                        Err(code) => (
+                            if dispatched { "UNKNOWN" } else { "REFUSED" }.into(),
+                            code,
+                            None,
+                        ),
                     };
                     control.finish(&Receipt {
                         operation_id: *operation_id,
@@ -480,7 +501,9 @@ pub fn execute(
             .collect();
         reply.receipts = control.receipts()?;
         for e in &all {
-            let eligible = e.stage == Stage::Verified && validate_owned(&engine, e, &all).is_ok();
+            let eligible = e.stage == Stage::Verified
+                && !control.unresolved(e.id, Uuid::nil())?
+                && validate_owned(&engine, e, &all).is_ok();
             let processes = engine
                 .control_scope(e)
                 .and_then(|_scope| engine.api.processes(&e.name()));

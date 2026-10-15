@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "line": 5,
+      "status": "FAILED",
+      "code": "CANARY_SMB_DENIAL_FAILED",
+      "name": "required_prerequisites",
+      "id": "T01"
+    }
+  ],
+  "mode": "normal",
+  "status": "FAILED",
+  "standard_user": true
+}

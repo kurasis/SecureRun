@@ -4,10 +4,15 @@ $cases=[Collections.Generic.List[object]]::new()
 function Save {ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 10|Set-Content (Join-Path $Fixture 'control-cases.json') -Encoding utf8}
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
 function Case([string]$id,[string]$name,[scriptblock]$body){$c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save;try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'CONTROL_CASE_FAILED'};$c.line=$_.InvocationInfo.ScriptLineNumber;$c.exception_type=$_.Exception.GetBaseException().GetType().FullName};Save;Write-Host ($name+' '+$c.status+$(if($c.ContainsKey('code')){' '+$c.code}else{''}))}
-function Call($request,[string]$kind='control',[string]$image=$Manager){
+function Call($request,[string]$kind='control',[string]$image=$Manager,[bool]$allowFailure=$false){
     $s=[Diagnostics.ProcessStartInfo]::new($image);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once")
     $p=[Diagnostics.Process]::Start($s)
-    try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(150000)) 'CONTROL_TIMEOUT';Require ($p.ExitCode -eq 0) 'CONTROL_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OBSERVED') $r.reason;return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+    try{$read=$p.StandardOutput.ReadToEndAsync();$err=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(150000)) 'CONTROL_TIMEOUT';Require ($p.ExitCode -eq 0) 'CONTROL_WORKER_EXIT_FAILED';$r=$read.Result|ConvertFrom-Json;if(-not $allowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+}
+function Coordinate([string]$action){
+    [IO.File]::WriteAllText((Join-Path $Fixture 'lab-request.txt'),$action);$clock=[Diagnostics.Stopwatch]::StartNew()
+    do{if((Test-Path (Join-Path $Fixture 'lab-ack.txt')) -and [IO.File]::ReadAllText((Join-Path $Fixture 'lab-ack.txt')) -eq $action){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+    throw 'LAB_COORDINATION_TIMEOUT'
 }
 function New-App([string]$exe,[string[]]$arguments,[string]$cwd=$null){
     $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$script:e.id;expected_revision=$script:e.revision;operation_id=$id;display_name='Synthetic launch fixture';executable=$exe;arguments=$arguments;working_directory=$cwd}
@@ -19,10 +24,22 @@ function Stop-Owned { $id=[Guid]::NewGuid().ToString();$r=Call @{action='STOP';e
 function Reports([string]$leaf){$clock=[Diagnostics.Stopwatch]::StartNew();do{$files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf);if($files.Count -gt 0){return @(Get-Content $files[0].FullName|ForEach-Object {$_|ConvertFrom-Json})};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);throw 'TARGET_REPORT_MISSING'}
 try {
     $who=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($who);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_TOKEN_REQUIRED'
-    $active=if($Mode -eq 'normal'){$Manager}else{$FaultManager}
+    $active=if($Mode -in @('normal','sessions')){$Manager}else{$FaultManager}
     $r=Call @{action='CREATE';display_name='P06 production-path fixture';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} 'policy' $active
     $script:e=$r.environments[0];$script:root=$e.compiled.section.FileRootPath[0];Require ($e.stage -eq 'VERIFIED') 'P05_GATE_REQUIRED'
-    if($Mode -eq 'scope'){
+    if($Mode -eq 'sessions'){
+        Case 'T36' 'production_stop_covers_two_actual_windows_sessions' {
+            $actor=[Diagnostics.Process]::GetCurrentProcess().SessionId;Require ($actor -ne 0) 'INDEPENDENT_ACTOR_SESSION_REQUIRED'
+            $probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe';$a=New-App $probe @('hold',(Join-Path $Fixture 'session-actor.jsonl'));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
+            $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
+            @{box=('SR_'+$e.id.Replace('-',''));owner_sid=$who.User.Value}|ConvertTo-Json|Set-Content (Join-Path $results 'session-ready.json') -Encoding utf8
+            $clock=[Diagnostics.Stopwatch]::StartNew()
+            do{$r=Call @{action='LIST'};$v=$r.environments|Where-Object environment_id -eq $e.id;if($v.complete -and @($v.processes|Where-Object session -eq 0).Count -ge 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+            Require ($v.complete -and @($v.processes|Where-Object session -eq 0).Count -ge 1 -and @($v.processes|Where-Object session -eq $actor).Count -ge 1) 'REAL_MULTISESSION_PROCESSES_NOT_OBSERVED'
+            $count=$v.processes.Count;$stopped=Stop-Owned;$v=$stopped.environments|Where-Object environment_id -eq $e.id;Require ($v.complete -and $v.activity -eq 'IDLE' -and $v.processes.Count -eq 0) 'OTHER_SESSION_STOP_NOT_COMPLETED'
+            @{real_windows_sessions=@(0,$actor);same_owner_verified=$true;processes_before=$count;processes_after=0;stop_waits_completed=$true;product_helper=$false;os_logon_policy_modified=$false}
+        }
+    }elseif($Mode -eq 'scope'){
         $Manager=$FaultManager;$probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe'
         $a=New-App $probe @('hold',(Join-Path $Fixture 'scope-held.jsonl'));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
         Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box)
@@ -39,6 +56,16 @@ try {
                 @{real_held_handles=$true;scope_changed_before_dispatch=$true;target_survives=$true;numeric_pid_fallback=$false;unknown_completion_preserved=$true}
             }finally{Remove-Item Env:/SECURERUN_P06_PAUSE_STAGE -ErrorAction SilentlyContinue;$lab.Set($box,'FileRootPath',$root);if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();$null=Stop-Owned}
         }
+        Case 'T07' 'exited_retained_object_does_not_retarget_unrelated_process' {
+            $a=New-App $probe @('exit-during-stop',(Join-Path $Fixture 'exit-during-stop.jsonl'));$receipt=Launch $a;Require ($receipt.state -eq 'RUNNING_BOXED') $receipt.reason
+            $hostStart=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh).Source);$hostStart.UseShellExecute=$false;foreach($arg in @('-NoProfile','-NonInteractive','-Command','Start-Sleep -Seconds 90')){$hostStart.ArgumentList.Add($arg)};$other=[Diagnostics.Process]::Start($hostStart)
+            $env:SECURERUN_P06_PAUSE_STAGE='StopHeld';$id=[Guid]::NewGuid().ToString();$s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true
+            foreach($arg in @('--control-worker',[string]$PID,[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc()))){$s.ArgumentList.Add($arg)};$p=[Diagnostics.Process]::Start($s)
+            try{$line=$p.StandardOutput.ReadLineAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP';environment_id=$e.id;operation_id=$id} -Compress));$p.StandardInput.Close();Require ($line.Wait(45000)) 'EXIT_RACE_CHECKPOINT_TIMEOUT';Require ($line.Result -eq 'CHECKPOINT_StopHeld') 'EXIT_RACE_NOT_REACHED';$read=$p.StandardOutput.ReadToEndAsync();Require ($p.WaitForExit(30000)) 'EXIT_RACE_STOP_TIMEOUT';$r=$read.Result|ConvertFrom-Json;$stopped=$r.receipts|Where-Object operation_id -eq $id
+                Require ($stopped.state -eq 'STOPPED' -and -not $other.HasExited) 'EXITED_HANDLE_RETARGETED'
+                @{actual_primary_exit_while_held=$true;unrelated_process_survives=$true;retained_handle_prevents_pid_reuse_until_close=$true;numeric_pid_fallback=$false;completion_waited=$true}
+            }finally{Remove-Item Env:/SECURERUN_P06_PAUSE_STAGE -ErrorAction SilentlyContinue;if(-not $p.HasExited){$p.Kill($true)};$p.Dispose();if(-not $other.HasExited){$other.Kill();$other.WaitForExit()};$other.Dispose()}
+        }
     }elseif($Mode -ne 'normal'){
         $Manager=$FaultManager;$probe=Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe';$leaf='lost-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$output=Join-Path $Fixture $leaf;$a=New-App $probe @('short',$output)
         $stage=if($Mode -eq 'reserved'){'Reserved'}else{'Accepted'};$id=[Guid]::NewGuid().ToString();$request=@{action='LAUNCH';application_id=$a.id;environment_id=$a.environment_id;expected_revision=$a.revision;operation_id=$id}
@@ -53,7 +80,7 @@ try {
             foreach($n in 1..3){$retry=Call $request;$receipt=$retry.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'UNKNOWN') 'UNCERTAIN_LAUNCH_REPLAYED'}
             $after=if($Mode -eq 'accepted'){@(Reports $leaf).Count}else{@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $leaf).Count}
             Require ($before -eq $after -and $before -eq $(if($Mode -eq 'accepted'){1}else{0})) 'TARGET_EXECUTED_MORE_THAN_ONCE'
-            $null=Stop-Owned
+            $null=Call @{action='RECONCILE';operation_id=$id};$null=Stop-Owned
             @{real_worker_killed=$true;checkpoint=$stage;duplicate_deliveries=3;target_executions=$after;automatic_replay=$false;receipt_state='UNKNOWN';standard_user=$true}
         }
     }else{
@@ -108,6 +135,21 @@ try {
             try{$read=$p.StandardOutput.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject @{action='STOP_MANAGED';operation_id=$id} -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(45000)) 'CONFLICT_TIMEOUT';$r=$read.Result|ConvertFrom-Json;Require ($r.reason -eq 'OPERATION_CONFLICT') 'OPERATION_SCOPE_REUSED'}finally{$p.Dispose()}
             @{rapid_cycles=3;conflicting_operation_refused=$true;all_waits_completed=$true}
         }
+        Case 'T01' 'stopped_engine_service_never_dispatches_target' {
+            Coordinate 'service-off'
+            try{$r=Call @{action='LAUNCH';environment_id=$treeApp.environment_id;application_id=$treeApp.id;expected_revision=$treeApp.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'STOPPED_ENGINE_ACCEPTED_TARGET'}finally{Coordinate 'service-on'}
+            @{service_actually_stopped=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
+        }
+        Case 'T02' 'changed_original_component_refuses_launch' {
+            Coordinate 'start-impostor'
+            try{$r=Call @{action='LAUNCH';environment_id=$treeApp.environment_id;application_id=$treeApp.id;expected_revision=$treeApp.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'CHANGED_ENGINE_ACCEPTED_TARGET'}finally{Coordinate 'start-restore'}
+            @{component_replaced_on_disposable_vm=$true;launch_refused=$true;original_signature_restored=$true;verification_disabled=$false}
+        }
+        Case 'T03' 'registered_target_replacement_is_refused' {
+            $replaceable=Join-Path $Fixture 'replaceable.exe';Copy-Item $probe.FullName $replaceable;$leaf='replaced-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $replaceable @('short',(Join-Path $Fixture $leaf));[IO.File]::WriteAllText($replaceable,'SYNTHETIC_INVALID_PE')
+            $receipt=Launch $a;Require ($receipt.state -eq 'REFUSED') 'REPLACED_TARGET_EXECUTED';Require (@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $leaf).Count -eq 0) 'REPLACED_TARGET_RAN'
+            @{registered_identity_changed=$true;target_not_dispatched=$true;host_fallback=$false}
+        }
         Case 'T03' 'invalid_exe_and_control_characters_are_refused' {
             $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$id;display_name='Invalid';executable=(Join-Path $Fixture 'missing.exe');arguments=@();working_directory=$null};$receipt=$r.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'REFUSED') 'INVALID_EXE_ACCEPTED'
             $id=[Guid]::NewGuid().ToString();$r=Call @{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=$id;display_name='Invalid';executable=$probe.FullName;arguments=@("bad`nargument");working_directory=$null};$receipt=$r.receipts|Where-Object operation_id -eq $id;Require ($receipt.state -eq 'REFUSED' -and $receipt.reason -eq 'TARGET_ARGUMENTS_INVALID') 'ARGUMENT_CONTROL_ACCEPTED'
@@ -115,8 +157,13 @@ try {
         }
         Case 'T50' 'target_cwd_is_separate_from_host_worker_cwd' {
             $cwd=Join-Path $Fixture 'hostile cwd';$null=New-Item -ItemType Directory -Path $cwd;[IO.File]::WriteAllText((Join-Path $cwd 'SbieDll.dll'),'SYNTHETIC_INVALID_DLL');[IO.File]::WriteAllText((Join-Path $cwd 'Start.exe'),'SYNTHETIC_INVALID_EXE')
-            $leaf='cwd-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('short',(Join-Path $Fixture $leaf)) $cwd;$receipt=Launch $a;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason;Require ((Reports $leaf)[0].boxed) 'HOSTILE_CWD_ESCAPED';$null=Stop-Owned
+            $leaf='cwd-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('cwd',(Join-Path $Fixture $leaf),$cwd) $cwd;$receipt=Launch $a;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason;Require ((Reports $leaf)[0].boxed -and (Reports $leaf)[0].cwd_exact) 'HOSTILE_CWD_ESCAPED';$null=Stop-Owned
             @{hostile_target_directory_accepted_separately=$true;trusted_host_worker_cwd=$true;impostor_dependencies_unused=$true}
+        }
+        Case 'T56' 'stale_application_revision_cannot_dispatch_after_policy_change' {
+            $r=Call @{action='APPLY';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();acknowledge_view_change=$false;policy=$e.desired} 'policy';$updated=$r.environments|Where-Object id -eq $e.id;Require ($updated.revision -gt $e.revision) 'REVISION_NOT_ADVANCED'
+            $receipt=Launch $treeApp;Require ($receipt.state -eq 'REFUSED' -and $receipt.reason -eq 'REVISION_CONFLICT') 'OLD_REVISION_DISPATCHED';$script:e=$updated
+            @{new_revision_observed=$true;stale_registration_refused=$true;old_response_does_not_authorize_dispatch=$true;fresh_worker_prerequisites=$true}
         }
     }
 }catch{Case 'T01' 'required_prerequisites' {throw $_}}

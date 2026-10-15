@@ -55,8 +55,7 @@ fn main() {
         "\\\"tail\\",
     ];
     let exact = mode != "arguments" || args[2..] == expected;
-    let report =
-        serde_json::json!({"boxed":true,"session":session,"arguments_exact":exact,"mode":mode});
+    let report = serde_json::json!({"boxed":true,"session":session,"arguments_exact":exact,"cwd_exact":mode!="cwd" || args.get(2).is_some_and(|p|std::env::current_dir().ok().is_some_and(|cwd|cwd.to_string_lossy().eq_ignore_ascii_case(p))),"mode":mode});
     let mut f = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
@@ -75,8 +74,10 @@ fn main() {
             .spawn()
             .unwrap();
     }
-    if mode != "short" && mode != "arguments" && mode != "background" {
-        std::thread::sleep(std::time::Duration::from_secs(90));
+    if mode != "short" && mode != "arguments" && mode != "background" && mode != "cwd" {
+        std::thread::sleep(std::time::Duration::from_secs(
+            if mode == "exit-during-stop" { 4 } else { 90 },
+        ));
     }
 }
 #[cfg(not(windows))]

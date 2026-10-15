@@ -16,6 +16,20 @@ function Workspace {
  $r=List $drive.id;$letter=$env:SystemRoot.Substring(0,1);$r=List ($r.entries|Where-Object name -eq $letter).id;$r=List ($r.entries|Where-Object name -eq 'SecureRunWorkspace').id;$r=List ($r.entries|Where-Object name -eq $script:e.id.Replace('-','')).id;return $r
 }
 function Export($entry,[string]$name,[bool]$allowFailure=$false,[string]$destination=$script:output){$q=Request 'EXPORT';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$entry.id;$q.destination=$destination;$q.name=$name;return @{reply=(Call $q 'files' $allowFailure);request=$q}}
+function Box-Report([string]$leaf) {
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do {
+  $files=@(Get-ChildItem -LiteralPath $script:root -Recurse -File -Filter $leaf)
+  Require ($files.Count -le 1) 'DUPLICATE_TARGET_REPORT'
+  if($files.Count -eq 1){
+   $contents=$null;$stream=$null;$reader=$null
+   try{$stream=[IO.File]::Open($files[0].FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read);Require ($stream.Length -le 4096) 'TARGET_REPORT_BOUND';$reader=[IO.StreamReader]::new($stream,[Text.UTF8Encoding]::new($false,$true));$contents=$reader.ReadToEnd()}catch [IO.IOException]{}finally{if($null -ne $reader){$reader.Dispose()}elseif($null -ne $stream){$stream.Dispose()}}
+   if($null -ne $contents -and $contents.EndsWith("`n")){return ($contents|ConvertFrom-Json)}
+  }
+  Start-Sleep -Milliseconds 100
+ }while($clock.ElapsedMilliseconds -lt 15000)
+ throw 'COMPLETE_BOXED_REPORT_TIMEOUT'
+}
 function Stop-Owned {$q=@{action='STOP';environment_id=$script:e.id;operation_id=[Guid]::NewGuid().ToString()};$r=Call $q 'control';$op=$r.receipts|Where-Object operation_id -eq $q.operation_id;Require ($op.state -eq 'STOPPED') $op.reason}
 function Crash($q,[string]$stage,[scriptblock]$whilePaused={}){
  $env:SECURERUN_P07_PAUSE_STAGE=$stage;$s=[Diagnostics.ProcessStartInfo]::new($script:active);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$s.RedirectStandardError=$true
@@ -120,10 +134,13 @@ try{
   foreach($probe in @(Get-ChildItem (Split-Path $Manager) -Filter 'securerun-launch-probe*.exe')){
    Case 'T43' ('imported_boxed_exe_'+$probe.BaseName) {
     $peBytes=[IO.File]::ReadAllBytes($probe.FullName);$peOffset=[BitConverter]::ToInt32($peBytes,0x3c);$peMachine=[BitConverter]::ToUInt16($peBytes,$peOffset+4).ToString('x4');$expectedMachine=if($probe.BaseName.EndsWith('-x86')){'014c'}elseif($probe.BaseName.EndsWith('-x64')){'8664'}elseif($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'};Require ($peMachine -eq $expectedMachine) 'TARGET_PE_ARCHITECTURE_WRONG';$probeHash=(Get-FileHash -LiteralPath $probe.FullName).Hash.ToLowerInvariant()
+    try {
     $name=$probe.BaseName+' Программа, %SystemRoot%.exe';$x=Import $probe.FullName $name;$r=Workspace;$exe=$r.entries|Where-Object name -eq $name;Require ($exe.executable) 'BOX_EXE_MAPPING_UNAVAILABLE';$report=Join-Path $Fixture ($probe.BaseName+'-boxed.jsonl');$q=Request 'REGISTER';$q.operation_id=[Guid]::NewGuid().ToString();$q.file_id=$exe.id;$physical=Join-Path $root ('drive/'+$env:SystemRoot.Substring(0,1)+'/SecureRunWorkspace/'+$e.id.Replace('-','')+'/'+$name);$q.arguments=@('mapping',$report,$physical);$r=Call $q;Require ($null -ne $r.application_id) 'BOX_REGISTRATION_FAILED'
     $op=[Guid]::NewGuid().ToString();$r=Call @{action='LAUNCH';application_id=$r.application_id;environment_id=$e.id;expected_revision=$e.revision;operation_id=$op} 'control';$receipt=$r.receipts|Where-Object operation_id -eq $op;Require ($receipt.state -in @('BOXED_STAGE_RUNNING','BOXED_STAGE_EXITED')) $receipt.reason
-    $clock=[Diagnostics.Stopwatch]::StartNew();do{$reports=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter ($probe.BaseName+'-boxed.jsonl'));if($reports.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Require ($reports.Count -eq 1 -and -not(Test-Path -LiteralPath $report)) 'BOX_LOGICAL_LAUNCH_FAILED';$data=Get-Content $reports[0].FullName -Raw|ConvertFrom-Json;Require ($data.boxed -and $data.mapping_verified) 'IMPORTED_EXE_MAPPING_UNVERIFIED';Stop-Owned
+    $data=Box-Report ($probe.BaseName+'-boxed.jsonl');Require (-not(Test-Path -LiteralPath $report)) 'HOST_REPORT_PRESENT';Require ($data.boxed -and $data.mapping_verified) 'IMPORTED_EXE_MAPPING_UNVERIFIED'
+
     @{actual_pe=$probe.BaseName;pe_machine=$peMachine;probe_sha256=$probeHash;boxed=$true;logical_launch=$true;original_get_handle_path_verified=$true;literal_percent_environment_name=$true;no_shell_associations=$true;physical_host_fallback=$false;host_report_absent=$true}
+    }finally{Stop-Owned}
    }
   }
   Case 'T42' 'running_environment_blocks_file_mutation' {

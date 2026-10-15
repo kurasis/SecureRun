@@ -272,3 +272,114 @@ pub async fn policy_request(
     .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))?;
     Ok(reply)
 }
+
+#[derive(Deserialize)]
+#[serde(
+    tag = "action",
+    rename_all = "SCREAMING_SNAKE_CASE",
+    deny_unknown_fields
+)]
+pub enum UiControlRequest {
+    List,
+    Register {
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+        display_name: String,
+        executable_selection: Uuid,
+        arguments: Vec<String>,
+        directory_selection: Option<Uuid>,
+    },
+    Launch {
+        application_id: Uuid,
+        environment_id: Uuid,
+        expected_revision: u64,
+        operation_id: Uuid,
+    },
+    Stop {
+        environment_id: Uuid,
+        operation_id: Uuid,
+    },
+    StopManaged {
+        operation_id: Uuid,
+    },
+    Reconcile {
+        operation_id: Uuid,
+    },
+}
+#[tauri::command]
+pub async fn control_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiControlRequest,
+) -> Result<securerun_sandboxie_adapter::control::Reply> {
+    authorize(&window)?;
+    use securerun_sandboxie_adapter::control::Request as Control;
+    let mut held = vec![];
+    let request = match request {
+        UiControlRequest::List => Control::List,
+        UiControlRequest::Register {
+            environment_id,
+            expected_revision,
+            operation_id,
+            display_name,
+            executable_selection,
+            arguments,
+            directory_selection,
+        } => {
+            let mut selections = vec![UiGrant {
+                selection_id: executable_selection,
+                permission: Permission::Block,
+            }];
+            if let Some(id) = directory_selection {
+                selections.push(UiGrant {
+                    selection_id: id,
+                    permission: Permission::Block,
+                })
+            }
+            let (paths, leases) = grants(
+                &state,
+                selections,
+                operation_id,
+                Some(environment_id),
+                expected_revision,
+            )?;
+            held = leases;
+            Control::Register {
+                environment_id,
+                expected_revision,
+                operation_id,
+                display_name,
+                executable: paths[0].path.clone(),
+                arguments,
+                working_directory: paths.get(1).map(|p| p.path.clone()),
+            }
+        }
+        UiControlRequest::Launch {
+            application_id,
+            environment_id,
+            expected_revision,
+            operation_id,
+        } => Control::Launch {
+            application_id,
+            environment_id,
+            expected_revision,
+            operation_id,
+        },
+        UiControlRequest::Stop {
+            environment_id,
+            operation_id,
+        } => Control::Stop {
+            environment_id,
+            operation_id,
+        },
+        UiControlRequest::StopManaged { operation_id } => Control::StopManaged { operation_id },
+        UiControlRequest::Reconcile { operation_id } => Control::Reconcile { operation_id },
+    };
+    tauri::async_runtime::spawn_blocking(move || {
+        let _held = held;
+        securerun_sandboxie_adapter::windows::provisioning::control::bounded_request(&request)
+    })
+    .await
+    .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))
+}

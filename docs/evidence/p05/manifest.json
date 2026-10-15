@@ -1,6 +1,6 @@
 {
   "phase": "P05",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636",
   "run_id": 38648135812,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38648135812",
@@ -2490,5 +2490,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P05 production policy/provisioning paths and fixed synthetic diagnostics only; user-target launch remains unavailable until P06."
+  "note": "P05 production policy/provisioning paths and fixed synthetic diagnostics only; user-target launch remains unavailable until P06.",
+  "current_blocker": "P06 runtime changes require matching native regression evidence"
 }

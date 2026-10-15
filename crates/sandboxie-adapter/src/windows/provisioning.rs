@@ -4,6 +4,7 @@ use crate::{policy::*, provision::*};
 use std::{io::Write, os::windows::io::FromRawHandle};
 use uuid::Uuid;
 mod aliases;
+pub mod control;
 mod network;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
@@ -747,7 +748,11 @@ impl NativeEngine {
             let keep = keep
                 || matches!(
                     key.to_str(),
-                    Some("GITHUB_ACTIONS" | "SECURERUN_P05_PAUSE_STAGE")
+                    Some(
+                        "GITHUB_ACTIONS"
+                            | "SECURERUN_P05_PAUSE_STAGE"
+                            | "SECURERUN_P06_PAUSE_STAGE"
+                    )
                 );
             if !keep {
                 unsafe { std::env::remove_var(&key) };

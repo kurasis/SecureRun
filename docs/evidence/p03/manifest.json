@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38649287239,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38649287239",
   "tested_commit": "a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636",
@@ -491,5 +491,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed.",
+  "current_blocker": "P06 runtime changes require matching native regression evidence"
 }

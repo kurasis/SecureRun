@@ -1,0 +1,59 @@
+name: P06 launch and scoped process control
+on:
+  push:
+    branches: [main, 'p06/**']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P06.ps1', 'tools/probe/p06*', '.github/workflows/p06.yml']
+  pull_request:
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/lab/Invoke-P06.ps1', 'tools/probe/p06*', '.github/workflows/p06.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: p06-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-control:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - id: native-cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p06-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            p06-${{ matrix.runner }}-rust190-
+            p05-${{ matrix.runner }}-rust190-
+            p04-${{ matrix.runner }}-rust190-
+            p03-${{ matrix.runner }}-rust190-
+      - name: Validate production launch and process control
+        shell: pwsh
+        run: ./tools/lab/Invoke-P06.ps1
+      - name: Retain reviewed structured evidence
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: p06-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p06/*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve compiled dependencies after diagnostic failure
+        if: failure() && steps.native-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p06-${{ matrix.runner }}-rust190-${{ hashFiles('Cargo.lock') }}

@@ -1,15 +1,16 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-14 UTC. Requested scope: full P05.
+Specification: 1.3. Updated: 2026-10-15 UTC. Requested scope: full P06.
 
 | Phase | Status | Evidence / dependency |
 |---|---|---|
 | P01 | DONE (owner-selected Windows 11 ARM64 lab) | [P01 report](phases/P01_REPORT.md), retained provenance |
 | P02 | DONE — representative feasibility gate | [P02 report](phases/P02_REPORT.md), [feasibility](FEASIBILITY_REPORT.md), [operation map](OPERATION_MAP.md) |
-| P03 | DONE — current P05 regression verified | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
-| P04 | DONE — current P05 regression verified | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
-| P05 | DONE | [P05 report](phases/P05_REPORT.md), [policy/provisioning contract](POLICY_PROVISIONING.md), retained complete native evidence |
-| P06–P12 | NOT_STARTED | Production target launch remains unavailable |
+| P03 | BLOCKED — P06 regression pending | [P03 report](phases/P03_REPORT.md), [IPC contract](IPC_CONTRACT.md), retained native evidence |
+| P04 | BLOCKED — P06 regression pending | [P04 report](phases/P04_REPORT.md), [observation contract](ENGINE_OBSERVATION.md), retained native evidence |
+| P05 | BLOCKED — P06 regression pending | [P05 report](phases/P05_REPORT.md), [policy/provisioning contract](POLICY_PROVISIONING.md), retained complete native evidence |
+| P06 | IN_PROGRESS | Production launch/control implementation; native exit gate pending |
+| P07–P12 | NOT_STARTED | Depends on P06 |
 
 The complete 26-document specification remains byte-for-byte unchanged.
 Every mandatory adapter operation has a tested viable route on the owner-selected

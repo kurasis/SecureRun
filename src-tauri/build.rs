@@ -13,6 +13,7 @@ fn main() {
                 "get_operation",
                 "diagnostic_summary",
                 "policy_request",
+                "control_request",
                 "select_policy_path",
                 "ci_report",
             ]),

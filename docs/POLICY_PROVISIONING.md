@@ -82,8 +82,13 @@ process birth, owner SID and both self/parent box context from the OS and origin
 driver. Credentials are removed from its environment before probe launch. A bounded
 worker job, bounded input/output and held process receipt limit failures; an
 unknown result blocks verification. The private journal records diagnostic scope
-before effects; failed probes are fenced. Retained diagnostics have a quota of 64;
-no generic recursive deletion is introduced ahead of the lifecycle phase.
+before effects; failed probes are fenced. Retained diagnostics have a quota of 256, covering the required ten-environment
+workload with native/x86/x64 verification. Successful fresh diagnostic definitions
+are retired only after full enforcement proof, complete stopped scope, held root
+identity and exact current configuration/automation checks. Their data and audit
+records are retained; failed scopes remain fenced and inspect-only. No diagnostic
+root data is recursively deleted. Mandatory sibling denials compile in canonical
+root order, independent of UUID insertion versus durable listing order.
 
 Original RPC support can outlive the fixed probe. The private diagnostic stop
 validates this worker's generated box, exact current section, marker and held

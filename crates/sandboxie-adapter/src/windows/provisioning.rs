@@ -2098,9 +2098,9 @@ impl NativeEngine {
                     .to_string_lossy()
                     .starts_with("diagnostic-")
             })
-            .take(65)
+            .take(MAX_RETAINED_DIAGNOSTICS + 1)
             .count();
-        if count >= 64 {
+        if count >= MAX_RETAINED_DIAGNOSTICS {
             return Err("DIAGNOSTIC_RETENTION_QUOTA");
         }
         let id = Uuid::new_v4();
@@ -2479,6 +2479,64 @@ impl NativeEngine {
             serde_json::to_vec(&evidence).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        // Completed private canary definitions must not exhaust ordinary box
+        // enumeration. Retire only this worker-generated, fully verified scope;
+        // all root data and durable diagnostic evidence remain retained.
+        self.mutation_context()?;
+        self.validate_root(&diagnostic)?;
+        self.idle(&diagnostic.name())?;
+        let current_global = self.global()?;
+        if current_global != global {
+            return Err("DIAGNOSTIC_SCOPE_CHANGED");
+        }
+        let raw = self.section(&diagnostic.name(), false)?;
+        let effective = self.section(&diagnostic.name(), true)?;
+        let mut fenced = diagnostic.compiled.clone();
+        fenced.section.insert("Enabled".into(), vec!["n".into()]);
+        verify_readback(&fenced, &raw, &effective, &current_global)?;
+        validate_automation(&raw, &effective, &current_global)?;
+        self.set(&diagnostic.name(), "*", &[])?;
+        self.reload()?;
+        if self.exists(&diagnostic.name())? {
+            return Err("DIAGNOSTIC_DEFINITION_STILL_PRESENT");
+        }
+        let saved_report = locate_report(
+            Path::new(&self.root_for(id)),
+            output.file_name().unwrap().to_str().unwrap(),
+        )?;
+        let mut saved_file = lease(&saved_report, false)?;
+        let mut saved_bytes = Vec::new();
+        Read::by_ref(&mut saved_file)
+            .take(4097)
+            .read_to_end(&mut saved_bytes)
+            .map_err(|_| "DIAGNOSTIC_RETAINED_REPORT_CHANGED")?;
+        if saved_bytes.len() > 4096 {
+            return Err("DIAGNOSTIC_RETAINED_REPORT_CHANGED");
+        }
+        let retained: CanaryReport = serde_json::from_slice(&saved_bytes)
+            .map_err(|_| "DIAGNOSTIC_RETAINED_REPORT_CHANGED")?;
+        if fingerprint(&retained) != fingerprint(&report) {
+            return Err("DIAGNOSTIC_RETAINED_REPORT_CHANGED");
+        }
+        let retired = self
+            .profile
+            .join("metadata")
+            .join(format!("probe-retired-{nonce}.json"));
+        let mut retired_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(retired)
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        let retirement = serde_json::json!({"schema":1,"completed":true,"definition_removed":true,"root_data_retained":true,"synthetic_report_unchanged":true});
+        retired_file
+            .write_all(
+                &serde_json::to_vec(&retirement).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+            )
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        retired_file
+            .sync_all()
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
         Ok(fingerprint(&(
             FAMILY,
             probe_hash,

@@ -84,6 +84,10 @@ if($Mode -eq 'DISPLAY_SERVER'){
  try{
   $rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
   foreach($suffix in @('100','150','200','done','failed')){$events+=,[Threading.EventWaitHandle]::OpenExisting($DisplayEvents+'-'+$suffix,$rights)}
+  $prepared=@{mode='DISPLAY_PREPARATION';requested_windows_scale=100;status='FAILED';real_windows_uia=$true;synthetic_fixture_only=$true;os_security_settings_modified=$false;excluded_from_product_startup_measurement=$true}
+  try{Set-ActualDisplayScale 100;$prepared.status='PASSED'}catch{$prepared.stage=$script:stage;$prepared.exception_type=$_.Exception.GetBaseException().GetType().FullName}
+  $prepared|ConvertTo-Json|Set-Content -LiteralPath ($ResultFile+'.preparation.json') -Encoding UTF8
+  if($prepared.status -ne 'PASSED'){$null=$events[4].Set();exit 1}
   $null=$events[3].Set() # Parent consumes readiness before starting the actor.
   while($serverClock.ElapsedMilliseconds -lt 3000000){
    $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$events[0..2],1000)

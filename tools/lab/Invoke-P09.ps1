@@ -74,7 +74,7 @@ try {
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
  $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
  $controller=[Diagnostics.Process]::Start($display)
- if(-not $displayEvents[3].WaitOne(60000) -or $controller.HasExited){throw 'P09_DISPLAY_SERVER_NOT_READY'}
+ if([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[3..4],90000) -ne 0 -or $controller.HasExited){throw 'P09_DISPLAY_SERVER_NOT_READY'}
  $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew()
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}

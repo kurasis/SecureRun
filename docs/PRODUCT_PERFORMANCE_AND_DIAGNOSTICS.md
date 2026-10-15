@@ -20,7 +20,13 @@ processes, roots and configuration. A stale, changed or failed observation clear
 availability. Every mutation independently repeats its full native checks; the
 observer supplies no mutation authority. WebView2's public low-memory target
 reduces caches without changing its sandbox or excluding any child from the
-measurement. Fresh Windows measurements are required before claiming improvement.
+measurement. Fresh Windows measurements are required before claiming further improvement.
+Numeric startup tracing at `9daaf46` found 83 ms initial engine observation,
+90 ms to WebView construction and 4167 ms through window construction. The next
+normal build uses the sole fixed additional browser argument `--disable-gpu` to
+measure software composition on the hosted virtual display. It adds no sandbox,
+certificate, origin or other security-disable argument. Both resource and real
+UI checks must pass before this rendering choice can be accepted.
 
 | Workload | Required reference budget | Measurement |
 |---|---|---|

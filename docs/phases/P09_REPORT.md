@@ -304,3 +304,14 @@ permission or Windows security setting is changed. CPU diagnostics separate the
 held manager's CPU and child remainder; live WebView attribution is explicitly
 incomplete. The original complete kernel-job CPU and elapsed interval remain
 the sole authoritative budget measurement.
+
+
+The first persistent-controller run could not initially discover Settings after
+waiting for the actor. The next controller prepares its retained provider at
+100% before readiness/actor startup and records this separate display preparation.
+It stays outside product timing and receives no actor payload. Its scale actions
+and the independently measured manager DPI remain mandatory. Native startup
+tracing at `9daaf46` attributed 83 ms to observation and 4167 ms through WebView
+construction. The next normal product tries fixed software composition using
+only `--disable-gpu`; no sandbox or security-disable browser argument is added.
+This change requires measured native validation and makes no performance claim.

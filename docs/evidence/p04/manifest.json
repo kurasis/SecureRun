@@ -584,6 +584,46 @@
       "path": "investigation-8398582/windows-2025/observation-cases.json",
       "sha256": "7348cc0dbbbb72a3eb62779b473271f52b5c5b2104eaece7aa933dca53a66d7c",
       "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/standard-user.json",
+      "sha256": "ebbfe8cc856ba522795de87cc5b98ca32ff7f2c316ce57fde92ce5e8bfd7efc1",
+      "size": 430
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/run-summary.json",
+      "sha256": "9b87262ac70daa814e937eafc136ba47106ff52034d8f08177f92f919af889a1",
+      "size": 511
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/observation-cases.json",
+      "sha256": "5c8a2644a6baa53a801c93e173ef1b83d086686115fa1fd3661a20ea4d7b0504",
+      "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/stage.json",
+      "sha256": "e79a59fa465660f71e4c2ab0ea1f04a5144946a7f5b1370e1e6e4a4fa4c28057",
+      "size": 152
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/standard-user.json",
+      "sha256": "958401d7f128d9000db8d297aeb8486fa285f7a3bf224c143a07185cedf7bb3a",
+      "size": 430
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/stage.json",
+      "sha256": "7cf58435945b5ec16639bd56734eb677f306de34160e0d0f1673909d1c37a2e8",
+      "size": 152
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/observation-cases.json",
+      "sha256": "dadbefe826e969e1d01a65a1c7f72f6c9cb1a74e8a7a1d35c594e1efdea60d43",
+      "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/run-summary.json",
+      "sha256": "7bf21e0f1e0c9589016b42779eadfd4a392fdbc8059cfd0744f985611205d7c0",
+      "size": 510
     }
   ],
   "tested_sources": [
@@ -879,13 +919,20 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Passing ce6098f regression is historical. Endpoint availability and control-counter changes require a fresh matching source regression before P09 can close.",
+  "note": "Fresh P04 runtime checks passed both targets at d2b138a in run 38802021230. DONE still requires matching P03 and final-source dependency proof.",
   "historical_runs": [
     {
       "run_id": 38800456163,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38800456163",
       "result": "FAILED",
       "note": "Server passed; ARM boxed-manager observation and normal desktop refusal timed out. No successful boxed-startup claim."
+    },
+    {
+      "run_id": 38802021230,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38802021230",
+      "tested_commit": "d2b138a39acb50e596852eef0b1c1886c40d8ba0",
+      "result": "PASSED_DEPENDENCY_PENDING",
+      "note": "Fresh P04 runtime checks passed both targets at d2b138a in run 38802021230. DONE still requires matching P03 and final-source dependency proof."
     }
   ]
 }

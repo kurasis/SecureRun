@@ -211,3 +211,8 @@ started. The next watcher initializes only the desktop provider, without queryin
 all desktop windows, and has a 60-second preparation bound. The product timer
 still starts afterwards and the 3000 ms budget is unchanged. A failed startup
 measurement does not prevent independent UI scenarios in diagnostic mode.
+
+Fresh P04 run `38802021230` passed both targets at `d2b138a`, including both
+boxed-manager checks. Earlier timeouts remain historical. The single-environment
+layout diagnostic is separate from the four-environment application diagnostic
+and the mandatory full ten-environment gate; neither diagnostic can close P09.

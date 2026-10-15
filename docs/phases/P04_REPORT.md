@@ -148,3 +148,8 @@ are retained in the phase manifest. This confirms this phase only; the P09
 product exit gate remains pending.
 
 Run: https://github.com/kurasis/SecureRun/actions/runs/38793642900
+
+Fresh P09 regression `38802021230` at `d2b138a39acb50e596852eef0b1c1886c40d8ba0`
+passed both targets, including both actual boxed-manager refusal checks and the
+standard-user all-session observations. The earlier ARM timeout is preserved.
+The phase manifest remains provisional until final matching P03/source proof.

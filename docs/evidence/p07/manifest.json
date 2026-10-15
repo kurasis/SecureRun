@@ -264,6 +264,56 @@
       "path": "investigation-68af79d/windows-11-arm/file-cases.json",
       "size": 9504,
       "sha256": "e547ec2559a1e9abe2aeb5b8d27116fbcebb06524f6201d1d0aa50ef2316d1f8"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-normal.json",
+      "size": 91,
+      "sha256": "e9974a9fdfce3d5a68494ca22894742d46c23442e7a46652b722bcde8723013e"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-fault.json",
+      "size": 90,
+      "sha256": "835d6943de3436ecd091e4c3bceac36e720ca4864cf98cbb805bf9d5b8097ca1"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "fc7067335838509ce62f58af4032167cd62b9fdedc31c90f1b4ba69266477ad5"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/run-summary.json",
+      "size": 653,
+      "sha256": "f7e82ef6856cc64421cf9fc238ed5094679957bd2faa537b540a1637edc3634b"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/file-cases.json",
+      "size": 8928,
+      "sha256": "0d4e422ade3930188f3c8dd524207f95ed5b58cf7cf3bec0372207ea989b39f9"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/standard-normal.json",
+      "size": 91,
+      "sha256": "b50c273df08363cce8b69553e8b7884a785273b758b32aec6f3e70f3be0151ae"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "f5f236ff1b039e652e0d926eee53d62a3ee98aceeaac9189bfef04ccd7361b30"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "495567be3c83f5b0fcf51273d4ed0b44e88cd873866384c906b730a4cbbf3772"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "2c9f113bbc655332d980eff89235e8541f2d3728b37ce65cb698e4f713065583"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/file-cases.json",
+      "size": 9504,
+      "sha256": "d06eff42f91a4aaacc5b309c8c14fe712eda7a29f6d42f10fc3ea30c6cae2f3b"
     }
   ],
   "targets": [],
@@ -310,6 +360,12 @@
       "run_id": 38725132900,
       "result": "PASSED",
       "note": "Both P07 laboratories passed all 28 Server / 29 ARM cases; phase completion still requires matching dependency regressions."
+    },
+    {
+      "tested_commit": "144be07d4a8cbb7c3d759a76411c0681740ef6ea",
+      "run_id": 38726656929,
+      "result": "PASSED",
+      "note": "Both native P07 laboratories passed: 28 Server / 29 ARM. The matching dependency gate remained blocked by P06 driver-bootstrap fixture coordination."
     }
   ]
 }

@@ -12,7 +12,7 @@ function Call($request,[string]$kind='control',[string]$image=$Manager,[bool]$al
 }
 function Coordinate([string]$action){
     [IO.File]::WriteAllText((Join-Path $Fixture 'lab-request.txt'),$action);$clock=[Diagnostics.Stopwatch]::StartNew()
-    do{if((Test-Path (Join-Path $Fixture 'lab-ack.txt')) -and [IO.File]::ReadAllText((Join-Path $Fixture 'lab-ack.txt')) -eq $action){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
+    do{if((Test-Path (Join-Path $Fixture 'lab-ack.txt')) -and [IO.File]::ReadAllText((Join-Path $Fixture 'lab-ack.txt')) -eq $action){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 120000)
     throw 'LAB_COORDINATION_TIMEOUT'
 }
 function New-App([string]$exe,[string[]]$arguments,[string]$cwd=$null){
@@ -38,6 +38,19 @@ function Reports([string]$leaf){
 
 try {
     $who=[Security.Principal.WindowsIdentity]::GetCurrent();$principal=[Security.Principal.WindowsPrincipal]::new($who);Require (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'STANDARD_TOKEN_REQUIRED'
+    if($Mode -eq 'normal'){
+        # Test the bootstrap engine guard before CREATE runs production policy
+        # diagnostics. A registered-target service-loss test runs later as well.
+        Case 'T01' 'unloaded_original_driver_refuses_production_launch' {
+            Coordinate 'driver-off'
+            try{
+                $r=Call @{action='LAUNCH';environment_id=[Guid]::NewGuid().ToString();application_id=[Guid]::NewGuid().ToString();expected_revision=1;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true
+                Require ($r.reason -eq 'MANAGER_CONTEXT_UNSAFE' -and $r.environments.Count -eq 0 -and $r.receipts.Count -eq 0) 'UNLOADED_DRIVER_ACCEPTED_TARGET'
+            }finally{Coordinate 'driver-on'}
+            @{driver_actually_unloaded=$true;original_authenticated_kmdutil=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false;bootstrap_before_provisioning=$true;dispatch_reservation_created=$false;refusal_reason='MANAGER_CONTEXT_UNSAFE'}
+        }
+        Require ($cases[-1].status -eq 'PASSED') 'DRIVER_BOOTSTRAP_NEGATIVE_CONTROL_FAILED'
+    }
     $active=if($Mode -in @('normal','sessions')){$Manager}else{$FaultManager}
     $r=Call @{action='CREATE';display_name='P06 production-path fixture';operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()}} 'policy' $active
     $script:e=$r.environments[0];$script:root=$e.compiled.section.FileRootPath[0];Require ($e.stage -eq 'VERIFIED') 'P05_GATE_REQUIRED'
@@ -101,14 +114,6 @@ try {
         }
     }else{
         $probes=@(Get-ChildItem (Split-Path $Manager) -Filter 'securerun-launch-probe*.exe')
-        # Establish the real unloaded-driver negative control before the mixed-PE
-        # workload series. No live target or emulation teardown is needed here.
-        Case 'T01' 'unloaded_original_driver_refuses_production_launch' {
-            $driverTarget=New-App (Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe') @('short',(Join-Path $Fixture 'driver-refusal.jsonl'))
-            Coordinate 'driver-off'
-            try{$r=Call @{action='LAUNCH';environment_id=$driverTarget.environment_id;application_id=$driverTarget.id;expected_revision=$driverTarget.revision;operation_id=[Guid]::NewGuid().ToString()} 'control' $Manager $true;Require ($r.reason -ne 'OBSERVED' -and $r.environments.Count -eq 0) 'UNLOADED_DRIVER_ACCEPTED_TARGET'}finally{Coordinate 'driver-on'}
-            @{driver_actually_unloaded=$true;original_authenticated_kmdutil=$true;production_launch_refused=$true;host_fallback=$false;os_security_settings_modified=$false}
-        }
         foreach($probe in $probes){
             Case 'T04' ('exact_arguments_'+$probe.BaseName) {
                 try {

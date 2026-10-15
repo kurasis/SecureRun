@@ -121,3 +121,14 @@ preserves all prior raw reports. This observation protocol stays read-only and
 cannot authorize launch; the separate P06 service independently checks its
 current owner/root/policy and action-specific prerequisites. Ordinary-user
 service-process identity uncertainty remains explicit rather than fabricated.
+
+## Current P07 dependency regression
+
+Runtime `144be07d4a8cbb7c3d759a76411c0681740ef6ea` passes
+[run 38726646899](https://github.com/kurasis/SecureRun/actions/runs/38726646899)
+on Server 2025 x64 and Windows 11 ARM64. Each target passed 38 native adapter
+tests and all 19 observation cases, including the actual boxed normal desktop
+entrypoint refusing before metadata. The [manifest](../evidence/p04/manifest.json)
+binds current source hashes and immutable reports. An earlier ARM desktop-startup
+30-second timeout is retained as failed investigation; its cause was not
+established. The fresh complete run passed the unchanged refusal condition.

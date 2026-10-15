@@ -1,46 +1,46 @@
 {
   "phase": "P04",
   "result": "BLOCKED",
-  "tested_commit": "50397b84a5af7cc4b4c988bbd6b257504b750707",
-  "run_id": 38723497007,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38723497007",
+  "tested_commit": "144be07d4a8cbb7c3d759a76411c0681740ef6ea",
+  "run_id": 38726646899,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38726646899",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-50397b8/windows-2025",
+      "evidence_directory": "completion-144be07/windows-2025",
       "summary": {
-        "manager_commit": "50397b84a5af7cc4b4c988bbd6b257504b750707",
-        "result": "PASSED",
-        "os_security_settings_modified": false,
-        "manager_binary_sha256": "22283e75e73d46777d2754d2387af17b5ce67ae5b18f88a4823c0788f38802e0",
-        "production_target_launches": 0,
-        "production_mutations": 0,
-        "teardown": "DISCARD_ACTIONS_VM",
         "adapter_tests_passed": 38,
-        "native_cases_passed": 19,
+        "phase": "P04",
+        "manager_binary_sha256": "499bed104d3350255a3c271f3bad0f9d7ad27a8d940fe14e8bb3e4fa965bf70f",
+        "manager_commit": "144be07d4a8cbb7c3d759a76411c0681740ef6ea",
         "pe_machine": "8664",
-        "os_build": "10.0.26100.0",
+        "native_cases_passed": 19,
         "target": "x86_64-pc-windows-msvc",
-        "phase": "P04"
+        "result": "PASSED",
+        "production_target_launches": 0,
+        "teardown": "DISCARD_ACTIONS_VM",
+        "os_security_settings_modified": false,
+        "os_build": "10.0.26100.0",
+        "production_mutations": 0
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-50397b8/windows-11-arm",
+      "evidence_directory": "completion-144be07/windows-11-arm",
       "summary": {
-        "native_cases_passed": 19,
-        "manager_commit": "50397b84a5af7cc4b4c988bbd6b257504b750707",
-        "result": "PASSED",
-        "os_security_settings_modified": false,
-        "production_mutations": 0,
-        "production_target_launches": 0,
-        "os_build": "10.0.26200.0",
+        "manager_binary_sha256": "4b581fe3f80f88d95a991993119da92ad1c0f4509f727acac63e30c19e54bc68",
         "pe_machine": "aa64",
+        "production_mutations": 0,
+        "manager_commit": "144be07d4a8cbb7c3d759a76411c0681740ef6ea",
+        "result": "PASSED",
+        "target": "aarch64-pc-windows-msvc",
         "phase": "P04",
+        "os_security_settings_modified": false,
         "teardown": "DISCARD_ACTIONS_VM",
-        "manager_binary_sha256": "667b5c583a62796c21c8115bdd524376def50d0bbd0269fa0eac166f753e69e2",
+        "production_target_launches": 0,
         "adapter_tests_passed": 38,
-        "target": "aarch64-pc-windows-msvc"
+        "native_cases_passed": 19,
+        "os_build": "10.0.26200.0"
       }
     }
   ],
@@ -344,6 +344,46 @@
       "path": "investigation-68af79d-first-arm/observation-cases.json",
       "size": 7205,
       "sha256": "ceefe4564467964bdb84ce42e5a3e4faf2ccc198b4ddbd7c4ee4e0f93907b505"
+    },
+    {
+      "path": "completion-144be07/windows-2025/stage.json",
+      "sha256": "fe883047db623a8cdb9b8aa4747b61ca422506beb925733fececce655208a9d0",
+      "size": 152
+    },
+    {
+      "path": "completion-144be07/windows-2025/run-summary.json",
+      "sha256": "680ea00ce70a49693f07ac0be0cf315c49845d2f5abd9880b07acbd49b9e39c0",
+      "size": 510
+    },
+    {
+      "path": "completion-144be07/windows-2025/observation-cases.json",
+      "sha256": "b37847870fecd2d0b1ce14440f0c10c52e2536cdf0f16854ef6e41e7118fd62a",
+      "size": 7320
+    },
+    {
+      "path": "completion-144be07/windows-2025/standard-user.json",
+      "sha256": "08c40f2ef424041be915b643c2b856e0c888facd403589febce4ca518d4343c0",
+      "size": 430
+    },
+    {
+      "path": "completion-144be07/windows-11-arm/stage.json",
+      "sha256": "bb350f2ad414ab46c64286996d0784d348e18d943c03e93b59931e90a626dddc",
+      "size": 152
+    },
+    {
+      "path": "completion-144be07/windows-11-arm/run-summary.json",
+      "sha256": "5e0c98516bf72901763753baa3fe5b16094592d84a194f433d9aa096e38d5237",
+      "size": 511
+    },
+    {
+      "path": "completion-144be07/windows-11-arm/observation-cases.json",
+      "sha256": "45efb3c3f71771661d1379482edc2e1c9dafb9126f1429bae98ca47a8e819ced",
+      "size": 7320
+    },
+    {
+      "path": "completion-144be07/windows-11-arm/standard-user.json",
+      "sha256": "35e29bd2688c16d0f0b1511d0a0d5a71be72b4c6f562a54990af06586f45c859",
+      "size": 430
     }
   ],
   "tested_sources": [
@@ -404,8 +444,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/bin/securerun-launch-probe.rs",
-      "sha256": "86761a0722d56ab9f9b6096b4a30da5b28a32397acc8806bbf0834f80452090a",
-      "size": 4307
+      "sha256": "62af9d2001837f33c058044ea84c2c2fab5226b30aee2a15f348cfd647065d3b",
+      "size": 4528
     },
     {
       "path": "crates/sandboxie-adapter/src/bin/securerun-policy-probe.rs",
@@ -459,8 +499,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning.rs",
-      "sha256": "ebd73a4f17782d50d34a01be1c04e28eb228bf30c4debad3b2b58926907e328b",
-      "size": 98384
+      "sha256": "b3cbcb74fe7c643b30b8684d90c0adab964ca7fcd8726c82a129296577b8ca36",
+      "size": 99479
     },
     {
       "path": "crates/sandboxie-adapter/src/windows.rs",
@@ -579,15 +619,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P07 lab ordering/diagnostic source changed; matching exact-source native regression pending. Historical raw reports are retained.",
-  "stale_reason": "Shared diagnostic held-object exit handling and synthetic append framing changed during P07; fresh matching regression pending.",
-  "historical_runs": [
-    {
-      "tested_commit": "68af79d64d55aa6ae21dc763f0c057834aca4c6c",
-      "run_id": 38725423400,
-      "attempt": 1,
-      "result": "FAILED",
-      "note": "Server passed all 19 observation cases and 38 adapter tests. ARM passed 18 observation cases and 38 adapter tests; actual boxed desktop startup did not complete its 30-second wait. No successful refusal is inferred. A fresh disposable ARM job is required; its result remains separate."
-    }
-  ]
+  "note": "P06 disposable driver-bootstrap coordination changed; matching exact-source P07 dependency regression pending. Historical reports remain immutable."
 }

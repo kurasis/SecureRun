@@ -379,6 +379,66 @@
       "path": "investigation-68af79d/windows-11-arm/partial-normal.json",
       "size": 1064,
       "sha256": "450ff4a5018d9de9d95ecfe4a9e89a9f2796858adae63c566a83dbf5b6b60dc2"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-sessions.json",
+      "size": 549,
+      "sha256": "749cb9ca72b3b223099ff5c07ce94e832e8aee9e0ab189898c5028655d15323c"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-scope.json",
+      "size": 913,
+      "sha256": "50f6e8b5f73cfefa5a01d5f608cbd8ebd60e2dbd1584d4aafa99593a50153786"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-reserved.json",
+      "size": 489,
+      "sha256": "0dce0961e147b099e42dc8582ca500cc3baf7184029264743635023653888661"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-normal.json",
+      "size": 4876,
+      "sha256": "c48cfd3c52f442d1087ccc081fa265896cdfdf6f046a14b25bbf8c9540f5e913"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/standard-accepted.json",
+      "size": 489,
+      "sha256": "fdb18d891b764a14649601c4cda77c9cc8830a121e2e3da67961524c55fd2671"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "0c90b4312ccffbee7ecba61251d6167d1e730d408f3d278b52dad3c12db00e20"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/run-summary.json",
+      "size": 536,
+      "sha256": "be41caeda39ef5ac368d7ce9e02e952fd8b865ffdf935a32ecee4e9931223014"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/driver-unload.json",
+      "size": 120,
+      "sha256": "b2e8f2859a28096ed2748da0f3e14a1cd70ce50b86d80c6dfe4602d63ced79f9"
+    },
+    {
+      "path": "investigation-144be07/windows-2025/control-cases.json",
+      "size": 6653,
+      "sha256": "843bac57241cc2ba4a9f38bd81d1096eb870722aa0b2228f42512ab5c7ef6b0c"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "0c90b4312ccffbee7ecba61251d6167d1e730d408f3d278b52dad3c12db00e20"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/driver-unload.json",
+      "size": 123,
+      "sha256": "56ee6b4083140991011fab1958f6e0c0698576c76e85b721d097904178afc7e7"
+    },
+    {
+      "path": "investigation-144be07/windows-11-arm/partial-normal.json",
+      "size": 2945,
+      "sha256": "81e719e211d66b591c4fbf2f0e4f06f80ea67df0f7e5dbee65499e3053ca059b"
     }
   ],
   "tested_sources": [
@@ -779,7 +839,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P07 lab ordering/diagnostic source changed; matching exact-source native regression pending. Historical raw reports are retained.",
+  "note": "P06 disposable driver-bootstrap coordination changed; matching exact-source P07 dependency regression pending. Historical reports remain immutable.",
   "historical_runs": [
     {
       "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",
@@ -821,6 +881,12 @@
       "run_id": 38725430536,
       "result": "FAILED",
       "note": "ARM exact argv passed for all three architectures; original driver utility did not complete before the 30-second lab limit. Later lab source moves the actual-unload negative control before mixed-PE workloads, allows the original utility retry window and retains numeric completion status."
+    },
+    {
+      "tested_commit": "144be07d4a8cbb7c3d759a76411c0681740ef6ea",
+      "run_id": 38726653807,
+      "result": "FAILED",
+      "note": "Server passed all cases. ARM original utility did not complete its 60-second unload wait after provisioning. Actor coordination expired after 45 seconds, causing secondary cases while engine transition was pending. Later lab source tests the bootstrap guard before provisioning and waits 120 seconds for bounded lab coordination; production checks remain unchanged."
     }
   ],
   "stale_reason": "P07 runtime and tooling changed; matching native regression pending"

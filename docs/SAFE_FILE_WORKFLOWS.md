@@ -25,7 +25,7 @@ filesystem or change audit. It exposes directories below the engine-resolved
 `drive`, `user` and `share` branches, hiding root internal files and transfer
 staging directories. Every listed object is opened without reparse traversal,
 validated against held ancestry and recorded root/file identity. Enumeration is
-lazy: 128 directory entries inspected per page, at most 4096 skipped entries,
+lazy: 128 directory entries inspected per page, at most 16,384 skipped entries (including the P09 10,000-file workload),
 with bounded depth/path grammar and a bounded native response. Unsafe entries
 are omitted; a failed directory observation is an error. Sizes and timestamps
 cross JSON as decimal strings. Complete suffixes remain visible; controls and

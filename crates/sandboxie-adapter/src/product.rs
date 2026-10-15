@@ -19,6 +19,7 @@ pub fn now() -> u64 {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Action {
+    Rename,
     PolicyCreate,
     PolicyApply,
     PolicyInspect,
@@ -71,7 +72,17 @@ impl Event {
 )]
 pub enum Request {
     List,
-    Record { event: Event },
+    Rename {
+        environment_id: Uuid,
+        expected_revision: u64,
+        expected_generation: u64,
+        expected_display_name: String,
+        display_name: String,
+        operation_id: Uuid,
+    },
+    Record {
+        event: Event,
+    },
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Reply {

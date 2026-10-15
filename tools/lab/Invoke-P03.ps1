@@ -33,7 +33,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'NORMAL_NATIVE_CONFIGURATION_TEST_FAILED' }
     $normalCount=0
     foreach ($line in $normal) {if ([string]$line -match 'test result: ok\. (\d+) passed; 0 failed') {$normalCount += [int]$Matches[1]}}
-    if ($normalCount -ne 2) {throw 'NORMAL_CONFIGURATION_COVERAGE_MISSING'}
+    if ($normalCount -lt 3) {throw 'NORMAL_CONFIGURATION_COVERAGE_MISSING'}
     $normalAcl=Get-Content (Join-Path $repo 'src-tauri/gen/schemas/acl-manifests.json') -Raw | ConvertFrom-Json
     $appPermissions=$normalAcl.'__app-acl__'.permissions
     if ($null -eq $appPermissions.'allow-get-snapshot' -or $null -eq $appPermissions.'deny-create-draft') { throw 'CUSTOM_APPLICATION_ACL_MISSING' }

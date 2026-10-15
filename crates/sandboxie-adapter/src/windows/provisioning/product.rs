@@ -6,6 +6,55 @@ pub fn execute(pid: u32, birth: u64, request: contract::Request) -> contract::Re
     let result = (|| -> R<contract::Reply> {
         let engine = NativeEngine::new(pid, birth)?;
         let meta = engine.profile.join("metadata");
+        if let contract::Request::Rename {
+            environment_id,
+            expected_revision,
+            expected_generation,
+            expected_display_name,
+            display_name,
+            operation_id,
+        } = &request
+        {
+            let namespace = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(true)
+                .truncate(false)
+                .share_mode(0)
+                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                .open(meta.join("policy-writer.lock"))
+                .map_err(|_| "NAMESPACE_OPERATION_BUSY")?;
+            identity(&namespace)?;
+            let path = meta.join("policy.sqlite");
+            let _db = lease(&path, true)?;
+            let mut policy = Journal::open(&path, &engine.owner)?;
+            let signature = fingerprint(&(
+                "RENAME_METADATA",
+                &engine.owner,
+                environment_id,
+                expected_revision,
+                expected_generation,
+                expected_display_name,
+                display_name,
+            ));
+            if policy.operation(*operation_id, &signature)?.is_none() {
+                validate_display_name(display_name)?;
+                let mut environment = policy.get(*environment_id)?;
+                let _scope = engine.control_scope(&environment)?;
+                if environment.revision != *expected_revision
+                    || environment.generation != *expected_generation
+                    || environment.display_name != *expected_display_name
+                    || environment.lifecycle_operation.is_some()
+                {
+                    return Err("METADATA_RENAME_STALE");
+                }
+                environment.display_name = display_name.clone();
+                environment.operation_id = *operation_id;
+                environment.operation_signature = signature;
+                policy.save(&environment)?;
+            }
+        }
+
         let lock = OpenOptions::new()
             .read(true)
             .write(true)

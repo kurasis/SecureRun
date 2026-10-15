@@ -51,7 +51,26 @@ pub struct PolicyState(
     Mutex<HashMap<Uuid, Selection>>,
     std::sync::atomic::AtomicU64,
     Mutex<HashMap<Uuid, QueuedPolicy>>,
+    tauri::async_runtime::Mutex<()>,
+    std::sync::atomic::AtomicUsize,
 );
+struct CommandSlot<'a>(&'a std::sync::atomic::AtomicUsize);
+impl Drop for CommandSlot<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+fn command_slot(state: &PolicyState) -> Result<CommandSlot<'_>> {
+    state
+        .4
+        .fetch_update(
+            std::sync::atomic::Ordering::SeqCst,
+            std::sync::atomic::Ordering::SeqCst,
+            |count| (count < 8).then_some(count + 1),
+        )
+        .map_err(|_| AppError::new(ErrorCode::OperationConflict))?;
+    Ok(CommandSlot(&state.4))
+}
 fn authorize(window: &WebviewWindow) -> Result<()> {
     let url = window
         .url()
@@ -60,6 +79,12 @@ fn authorize(window: &WebviewWindow) -> Result<()> {
         return err(ErrorCode::Unauthorized);
     }
     Ok(())
+}
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PickerLanguage {
+    En,
+    Ru,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -70,6 +95,8 @@ pub struct PickerRequest {
     directory: bool,
     #[serde(default)]
     file_transfer: bool,
+    #[serde(default)]
+    language: Option<PickerLanguage>,
 }
 #[derive(Serialize)]
 pub struct PickerReply {
@@ -84,6 +111,8 @@ pub async fn select_policy_path(
     request: PickerRequest,
 ) -> Result<PickerReply> {
     authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
     let list = tauri::async_runtime::spawn_blocking(|| {
         securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
     })
@@ -104,8 +133,12 @@ pub async fn select_policy_path(
         return err(ErrorCode::InvalidInput);
     }
     let directory = request.directory;
+    let title = match request.language {
+        Some(PickerLanguage::Ru) => "Выбор ресурса SecureRun",
+        _ => "SecureRun resource selection",
+    };
     let selected = tauri::async_runtime::spawn_blocking(move || {
-        let dialog = rfd::FileDialog::new();
+        let dialog = rfd::FileDialog::new().set_title(title);
         if directory {
             dialog.pick_folder()
         } else {
@@ -115,6 +148,7 @@ pub async fn select_policy_path(
     .await
     .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?
     .ok_or_else(|| AppError::new(ErrorCode::SelectionExpired))?;
+    authorize(&window)?;
     let path = selected
         .to_str()
         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?
@@ -180,6 +214,14 @@ pub struct UiGrant {
 )]
 pub enum UiRequest {
     List,
+    Rename {
+        environment_id: Uuid,
+        expected_revision: u64,
+        expected_generation: u64,
+        expected_display_name: String,
+        display_name: String,
+        operation_id: Uuid,
+    },
     Queue {
         environment_id: Uuid,
         expected_revision: u64,
@@ -300,6 +342,38 @@ async fn policy_request_inner(
         UiRequest::Queue { .. }
         | UiRequest::ApplyQueued { .. }
         | UiRequest::DiscardQueued { .. } => return err(ErrorCode::InvalidInput),
+
+        UiRequest::Rename {
+            environment_id,
+            expected_revision,
+            expected_generation,
+            expected_display_name,
+            display_name,
+            operation_id,
+        } => {
+            let renamed = tauri::async_runtime::spawn_blocking(move || {
+                securerun_sandboxie_adapter::windows::provisioning::product::bounded_request(
+                    &securerun_sandboxie_adapter::product::Request::Rename {
+                        environment_id,
+                        expected_revision,
+                        expected_generation,
+                        expected_display_name,
+                        display_name,
+                        operation_id,
+                    },
+                )
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))?;
+            if renamed.reason != "OBSERVED" {
+                return Ok(Reply::failure(&renamed.reason));
+            }
+            return tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown));
+        }
         UiRequest::List => Request::List,
         UiRequest::Create {
             display_name,
@@ -892,9 +966,12 @@ pub async fn policy_request(
     product: State<'_, crate::product::ProductState>,
 ) -> Result<PolicyReply> {
     authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
     use securerun_sandboxie_adapter::product::Action as A;
     let environment_id = match &request {
-        UiRequest::Apply { environment_id, .. }
+        UiRequest::Rename { environment_id, .. }
+        | UiRequest::Apply { environment_id, .. }
         | UiRequest::Queue { environment_id, .. }
         | UiRequest::Inspect { environment_id }
         | UiRequest::Repair { environment_id, .. } => Some(*environment_id),
@@ -903,6 +980,7 @@ pub async fn policy_request(
     let action = match &request {
         UiRequest::List => None,
         UiRequest::Create { .. } => Some(A::PolicyCreate),
+        UiRequest::Rename { .. } => Some(A::Rename),
         UiRequest::Inspect { .. } => Some(A::PolicyInspect),
         UiRequest::Repair { .. } => Some(A::PolicyRepair),
         _ => Some(A::PolicyApply),
@@ -1093,6 +1171,8 @@ pub async fn control_request(
     product: State<'_, crate::product::ProductState>,
 ) -> Result<ControlReply> {
     authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
     use securerun_sandboxie_adapter::product::Action as A;
     let environment_id = match &request {
         UiControlRequest::Register { environment_id, .. }
@@ -1108,7 +1188,7 @@ pub async fn control_request(
         UiControlRequest::StopManaged { .. } => Some(A::StopManaged),
         UiControlRequest::Reconcile { .. } => Some(A::LifecycleInspect),
     };
-    let result = control_request_inner(window, state, request, backend.clone()).await;
+    let result = control_request_inner(window, state.clone(), request, backend.clone()).await;
     if let Some(action) = action {
         crate::product::record(
             &product,
@@ -1134,6 +1214,17 @@ pub async fn files_request(
     product: State<'_, crate::product::ProductState>,
 ) -> Result<FilesReply> {
     authorize(&window)?;
+    let cancel = matches!(&request, UiFilesRequest::Cancel { .. });
+    let _slot = if cancel {
+        None
+    } else {
+        Some(command_slot(&state)?)
+    };
+    let _gate = if cancel {
+        None
+    } else {
+        Some(state.3.lock().await)
+    };
     use securerun_sandboxie_adapter::product::Action as A;
     let environment_id = match &request {
         UiFilesRequest::List { environment_id, .. }
@@ -1152,7 +1243,7 @@ pub async fn files_request(
         UiFilesRequest::Recover { .. } => Some(A::TransferInspect),
         UiFilesRequest::Discard { .. } | UiFilesRequest::Cancel { .. } => Some(A::TransferDiscard),
     };
-    let result = files_request_inner(window, state, request, backend.clone()).await;
+    let result = files_request_inner(window, state.clone(), request, backend.clone()).await;
     if let Some(action) = action {
         crate::product::record(
             &product,
@@ -1172,11 +1263,14 @@ pub async fn files_request(
 #[tauri::command]
 pub async fn lifecycle_request(
     window: WebviewWindow,
+    state: State<'_, PolicyState>,
     request: UiLifecycleRequest,
     backend: State<'_, crate::app::AppState>,
     product: State<'_, crate::product::ProductState>,
 ) -> Result<LifecycleReply> {
     authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
     use securerun_sandboxie_adapter::product::Action as A;
     let environment_id = match &request {
         UiLifecycleRequest::Act { environment_id, .. } => Some(*environment_id),
@@ -1203,4 +1297,29 @@ pub async fn lifecycle_request(
         .await;
     }
     result
+}
+
+#[cfg(test)]
+mod product_command_tests {
+    use super::*;
+    #[test]
+    fn waiting_managed_commands_are_bounded_and_dropped_slots_are_reusable() {
+        let state = PolicyState::default();
+        let mut held = (0..8)
+            .map(|_| command_slot(&state).unwrap())
+            .collect::<Vec<_>>();
+        assert!(matches!(
+            command_slot(&state),
+            Err(AppError {
+                code: ErrorCode::OperationConflict,
+                ..
+            })
+        ));
+        held.pop();
+        let replacement = command_slot(&state).unwrap();
+        assert!(command_slot(&state).is_err());
+        drop(replacement);
+        drop(held);
+        assert_eq!(state.4.load(std::sync::atomic::Ordering::SeqCst), 0);
+    }
 }

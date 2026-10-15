@@ -532,7 +532,7 @@ fn list(
     offset: u32,
     reply: &mut contract::Reply,
 ) -> R<()> {
-    if offset > 4096 {
+    if offset > 16384 {
         return Err("ENUMERATION_BOUND");
     }
     let root = engine.root_for(e.id);

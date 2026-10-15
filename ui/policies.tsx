@@ -28,13 +28,13 @@ export function Policies({language,environmentId,creationOnly,onCreated,stopped}
   const fresh=observedAt>0&&now-observedAt<30000;
   const reset=()=>{setReviewed(false);setEditing(null);setName('');setPreset('STANDARD_OFFLINE');setGrants([]);setAck(false);setOperation(crypto.randomUUID());};
   const pick=async(directory:boolean)=>{
-    setBusy(true);try {const selection=await invoke<{selection_id:string;display_name:string}>('select_policy_path',{request:{operation_id:operation,environment_id:editing?.id??null,expected_revision:editing?.revision??0,directory}});setGrants(old=>[...old,{...selection,permission}]);}
+    setBusy(true);try {const selection=await invoke<{selection_id:string;display_name:string}>('select_policy_path',{request:{operation_id:operation,environment_id:editing?.id??null,expected_revision:editing?.revision??0,directory,language}});setGrants(old=>[...old,{...selection,permission}]);}
     catch{setError('POLICY_SELECTION_UNAVAILABLE');}finally{setBusy(false);}
   };
   const submit=async(event:React.FormEvent)=>{
     event.preventDefault();const selected=grants.map(({selection_id,permission})=>({selection_id,permission}));
     const result=await request(editing?{action:'QUEUE',environment_id:editing.id,expected_revision:editing.revision,preset,grants:selected,operation_id:operation,acknowledge_view_change:ack}:{action:'CREATE',display_name:name,preset,grants:selected,operation_id:operation});
-    if(result?.reason==='OBSERVED'&&!editing){const created=result.environments.find(e=>!reply?.environments.some(old=>old.id===e.id));if(created&&mode==='DISPOSABLE'){await invoke('lifecycle_request',{request:{action:'ACT',environment_id:created.id,expected_revision:created.revision,expected_generation:created.generation,operation_id:crypto.randomUUID(),intent:'DISPOSABLE',language}});}onCreated?.();}
+    if(result?.reason==='OBSERVED'&&!editing){const created=result.environments.find(e=>!reply?.environments.some(old=>old.id===e.id));if(created&&mode==='DISPOSABLE'){const retained=await invoke<{reply:{reason:string}}>('lifecycle_request',{request:{action:'ACT',environment_id:created.id,expected_revision:created.revision,expected_generation:created.generation,operation_id:crypto.randomUUID(),intent:'DISPOSABLE',language}}).catch(()=>null);if(!retained||retained.reply.reason!=='OBSERVED'){reset();setError('CREATED_RETENTION_NOT_CONFIRMED');return;}}onCreated?.();}
     reset();if(result?.reason!=='OBSERVED')await refresh();
   };
   return <section className="policies" aria-labelledby="policies-title"><h2 id="policies-title">{t.title}</h2><p>{t.limitation}</p><p>{t.prerequisite}</p><p>{t.deferred}</p><p>{t.launch} {t.noHelper}</p>

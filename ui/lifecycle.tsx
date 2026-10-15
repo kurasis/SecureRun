@@ -35,7 +35,7 @@ export function Lifecycle({ language,environmentId }: { language: Language;envir
     {error && <ErrorView language={language} code={error} diagnosticId={reply?.diagnostic_id} action={ru?'Хранение':'Retention'}/>}
     {reply?.environments.filter(e=>!environmentId||e.environment_id===environmentId).map(e => { const stopped = fresh && e.complete && e.activity === 'IDLE' && !e.pending_operation;
       return <article key={e.environment_id}><h3>{escaped(e.display_name)}</h3><p>{statusName(e.lifecycle,language)} · {statusName(e.mode,language)} · {statusName(e.activity,language)} · {ru ? 'поколение' : 'generation'} {e.generation}</p>
-        {e.reason !== 'OBSERVED' && <p role="status">{e.reason}</p>}
+        {e.reason !== 'OBSERVED' && <ErrorView language={language} code={e.reason} action={ru?'Хранение':'Retention'} diagnosticId={reply?.diagnostic_id}/>}
         {e.mode === 'DISPOSABLE' && e.disposable_pending && <p role="status">{ru ? 'Осталось disposable-состояние. После завершения всех процессов выберите продолжение, экспорт или удаление. Перезапуск менеджера ничего не удаляет.' : 'Disposable state remains. After all processes exit, choose Resume, Export or Delete. Restarting the manager deletes nothing.'}</p>}
         <button disabled={busy || !stopped} onClick={() => void act(e, e.lifecycle === 'ACTIVE' ? 'ARCHIVE' : 'UNARCHIVE')}>{e.lifecycle === 'ACTIVE' ? (ru ? 'Архивировать' : 'Archive') : (ru ? 'Вернуть из архива' : 'Unarchive')}</button>
         <button disabled={busy || !stopped} onClick={() => void act(e, e.mode === 'PERSISTENT' ? 'DISPOSABLE' : 'PERSISTENT')}>{e.mode === 'PERSISTENT' ? (ru ? 'Режим Disposable' : 'Use disposable mode') : (ru ? 'Режим Persistent' : 'Use persistent mode')}</button>
@@ -46,6 +46,6 @@ export function Lifecycle({ language,environmentId }: { language: Language;envir
       </article>;
     })}
     <h3>{ru ? 'Операции' : 'Operations'}</h3><p>{ru ? 'Восстановление проверяет фактическое состояние. Оно не повторяет удаление, не запускает приложения и не удаляет временные файлы по имени.' : 'Recovery inspects actual state. It never repeats deletion, launches applications or deletes temporary files by name.'}</p>
-    {reply?.operations.filter(o=>!environmentId||o.environment_id===environmentId).map(o => <p key={o.operation_id}>{escaped(o.display_name)} · {statusName(o.intent,language)} · {statusName(o.stage,language)} <details><summary>{ru?'Технический код':'Technical code'}</summary><code>{escaped(o.reason)}</code></details> <button disabled={busy} onClick={() => void recover(o.operation_id)}>{ru ? 'Проверить' : 'Inspect'}</button></p>)}
+    {reply?.operations.filter(o=>!environmentId||o.environment_id===environmentId).map(o => <article key={o.operation_id}>{escaped(o.display_name)} · {statusName(o.intent,language)} · {statusName(o.stage,language)} <details><summary>{ru?'Технический код':'Technical code'}</summary><code>{escaped(o.reason)}</code></details> <button disabled={busy} onClick={() => void recover(o.operation_id)}>{ru ? 'Проверить' : 'Inspect'}</button></article>)}
   </section>;
 }

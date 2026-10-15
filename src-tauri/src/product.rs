@@ -20,6 +20,9 @@ struct Preview {
 pub struct ProductState {
     events: Mutex<VecDeque<Event>>,
     previews: Mutex<HashMap<Uuid, Preview>>,
+    gate: tauri::async_runtime::Mutex<()>,
+    active: std::sync::atomic::AtomicUsize,
+    persistence_failed: std::sync::atomic::AtomicBool,
 }
 fn authorize(window: &WebviewWindow) -> Result<()> {
     let url = window
@@ -36,7 +39,7 @@ fn persistent(backend: &AppState) -> bool {
         .lock()
         .is_ok_and(|b| !b.fixture && b.health.view(Instant::now()).control_plane_safe)
 }
-pub async fn record(
+async fn record_unlocked(
     state: &ProductState,
     backend: &AppState,
     action: Action,
@@ -51,16 +54,64 @@ pub async fn record(
     }
     if let Ok(mut events) = state.events.lock() {
         events.push_front(event.clone());
+        events.retain(|e| {
+            e.unix_ms >= contract::now().saturating_sub(contract::RETENTION_DAYS * 86400000)
+        });
         events.truncate(contract::HISTORY_LIMIT);
     }
     if persistent(backend) {
-        let _ = tauri::async_runtime::spawn_blocking(move || {
+        let persisted = tauri::async_runtime::spawn_blocking(move || {
             securerun_sandboxie_adapter::windows::provisioning::product::bounded_request(
                 &contract::Request::Record { event },
             )
         })
         .await;
+        if !persisted.is_ok_and(|r| r.reason == "OBSERVED") {
+            state
+                .persistence_failed
+                .store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+    } else {
+        state
+            .persistence_failed
+            .store(true, std::sync::atomic::Ordering::SeqCst);
     }
+}
+pub async fn record(
+    state: &ProductState,
+    backend: &AppState,
+    action: Action,
+    outcome: Outcome,
+    environment_id: Option<Uuid>,
+    diagnostic_id: Option<Uuid>,
+) {
+    let _gate = state.gate.lock().await;
+    record_unlocked(
+        state,
+        backend,
+        action,
+        outcome,
+        environment_id,
+        diagnostic_id,
+    )
+    .await;
+}
+struct ProductSlot<'a>(&'a std::sync::atomic::AtomicUsize);
+impl Drop for ProductSlot<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+fn slot(state: &ProductState) -> Result<ProductSlot<'_>> {
+    state
+        .active
+        .fetch_update(
+            std::sync::atomic::Ordering::SeqCst,
+            std::sync::atomic::Ordering::SeqCst,
+            |n| (n < 4).then_some(n + 1),
+        )
+        .map_err(|_| AppError::new(ErrorCode::OperationConflict))?;
+    Ok(ProductSlot(&state.active))
 }
 async fn history(state: &ProductState, backend: &AppState) -> Result<contract::Reply> {
     let mut reply = if persistent(backend) {
@@ -80,16 +131,23 @@ async fn history(state: &ProductState, backend: &AppState) -> Result<contract::R
         .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
         .iter()
     {
-        if !reply
-            .events
-            .iter()
-            .any(|e| e.diagnostic_id == event.diagnostic_id)
+        if event.unix_ms >= contract::now().saturating_sub(contract::RETENTION_DAYS * 86400000)
+            && !reply
+                .events
+                .iter()
+                .any(|e| e.diagnostic_id == event.diagnostic_id)
         {
             reply.events.push(event.clone());
         }
     }
     reply.events.sort_by_key(|e| std::cmp::Reverse(e.unix_ms));
     reply.events.truncate(contract::HISTORY_LIMIT);
+    if state
+        .persistence_failed
+        .load(std::sync::atomic::Ordering::SeqCst)
+    {
+        reply.reason = "SESSION_EVENTS_NOT_PERSISTED".into();
+    }
     Ok(reply)
 }
 #[derive(Deserialize)]
@@ -128,6 +186,8 @@ pub async fn product_request(
     request: Request,
 ) -> Result<Reply> {
     authorize(&window)?;
+    let _slot = slot(&state)?;
+    let _gate = state.gate.lock().await;
     let mut result = Reply {
         history: history(&state, &backend).await?,
         preview_id: None,
@@ -188,7 +248,7 @@ pub async fn product_request(
             }
             result.preview_id = Some(id);
             result.bundle = Some(body);
-            record(
+            record_unlocked(
                 &state,
                 &backend,
                 Action::DiagnosticPreview,
@@ -250,6 +310,9 @@ pub async fn product_request(
                     .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?;
                 securerun_sandboxie_adapter::files::leaf(leaf)
                     .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?;
+                if !leaf.to_lowercase().ends_with(".json") {
+                    return err(ErrorCode::PathUnsafe);
+                }
                 let _parent = native::capture(
                     path.parent()
                         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?,
@@ -263,7 +326,13 @@ pub async fn product_request(
                         windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT,
                     )
                     .open(&path)
-                    .map_err(|_| AppError::new(ErrorCode::OperationConflict))?;
+                    .map_err(|error| {
+                        AppError::new(if error.kind() == std::io::ErrorKind::AlreadyExists {
+                            ErrorCode::DestinationExists
+                        } else {
+                            ErrorCode::PathUnsafe
+                        })
+                    })?;
                 native::identify(&file)?;
                 file.write_all(body.as_bytes())
                     .and_then(|_| file.sync_all())
@@ -274,7 +343,7 @@ pub async fn product_request(
             .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))??;
             authorize(&window)?;
             result.saved = saved;
-            record(
+            record_unlocked(
                 &state,
                 &backend,
                 Action::DiagnosticSave,

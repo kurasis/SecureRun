@@ -332,6 +332,17 @@ fn mandatory(engine: &impl Engine, id: Uuid, owner: &str, all: &[OwnedEnvironmen
         marker: format!("v1:{owner}:{}", id.simple()),
     }
 }
+pub fn validate_display_name(display_name: &str) -> PolicyResult<()> {
+    if display_name.trim().is_empty()
+        || display_name.chars().count() > 80
+        || display_name
+            .chars()
+            .any(|c| c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'))
+    {
+        return Err("DISPLAY_NAME_INVALID");
+    }
+    Ok(())
+}
 pub fn create(
     journal: &mut Journal,
     engine: &impl Engine,
@@ -344,14 +355,7 @@ pub fn create(
     if let Some(e) = journal.operation(operation_id, &operation_signature)? {
         return Ok(e);
     }
-    if display_name.trim().is_empty()
-        || display_name.chars().count() > 80
-        || display_name
-            .chars()
-            .any(|c| c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'))
-    {
-        return Err("DISPLAY_NAME_INVALID");
-    }
+    validate_display_name(display_name)?;
     let all = journal.list()?;
     if all.len() >= 12 {
         return Err("OWNED_ENVIRONMENT_BOUND");

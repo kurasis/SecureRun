@@ -146,5 +146,14 @@ class IntegrityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'P08 cleanup component pins differ'):
                 validator.validate(copy)
 
+    def test_p09_cannot_close_without_current_lifecycle_regression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy=Path(tmp)/'repo'
+            shutil.copytree(ROOT,copy,ignore=shutil.ignore_patterns('.git','artifacts','__pycache__','node_modules','target','dist','gen'))
+            path=copy/'docs/evidence/p09/manifest.json';manifest=json.loads(path.read_text());manifest['result']='DONE';path.write_text(json.dumps(manifest))
+            dependency=copy/'docs/evidence/p08/manifest.json';stale=json.loads(dependency.read_text());stale['result']='BLOCKED';dependency.write_text(json.dumps(stale))
+            with self.assertRaisesRegex(ValueError,'P09 DONE requires matching current P03 through P08 regressions'):
+                validator.validate(copy)
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,37 @@
+[
+  {
+    "status": "PASSED",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "evidence": {
+      "synthetic_reports_unchanged": true,
+      "all_successful_definitions_retired": true,
+      "retention_limit": 256,
+      "root_data_retained": true,
+      "completed_definition_count": 0,
+      "no_recursive_data_deletion": true,
+      "retained_diagnostics": 30
+    },
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "name": "normal_manager_startup_diagnostic_only",
+    "evidence": {
+      "performance_exit_gate_claimed": false,
+      "inspector_enabled": false,
+      "environment_count": 4,
+      "startup_interactive_upper_bound_ms": 2832.6038,
+      "native_window_present_ms": 2260.9484
+    },
+    "id": "T32"
+  },
+  {
+    "name": "actual_normal_webview_environment_navigation",
+    "id": "T32",
+    "code": "P09_UI_WAIT_EXPIRED",
+    "line": 50,
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "ui_stage": "OVERVIEW",
+    "status": "FAILED"
+  }
+]

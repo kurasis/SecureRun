@@ -1,0 +1,48 @@
+[
+  {
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED",
+    "evidence": {
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "all_successful_definitions_retired": true,
+      "retained_diagnostics": 3,
+      "no_recursive_data_deletion": true,
+      "synthetic_reports_unchanged": true,
+      "completed_definition_count": 0
+    }
+  },
+  {
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only",
+    "status": "PASSED",
+    "evidence": {
+      "environment_count": 1,
+      "native_window_present_ms": 2843.5403,
+      "performance_exit_gate_claimed": false,
+      "inspector_enabled": false,
+      "startup_interactive_upper_bound_ms": 3263.2249
+    }
+  },
+  {
+    "id": "T32",
+    "name": "actual_normal_webview_environment_navigation",
+    "status": "PASSED",
+    "evidence": {
+      "mock_state": false,
+      "ten_owned_environments": false,
+      "real_backend": true,
+      "normal_production_binary": true
+    }
+  },
+  {
+    "code": "P09_UI_ACTION_DISABLED",
+    "id": "T32",
+    "line": 50,
+    "ui_stage": "RENAME",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "status": "FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException"
+  }
+]

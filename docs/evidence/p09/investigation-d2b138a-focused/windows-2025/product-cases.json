@@ -1,0 +1,24 @@
+[
+  {
+    "evidence": {
+      "completed_definition_count": 0,
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "retained_diagnostics": 20,
+      "no_recursive_data_deletion": true,
+      "all_successful_definitions_retired": true,
+      "synthetic_reports_unchanged": true
+    },
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED",
+    "id": "T32"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_WATCHER_NOT_READY",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "line": 5,
+    "name": "normal_manager_startup_diagnostic_only",
+    "id": "T32"
+  }
+]

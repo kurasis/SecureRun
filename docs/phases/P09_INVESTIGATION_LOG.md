@@ -935,3 +935,13 @@ NotImplementedException/NotSupportedException, repeating owner and birth checks
 immediately before posting. Other failures remain refusals and the window must
 actually become invisible. No new process identity, permission, termination,
 application selection or OS-default change is accepted.
+
+### Collapse owned Settings lists after selecting display values
+
+The display controller expanded the resolution and scaling comboboxes and used
+SelectionItem.Select without explicitly collapsing either list. Selection alone
+does not guarantee that a popup closes. The controller now reacquires each
+combobox by its existing fixed automation ID, collapses it and verifies Collapsed
+before minimizing Settings. This is an ordinary action on the already owned
+Settings control and adds no window/process permission. Windows must confirm
+whether the outstanding PickerHost surfaces and physical input are corrected.

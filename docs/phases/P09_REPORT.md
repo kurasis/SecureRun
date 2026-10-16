@@ -75,7 +75,10 @@ lists include the current tools.
 | Fresh full `f9a9755` | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449): unchanged exact source on a fresh matrix, pending. |
 | P03 exact-source regression | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430): both native targets and portable job passed; each native target passed 19 foundation/4 app/3 frontend/32 command cases. Formal original evidence retained. |
 | P04 exact-source regression | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564): both targets passed 61 adapter tests and 19 native observation/trust cases; original formal evidence retained. |
-| P05–P08 exact-source regressions | Running at the same immutable candidate; final matching success remains required |
+| P05 exact-source regression | [38893332061](https://github.com/kurasis/SecureRun/actions/runs/38893332061): Each target passed 61 adapter tests and 45 applicable native policy/provisioning cases, with zero failures. T52 is explicitly not applicable because the product has no elevation/helper route; OS-current-user profile authority remains mandatory. Formal original evidence retained. |
+| P06 exact-source regression | [38893334893](https://github.com/kurasis/SecureRun/actions/runs/38893334893): Server passed 21 and ARM passed 22 actual launch/control cases, with zero failures. Matching regressions include actual x86 and emulated x64 targets; normal release fault features remain disabled. Formal original evidence retained. |
+| P07 exact-source regression | [38893338017](https://github.com/kurasis/SecureRun/actions/runs/38893338017): Server passed 28 and ARM passed 29 actual safe-file/boxed-EXE cases, with zero failures or actor failures. Normal/fault binary provenance and staged executable hashes are retained. Formal original evidence retained. |
+| P08 exact-source regression | [38893340716](https://github.com/kurasis/SecureRun/actions/runs/38893340716): Both targets passed all 38 actual lifecycle/recovery cases, with zero failures or actor failures. This includes interruption, native confirmation, generation, stale-root and unsafe-hook refusal checks. Formal original evidence retained. |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
 the real native picker and observed the actual imported file. Server also passed
@@ -181,11 +184,13 @@ GitHub authentication recovered after temporary expiry; publication is working.
 
 ## Remaining exit gate
 
-Complete actual export/collision/archive/reset and every application/accessibility
-case on both targets at the final source. Freeze that source, execute P03–P08 on
-the same commit, retain evidence in dependency order and complete the full P09
-retainer. Then update the final reports/status and perform ordinary validated
-merge. No protected source list is reduced to reuse stale results.
+All six P03–P08 regressions now passed and are formally retained on the exact
+candidate `f9a9755`. Server passed every full P09 target check. Complete the fresh
+full P09 matrix on both targets, including ARM's ten-environment reference sample
+and every mandatory workflow, then retain P09 against those matching dependency
+manifests. Historical ARM manager-workflow success cannot replace that complete
+final-source run. Final reports/status and ordinary validated merge follow. No
+protected source list is reduced to reuse stale results.
 
 Commands used include `python tools/lab/validate_repository.py`,
 `python -m unittest discover -s tests -q`, `npm run check`, `npm test`,

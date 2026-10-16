@@ -1,5 +1,16 @@
 # P06 — Isolated launch and scoped process control
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893334893](https://github.com/kurasis/SecureRun/actions/runs/38893334893).
+Server passed 21 and ARM passed 22 actual launch/control cases, with zero failures. Matching regressions include actual x86 and emulated x64 targets; normal release fault features remain disabled.
+All earlier dependencies passed on the same source. The
+[manifest](../evidence/p06/manifest.json) binds original reports and every
+protected source, including current lab tools. This closes P06 only;
+complete matching full P09 proof remains pending. The sections below preserve
+the original completion and historical regressions.
+
+
 Status: DONE.
 Specification: 1.3. Original requested scope: complete P06.
 The sections below record the historical P06 completion; the current P07

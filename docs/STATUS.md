@@ -8,17 +8,18 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
 | P03 | DONE — matching P09 regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | DONE — matching P09 regression passed | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | BLOCKED — final P09 runtime regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | BLOCKED — final P09 runtime regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | BLOCKED — P09 regression pending | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | BLOCKED — P09 regression pending | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P05 | DONE — matching P09 regression passed | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | DONE — matching P09 regression passed | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | DONE — matching P09 regression passed | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | DONE — matching P09 regression passed | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
 Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
 [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Fresh full run [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449)
-is pending. P09 remains IN_PROGRESS; P03 and P04 passed at this exact source; matching P05–P08 regressions are running.
+is pending. P09 remains IN_PROGRESS; All matching P03–P08 regressions passed at this exact source and their formal
+source-bound evidence is retained. Full P09 still requires the ARM target.
 
 First full `f9a9755` ARM attempt 38891751077 refused environment eight with
 DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault; no full sample
@@ -56,10 +57,10 @@ investigations remain historical and never count as successful phase proof.
 |---|---|---|
 | P03 | [38763953821](https://github.com/kurasis/SecureRun/actions/runs/38763953821) | 19 foundation, 2 normal native, 3 UI and 29 actual command-boundary cases passed |
 | P04 | [38763957687](https://github.com/kurasis/SecureRun/actions/runs/38763957687) | 48 adapter tests and 19 native observation cases passed |
-| P05 | [38763825315](https://github.com/kurasis/SecureRun/actions/runs/38763825315) | 48 adapter tests and 45 applicable native cases passed; one absent different-admin UAC route is Not applicable |
-| P06 | [38763961970](https://github.com/kurasis/SecureRun/actions/runs/38763961970) | 21 Server / 22 ARM launch/control cases passed; zero failures |
-| P07 | [38763966380](https://github.com/kurasis/SecureRun/actions/runs/38763966380) | 28 Server / 29 ARM file/boxed-EXE cases passed; zero failures or actor failures |
-| P08 | [38763860037](https://github.com/kurasis/SecureRun/actions/runs/38763860037) | 38/38 native lifecycle and recovery cases passed on each target; zero failures or actor failures |
+| P05 | DONE — matching P09 regression passed | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | DONE — matching P09 regression passed | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | DONE — matching P09 regression passed | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | DONE — matching P09 regression passed | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
 
 Laboratories: Windows Server 2025 x64, build 26100, with actual x64/x86 target PEs;
 Windows 11 ARM64, build 26200, with ARM64 and emulated x86/x64 target PEs.

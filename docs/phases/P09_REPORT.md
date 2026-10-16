@@ -762,3 +762,22 @@ product windows and never changes application defaults or terminates processes.
 The product receives no event names. PowerShell parsing, fixture compilation,
 JavaScript syntax, the repository validator and all 18 tooling tests passed;
 actual Windows execution remains required.
+
+### Save completion and native browser interaction diagnostics
+
+The cancelled `cf6edad` Server diagnostic completed the Notepad++ native Save As
+field/button interaction, but the output was not observed after the fixed
+500 ms delay. The fixture now waits up to 30 seconds for the exact boxed output
+before stopping the editor; byte equality and unchanged host input/output remain
+mandatory. Browser navigation uses owned-window Windows SendKeys with a verified
+synthetic URI clipboard paste and clears the clipboard afterwards. The helper
+records only expected-title booleans, not browser text. The about:support text
+parser accepts Mozilla's actual “Effective Content Process Sandbox Level” label;
+a positive observed level is still required. File UI failures now distinguish a
+missing canary, missing escaped direction marker and missing full suffix without
+recording filenames. These changes require actual Windows confirmation.
+
+All six `cf6edad` P03–P08 regressions passed on both targets. Their reviewed raw
+JSON is retained as historical exact-commit evidence; newer P09 fixture changes
+require final matching-source validation. The unsuccessful `ec2a16b` full run and
+cancelled `cf6edad` partial runs are also retained without a completion claim.

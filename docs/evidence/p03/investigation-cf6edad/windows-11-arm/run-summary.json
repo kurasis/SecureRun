@@ -1,0 +1,17 @@
+{
+  "target": "aarch64-pc-windows-msvc",
+  "phase": "P03",
+  "teardown": "DISCARD_ACTIONS_VM",
+  "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+  "os_build": "10.0.26200.0",
+  "normal_native_tests_passed": 3,
+  "os_security_settings_modified": false,
+  "windows_command_cases_passed": 32,
+  "foundation_tests_passed": 19,
+  "result": "PASSED",
+  "node_version": "v24.19.0",
+  "pe_machine": "aa64",
+  "frontend_tests_passed": 3,
+  "engine_operations_executed": 0,
+  "manager_commit": "cf6edad614cdfb5160cf223108e7eeaf2376c9c6"
+}

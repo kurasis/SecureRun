@@ -193,18 +193,25 @@ function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
 }
 function Browser-Key([int]$id,[int]$key,[int]$modifier=0){
  $rootWindow=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
- Need ([P09Access]::OwnedWindow($rootWindow,$id));Need ([P09Access]::Chord($rootWindow,$id,[uint16]$key,[uint16]$modifier))
+ Need ([P09Access]::OwnedWindow($rootWindow,$id))
+ $prefix=switch($modifier){0{''};17{'^'};default{throw 'P09_BROWSER_KEY_UNSUPPORTED'}}
+ $value=switch($key){9{'{TAB}'};13{'{ENTER}'};65{'a'};67{'c'};76{'l'};86{'v'};default{throw 'P09_BROWSER_KEY_UNSUPPORTED'}}
+ [Windows.Forms.SendKeys]::SendWait($prefix+$value)
 }
 function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
- Focus-OwnedWindow $hwnd $id;Browser-Key $id 76 17;Start-Sleep -Milliseconds 200
- Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 13
- $result.native_keyboard_delivery_checked=$true
+ Need ($address -in @('about:blank','about:support') -or $address -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/(?:main|protocol)/[0-9a-f-]{36}$')
+ Focus-OwnedWindow $hwnd $id
+ try{
+  [Windows.Forms.Clipboard]::SetText($address);Need ([Windows.Forms.Clipboard]::GetText() -ceq $address)
+  Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Browser-Key $id 86 17;Start-Sleep -Milliseconds 200;Browser-Key $id 13
+ }finally{[Windows.Forms.Clipboard]::Clear()}
+ $result.native_keyboard_delivery_checked=$true;$result.navigation_input='OWNED_WINDOW_SENDKEYS_SYNTHETIC_URI_PASTE'
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
  Browser-Address $root $hwnd $id 'about:blank';$clock=[Diagnostics.Stopwatch]::StartNew()
  do{if(-not $root.Current.Name.Contains($title)){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
- Need (-not $root.Current.Name.Contains($title));Browser-Address $root $hwnd $id $address;$clock.Restart()
- do{if($root.Current.Name.Contains($title)){return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)
+ $result.blank_document_title_changed=(-not $root.Current.Name.Contains($title));Need $result.blank_document_title_changed;Browser-Address $root $hwnd $id $address;$clock.Restart()
+ do{if($root.Current.Name.Contains($title)){$result.requested_document_title_observed=$true;return};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)
  Need $false
 }
 function Activate-CanaryLink($root,[IntPtr]$hwnd,[int]$id,[string]$name){
@@ -374,7 +381,7 @@ try{
     do{
      $text=[Windows.Forms.Clipboard]::GetText();Need ($text.Length -le 2097152)
      if($text.StartsWith('{')){$data=$text|ConvertFrom-Json;Need ($null -ne $data.sandbox -and $null -ne $data.sandbox.PSObject.Properties['effectiveContentSandboxLevel']);$level=[int]$data.sandbox.effectiveContentSandboxLevel;break}
-     elseif($text -match '(?im)^\s*Effective Content Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];break}
+     elseif($text -match '(?im)^\s*Effective Content (?:Process )?Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];break}
      Start-Sleep -Milliseconds 100
     }while($clock.ElapsedMilliseconds -lt 10000)
     Need ($level -gt 0);$result.effective_content_sandbox_level=$level;$result.browser_own_sandbox_enabled=$true;$result.real_about_support=$true

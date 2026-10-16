@@ -263,7 +263,11 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash
   $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps $editor
-  $access=Access 'EDITOR' $pidValue $outputFile -Box ('SR_'+$apps.id.Replace('-',''));Start-Sleep -Milliseconds 500;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
+  $access=Access 'EDITOR' $pidValue $outputFile -Box ('SR_'+$apps.id.Replace('-',''))
+  $saveClock=[Diagnostics.Stopwatch]::StartNew();$savedCandidates=@()
+  do{$savedCandidates=@(Get-ChildItem -LiteralPath $apps.compiled.section.FileRootPath[0] -Recurse -File -Filter 'editor-output.txt');if($savedCandidates.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($saveClock.ElapsedMilliseconds -lt 30000)
+  @{output_count=$savedCandidates.Count;wait_ms=$saveClock.ElapsedMilliseconds;host_output_present=(Test-Path -LiteralPath $outputFile);real_native_picker_completed=($access.status -eq 'PASSED')}|ConvertTo-Json|Set-Content (Join-Path $results 'editor-save-observation.json') -Encoding utf8
+  Require ($savedCandidates.Count -eq 1) 'P09_EDITOR_SAVE_NOT_OBSERVED';Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
   $saved=Find-BoxFile $apps 'editor-output.txt';Require (([IO.File]::ReadAllText($saved.FullName)).Trim() -ceq 'P09_EDITOR_CANARY') 'P09_EDITOR_BYTES_DIFFER';Require (-not(Test-Path -LiteralPath $outputFile) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $before) 'P09_EDITOR_CHANGED_HOST'
   @{official_executable=$true;real_gui_editor=$true;actual_keyboard_edit_and_save=$access.real_keyboard_edit;original_driver_member_observed=$true;boxed_saved_bytes_verified=$true;host_input_unchanged=$true;host_output_absent=$true;clean_portable_profile=$true;plugins_and_host_update_integrations_outside_validated_workflow=$true}
  }

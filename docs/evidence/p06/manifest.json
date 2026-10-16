@@ -1074,6 +1074,96 @@
       "path": "investigation-ec2a16b/windows-11-arm/control-cases.json",
       "sha256": "9298b849dcf5543df834e84b1af9604faa978688ae5f41f86a276b71b4152a73",
       "size": 7222
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/control-cases.json",
+      "size": 7222,
+      "sha256": "faec5c21b9720f604d423e02a1eb40dfacbc758adf7efa8c7484d5fac9f9018b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/driver-unload.json",
+      "size": 120,
+      "sha256": "e54d55ce70f122807dc1b94ea22111d5fe4cd449bffe946c8592b98d41497645"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/run-summary.json",
+      "size": 536,
+      "sha256": "64358b7e34d7f89e2ef43f2011bbf2e86c2db84bd5e2711fed29307f010db999"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "16ee74583e0c88bd2932043299377821fdf4a1368079a916b7d1f6fa79c538a3"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-accepted.json",
+      "size": 489,
+      "sha256": "654f652b00e8f69681eeea407eb157633272166410e3b73ae8e780c8fb10b932"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-normal.json",
+      "size": 5479,
+      "sha256": "726c4886f045e2194fb6936c0e8f3daf189102a0cdeece96ab744d95e5e07538"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-reserved.json",
+      "size": 489,
+      "sha256": "d518fb4763aca64bc961ad4a8edfa4668ddfb939bd2c2d15d36ffcc67c1f8f17"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-scope.json",
+      "size": 913,
+      "sha256": "a81f794bf0f91cfc2dbfebff617a23374fd31916348d6a47cdb4b6a8df0bf60b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-sessions.json",
+      "size": 549,
+      "sha256": "62b73cba7203d07b1ae4b052a3cbb92200771c23724e092f42eb587519dd57a1"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/control-cases.json",
+      "size": 6908,
+      "sha256": "eee25d74cf69a9e439d6954ed6cced09dadd2fc1ac3d244f9be4c87883292322"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/driver-unload.json",
+      "size": 120,
+      "sha256": "e173749e58c1fef15c77b15b9ca7375a40ef26a0d27fa32c681432bac3814da8"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/run-summary.json",
+      "size": 536,
+      "sha256": "5a8fa043cd1c2d9a4c9f2bf31f3d0bf8c0277970e495f91f6fd58c769b24a04f"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "16ee74583e0c88bd2932043299377821fdf4a1368079a916b7d1f6fa79c538a3"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-accepted.json",
+      "size": 489,
+      "sha256": "cee9024de9adb5fd7380d1a4c9bdc1f4a8c11b1d6eeab96c025454fb408a14b6"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-normal.json",
+      "size": 5141,
+      "sha256": "6074b85cdd31756c8a12de143a5cd78e195f28f88d292903f6fbc2c2d7165ba0"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-reserved.json",
+      "size": 489,
+      "sha256": "b4c0d974880d73b85a70dc573f10d7f4b68cd62105b3fa2915d30a2e18993390"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-scope.json",
+      "size": 913,
+      "sha256": "0dff4b7fa45528e2bec301c9dbadd889a34f6820adcd5a11ecfc55003d2ff37c"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-sessions.json",
+      "size": 549,
+      "sha256": "4a1e70662f7346e57750b3e453751e334ccd38689983515b6a7e43274a475ffa"
     }
   ],
   "tested_sources": [
@@ -1653,6 +1743,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38842220204",
       "result": "PASSED",
       "note": "Actual regression passed both Windows targets. P09 lab fixture source subsequently changed; matching final-source phase retention remains pending."
+    },
+    {
+      "tested_commit": "cf6edad614cdfb5160cf223108e7eeaf2376c9c6",
+      "run_id": 38846702204,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38846702204",
+      "result": "PASSED",
+      "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
     }
   ]
 }

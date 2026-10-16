@@ -768,6 +768,46 @@
       "path": "completion-ec2a16b/windows-11-arm/run-summary.json",
       "sha256": "1cc04b28b2ce8c1d5f5464e1b36cfcb9b455dd6cbb3ef0392aee2c7de17127fc",
       "size": 553
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/acl-manifests.json",
+      "size": 73527,
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/capabilities.json",
+      "size": 760,
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/command-boundary.json",
+      "size": 3732,
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/run-summary.json",
+      "size": 553,
+      "sha256": "d68583f89cb41116b7722abaa9c38883e72b86e5958e11b23758b04914978d1e"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/acl-manifests.json",
+      "size": 73527,
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/capabilities.json",
+      "size": 760,
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/command-boundary.json",
+      "size": 3732,
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/run-summary.json",
+      "size": 552,
+      "sha256": "490725462b52123aa2079e7d52468d758363e73a690e9866d9ee3240d470c381"
     }
   ],
   "tested_sources": [
@@ -1256,6 +1296,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38811673054",
       "result": "BLOCKED",
       "note": "Historical matching observer proof retained; a bounded natural-completion wait adjustment requires a fresh exact-source regression."
+    },
+    {
+      "tested_commit": "cf6edad614cdfb5160cf223108e7eeaf2376c9c6",
+      "run_id": 38846696355,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38846696355",
+      "result": "PASSED",
+      "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
     }
   ],
   "production_acceptance_scenarios_passed": 0,

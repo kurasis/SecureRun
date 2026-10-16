@@ -704,6 +704,46 @@
       "path": "completion-ec2a16b/windows-11-arm/standard-user.json",
       "sha256": "eb015a1a5377341cf580b74bd8bd66023175fa5ce9923d89d222939322b4b4f5",
       "size": 430
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "2d1612b2dc0828f602c08cd1f21abb116725dd0c2cbef3456cca637b6acd9f20"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "7430f17795b2c33761ccd325cd87296efcf5ea5a3ce3b9a44ac6993213ae7b73"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "28e26349b2a5b9f1df08b1c4b0a1463e9a9ca14564b10a220f5d2ab567f8e767"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "b31f5a57a9cb31ebc7be68c7af97e566fec5e6af95c8dd7d7de45abee59950ba"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "d9cb09f5226265fa208fcfd5ae52dce18cf763a2967c778feb53eedde3daa536"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "dd6a57f07aa977cdbbf9090561213d1b7aa6b2f11455ed959a9705e474e93de9"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "28e26349b2a5b9f1df08b1c4b0a1463e9a9ca14564b10a220f5d2ab567f8e767"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "036a43d0bc54e6751ab10d72aa7b2e21b3d4358eb39ca37836b808697a12299c"
     }
   ],
   "tested_sources": [
@@ -1009,5 +1049,14 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.",
+  "historical_runs": [
+    {
+      "tested_commit": "cf6edad614cdfb5160cf223108e7eeaf2376c9c6",
+      "run_id": 38846698162,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38846698162",
+      "result": "PASSED",
+      "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
+    }
+  ]
 }

@@ -115,7 +115,7 @@ public static class P09Access {
   try{
    if(foreground!=0&&foreground!=current)attachedForeground=AttachThreadInput(current,foreground,true);
    if(target!=0&&target!=current&&target!=foreground)attachedTarget=AttachThreadInput(current,target,true);
-   ShowWindow(window,9);BringWindowToTop(window);SetForegroundWindow(window);return ExactForeground(window,expected);
+   BringWindowToTop(window);SetForegroundWindow(window);return ExactForeground(window,expected);
   }finally{if(attachedTarget)AttachThreadInput(current,target,false);if(attachedForeground)AttachThreadInput(current,foreground,false);}
  }
 
@@ -277,7 +277,7 @@ function Request-EnrolledPickerCancellation{
 function Owned-Point($point,[IntPtr]$target,[int]$id){
  $hit=[P09Access]::WindowFromPoint($point)
  if(-not ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target) -and (Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST','WINDOWS_START_MENU')){
-  Request-EnrolledPickerCancellation;$null=[P09Access]::SetForegroundWindow($target);$clock=[Diagnostics.Stopwatch]::StartNew()
+  Request-EnrolledPickerCancellation;$result.owned_activation_accepted=[P09Access]::ActivateOwned($target,$id);$clock=[Diagnostics.Stopwatch]::StartNew()
   do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  }
  Observe-NativePoint $hit $target;$result.native_hit_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.native_packed_point_agrees=($hit -eq [P09Access]::PackedPoint($point))

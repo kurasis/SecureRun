@@ -141,6 +141,7 @@ public static class P09Access {
  [DllImport("user32.dll")]public static extern bool EnumWindows(Visit visit,IntPtr data);
  [DllImport("user32.dll")]public static extern uint GetWindowThreadProcessId(IntPtr hwnd,out uint pid);
  [DllImport("user32.dll")]public static extern bool IsWindowVisible(IntPtr hwnd);
+ [DllImport("user32.dll")]public static extern bool IsWindow(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool IsIconic(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern uint GetDpiForWindow(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool SetForegroundWindow(IntPtr hwnd);
@@ -244,12 +245,13 @@ function Prepare-InitialDesktopPass{
   $result.initial_picker_window_count=$script:initialPickers.Count
   $result.cancelled_window_count=0
   foreach($window in $script:initialPickers){
+   if(-not [P09Access]::IsWindow($window)){continue};$result.preparation_stage='WINDOW_OWNER'
    if(-not [P09Access]::IsWindowVisible($window) -and -not ($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER')){continue}
-   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user;Need ([P09Access]::SameUser([P09Access]::GetAncestor($window,3)))
+   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user;$result.preparation_stage='PROCESS_BIRTH'
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
    Need ($noProductProcesses -or $enrolled)
-   $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -iin @('PickerHost.exe','WWAHost.exe','StartMenuExperienceHost.exe','SearchHost.exe'))
+   $result.preparation_stage='IMAGE_TRUST';$image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -iin @('PickerHost.exe','WWAHost.exe','StartMenuExperienceHost.exe','SearchHost.exe'))
    $windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows);$programs=[Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
    $protected=$image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($programs+'\WindowsApps\',[StringComparison]::OrdinalIgnoreCase)
    Need $protected;$trusted=$false;$signature=Get-AuthenticodeSignature -LiteralPath $image
@@ -258,12 +260,13 @@ function Prepare-InitialDesktopPass{
    $result.authenticated_windows_component=$trusted;Need $trusted;Need ([P09Access]::HitBirthKey($window) -ceq $birthKey)
    if($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER'){$null=$script:enrolledInitialPickers.Add($birthKey)}
    if(-not [P09Access]::IsWindowVisible($window)){continue}
+   $result.preparation_stage='VISIBLE_ROOT_OWNER';Need ([P09Access]::SameUser([P09Access]::GetAncestor($window,3)))
    if([IO.Path]::GetFileName($image) -iin @('StartMenuExperienceHost.exe','SearchHost.exe')){
     Need ([P09Access]::SameUser($window) -and [P09Access]::HitBirthKey($window) -ceq $birthKey);$null=[P09Access]::ShowWindow($window,0);$clock=[Diagnostics.Stopwatch]::StartNew()
     while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50}
     Need (-not [P09Access]::IsWindowVisible($window));$result.close_mechanism='SCOPED_INITIAL_SHELL_WINDOW_HIDE';$result.initial_picker_cancelled=$true;$result.cancelled_window_count++;continue
    }
-   $element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;$closeDispatched=$false
+   $result.preparation_stage='CLOSE_AND_INVISIBILITY';$element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;$closeDispatched=$false
    if($element.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){
     try{$pattern.Close();$closeDispatched=$true;$result.close_mechanism='UIA_WINDOW_CLOSE'}
     catch{$cause=$_.Exception.GetBaseException();if($cause -isnot [NotImplementedException] -and $cause -isnot [NotSupportedException]){throw};$result.uia_close_not_implemented=$true}
@@ -278,7 +281,7 @@ function Prepare-InitialDesktopPass{
   }
   foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
   $result.status='OBSERVED'
- }catch{$result.status='BLOCKED';$result.code='P09_INITIAL_DESKTOP_PREPARATION_FAILED';$kind=$_.FullyQualifiedErrorId.Split(',')[0];$result.error_record_kind=if($kind -cmatch '^[A-Za-z][A-Za-z0-9_.]{0,100}$'){$kind}else{'WITHHELD'}}
+ }catch{$result.status='BLOCKED';$result.code='P09_INITIAL_DESKTOP_PREPARATION_FAILED';$result.failure_line=$_.InvocationInfo.ScriptLineNumber;$kind=$_.FullyQualifiedErrorId.Split(',')[0];$result.error_record_kind=if($kind -cmatch '^[A-Za-z][A-Za-z0-9_.]{0,100}$'){$kind}else{'WITHHELD'}}
  return $result
 }
 function Prepare-InitialDesktop{

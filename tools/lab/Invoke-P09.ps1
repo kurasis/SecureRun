@@ -1,5 +1,6 @@
 ﻿[CmdletBinding()]
-param([switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly)
+param([switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly,[switch]$BrowserOnly)
+if($BrowserOnly){$AppsOnly=$true;$Focused=$true}
 if($LayoutOnly -and $AppsOnly){throw 'P09_DIAGNOSTIC_MODE_CONFLICT'}
 if($LayoutOnly -or $AppsOnly){$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
@@ -19,12 +20,14 @@ try {
  if($LASTEXITCODE -ne 0){throw 'P09_FOUNDATION_UI_TESTS_FAILED'}
  npm run test:product
  if($LASTEXITCODE -ne 0){throw 'P09_PRODUCT_UI_TESTS_FAILED'}
+ if(-not $BrowserOnly){
  $unit=& cargo test --locked 2>&1;$unit|Out-Host
  if($LASTEXITCODE -ne 0){throw 'P09_NATIVE_UNIT_TESTS_FAILED'}
  cargo test --locked -p securerun
  if($LASTEXITCODE -ne 0){throw 'P09_PRODUCT_NATIVE_TESTS_FAILED'}
  cargo clippy --locked -p securerun --all-targets -- -D warnings
  if($LASTEXITCODE -ne 0){throw 'P09_NATIVE_LINT_FAILED'}
+ }
  npm run tauri -- build --no-bundle --target $target
  if($LASTEXITCODE -ne 0){throw 'P09_RELEASE_BUILD_FAILED'}
  $run=[Guid]::NewGuid().ToString('N');$productHome=Join-Path $env:ProgramFiles "SecureRun-P09-$run";$null=New-Item -ItemType Directory -Path $productHome;$app=Join-Path $productHome 'securerun.exe';Copy-Item ("target/$target/release/securerun.exe") $app;$managerHash=(Get-FileHash -LiteralPath $app).Hash.ToLowerInvariant()
@@ -73,6 +76,7 @@ try {
  if($Focused){$start.ArgumentList.Add('-Focused')}
  if($LayoutOnly){$start.ArgumentList.Add('-LayoutOnly')}
  if($AppsOnly){$start.ArgumentList.Add('-AppsOnly')}
+ if($BrowserOnly){$start.ArgumentList.Add('-BrowserOnly')}
  $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.CreateNoWindow=$true;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
  $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP','ProgramFiles','ProgramW6432')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
@@ -107,7 +111,7 @@ try {
   $budgetStatus=(Get-Content (Join-Path $out 'performance-budget-assessment.json') -Raw|ConvertFrom-Json).status
  }
  if(-not $Focused -and $result.status -eq 'PASSED' -and $budgetStatus -eq 'NOT_MEASURED'){throw 'P09_PERFORMANCE_PROOF_MISSING'}
- $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;engineering_budget_status=$budgetStatus;standard_user=$true;real_normal_webview=(-not [bool]$AppsOnly);apps_only=[bool]$AppsOnly;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
+ $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;engineering_budget_status=$budgetStatus;standard_user=$true;real_normal_webview=(-not [bool]$AppsOnly);apps_only=[bool]$AppsOnly;browser_only=[bool]$BrowserOnly;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
  foreach($field in @('native_cases_passed','failed','ui_cases_passed','ui_failed')){$summary[$field]=if($result.PSObject.Properties[$field]){$result.$field}else{-1}}
  $summary|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
  $summary.workload_mode=if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'}

@@ -1,4 +1,5 @@
-﻿param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly)
+﻿param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly,[switch]$BrowserOnly)
+if($BrowserOnly){$AppsOnly=$true;$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Generic.List[object]]::new();$script:lastUi=$null;$script:stage='INITIALIZING';$script:capturesClean=$true;$script:failureCode=$null;$script:browserGuiPid=0;$script:browserReceipt=$null
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
@@ -94,24 +95,29 @@ user_pref("toolkit.telemetry.unified", false);
 user_pref("network.protocol-handler.external.securerun-p09", true);
 '@
  [IO.File]::WriteAllText((Join-Path $hostProfile 'user.js'),$prefs);[IO.File]::WriteAllText((Join-Path $boxedProfile 'user.js'),$prefs)
- $all=@();$environmentCount=if($LayoutOnly){1}elseif($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
+ $all=@();$environmentCount=if($BrowserOnly){1}elseif($LayoutOnly){1}elseif($Focused){4}else{10};$script:stage='SEEDING_REAL_ENVIRONMENTS'
  for($i=1;$i -le $environmentCount;$i++){
   $script:stage=('SEEDING_ENVIRONMENT_{0:00}' -f $i)
-  $grants=@();if($i -eq 3){$grants=@(@{path=$hostProfile;permission='BLOCK'})};$preset=if($i -eq 3){'STANDARD_ONLINE'}else{'STANDARD_OFFLINE'}
+  $grants=@();if($BrowserOnly -or $i -eq 3){$grants=@(@{path=$hostProfile;permission='BLOCK'})};$preset=if($BrowserOnly -or $i -eq 3){'STANDARD_ONLINE'}else{'STANDARD_OFFLINE'}
   $r=Native @{action='CREATE';display_name=('P09 reference {0:00}' -f $i);operation_id=[Guid]::NewGuid().ToString();policy=@{schema=1;preset=$preset;grants=$grants}}
   $e=@($r.environments|Where-Object display_name -eq ('P09 reference {0:00}' -f $i))[0];Require ($e.stage -eq 'VERIFIED') 'P09_VERIFIED_SEED_REQUIRED';$all+=,$e;$lab.Register(('SR_'+$e.id.Replace('-','')))
  }
- $script:stage='SEEDING_COMPLETE';$current=Native @{action='LIST'};$all=@($current.environments|Sort-Object display_name);$first=$all[0];$apps=$all[[Math]::Min(1,$all.Count-1)];$web=$all[[Math]::Min(2,$all.Count-1)];$seed=Join-Path $Fixture 'seed.txt';[IO.File]::WriteAllText($seed,'P09_SYNTHETIC_SEED');$null=Native @{action='IMPORT';environment_id=$first.id;expected_revision=$first.revision;operation_id=[Guid]::NewGuid().ToString();source=$seed;name='file-00000.txt'} 'files'
+ $script:stage='SEEDING_COMPLETE';$current=Native @{action='LIST'};$all=@($current.environments|Sort-Object display_name);$first=$all[0];$apps=$all[[Math]::Min(1,$all.Count-1)];$web=$all[[Math]::Min(2,$all.Count-1)]
+ if(-not $BrowserOnly){
+ $seed=Join-Path $Fixture 'seed.txt';[IO.File]::WriteAllText($seed,'P09_SYNTHETIC_SEED');$null=Native @{action='IMPORT';environment_id=$first.id;expected_revision=$first.revision;operation_id=[Guid]::NewGuid().ToString();source=$seed;name='file-00000.txt'} 'files'
  $workspace=(Find-BoxFile $first 'file-00000.txt').DirectoryName
  for($i=1;$i -lt 9999;$i++){[IO.File]::WriteAllText((Join-Path $workspace ('file-{0:00000}.txt' -f $i)),'x')};[IO.File]::WriteAllText((Join-Path $workspace ("00000-report"+[char]0x202e+'fdp.exe')),'INERT_FILENAME_ONLY')
  Require (@(Get-ChildItem -LiteralPath $workspace -File).Count -eq 10000) 'P09_TEN_THOUSAND_FILE_FIXTURE_FAILED'
+ }
  [IO.File]::WriteAllText((Join-Path $Fixture 'policy-resource.txt'),'P09_POLICY_RESOURCE')
+ if(-not $BrowserOnly){
  Case 'T32' 'completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence' {
   $metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';$records=@(Get-ChildItem -LiteralPath $metadata -Filter 'diagnostic-*.json' -File);$retired=@(Get-ChildItem -LiteralPath $metadata -Filter 'probe-retired-*.json' -File)
   Require ($records.Count -gt $(if($Focused){0}else{64}) -and $records.Count -le 256 -and $retired.Count -eq $records.Count) 'P09_DIAGNOSTIC_RETENTION_INCOMPLETE'
   foreach($record in $retired){$proof=Get-Content -LiteralPath $record.FullName -Raw|ConvertFrom-Json;Require ($proof.completed -and $proof.definition_removed -and $proof.root_data_retained -and $proof.synthetic_report_unchanged) 'P09_DIAGNOSTIC_RETIREMENT_PROOF_INVALID'}
   foreach($record in $records){$scope=Get-Content -LiteralPath $record.FullName -Raw|ConvertFrom-Json -Depth 20;Require ($null -eq $lab.Read(('SR_'+$scope.id.Replace('-','')),'Enabled',0x70000000)) 'P09_COMPLETED_DIAGNOSTIC_DEFINITION_REMAINS';Require (Test-Path -LiteralPath $scope.compiled.section.FileRootPath[0] -PathType Container) 'P09_DIAGNOSTIC_DATA_REMOVED'}
   @{retained_diagnostics=$records.Count;retention_limit=256;completed_definition_count=0;all_successful_definitions_retired=$true;root_data_retained=$true;synthetic_reports_unchanged=$true;no_recursive_data_deletion=$true}
+ }
  }
  if(-not $Focused){
  Case 'T32' 'ten_real_idle_environments_and_populated_box' { $r=Native @{action='LIST'} 'control';Require (@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0) 'P09_IDLE_SEED_SCOPE_INCOMPLETE';@{actual_environments=$all.Count;actual_files=10000;all_idle=(@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0);synthetic_only=$true} }
@@ -272,6 +278,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   Require $script:capturesClean 'P09_SECRET_IN_NATIVE_CAPTURE';@{persistent_history_present=$true;local_history_and_wal_scanned=$true;normal_manager_stderr_scanned=$true;inspected_manager_stderr_scanned=$true;native_worker_error_capture_scanned=$true;utf8_and_utf16_scanned=$true;argv_environment_error_canaries_absent=$true;untrusted_text_cannot_add_event_fields=$true}
  }
  }
+ if(-not $BrowserOnly){
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash
   $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps $editor
@@ -296,6 +303,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   @{official_gui_observed_boxed=$true;gui_operation_executable_sha256=(Get-FileHash -LiteralPath $archiveGui).Hash.ToLowerInvariant();actual_gui_create_and_extract=$true;actual_archive_created=$true;actual_archive_extracted=$true;round_trip_sha256_matches=$true;host_input_unchanged=$true;host_zip_and_extraction_absent=$true;engine_hooks_or_security_exceptions_added=$false}
  }
  Stop-Box $apps
+ }
  Case 'T41' 'official_browser_existing_host_instance_no_url_or_cookie_handoff' {
   $nonce=[Guid]::NewGuid().ToString();$script:browserProof=[P09Browser]::new($EngineHome,('SR_'+$web.id.Replace('-','')),$nonce)
   $script:hostBrowser=[P09Desktop]::new($browser,$EngineHome,(Join-Path $Fixture 'host-browser.log'),0,[string[]]@('-no-remote','-profile',$hostProfile,('http://127.0.0.1:'+$browserProof.Port+'/host/'+$nonce)))
@@ -332,6 +340,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  }
  if($null -ne $browserProof){$browserProof.Snapshot()|ConvertTo-Json -Depth 8|Set-Content (Join-Path $results 'browser-http-attribution.json') -Encoding utf8}
  Stop-Box $web
+ if(-not $BrowserOnly){
  Case 'T32' 'launch_overhead_observed_against_same_fixed_original_dispatch' {
   $box='SR_'+$apps.id.Replace('-','');$lab.Register($box);$clock=[Diagnostics.Stopwatch]::StartNew();$direct=$lab.HoldProductionProbe($box);$directMs=$clock.Elapsed.TotalMilliseconds
   try{Require ($lab.HeldMemberAlive($direct,$box)) 'P09_DIRECT_BASELINE_NOT_BOXED'}finally{[P05Lab]::Stop($direct);$lab.FenceFixture($box)}
@@ -339,8 +348,9 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   $measurement=@{same_fixed_benign_probe=$true;original_dispatch_ms=$directMs;production_manager_dispatch_ms=$managedMs;manager_added_upper_bound_ms=[Math]::Max(0,$managedMs-$directMs);target_startup_included_in_both=$true;target_met=($managedMs-$directMs -lt 1000);no_required_check_removed=$true}
   $measurement|ConvertTo-Json|Set-Content (Join-Path $results 'launch-performance.json') -Encoding utf8;$measurement
  }
+ }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count
- @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});apps_only=[bool]$AppsOnly;normal_gui_manager_exercised=(-not [bool]$AppsOnly);standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
+ @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});apps_only=[bool]$AppsOnly;browser_only=[bool]$BrowserOnly;normal_gui_manager_exercised=(-not [bool]$AppsOnly);standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
  Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1}
 }catch{
  @{status='FAILED';standard_user=$true;stage=$script:stage;code=$(if($script:failureCode){$script:failureCode}else{'P09_ACTOR_FAILED'});exception_type=$_.Exception.GetBaseException().GetType().FullName;line=$_.InvocationInfo.ScriptLineNumber;manager_commit=$Commit}|ConvertTo-Json|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8;Save;exit 1

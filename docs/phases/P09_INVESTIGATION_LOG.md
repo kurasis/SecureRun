@@ -1322,3 +1322,24 @@ its secret-isolation case was still IN_PROGRESS. It supplies no Save, transfer,
 confirmation or lifecycle success for that attempt. Its original partial JSON is
 retained separately from ARM's completed diagnostic result. Both require the
 fresh full-source gate; cancellation is never counted as a pass.
+
+
+## Full 0071e2c: ARM completes the entire manager workflow
+
+Run 38887959409 completed ten environments/10000 files/60-second complete-job
+measurement on both targets. ARM positively passed actual transfer SHA-256,
+collision rename, all three scoped native confirmations, backend lifecycle/
+generation, empty reset root and unchanged host data: 101 UI assertions passed.
+Its separate archive GUI case timed out; browser welcome then hit an unidentified
+foreign window. No cause or authority to act on that unknown owner is inferred.
+The current fixture records archive create/extract outcomes separately, including
+current typed failure before rethrowing, preserving the original 45-second wait.
+Server passed 21 native cases and 99 UI assertions, including actual Archive;
+its next confirmation was not observed. The fixture used button.disabled, ignoring
+disabled ancestor fieldsets while the manager reacquired fresh state after native
+focus. It now waits for actual :disabled availability and both expected actions,
+then uses the unchanged native UUID/retention/owner/button and closure guards.
+Exact confirmation title selection and separate found/title flags improve failure
+attribution. All 680 original reviewed JSON files are retained. Queued diagnostic
+38887959182 was cancelled as a duplicate of the already-running full matrix; no
+mandatory full coverage was removed. Fresh full `f9a9755` is 38891751077.

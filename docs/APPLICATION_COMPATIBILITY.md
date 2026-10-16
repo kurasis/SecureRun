@@ -17,8 +17,15 @@ and on ARM in focused run 38885566833 (`217f550`), including actual editor save,
 archive round trip and all four browser cases. ARM also passed real import/export
 and collision rename. Its remaining native Archive confirmation failure belongs
 to the manager lifecycle workflow, not the archive application. Complete matching
-full-source proof at `0071e2c` is still mandatory; constituent runs are not combined
+full-source proof at `f9a9755` is still mandatory; constituent runs are not combined
 to close the formal gate.
+
+Full `0071e2c` later passed all 101 manager UI assertions and the complete real
+transfer/lifecycle chain on ARM, but its archive GUI exit timed out and browser
+welcome hit an unidentified foreign surface. Those are mandatory failures; the
+unknown owner is not hidden or exempted. Fresh complete matching proof remains
+required. The fixture now preserves create/extract outcomes separately without
+changing the original held-process wait or output/hash checks.
 
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated

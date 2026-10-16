@@ -15,7 +15,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `0071e2c00ccdd1260d945251f5f14fbac405efd1`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
 prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
 at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and
@@ -40,6 +40,15 @@ First full `217f550` ARM attempt refused environment four with an unassociated
 WerFault and has no full sample; its remaining Server job and fresh retry
 38887488001 were cancelled as superseded by the confirmation correction. No
 reporter is killed, trusted or exempted. No final gate is closed.
+Full `0071e2c` run 38887959409 completed reference measurements on both targets.
+ARM passed the complete real transfer/Archive/Unarchive/Reset chain and all 101 UI
+assertions, then archive exit and browser point ownership failed. Server passed
+99 UI assertions and Archive, but the next confirmation was not observed. The
+fixture now respects inherited fieldset availability and records archive create/
+extract failures separately without changing the wait or containment requirements.
+Current full run 38891751077 uses `f9a9755`. Queued focused 38887959182 was cancelled
+as a duplicate after the full matrix started; full mandatory coverage is retained.
+No final gate is closed.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

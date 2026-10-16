@@ -4,7 +4,7 @@ Status: IN_PROGRESS. The [P09 manifest](../evidence/p09/manifest.json) is BLOCKE
 Requested scope is full P09 only; P10–P12 remain NOT_STARTED. Final installed
 T01–T66 acceptance is reserved for P12 and remains unrun.
 
-Current runtime/lab candidate: `0071e2c00ccdd1260d945251f5f14fbac405efd1`.
+Current runtime/lab candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
 Documentation-only descendants do not replace the tested source. The implementation
 and reviewed evidence are published in [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 
@@ -70,7 +70,8 @@ lists include the current tools.
 | Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
 | First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
 | Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; superseded Server cancelled after 88 UI assertions before transfers. |
-| Current full/focused `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409) / [38887959182](https://github.com/kurasis/SecureRun/actions/runs/38887959182): results pending |
+| Full `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409): both completed reference measurements. Server 21 native/99 UI passed; next confirmation not observed. ARM completed the real transfer/lifecycle chain and all 101 UI assertions, but archive exit timed out and browser welcome hit an unidentified foreign surface. |
+| Current full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): pending. Queued diagnostic 38887959182 was cancelled as a duplicate; the full run includes all mandatory UI/native/workload cases. |
 | Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
@@ -117,9 +118,29 @@ failure required a fixture correction. The pin is superseded and cannot close a
 gate. Current full/focused runs use `0071e2c`; final matching P03–P08 regressions
 remain required.
 
+Full `0071e2c` positively completed import/export SHA-256, collision rename,
+Archive/Unarchive/Reset with native UUID/retention confirmation, generation change,
+empty reset root and unchanged host data on ARM. All 101 UI assertions passed.
+Server passed 99 assertions and actual Archive, but the next native confirmation
+was not observed. Its fixture checked button.disabled, which does not include an
+ancestor disabled fieldset. It now waits on actual :disabled state for both click
+and completion, requiring both expected lifecycle actions to exist. Confirmation
+lookup accepts only the exact known title and records separate found/title flags.
+This fixes a definite fixture predicate defect; fresh results must establish the
+complete Server workflow.
+
+ARM's separate official archive case timed out, then browser welcome encountered
+an unidentified foreign window at the physical point. The archive's saved exit
+record belonged to its earlier successful step; the current fixture records
+create/extract separately and saves the current typed failure before rethrowing.
+Its 45-second held-process wait, actual output/hash requirements and browser point
+ownership guards remain unchanged. No cause is inferred for the unknown owner,
+no unknown window is hidden and no new process exception is accepted. All 680
+original reviewed JSON files from the failed full matrix are retained.
+
 ## Measured budgets and remaining risks
 
-Both full `aa5b8f5` runs completed ten actual idle environments, 10,000 files and
+Both full `aa5b8f5` and `0071e2c` matrices completed ten actual idle environments, 10,000 files and
 more than 60 seconds of complete kernel-job CPU accounting, including exited
 workers/WebViews. Targets remain unchanged.
 
@@ -127,6 +148,8 @@ workers/WebViews. Targets remain unchanged.
 |---|---:|---:|---:|
 | Server x64 | 4008.2433 — deviation | 1.2475397684 — deviation | 230728418 — met |
 | Windows 11 ARM64 | 2872.8287 — met | 1.2869004001 — deviation | 239241041 — met |
+| Server x64, `0071e2c` | 5848.2869 — deviation | 0.7398902124 — met | 230532884 — met |
+| Windows 11 ARM64, `0071e2c` | 2411.0373 — met | 1.2273387172 — deviation | 244125310 — met |
 
 Slower startup delays interactive controls. Higher idle CPU can increase power use.
 These are measured deviations under specification acceptance gate 7; they do not

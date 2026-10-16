@@ -894,3 +894,32 @@ It is always DIAGNOSTIC_ONLY, records that the normal manager WebView was not
 exercised, and cannot satisfy the full P09 retainer. The default full workload
 and every mandatory full case remain unchanged. This reduces iteration time for
 remaining native app input work while the complete gate runs independently.
+
+### Browser document focus and Windows accessibility provider
+
+The f9b719d Server diagnostic passed the complete native Notepad++ save workflow:
+exact boxed output was present within 5 ms, expected bytes matched and host data
+remained unchanged. Browser request history still contained only the initial
+boxed main request, so a successful SendKeys call was not navigation proof.
+The helper now verifies a neutral native click inside the known canary document
+and actual focus before addressing the browser. It uses the real owned Windows
+UI Automation address field when available, with exact value readback and native
+Enter, and retains the native keyboard fallback. All expected-page, actual HTTP,
+held process/original-driver attribution and handler/output checks remain.
+
+Disposable Firefox host/boxed profiles explicitly enable the accessibility
+provider with `accessibility.force_disabled=-1`. Mozilla documents -1 as force
+enable, 0 as on-request and 1 as disabled in
+[nsAccessibilityService.cpp](https://github.com/mozilla-firefox/firefox/blob/main/accessible/base/nsAccessibilityService.cpp).
+This is an accessibility preference, not a content sandbox exception. The real
+about:support effective sandbox level must still be positive. Its owned Windows
+TextPattern can supply the rendered level directly; only that number and source
+kind are retained, and raw support content is never saved.
+
+Native target/modal window discovery now uses the bounded z-order enumeration
+and the existing native root-owner predicate, and recognizes the exact expected
+picker title as well as the classic dialog class. This supports owned modal
+windows without assuming every native picker is enumerated as a classic desktop
+window. Tauri IPC remains protected and unchanged. The missing picker diagnostic
+records only rendered typed errors and a form-presence flag; no raw native
+arguments, selections, URLs or exceptions are exported.

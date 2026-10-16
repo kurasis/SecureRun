@@ -23,7 +23,7 @@ public static class P09Access {
  [StructLayout(LayoutKind.Sequential)]struct Input{public uint Type;public InputData Data;}
  [DllImport("user32.dll",SetLastError=true)]static extern uint SendInput(uint count,Input[] input,int size);
  [DllImport("user32.dll")]static extern uint MapVirtualKey(uint code,uint kind);
- static bool ExactForeground(IntPtr root,uint expected){uint owner;GetWindowThreadProcessId(root,out owner);return root!=IntPtr.Zero&&owner==expected&&GetAncestor(GetForegroundWindow(),2)==root;}
+ static bool ExactForeground(IntPtr root,uint expected){return root!=IntPtr.Zero&&OwnedWindow(root,expected)&&GetAncestor(GetForegroundWindow(),2)==root;}
  static Input Key(ushort scan,uint flags){return new Input{Type=1,Data=new InputData{Keyboard=new KeyInput{Scan=scan,Flags=flags}}};}
  public static bool Chord(IntPtr root,uint expected,ushort key,ushort modifier){
   if(!ExactForeground(root,expected))return false;ushort scan=(ushort)MapVirtualKey(key,0),mod=(ushort)MapVirtualKey(modifier,0);if(scan==0||(modifier!=0&&mod==0))return false;
@@ -80,9 +80,9 @@ public static class P09Access {
  public static int InputSize(){return Marshal.SizeOf(typeof(Input));}
  [DllImport("user32.dll")]static extern IntPtr GetTopWindow(IntPtr parent);
  [DllImport("user32.dll")]static extern IntPtr GetWindow(IntPtr window,uint relation);
- public static IntPtr[] VisiblePickerWindows(System.Collections.Generic.HashSet<int> pids,out bool complete){
+ public static IntPtr[] VisibleProcessWindows(System.Collections.Generic.HashSet<int> pids,out bool complete){
   var found=new System.Collections.Generic.List<IntPtr>();var seen=new System.Collections.Generic.HashSet<IntPtr>();IntPtr window=GetTopWindow(IntPtr.Zero);int scanned=0;
-  while(window!=IntPtr.Zero&&scanned++<4096&&seen.Add(window)){uint pid;GetWindowThreadProcessId(window,out pid);if(pids.Contains((int)pid)&&IsWindowVisible(window))found.Add(window);window=GetWindow(window,2);}
+  while(window!=IntPtr.Zero&&scanned++<4096&&seen.Add(window)){uint pid;GetWindowThreadProcessId(window,out pid);if(IsWindowVisible(window)){bool owned=pids.Contains((int)pid);if(!owned)foreach(int expected in pids)if(RootOwnerPid(window)==(uint)expected){owned=true;break;}if(owned)found.Add(window);}window=GetWindow(window,2);}
   complete=window==IntPtr.Zero;IntPtr foreground=GetAncestor(GetForegroundWindow(),2);uint owner;GetWindowThreadProcessId(foreground,out owner);if(pids.Contains((int)owner)&&IsWindowVisible(foreground)&&!found.Contains(foreground))found.Add(foreground);return found.ToArray();
  }
  public static bool CancelInitialWindow(IntPtr window){return PostMessage(window,16,IntPtr.Zero,IntPtr.Zero);}
@@ -110,12 +110,23 @@ if([P09Access]::SetThreadDpiAwarenessContext([IntPtr]::new(-4)) -eq [IntPtr]::Ze
 $script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero;$script:raisedWindows=[Collections.Generic.List[IntPtr]]::new()
 $result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()};$stage='INITIALIZED'
 function Need([bool]$ok){if(-not $ok){throw 'P09_NATIVE_ACCESSIBILITY_FAILED'}}
+function Known-PickerTitle([string]$title){
+ if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
+ return ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File','Выбор ресурса SecureRun','Сохранить просмотренную диагностику'))
+}
 function Window([int]$id,[bool]$dialog=$false){
- $script:found=[IntPtr]::Zero;$script:foundArea=0
- $null=[P09Access]::EnumWindows({param($hwnd,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($hwnd,[ref]$owner);if($owner -eq $id -and [P09Access]::IsWindowVisible($hwnd)){
-  $e=[Windows.Automation.AutomationElement]::FromHandle($hwnd)
-  if($dialog -and [P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox)){$script:found=$hwnd;return $false};if(-not $dialog -and -not [P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox)){$rectangle=$e.Current.BoundingRectangle;$area=$rectangle.Width*$rectangle.Height;if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
- };return $true},[IntPtr]::Zero)
+ $script:found=[IntPtr]::Zero;$script:foundArea=0;$complete=$false;$ids=[Collections.Generic.HashSet[int]]::new();$null=$ids.Add($id)
+ $windows=@([P09Access]::VisibleProcessWindows($ids,[ref]$complete));Need $complete
+ $script:ownedCandidateWindows=[Collections.Generic.List[IntPtr]]::new();foreach($candidate in $windows){$script:ownedCandidateWindows.Add($candidate)}
+ # Include actual modal windows owned by the target, including OS broker windows.
+ $null=[P09Access]::EnumWindows({param($hwnd,$data);if([P09Access]::IsWindowVisible($hwnd) -and [P09Access]::OwnedWindow($hwnd,$id)){$script:ownedCandidateWindows.Add($hwnd)};return $true},[IntPtr]::Zero)
+ $windows=@($script:ownedCandidateWindows|Select-Object -Unique)
+ foreach($hwnd in $windows){
+  $e=[Windows.Automation.AutomationElement]::FromHandle($hwnd);$isDialog=([P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox) -or (Known-PickerTitle $e.Current.Name))
+  if($dialog -and $isDialog){return $hwnd}
+  if(-not $dialog -and -not $isDialog){$rectangle=$e.Current.BoundingRectangle;$area=$rectangle.Width*$rectangle.Height;if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
+ }
+ if($dialog){$result.picker_owned_visible_window_count=$windows.Count}
  return $script:found
 }
 function In-Provider($element,$ancestor){
@@ -164,8 +175,8 @@ function Prepare-InitialDesktop{
   $script:pickerChildren=0;$script:visiblePickerChildren=0;$script:pickerTopLevels=0;$script:scannedChildren=0
   $null=[P09Access]::EnumWindows({param($top,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($top,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerTopLevels++};$null=[P09Access]::EnumChildWindows($top,{param($child,$data);$script:scannedChildren++;if($script:scannedChildren -gt 8192){return $false};$owner=0;$null=[P09Access]::GetWindowThreadProcessId($child,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerChildren++;if([P09Access]::IsWindowVisible($child)){$script:visiblePickerChildren++}};return $true},[IntPtr]::Zero);return ($script:scannedChildren -le 8192)},[IntPtr]::Zero)
   $result.picker_all_top_level_windows=$script:pickerTopLevels;$result.picker_child_windows=$script:pickerChildren;$result.picker_visible_child_windows=$script:visiblePickerChildren;$result.picker_child_enumeration_complete=($script:scannedChildren -le 8192);$result.controller_foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow())
-  $zComplete=$false;$zWindows=@([P09Access]::VisiblePickerWindows($script:initialPickerIds,[ref]$zComplete));$result.picker_z_order_enumeration_complete=$zComplete;Need $zComplete
-  foreach($candidateWindow in $zWindows){if(-not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
+  $zComplete=$false;$zWindows=@([P09Access]::VisibleProcessWindows($script:initialPickerIds,[ref]$zComplete));$result.picker_z_order_enumeration_complete=$zComplete;Need $zComplete
+  foreach($candidateWindow in $zWindows){$candidateOwner=0;$null=[P09Access]::GetWindowThreadProcessId($candidateWindow,[ref]$candidateOwner);if($script:initialPickerIds.Contains($candidateOwner) -and -not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
   $result.picker_z_order_visible_windows=$zWindows.Count;Need ($script:initialPickers.Count -le 8)
   $result.initial_picker_window_count=$script:initialPickers.Count
   $result.cancelled_window_count=0
@@ -255,11 +266,29 @@ function Browser-Key([int]$id,[int]$key,[int]$modifier=0){
  $value=switch($key){9{'{TAB}'};13{'{ENTER}'};65{'a'};67{'c'};76{'l'};86{'v'};default{throw 'P09_BROWSER_KEY_UNSUPPORTED'}}
  [Windows.Forms.SendKeys]::SendWait($prefix+$value)
 }
+function Focus-BrowserDocument($root,[IntPtr]$hwnd,[int]$id){
+ Focus-OwnedWindow $hwnd $id
+ $result.browser_focus_before_document_click=[P09Access]::FocusWithin($hwnd)
+ if($root.Current.Name.Contains('P09 browser canary') -or $root.Current.Name.Contains('P09 protocol canary')){
+  # The controlled page contains a heading and one top-left link. This neutral
+  # point is inside the owned document, away from chrome and the canary link.
+  $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));Need ($bounds.Right-$bounds.Left -ge 480 -and $bounds.Bottom-$bounds.Top -ge 360)
+  $point=[P09Point]::new();$point.X=$bounds.Left+[int](($bounds.Right-$bounds.Left)*2/3);$point.Y=$bounds.Top+[int](($bounds.Bottom-$bounds.Top)*3/4)
+  $hit=[P09Access]::WindowFromPoint($point);Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+  try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)};$result.browser_owned_document_click_verified=$true
+ }
+ $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::FocusWithin($hwnd)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000);Need ([P09Access]::FocusWithin($hwnd))
+}
 function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  Need ($address -in @('about:blank','about:support') -or $address -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/(?:main|protocol)/[0-9a-f-]{36}$')
- Focus-OwnedWindow $hwnd $id
- Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Send-LiteralKeys $address;Start-Sleep -Milliseconds 200;Browser-Key $id 13
- $result.native_keyboard_delivery_checked=$true;$result.navigation_input='OWNED_WINDOW_SENDKEYS_LITERAL_SYNTHETIC_URI'
+ Focus-BrowserDocument $root $hwnd $id
+ $bar=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'urlbar-input'))
+ if($null -eq $bar){foreach($name in @('Search with Google or enter address','Search or enter address')){$bar=Find $root ([Windows.Automation.ControlType]::Edit) $name;if($null -ne $bar){break}}}
+ $value=$null;$result.address_bar_uia_available=($null -ne $bar)
+ if($null -ne $bar -and $bar.Current.IsEnabled -and (In-Provider $bar $root) -and $bar.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$value) -and -not $value.Current.IsReadOnly){
+  $bar.SetFocus();$value.SetValue($address);Need ($value.Current.Value -ceq $address);$result.address_bar_value_verified=$true;$result.navigation_input='OWNED_WINDOWS_UIA_ADDRESS_BAR'
+ }else{Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Send-LiteralKeys $address;$result.navigation_input='OWNED_WINDOW_SENDKEYS_LITERAL_SYNTHETIC_URI'}
+ Start-Sleep -Milliseconds 200;Browser-Key $id 13;$result.native_keyboard_delivery_checked=$true
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
  Browser-Address $root $hwnd $id 'about:blank';$clock=[Diagnostics.Stopwatch]::StartNew()
@@ -293,8 +322,8 @@ function Picker([int]$id,[string]$path){
  while($window -eq [IntPtr]::Zero -and $clock.ElapsedMilliseconds -lt 45000){$window=Window $id $true;if($window -eq [IntPtr]::Zero){Start-Sleep -Milliseconds 100}}
  Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name;$script:stage='VERIFYING_NATIVE_PICKER_TITLE'
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
- $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
- Need ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
+ $result.native_picker_title_recognized=Known-PickerTitle $title
+ Need $result.native_picker_title_recognized
  $script:stage='WAITING_FOR_ENABLED_NATIVE_FILENAME';$clock.Restart();$edit=$null;$nativeField=[IntPtr]::Zero;$activationTried=$false
  do{
   $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.OrCondition]::new([Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit),[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ComboBox)))
@@ -435,6 +464,16 @@ try{
    $stage='READING_BROWSER_SANDBOX_STATE';[Windows.Forms.Clipboard]::Clear()
    try{
     Browser-Document $root $hwnd $ManagerPid 'about:support' 'Troubleshooting Information'
+    $level=0;$documents=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Document))
+    Need ($documents.Count -le 16)
+    foreach($document in $documents){
+     $pattern=$null
+     if($document.Current.Name.Contains('Troubleshooting Information') -and -not $document.Current.IsOffscreen -and $document.TryGetCurrentPattern([Windows.Automation.TextPattern]::Pattern,[ref]$pattern)){
+      $text=$pattern.DocumentRange.GetText(2097153);Need ($text.Length -le 2097152)
+      if($text -match '(?im)^\s*Effective Content (?:Process )?Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];$result.sandbox_source='ABOUT_SUPPORT_WINDOWS_UIA_TEXT';break}
+     }
+    }
+    if($level -eq 0){
     $copy=Find $root ([Windows.Automation.ControlType]::Button) 'Copy raw data to clipboard'
     if($null -ne $copy){Click $copy;$result.sandbox_source='ABOUT_SUPPORT_RAW_JSON'}
     else{Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));Browser-Key $ManagerPid 65 17;Start-Sleep -Milliseconds 100;Browser-Key $ManagerPid 67 17;$result.sandbox_source='ABOUT_SUPPORT_RENDERED_TEXT'}
@@ -445,6 +484,7 @@ try{
      elseif($text -match '(?im)^\s*Effective Content (?:Process )?Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];break}
      Start-Sleep -Milliseconds 100
     }while($clock.ElapsedMilliseconds -lt 10000)
+    }
     Need ($level -gt 0);$result.effective_content_sandbox_level=$level;$result.browser_own_sandbox_enabled=$true;$result.real_about_support=$true
    }finally{[Windows.Forms.Clipboard]::Clear()}
   }

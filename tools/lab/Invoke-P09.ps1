@@ -89,7 +89,14 @@ try {
  $resultHome=Join-Path $owned 'results';if(Test-Path -LiteralPath $resultHome){Get-ChildItem -LiteralPath $resultHome -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}
  if(-not(Test-Path -LiteralPath (Join-Path $out 'standard-product.json'))){throw 'P09_ACTOR_REPORT_MISSING'}
  $result=Get-Content (Join-Path $out 'standard-product.json') -Raw|ConvertFrom-Json
- $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;standard_user=$true;real_normal_webview=$true;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
+ $budgetStatus='NOT_MEASURED'
+ if(-not $Focused -and (Test-Path (Join-Path $out 'performance.json')) -and (Test-Path (Join-Path $out 'process-update.json')) -and (Test-Path (Join-Path $out 'launch-performance.json'))){
+  & python (Join-Path $PSScriptRoot 'retain_p09_evidence.py') --assess-budget-directory $out
+  if($LASTEXITCODE -ne 0){throw 'P09_BUDGET_MEASUREMENT_INVALID'}
+  $budgetStatus=(Get-Content (Join-Path $out 'performance-budget-assessment.json') -Raw|ConvertFrom-Json).status
+ }
+ if(-not $Focused -and $result.status -eq 'PASSED' -and $budgetStatus -eq 'NOT_MEASURED'){throw 'P09_PERFORMANCE_PROOF_MISSING'}
+ $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;engineering_budget_status=$budgetStatus;standard_user=$true;real_normal_webview=$true;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
  foreach($field in @('native_cases_passed','failed','ui_cases_passed','ui_failed')){$summary[$field]=if($result.PSObject.Properties[$field]){$result.$field}else{-1}}
  $summary|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
  $summary.workload_mode=if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'}

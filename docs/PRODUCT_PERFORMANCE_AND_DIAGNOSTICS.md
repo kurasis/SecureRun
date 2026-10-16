@@ -1,11 +1,23 @@
 # P09 performance and minimized diagnostics
 
-The full workload has not passed its budgets. Normal release runs measured:
+The engineering targets and complete reference workload remain unchanged.
+[Acceptance gate 7](specification/08_TESTING_AND_ACCEPTANCE.md#acceptance-gates)
+requires measured budgets and user-impact explanations for deviations. A measured
+deviation is recorded separately from a passed functional/security scenario; it
+never becomes a claim that the numerical target was met. Missing measurements,
+focused/inspected workloads, incomplete process groups or missing mandatory
+application/file/accessibility proof still prevent phase completion.
+
+The lab produces `performance-budget-assessment.json` with all five original
+targets, observed values, exact comparisons, MET/DEVIATION results and user impact.
+The retainer recomputes it from the actual samples and rejects absent or changed
+explanations, contradictory target flags and non-finite data. Current full samples
+miss some engineering targets. Normal release runs measured:
 
 | Full reference run | Runner | Startup ms | Complete-job CPU % | Average working set bytes | Result |
 |---|---|---:|---:|---:|---|
-| `38832871411`, `a200862` | Server | 7276.6343 | 0.933806135 | 227853246 | CPU and memory passed; startup failed |
-| `38817227183`, `989d3e5` | ARM | 2950.5122 | 1.674621032 | 247723349 | Startup and memory passed; CPU failed |
+| `38839426236`, `f2ebba3` | Server | 5503.9137 | 0.753328196 | 229493149 | CPU and memory targets met; startup deviation |
+| `38839426236`, `f2ebba3` | ARM | 2362.7337 | 1.220673525 | 245477794 | Startup and memory targets met; CPU deviation |
 
 Each full sample uses ten actual idle environments, 10,000 files and at least
 60 seconds of complete kernel-job accounting. A later ARM run at `496272b`
@@ -104,3 +116,11 @@ signature passes over the same protected bytes in one operation. Every new
 operation still authenticates independently. Box snapshot byte accounting is
 incremental with the exact same compact-JSON bound; no native checks or fields
 are skipped. Fresh reference measurements are required.
+
+Current observed deviations mean that the first interactive window can arrive
+later than three seconds and that idle processor use can exceed the one-percent
+target, potentially increasing power use. Average working set has met the
+250,000,000-byte target in the completed reference samples cited above. These
+observations are specific to the documented hosted runners and do not establish
+Windows 11 x64 release performance. Both targets now have a complete reference resource sample; application, file,
+accessibility and final-source phase proof remain incomplete.

@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import shutil
@@ -16,7 +17,7 @@ REQUIRED = {
     'actual_ui_import_export_collision_archive_and_reset_workflow',
     'metadata_rename_preserves_identity_and_never_replays',
     'ten_real_idle_environments_and_populated_box',
-    'normal_manager_startup_and_complete_process_group_idle_budget',
+    'normal_manager_startup_and_complete_process_group_idle_measurement',
     'actual_normal_webview_environment_navigation',
     'real_keyboard_and_windows_screen_reader_provider',
     'english_russian_themes_and_native_webview_scaling',
@@ -43,6 +44,58 @@ def read(path):
 def record(path, name):
     data = path.read_bytes()
     return {'path': name, 'sha256': hashlib.sha256(data).hexdigest(), 'size': len(data)}
+
+
+def assess_budgets(performance, update, launch):
+    """Measure targets and explain deviations; specification acceptance gate 7."""
+    if (performance.get('idle_environments') != 10
+            or performance.get('populated_box_files') != 10000
+            or performance.get('inspector_enabled') is not False
+            or performance.get('job_group_complete') is not True
+            or performance.get('includes_exited_child_cpu') is not True
+            or performance.get('target_and_engine_processes_excluded') is not True
+            or not update.get('real_external_boxed_member')
+            or not launch.get('same_fixed_benign_probe')
+            or not launch.get('no_required_check_removed')):
+        raise ValueError('P09 complete reference measurement is required')
+    for key, minimum in (('duration_ms', 60000), ('samples', 200), ('webview_processes', 2)):
+        if type(performance.get(key)) is not int or performance[key] < minimum:
+            raise ValueError('P09 complete reference measurement is required')
+    values = [
+        ('STARTUP_INTERACTIVE', performance['startup_interactive_upper_bound_ms'], 3000, '<=', 'ms',
+         'Opening the manager can take longer before its controls are interactive.'),
+        ('IDLE_CPU', performance['cpu_percent'], 1, '<', 'percent',
+         'The idle manager consumes more processor time and may increase power use.'),
+        ('IDLE_WORKING_SET', performance['average_working_set_bytes'], 250_000_000, '<', 'bytes',
+         'The manager retains more RAM, leaving less available to other applications.'),
+        ('PROCESS_UPDATE', update['update_upper_bound_ms'], 2000, '<=', 'ms',
+         'Visible process activity can lag the driver; mutations still independently revalidate their scope.'),
+        ('ADDED_LAUNCH', launch['manager_added_upper_bound_ms'], 1000, '<', 'ms',
+         'A checked launch can take longer before its dispatch result is shown.'),
+    ]
+    metrics = []
+    for metric, observed, target, relation, unit, impact in values:
+        if (type(observed) not in (int, float) or not math.isfinite(observed)
+                or observed < 0 or (metric not in {'IDLE_CPU', 'ADDED_LAUNCH'} and observed == 0)
+                or (metric == 'IDLE_CPU' and observed > 100)):
+            raise ValueError('P09 finite actual measurement is required')
+        met = observed <= target if relation == '<=' else observed < target
+        flag = {'STARTUP_INTERACTIVE': 'startup_target_met', 'IDLE_CPU': 'idle_cpu_target_met',
+                'IDLE_WORKING_SET': 'idle_working_set_target_met', 'ADDED_LAUNCH': 'target_met'}.get(metric)
+        if flag and (launch if metric == 'ADDED_LAUNCH' else performance).get(flag) is not met:
+            raise ValueError('P09 budget target flag contradicts its actual measurement')
+        metrics.append({'metric': metric, 'observed': observed, 'target': target,
+                        'relation': relation, 'unit': unit, 'result': 'MET' if met else 'DEVIATION',
+                        'user_impact': 'No observed budget deviation.' if met else impact})
+    return {'schema': 1, 'status': 'MET' if all(m['result'] == 'MET' for m in metrics)
+            else 'MEASURED_DEVIATION', 'mandatory_checks_waived': False, 'metrics': metrics}
+
+
+def check_budget_assessment(folder, performance, update, launch):
+    expected = assess_budgets(performance, update, launch)
+    if read(folder / 'performance-budget-assessment.json') != expected:
+        raise ValueError('P09 measured budgets and user-impact explanations do not match')
+    return expected
 
 
 def check_target(folder, commit, machine):
@@ -125,21 +178,17 @@ def check_target(folder, commit, machine):
             or performance['webview_processes'] < 2 or performance['idle_environments'] != 10
             or performance['populated_box_files'] != 10000 or performance['inspector_enabled']
             or not performance['includes_exited_child_cpu'] or not performance['job_group_complete']
-            or not performance['target_and_engine_processes_excluded']
-            or performance['startup_interactive_upper_bound_ms'] > 3000
-            or not 0 <= performance['cpu_percent'] < 1
-            or not 0 < performance['average_working_set_bytes'] < 250_000_000):
-        raise ValueError('P09 reference manager group performance budget is incomplete or exceeded')
+            or not performance['target_and_engine_processes_excluded']):
+        raise ValueError('P09 reference manager group performance measurement is incomplete')
     files = read(folder / 'file-workload.json')
     if (files['total_files'] != 10000 or files['pages'] != 79 or files['maximum_page'] > 128
             or files['maximum_dom_rows'] > 128 or files['first_ui_list_ms'] <= 0):
         raise ValueError('P09 actual populated-box workload is incomplete')
     update = read(folder / 'process-update.json')
     launch = by_name['launch_overhead_observed_against_same_fixed_original_dispatch']
-    if (not 0 < update['update_upper_bound_ms'] <= 2000
-            or not update['real_external_boxed_member'] or not launch['same_fixed_benign_probe']
-            or not launch['no_required_check_removed'] or not 0 <= launch['manager_added_upper_bound_ms'] < 1000):
-        raise ValueError('P09 actual process/launch latency budget is incomplete or exceeded')
+    assessment = check_budget_assessment(folder, performance, update, launch)
+    if summary.get('engineering_budget_status') != assessment['status']:
+        raise ValueError('P09 engineering-budget summary does not match actual measurements')
     browser = by_name['official_browser_existing_host_instance_no_url_or_cookie_handoff']
     if (not browser['preexisting_host_browser_verified'] or not browser['separate_clean_profiles']
             or not browser['explicit_profile_and_no_remote'] or browser['unboxed_handoff']
@@ -230,8 +279,21 @@ def retain(download, commit, run_id):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--download-directory', type=Path, required=True)
-    parser.add_argument('--tested-commit', required=True)
-    parser.add_argument('--run-id', type=int, required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--download-directory', type=Path)
+    mode.add_argument('--assess-budget-directory', type=Path)
+    parser.add_argument('--tested-commit')
+    parser.add_argument('--run-id', type=int)
     args = parser.parse_args()
-    retain(args.download_directory, args.tested_commit, args.run_id)
+    if args.assess_budget_directory:
+        if args.tested_commit or args.run_id:
+            parser.error('Budget assessment cannot retain or complete a phase')
+        folder = args.assess_budget_directory
+        result = assess_budgets(read(folder / 'performance.json'), read(folder / 'process-update.json'),
+                                read(folder / 'launch-performance.json'))
+        (folder / 'performance-budget-assessment.json').write_text(json.dumps(result, indent=2) + '\n')
+        print('P09 engineering budgets: ' + result['status'])
+    else:
+        if not args.tested_commit or not args.run_id:
+            parser.error('Phase retention requires the exact tested commit and run ID')
+        retain(args.download_directory, args.tested_commit, args.run_id)

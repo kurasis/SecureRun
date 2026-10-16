@@ -17,6 +17,25 @@ public struct P09Rect { public int Left,Top,Right,Bottom; }
 [StructLayout(LayoutKind.Sequential)] public struct P09GuiInfo { public uint Size,Flags;public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret;public P09Rect CaretRect; }
 public static class P09Access {
  public delegate bool Visit(IntPtr hwnd,IntPtr data);
+ [StructLayout(LayoutKind.Sequential)]struct KeyInput{public ushort Key,Scan;public uint Flags,Time;public UIntPtr Extra;}
+ [StructLayout(LayoutKind.Sequential)]struct MouseInput{public int X,Y;public uint Data,Flags,Time;public UIntPtr Extra;}
+ [StructLayout(LayoutKind.Explicit)]struct InputData{[FieldOffset(0)]public KeyInput Keyboard;[FieldOffset(0)]public MouseInput Mouse;}
+ [StructLayout(LayoutKind.Sequential)]struct Input{public uint Type;public InputData Data;}
+ [DllImport("user32.dll",SetLastError=true)]static extern uint SendInput(uint count,Input[] input,int size);
+ [DllImport("user32.dll")]static extern uint MapVirtualKey(uint code,uint kind);
+ static bool ExactForeground(IntPtr root,uint expected){uint owner;GetWindowThreadProcessId(root,out owner);return root!=IntPtr.Zero&&owner==expected&&GetAncestor(GetForegroundWindow(),2)==root;}
+ static Input Key(ushort scan,uint flags){return new Input{Type=1,Data=new InputData{Keyboard=new KeyInput{Scan=scan,Flags=flags}}};}
+ public static bool Chord(IntPtr root,uint expected,ushort key,ushort modifier){
+  if(!ExactForeground(root,expected))return false;ushort scan=(ushort)MapVirtualKey(key,0),mod=(ushort)MapVirtualKey(modifier,0);if(scan==0||(modifier!=0&&mod==0))return false;
+  Input[] keys=modifier==0?new[]{Key(scan,8),Key(scan,10)}:new[]{Key(mod,8),Key(scan,8),Key(scan,10),Key(mod,10)};int size=Marshal.SizeOf(typeof(Input));
+  if(SendInput((uint)keys.Length,keys,size)==keys.Length)return true;
+  Input[] release=modifier==0?new[]{Key(scan,10)}:new[]{Key(scan,10),Key(mod,10)};SendInput((uint)release.Length,release,size);return false;
+ }
+ public static bool TypeText(IntPtr root,uint expected,string text){
+  if(!ExactForeground(root,expected)||text.Length>512||text.IndexOfAny(new[]{'\0','\r','\n'})>=0)return false;
+  var keys=new Input[text.Length*2];for(int i=0;i<text.Length;i++){keys[2*i]=Key(text[i],4);keys[2*i+1]=Key(text[i],6);}int size=Marshal.SizeOf(typeof(Input));uint count=SendInput((uint)keys.Length,keys,size);
+  if(count==keys.Length)return true;if((count&1)!=0){Input release=keys[count-1];release.Data.Keyboard.Flags|=2;SendInput(1,new[]{release},size);}return false;
+ }
  [DllImport("user32.dll")]public static extern bool ShowWindow(IntPtr window,int command);
  [DllImport("user32.dll")]public static extern bool GetWindowRect(IntPtr window,out P09Rect rectangle);
  [DllImport("user32.dll")]public static extern bool IsChild(IntPtr parent,IntPtr child);
@@ -34,12 +53,19 @@ public static class P09Access {
  [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageW")]static extern IntPtr ReadMessage(IntPtr window,uint message,IntPtr size,System.Text.StringBuilder value);
  [DllImport("user32.dll")]static extern bool PostMessage(IntPtr window,uint message,IntPtr parameter,IntPtr value);
  public static bool ClassIs(IntPtr window,string expected,string box){var name=new System.Text.StringBuilder(128);GetClassName(window,name,128);return String.Equals(name.ToString(),expected,StringComparison.OrdinalIgnoreCase)||(!String.IsNullOrEmpty(box)&&String.Equals(name.ToString(),"Sandbox:"+box+":"+expected,StringComparison.OrdinalIgnoreCase));}
- public static IntPtr Filename(IntPtr root,uint expected,string box){IntPtr found=IntPtr.Zero;EnumChildWindows(root,delegate(IntPtr window,IntPtr data){uint pid;GetWindowThreadProcessId(window,out pid);if(pid!=expected||!IsWindowVisible(window)||!IsWindowEnabled(window)||!ClassIs(window,"Edit",box))return true;int id=GetDlgCtrlID(window);bool known=id==1152;IntPtr parent=GetParent(window);for(int depth=0;!known&&depth<16&&parent!=IntPtr.Zero&&parent!=root;depth++,parent=GetParent(parent))known=GetDlgCtrlID(parent)==1148;if(known){found=window;return false;}return true;},IntPtr.Zero);return found;}
+ static bool FilenameEdit(IntPtr window,string box){return ClassIs(window,"Edit",box)||ClassIs(window,"RichEdit20W",box)||ClassIs(window,"RICHEDIT50W",box)||ClassIs(window,"RichEditD2DPT",box);}
+ public static int FilenameKinds(IntPtr root,uint expected,string box){int mask=0;EnumChildWindows(root,delegate(IntPtr window,IntPtr data){if(!OwnedWindow(window,expected))return true;int id=GetDlgCtrlID(window);if(id==1152)mask|=1;if(id==1148)mask|=2;if(id==1001)mask|=4;if(FilenameEdit(window,box))mask|=8;return true;},IntPtr.Zero);return mask;}
+ public static IntPtr Filename(IntPtr root,uint expected,string box){IntPtr found=IntPtr.Zero;EnumChildWindows(root,delegate(IntPtr window,IntPtr data){if(!OwnedWindow(window,expected)||!IsWindowVisible(window)||!IsWindowEnabled(window)||!FilenameEdit(window,box))return true;int id=GetDlgCtrlID(window);bool known=id==1152;IntPtr parent=GetParent(window);for(int depth=0;!known&&depth<16&&parent!=IntPtr.Zero&&parent!=root;depth++,parent=GetParent(parent))known=GetDlgCtrlID(parent)==1148;if(known){found=window;return false;}return true;},IntPtr.Zero);return found;}
  public static bool SetFilename(IntPtr field,string value){if(value.Length>32767||value.IndexOfAny(new[]{'\0','\r','\n'})>=0)return false;if(SendMessage(field,12,IntPtr.Zero,value)==IntPtr.Zero)return false;var read=new System.Text.StringBuilder(32768);ReadMessage(field,13,(IntPtr)read.Capacity,read);return read.ToString()==value;}
- public static bool AcceptPicker(IntPtr root,uint expected,string box){IntPtr button=GetDlgItem(root,1);if(button==IntPtr.Zero)EnumChildWindows(root,delegate(IntPtr window,IntPtr data){uint owner;GetWindowThreadProcessId(window,out owner);if(owner==expected&&GetDlgCtrlID(window)==1&&IsWindowVisible(window)&&IsWindowEnabled(window)&&ClassIs(window,"Button",box)){button=window;return false;}return true;},IntPtr.Zero);uint pid;GetWindowThreadProcessId(button,out pid);return button!=IntPtr.Zero&&pid==expected&&IsChild(root,button)&&IsWindowEnabled(button)&&ClassIs(button,"Button",box)&&PostMessage(button,245,IntPtr.Zero,IntPtr.Zero);}
+ public static bool AcceptPicker(IntPtr root,uint expected,string box){IntPtr button=GetDlgItem(root,1);if(button==IntPtr.Zero)EnumChildWindows(root,delegate(IntPtr window,IntPtr data){uint owner;GetWindowThreadProcessId(window,out owner);if(OwnedWindow(window,expected)&&GetDlgCtrlID(window)==1&&IsWindowVisible(window)&&IsWindowEnabled(window)&&ClassIs(window,"Button",box)){button=window;return false;}return true;},IntPtr.Zero);uint pid;GetWindowThreadProcessId(button,out pid);return button!=IntPtr.Zero&&OwnedWindow(button,expected)&&IsChild(root,button)&&IsWindowEnabled(button)&&ClassIs(button,"Button",box)&&PostMessage(button,245,IntPtr.Zero,IntPtr.Zero);}
  [DllImport("user32.dll")]public static extern IntPtr SetThreadDpiAwarenessContext(IntPtr context);
  public static bool OwnedWindow(IntPtr window,uint expected){uint pid=0;GetWindowThreadProcessId(window,out pid);if(pid==expected)return true;IntPtr root=GetAncestor(window,2);if(root!=IntPtr.Zero){GetWindowThreadProcessId(root,out pid);if(pid==expected)return true;}return RootOwnerPid(window)==expected;}
  [DllImport("user32.dll")]public static extern IntPtr WindowFromPhysicalPoint(P09Point point);
+ [DllImport("user32.dll")]public static extern IntPtr WindowFromPoint(P09Point point);
+ [DllImport("kernel32.dll",SetLastError=true)]static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode)]static extern bool QueryFullProcessImageName(IntPtr process,uint flags,System.Text.StringBuilder image,ref uint size);
+ [DllImport("kernel32.dll")]static extern bool CloseHandle(IntPtr handle);
+ public static string HitImage(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr held=OpenProcess(0x1000,false,pid);if(held==IntPtr.Zero)return null;try{uint size=32768;var image=new System.Text.StringBuilder((int)size);return QueryFullProcessImageName(held,0,image,ref size)?image.ToString():null;}finally{CloseHandle(held);}}
  [DllImport("user32.dll")]public static extern IntPtr GetAncestor(IntPtr window,uint flags);
  [DllImport("user32.dll",SetLastError=true)]static extern IntPtr OpenInputDesktop(uint flags,bool inherit,uint access);
  [DllImport("user32.dll")]static extern bool CloseDesktop(IntPtr desktop);
@@ -89,7 +115,15 @@ function Native-HitKind([IntPtr]$window){
    'systemsettings'{return 'DISPLAY_SETTINGS'};'applicationframehost'{return 'APPLICATION_FRAME_HOST'};'textinputhost'{return 'TEXT_INPUT_HOST'}
    'explorer'{return 'DESKTOP_SHELL'};'shellexperiencehost'{return 'DESKTOP_SHELL'};'dwm'{return 'DESKTOP_COMPOSITOR'}
    'powershell'{return 'POWERSHELL_HOST'};'pwsh'{return 'POWERSHELL_HOST'};'conhost'{return 'CONSOLE_HOST'};'windowsterminal'{return 'TERMINAL_HOST'}
-   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};default{return 'OTHER_WITHHELD'}
+   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};default{
+    $nativeName=$process.ProcessName.ToLowerInvariant();$hash=[Security.Cryptography.SHA256]::Create();try{$result.native_hit_name_sha256=([BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes($nativeName)))).Replace('-','').ToLowerInvariant()}finally{$hash.Dispose()}
+    $image=[P09Access]::HitImage($window);$windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
+    if($image -and ($image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SysWOW64\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase))){
+     $signature=Get-AuthenticodeSignature -LiteralPath $image
+     if($signature.Status -eq 'Valid' -and $null -ne $signature.SignerCertificate -and $signature.SignerCertificate.Subject -match '(?:^|,\s*)O=Microsoft Corporation(?:,|$)'){$result.native_hit_microsoft_system_component=[IO.Path]::GetFileName($image);return 'SIGNED_MICROSOFT_SYSTEM_COMPONENT'}
+    }
+    return 'OTHER_WITHHELD'
+   }
   }
  }finally{$process.Dispose()}}catch{return 'UNAVAILABLE'}
 }
@@ -102,8 +136,9 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd)
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
-  $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPhysicalPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
+  $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
   $result.focus_native_hit_kind=Native-HitKind $hit
+  $result.native_point_api_agree=($hit -eq [P09Access]::WindowFromPhysicalPoint($point))
   Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
   try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  }
@@ -115,21 +150,19 @@ function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
  do{$editor=[P09Access]::Editor($hwnd,$id,$ExpectedBox);if($editor -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
  Need ($editor -ne [IntPtr]::Zero -and [P09Access]::IsChild($hwnd,$editor));$result.native_editor_class_verified=$true
  $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($editor,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=[int](($bounds.Top+$bounds.Bottom)/2)
- $script:stage='VERIFYING_NATIVE_EDITOR_CLICK_POINT';$hit=[P09Access]::WindowFromPhysicalPoint($point);Need ($hit -eq $editor -or [P09Access]::IsChild($editor,$hit));Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+ $script:stage='VERIFYING_NATIVE_EDITOR_CLICK_POINT';$hit=[P09Access]::WindowFromPoint($point);Need ($hit -eq $editor -or [P09Access]::IsChild($editor,$hit));Need ([P09Access]::SetCursorPos($point.X,$point.Y))
  try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  $clock.Restart();do{if([P09Access]::FocusWithin($editor)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::FocusWithin($editor));$result.exact_editor_focus_verified=$true
 }
+function Browser-Key([int]$id,[int]$key,[int]$modifier=0){
+ $rootWindow=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
+ Need ([P09Access]::OwnedWindow($rootWindow,$id));Need ([P09Access]::Chord($rootWindow,$id,[ushort]$key,[ushort]$modifier))
+}
 function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
- Focus-OwnedWindow $hwnd $id
- # Read back the selected native address before Enter. Clipboard text is only
- # the fixed synthetic destination and is always cleared, never retained.
- try{
-  [Windows.Forms.SendKeys]::SendWait('^l');Start-Sleep -Milliseconds 200;[Windows.Forms.Clipboard]::SetText($address);[Windows.Forms.SendKeys]::SendWait('^v');Start-Sleep -Milliseconds 500;[Windows.Forms.SendKeys]::SendWait('^a');Start-Sleep -Milliseconds 200;[Windows.Forms.Clipboard]::Clear();[Windows.Forms.SendKeys]::SendWait('^c')
-  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 3000)
-  Need ([Windows.Forms.Clipboard]::GetText() -ceq $address);$result.native_browser_address_readback_verified=$true
-  [Windows.Forms.SendKeys]::SendWait('{ENTER}')
- }finally{[Windows.Forms.Clipboard]::Clear()}
+ Focus-OwnedWindow $hwnd $id;Browser-Key $id 76 17;Start-Sleep -Milliseconds 200
+ Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 13
+ $result.native_keyboard_delivery_checked=$true
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
  Browser-Address $root $hwnd $id 'about:blank';$clock=[Diagnostics.Stopwatch]::StartNew()
@@ -146,7 +179,7 @@ function Activate-CanaryLink($root,[IntPtr]$hwnd,[int]$id,[string]$name){
  }
  # The freshly loaded synthetic document has exactly one focusable link.
  # Physical Tab/Enter is an actual user action, never direct target dispatch.
- Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id));[Windows.Forms.SendKeys]::SendWait('{TAB}');[Windows.Forms.SendKeys]::SendWait('{ENTER}');return 'NATIVE_KEYBOARD_SINGLE_CANARY_LINK'
+ Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id));Browser-Key $id 9;Start-Sleep -Milliseconds 100;Browser-Key $id 13;return 'NATIVE_SCANCODE_SINGLE_CANARY_LINK'
 }
 function Owned-Link([int]$id,[string]$name){
  $script:matchedLink=$null
@@ -171,7 +204,7 @@ function Picker([int]$id,[string]$path){
   foreach($item in $edits){$known=($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder'));if(-not $known -and $item.Current.AutomationId -eq '1001'){$parent=[Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($item);$known=($null -ne $parent -and ($parent.Current.AutomationId -eq '1148' -or $parent.Current.Name -in @('File name:','File name','Folder:','Folder')))};if($item.Current.IsEnabled -and $known){$candidateValue=$null;if($item.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$candidateValue) -and -not $candidateValue.Current.IsReadOnly){$edit=$item;break}}}
   if($null -ne $edit){break};$nativeField=[P09Access]::Filename($window,$id,$ExpectedBox);if($nativeField -ne [IntPtr]::Zero){break};if(-not $activationTried -and $clock.ElapsedMilliseconds -ge 1000){$activationTried=$true;Focus-OwnedWindow $window $id;[Windows.Forms.SendKeys]::SendWait('%n')};Start-Sleep -Milliseconds 100
  }while($clock.ElapsedMilliseconds -lt 15000)
- $usedValue=($null -ne $edit);$result.native_filename_field_present=($nativeField -ne [IntPtr]::Zero)
+ $usedValue=($null -ne $edit);$result.native_filename_control_kinds=[P09Access]::FilenameKinds($window,$id,$ExpectedBox);$result.native_filename_field_present=($nativeField -ne [IntPtr]::Zero)
  if($usedValue){$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path)}else{Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::SetFilename($nativeField,$path))}
  $button=Find $root ([Windows.Automation.ControlType]::Button) 'Open';if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Save'};if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Select Folder'};if($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
  if($AllowOverwrite){Start-Sleep -Milliseconds 300;$confirm=Window $id $true;if($confirm -ne [IntPtr]::Zero){$confirmRoot=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($confirmRoot.Current.Name -eq 'Confirm Save As');Click (Find $confirmRoot ([Windows.Automation.ControlType]::Button) 'Yes')}}
@@ -279,7 +312,7 @@ try{
     }
     Start-Sleep -Milliseconds 100
    }while($clock.ElapsedMilliseconds -lt 5000)
-   if(-not $result.browser_protocol_confirmation_invoked){Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));[Windows.Forms.SendKeys]::SendWait('{ENTER}');$result.synthetic_protocol_confirmation_keyboard_sent=$true}
+   if(-not $result.browser_protocol_confirmation_invoked){Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));Browser-Key $ManagerPid 13;$result.synthetic_protocol_confirmation_keyboard_sent=$true}
   }
   'BROWSER_CHILD' {
    $stage='ACTIVATING_SYNTHETIC_BROWSER_DOCUMENT';Need ($ProtocolUri -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/main/[0-9a-f-]{36}$');Need (([Uri]$ProtocolUri).Port -ge 1024 -and ([Uri]$ProtocolUri).Port -le 65535)
@@ -291,7 +324,7 @@ try{
     Browser-Document $root $hwnd $ManagerPid 'about:support' 'Troubleshooting Information'
     $copy=Find $root ([Windows.Automation.ControlType]::Button) 'Copy raw data to clipboard'
     if($null -ne $copy){Click $copy;$result.sandbox_source='ABOUT_SUPPORT_RAW_JSON'}
-    else{Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('^c');$result.sandbox_source='ABOUT_SUPPORT_RENDERED_TEXT'}
+    else{Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));Browser-Key $ManagerPid 65 17;Start-Sleep -Milliseconds 100;Browser-Key $ManagerPid 67 17;$result.sandbox_source='ABOUT_SUPPORT_RENDERED_TEXT'}
     $clock=[Diagnostics.Stopwatch]::StartNew();$level=0
     do{
      $text=[Windows.Forms.Clipboard]::GetText();Need ($text.Length -le 2097152)
@@ -317,7 +350,7 @@ try{
     $pointClock=[Diagnostics.Stopwatch]::StartNew()
     do {
      $clickable=$navigation.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
-    $hit=[P09Access]::WindowFromPhysicalPoint($point);$hitOwner=[P09Access]::RootOwnerPid($hit);$result.keyboard_point_hits_window=($hit -ne [IntPtr]::Zero);$result.keyboard_native_root_owner_matches_manager=($hitOwner -eq $ManagerPid);$result.keyboard_native_window_owned=[P09Access]::OwnedWindow($hit,$ManagerPid);$result.keyboard_exact_navigation_provider_verified=(In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $navigation);$result.keyboard_click_hit_owned_window=($result.keyboard_native_window_owned -and $result.keyboard_exact_navigation_provider_verified)
+    $hit=[P09Access]::WindowFromPoint($point);$hitOwner=[P09Access]::RootOwnerPid($hit);$result.keyboard_point_hits_window=($hit -ne [IntPtr]::Zero);$result.keyboard_native_root_owner_matches_manager=($hitOwner -eq $ManagerPid);$result.keyboard_native_window_owned=[P09Access]::OwnedWindow($hit,$ManagerPid);$result.keyboard_exact_navigation_provider_verified=(In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $navigation);$result.keyboard_click_hit_owned_window=($result.keyboard_native_window_owned -and $result.keyboard_exact_navigation_provider_verified)
      if($result.keyboard_click_hit_owned_window){break};Start-Sleep -Milliseconds 100
     }while($pointClock.ElapsedMilliseconds -lt 5000)
     $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$result.keyboard_point_inside_native_window=($point.X -ge $bounds.Left -and $point.X -lt $bounds.Right -and $point.Y -ge $bounds.Top -and $point.Y -lt $bounds.Bottom)

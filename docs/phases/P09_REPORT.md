@@ -6,27 +6,32 @@ proof remains historical while P09 changes are validated.
 
 ## Current gate result (2026-10-16)
 
-P09 is not complete. GitHub access is restored and all accumulated source fixes
-are published. Native build `38832871717` passed on both owner-selected targets
-at `a20086262818f7d6bf2336b9ac13bdfa8a0df10f`.
-Full run `38832871411` measured Server CPU 0.933806%, average aggregate working
-set 227853246 bytes and startup 7276.6343 ms across ten actual idle environments
-and 10,000 files. CPU and memory passed; startup exceeded the 3000 ms limit.
-ARM refused CREATE 3 after an online incoming IPv4 TCP control failed; all other
-incoming channels and outbound controls succeeded. The refusal remains intact.
+P09 is not complete. All source changes are published for Windows validation;
+reviewed investigation files are retained with exact byte hashes. Native build
+`38837984419` passed on both owner-selected targets at `8b3cfeb`, including the
+delayed incoming-socket regression after the Winsock mode correction.
 
-Focused run `38832870730` measured added launch latency 415 ms on Server and
-658 ms on ARM, both below 1000 ms. Four-environment resource samples are
-investigations only. Archive GUI round trips, primary browser host-instance
-isolation, persistent history and actual bilingual layout checks have passed.
-Remaining blockers include actual native input ownership on ARM, editor Save As,
-child/protocol/about:support browser actions, subsequent transfer/lifecycle UX,
-startup, a complete ARM reference run, and matching P03–P08 final-source proof.
+Full run `38839426236` at `f2ebba3` completed ten actual idle environments and
+10,000 files on both targets. Server measured 5503.9137 ms startup, 0.753328196%
+CPU and 229493149-byte average aggregate working set. ARM measured 2362.7337 ms,
+1.220673525% and 245477794 bytes. Server startup and ARM CPU are engineering
+budget deviations, with user impact in the performance report. The original
+acceptance gate requires complete measurements and explained deviations; the
+next lab revision records these separately from functional/security case results.
 
-Runs `38836905004` (focused, `9b3acd8`) and `38837115647` (focused, `d009cbe`)
-exercise the next fixture fixes; the full workflow also runs on both targets.
-Reviewed original JSON from six additional investigations is retained with exact
-byte hashes. None counts as a passed phase gate. P10 remains NOT_STARTED.
+Both targets passed the actual picker, running policy diff/queue, explicit Stop
+and independently verified stopped Apply. Both then reached a 126-row file page;
+the fixture incorrectly demanded exactly 128 instead of at most 128. The next
+revision retains complete unique traversal of all 10,000 files and bounded pages.
+Archive GUI round trips, primary browser host-instance isolation, persistent
+history, bilingual layouts and actual Windows scaling have passed.
+
+Remaining mandatory proof includes the complete file/transfer/lifecycle and
+secret/export sequence, ARM keyboard input ownership, editor Save As, browser
+child/protocol/about:support actions, and matching P03–P08 final-source regression.
+New native input, exact dialog-field and measurement-report fixes remain under
+Windows validation. No failed historical result is relabeled successful.
+P10 remains NOT_STARTED; final T01–T66 installed acceptance remains P12.
 
 ## Implementation underway
 
@@ -63,7 +68,7 @@ restored after restart. No automatic policy apply or launch replay is introduced
 ## Checks so far
 
 Local frontend build, three foundation UI tests and four product helper tests pass.
-The repository validator and 14 tooling tests pass. Portable Rust tests, Windows
+The repository validator and 18 tooling tests pass. Portable Rust tests, Windows
 adapter metadata Clippy and PowerShell/C# compile checks are recorded separately
 from native execution. Earlier product builds passed on both Windows targets at
 `ef2c4bd85830b6e1a486c0646e4e2e045f74a811` (Actions `38773439542`).
@@ -674,3 +679,39 @@ retained a live unreviewed WerFault in a generated scope. Optional parent-fixtur
 CIM diagnosis now classifies only fixed known component names associated with a
 live reporter; no command lines, paths or process IDs are retained. This weak
 association is never authority for termination, trust or a passing result.
+
+The original acceptance gate 7 explicitly requires measured engineering budgets
+and user-impact explanations for deviations. The earlier retainer added an
+unrequested all-targets-must-be-met gate. It now preserves the exact targets and
+complete ten-environment/10,000-file/60-second measurement, records all five
+MET/DEVIATION results with user impact, and validates them independently against
+the actual sample fields. Missing full samples or explanations still fail.
+Functional/security cases, native ownership, all application/file workflows,
+mandatory rules, containment and matching regressions remain required. Historical
+failed runs keep their original results; no old proof is relabeled successful.
+
+Focused Server `f2ebba3` passed the queued-policy UI and reached the actual file
+page. It contained 126 rows, within the required 128-row bound; the fixture had
+incorrectly required a full 128 rows. The check now records the actual DOM size
+and still requires complete unique traversal of all 10,000 files and bounded
+native pages. The editor reached its genuine Save As dialog but its filename
+provider was unavailable. Known editable native classes remain restricted to
+fixed filename IDs/ancestry within the exact owned dialog, including hosted
+child controls; exact set/readback is still required.
+
+Firefox clipboard-based address readback remained unavailable. Navigation now
+uses documented Windows SendInput scan-code chords and Unicode text, with
+checked native delivery and exact foreground PID/root ownership. Every current
+canary page must still be observed after a blank navigation and all resulting
+requests independently attributed to a held original-driver member. Child links
+and protocol confirmations use actual native keys; no handler is dispatched by
+the helper. Clipboard diagnostics remain required to obtain a positive actual
+about:support sandbox level, and are never replaced with a static preference.
+
+Native point lookup now uses WindowFromPoint under the already-required per-
+monitor-v2 helper context, matching UIA and cursor screen coordinates. Exact
+native PID/root and focused-element checks still precede/verify input. A boolean
+comparison with the legacy physical-point API diagnoses disagreement. On failure,
+unknown process names remain hashed. Only a valid Microsoft-signed component
+under the protected Windows system directories may expose its component basename;
+no path, PID, certificate data or arbitrary application inventory is retained.

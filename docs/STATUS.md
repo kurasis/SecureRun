@@ -7,7 +7,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
 | P03 | DONE — matching P09 regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
-| P04 | BLOCKED — final P09 runtime regression pending | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
+| P04 | DONE — matching P09 regression passed | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED — final P09 runtime regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
 | P06 | BLOCKED — final P09 runtime regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
 | P07 | BLOCKED — P09 regression pending | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
@@ -18,7 +18,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
 [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Fresh full run [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449)
-is pending. P09 remains IN_PROGRESS; P03 passed at this exact source; matching P04–P08 regressions are running.
+is pending. P09 remains IN_PROGRESS; P03 and P04 passed at this exact source; matching P05–P08 regressions are running.
 
 First full `f9a9755` ARM attempt 38891751077 refused environment eight with
 DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault; no full sample

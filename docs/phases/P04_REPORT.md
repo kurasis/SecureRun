@@ -1,5 +1,15 @@
 # P04 phase report
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564).
+Both native targets passed 61 adapter tests and 19 observation/trust scenarios,
+with zero production mutations or target launches. Matching P03 passed on the
+same source. The [manifest](../evidence/p04/manifest.json) binds the original
+reports and all protected sources. This closes P04 only; P05–P09 remain pending.
+The sections below preserve the original completion and historical regressions.
+
+
 Status: DONE. Requested scope: full P04. Dependencies: P02 feasibility and P03
 foundation/IPC, with current P03 native regression for the same final source.
 This historical section describes original P04 scope; current P05 regression is

@@ -74,7 +74,8 @@ lists include the current tools.
 | First full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): ARM refused environment eight with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and unassociated WerFault; no full sample. Server pending. |
 | Fresh full `f9a9755` | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449): unchanged exact source on a fresh matrix, pending. |
 | P03 exact-source regression | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430): both native targets and portable job passed; each native target passed 19 foundation/4 app/3 frontend/32 command cases. Formal original evidence retained. |
-| P04–P08 exact-source regressions | Running at the same immutable candidate; final matching success remains required |
+| P04 exact-source regression | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564): both targets passed 61 adapter tests and 19 native observation/trust cases; original formal evidence retained. |
+| P05–P08 exact-source regressions | Running at the same immutable candidate; final matching success remains required |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
 the real native picker and observed the actual imported file. Server also passed

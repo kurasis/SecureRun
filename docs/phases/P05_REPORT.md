@@ -6,8 +6,7 @@ Current P09 dependency regression: DONE at
 Each target passed 61 adapter tests and 45 applicable native policy/provisioning cases, with zero failures. T52 is explicitly not applicable because the product has no elevation/helper route; OS-current-user profile authority remains mandatory.
 All earlier dependencies passed on the same source. The
 [manifest](../evidence/p05/manifest.json) binds original reports and every
-protected source, including current lab tools. This closes P05 only;
-complete matching full P09 proof remains pending. The sections below preserve
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
 the original completion and historical regressions.
 
 

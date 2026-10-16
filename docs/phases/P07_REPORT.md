@@ -6,8 +6,7 @@ Current P09 dependency regression: DONE at
 Server passed 28 and ARM passed 29 actual safe-file/boxed-EXE cases, with zero failures or actor failures. Normal/fault binary provenance and staged executable hashes are retained.
 All earlier dependencies passed on the same source. The
 [manifest](../evidence/p07/manifest.json) binds original reports and every
-protected source, including current lab tools. This closes P07 only;
-complete matching full P09 proof remains pending. The sections below preserve
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
 the original completion and historical regressions.
 
 

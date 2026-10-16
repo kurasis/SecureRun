@@ -7,7 +7,7 @@ Each target passed 19 foundation tests, 4 native app tests, 3 frontend tests and
 32 actual Windows command-boundary cases with zero engine operations. Both actual
 Windows architectures and the portable job passed. The [manifest](../evidence/p03/manifest.json)
 binds original reports and every protected source, including current lab tools.
-This closes P03 only; complete matching P04–P09 proof is still pending.
+P04–P09 also passed on this exact source; see the [P09 report](P09_REPORT.md).
 The sections below preserve the original completion and historical regressions.
 
 

@@ -8,11 +8,41 @@ never becomes a claim that the numerical target was met. Missing measurements,
 focused/inspected workloads, incomplete process groups or missing mandatory
 application/file/accessibility proof still prevent phase completion.
 
+## Final full reference measurement
+
+Status: DONE at `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).
+All 22 native cases and 101 UI assertions passed on each target. Both normal
+release samples used ten actual idle environments and 10000 files without an
+inspector, with complete kernel-job CPU including exited workers/WebViews.
+Server: 60190 ms/233 observations; ARM: 60139 ms/223 observations. Engine and
+application-target processes are excluded from the measured manager group.
+
+| Metric | Unchanged target | Server x64 | Windows 11 ARM64 |
+|---|---:|---:|---:|
+| Interactive startup ms | ≤3000 | 3810.259 — DEVIATION | 2365.5266 — MET |
+| Complete-job idle CPU % | <1 | 1.1422099692 — DEVIATION | 1.2406132546 — DEVIATION |
+| Average working set bytes | <250000000 | 229795180 — MET | 254373796 — DEVIATION |
+| Process update ms | ≤2000 | 1186.4 — MET | 1349 — MET |
+| Added launch ms | <1000 | 541 — MET | 552 — MET |
+
+Server can take longer before controls become interactive. Higher idle CPU may
+increase power use. ARM average memory is 4373796 bytes above target, leaving
+less available to other applications. Peak observed working sets were
+395481088/416501760 bytes; the original memory budget applies to the average.
+All five targets and exact flags remain in the original
+[Server assessment](evidence/p09/completion-f9a9755/windows-2025/performance-budget-assessment.json)
+and [ARM assessment](evidence/p09/completion-f9a9755/windows-11-arm/performance-budget-assessment.json).
+Both are MEASURED_DEVIATION with mandatory_checks_waived=false. No missing
+functional/security case or reference workload was waived.
+
+## Earlier measurements and measurement method
+
 The lab produces `performance-budget-assessment.json` with all five original
 targets, observed values, exact comparisons, MET/DEVIATION results and user impact.
 The retainer recomputes it from the actual samples and rejects absent or changed
-explanations, contradictory target flags and non-finite data. Current full samples
-miss some engineering targets. Normal release runs measured:
+explanations, contradictory target flags and non-finite data. Earlier full samples also
+missed some engineering targets. Historical normal release runs measured:
 
 | Full reference run | Runner | Startup ms | Complete-job CPU % | Average working set bytes | Result |
 |---|---|---:|---:|---:|---|
@@ -63,7 +93,7 @@ WebView2 uses its public low-memory target and normal rendering defaults. A
 software-composition experiment was reverted after failing to improve CPU and
 producing a 40.9-second startup outlier. The actor uses its loaded Windows profile
 and owner-private writable fixture TEMP; no security setting is changed.
-Historical samples cannot establish performance at the final source revision.
+Historical samples cannot replace the final-source measurement above.
 
 | Workload | Required reference budget | Measurement |
 |---|---|---|
@@ -109,13 +139,14 @@ private history/WAL and exact exported diagnostics in UTF-8 and UTF-16. Target
 arguments and raw errors are never copied into retained evidence. A real reviewed
 redacted example is retained only after its native save succeeds.
 
-Current result: pending [P09 manifest](evidence/p09/manifest.json).
+Current result: DONE in the [P09 manifest](evidence/p09/manifest.json), with all
+matching P03–P08 source-bound regressions. Exact reviewed native Save examples are
+retained for [Server](evidence/p09/completion-f9a9755/windows-2025/reviewed-diagnostic-example.json)
+and [ARM](evidence/p09/completion-f9a9755/windows-11-arm/reviewed-diagnostic-example.json).
+The native saved bytes exactly equal their reviewed minimized previews; local
+history and captured errors passed synthetic secret scans.
 
-
-Current observed deviations mean that the first interactive window can arrive
-later than three seconds and that idle processor use can exceed the one-percent
-target, potentially increasing power use. Average working set has met the
-250,000,000-byte target in the completed reference samples cited above. These
-observations are specific to the documented hosted runners and do not establish
-Windows 11 x64 release performance. Both targets have historical complete reference samples; final-source measurement,
-application, accessibility and phase proof remain incomplete.
+These measurements apply to the documented hosted tuples. They do not establish
+installed Windows 11 x64 release performance. Earlier setup/workflow failures and
+budget deviations remain immutable history. No Windows reporting/security setting,
+engine signature/TLS/checksum or browser sandbox protection was weakened to pass.

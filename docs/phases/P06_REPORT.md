@@ -6,8 +6,7 @@ Current P09 dependency regression: DONE at
 Server passed 21 and ARM passed 22 actual launch/control cases, with zero failures. Matching regressions include actual x86 and emulated x64 targets; normal release fault features remain disabled.
 All earlier dependencies passed on the same source. The
 [manifest](../evidence/p06/manifest.json) binds original reports and every
-protected source, including current lab tools. This closes P06 only;
-complete matching full P09 proof remains pending. The sections below preserve
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
 the original completion and historical regressions.
 
 

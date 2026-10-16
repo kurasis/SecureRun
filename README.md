@@ -3,15 +3,26 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01–P08 are complete on the owner-selected laboratories. P08 adds [lifecycle and recovery](docs/LIFECYCLE_AND_RECOVERY.md): persistent and
-disposable retention, archive/unarchive, explicitly confirmed Reset/Remove and
-journal inspection without replay. It builds on [safe file workflows](docs/SAFE_FILE_WORKFLOWS.md),
-[launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md) and
-[policy/provisioning](docs/POLICY_PROVISIONING.md).
-Current validation on the owner-selected Server 2025 x64 and Windows 11 ARM64
-laboratories is tracked in [STATUS](docs/STATUS.md) and
-[the P08 report](docs/phases/P08_REPORT.md). Final acceptance and packaging remain
-later phases.
+P01–P09 are complete on the owner-selected laboratories. P09 adds the original
+English/Russian native interface, onboarding, keyboard/accessibility and scaling,
+real file/policy/retention workflows and explicitly reviewed minimized diagnostics.
+Official editor/archive/browser workflows passed on Server 2025 x64 and Windows
+11 ARM64: 22 native scenarios and 101 UI assertions on each, with complete ten-
+environment/10000-file resource samples. All P03–P09 gates use the same verified
+runtime source `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
+
+See [STATUS](docs/STATUS.md), [P09 report](docs/phases/P09_REPORT.md),
+[UX/accessibility](docs/PRODUCT_UX.md), [application compatibility](docs/APPLICATION_COMPATIBILITY.md)
+and [measured budgets](docs/PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). Startup/CPU
+and ARM average-memory deviations are recorded with user impact; original targets
+are unchanged. Packaging and installed acceptance remain P11/P12, and P10 has not
+started. These laboratories do not certify a Windows 11 x64 installed release.
+
+The interface builds on [lifecycle/recovery](docs/LIFECYCLE_AND_RECOVERY.md),
+[safe files](docs/SAFE_FILE_WORKFLOWS.md), [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md)
+and [policy/provisioning](docs/POLICY_PROVISIONING.md). Archive/Unarchive,
+confirmed Reset/Remove and inspect-only journal recovery preserve explicit user
+intent and never resume work automatically.
 
 The complete, unchanged specification is in
 [docs/specification/00_README.md](docs/specification/00_README.md).
@@ -78,7 +89,7 @@ npm test
 
 The Linux cloud uses [setup-cloud.sh](tools/setup-cloud.sh); it pins and verifies
 Rust installation, activates workspace-local caches and executes these checks.
-Native Windows validation is reproduced by the P03–P08 Actions workflows on
+Native Windows validation is reproduced by the P03–P09 Actions workflows on
 Server 2025 x64 and Windows 11 ARM64, with actual x86/x64 target PEs.
 The [observation contract](docs/ENGINE_OBSERVATION.md) describes the versioned
 compatibility manifest, trust/context gates, private local diagnostics and bounded

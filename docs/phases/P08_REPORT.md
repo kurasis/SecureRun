@@ -6,8 +6,7 @@ Current P09 dependency regression: DONE at
 Both targets passed all 38 actual lifecycle/recovery cases, with zero failures or actor failures. This includes interruption, native confirmation, generation, stale-root and unsafe-hook refusal checks.
 All earlier dependencies passed on the same source. The
 [manifest](../evidence/p08/manifest.json) binds original reports and every
-protected source, including current lab tools. This closes P08 only;
-complete matching full P09 proof remains pending. The sections below preserve
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
 the original completion and historical regressions.
 
 

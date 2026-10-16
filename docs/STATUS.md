@@ -1,85 +1,66 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
+Specification: 1.3. Updated: 2026-10-16 UTC. Completed scope: full P09.
 
 | Phase | Status | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
-| P03 | DONE — matching P09 regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
-| P04 | DONE — matching P09 regression passed | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | DONE — matching P09 regression passed | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE — matching P09 regression passed | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE — matching P09 regression passed | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | DONE — matching P09 regression passed | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
-| P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
-| P10–P12 | NOT_STARTED | Depend on P09 |
+| P03 | DONE | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
+| P04 | DONE | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
+| P05 | DONE | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | DONE | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | DONE | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | DONE | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P09 | DONE | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
+| P10–P12 | NOT_STARTED | P10 is next eligible; outside the P09 request |
 
-Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
-[draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
-Fresh full run [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449)
-is pending. P09 remains IN_PROGRESS; All matching P03–P08 regressions passed at this exact source and their formal
-source-bound evidence is retained. Full P09 still requires the ARM target.
+Verified runtime/lab source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
+All P03–P09 gates passed on this exact commit; documentation/evidence descendants
+preserve its protected source bytes. [PR #10](https://github.com/kurasis/SecureRun/pull/10)
+contains the implementation and all reviewed project documents/evidence.
 
-First full `f9a9755` ARM attempt 38891751077 refused environment eight with
-DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault; no full sample
-exists. Server passed all 22 native cases and 101 UI assertions, and every independent
-formal target check. Fresh matrix 38894071449 and the P03–P08
-regressions use the same immutable `verify/p09-f9a9755` source. No reporter is
-killed/trusted/exempted and no failed attempt is relabelled successful.
+## Matching native proof
 
-Historical full `0071e2c`, run 38887959409, completed ten environments, 10000 files and
-at least 60 seconds of complete-job measurement on both targets. ARM passed all
-101 UI assertions and the complete real import/export/collision/Archive/Unarchive/
-Reset workflow with native confirmations, generation/root and host-integrity
-checks. Its separate archive GUI exit and browser point ownership failed.
-Server passed 21 native cases and 99 UI assertions, including exact reviewed Save,
-transfers, actual Archive and every editor/archive/browser case; the next lifecycle
-confirmation was not observed. The fixture now waits for actual inherited
-fieldset availability and logs archive create/extract outcomes separately.
-Native waits, scoped confirmation, file hashes and browser guards are unchanged.
-
-Both targets have positively saved exact reviewed minimized diagnostics. Historical
-browser/editor/archive constituents do not replace complete final-source proof.
-All reviewed original JSON, hashes, failures and cancellation reasons are retained
-and published. Earlier full ARM setup refusals with unassociated WerFault have no
-complete sample; no reporter is killed/trusted/exempted and no unknown window is
-hidden. Performance targets remain unchanged; measured startup/CPU deviations and
-user impact are recorded explicitly. GitHub authentication and publication work.
-
-Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
-Reviewed original JSON and binary provenance are retained with checksums. Failed
-investigations remain historical and never count as successful phase proof.
-
-## Historical P08 verification
-
-| Gate | Actions run | Result on each owner-selected target |
+| Gate | Actions run | Actual result on owner-selected targets |
 |---|---|---|
-| P03 | [38763953821](https://github.com/kurasis/SecureRun/actions/runs/38763953821) | 19 foundation, 2 normal native, 3 UI and 29 actual command-boundary cases passed |
-| P04 | [38763957687](https://github.com/kurasis/SecureRun/actions/runs/38763957687) | 48 adapter tests and 19 native observation cases passed |
-| P05 | DONE — matching P09 regression passed | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE — matching P09 regression passed | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE — matching P09 regression passed | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | DONE — matching P09 regression passed | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P03 | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430) | Each: 19 foundation, 4 app, 3 frontend, 32 command cases; portable job passed |
+| P04 | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564) | Each: 61 adapter tests, 19 native observation/trust cases |
+| P05 | [38893332061](https://github.com/kurasis/SecureRun/actions/runs/38893332061) | Each: 61 adapter tests, 45 applicable native cases; T52 N/A because no elevation/helper route exists |
+| P06 | [38893334893](https://github.com/kurasis/SecureRun/actions/runs/38893334893) | Server 21 / ARM 22 native launch/control cases |
+| P07 | [38893338017](https://github.com/kurasis/SecureRun/actions/runs/38893338017) | Server 28 / ARM 29 native file/boxed-EXE cases; zero actor failures |
+| P08 | [38893340716](https://github.com/kurasis/SecureRun/actions/runs/38893340716) | Each: 38 native lifecycle/recovery cases; zero actor failures |
+| P09 | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449) | Each: all 22 native scenarios and 101 UI assertions; zero failures |
 
-Laboratories: Windows Server 2025 x64, build 26100, with actual x64/x86 target PEs;
-Windows 11 ARM64, build 26200, with ARM64 and emulated x86/x64 target PEs.
-Original Sandboxie Plus 1.18.6 / core 5.73.6 / ABI `0x57230`, pinned upstream
+P09 includes real native Save of exact reviewed diagnostics, import/export and
+collision hashes, Archive/Unarchive/Reset confirmations and postconditions,
+keyboard/UIA, English/Russian themes/content/Windows DPI, complete inert filenames,
+queued policy review and official editor/archive/browser workflows. Firefox's
+observed effective content sandbox level was 9 on both targets.
+
+Both final reference samples contain ten actual idle environments, 10000 files
+and more than 60 seconds of complete kernel-job CPU including exited workers and
+WebViews. Original targets remain unchanged: Server startup/CPU and ARM CPU/average
+memory exceeded budgets, with actual flags and user impact in
+[the performance report](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). Measurement
+exceptions waive no mandatory functional/security or reference-workload check.
+
+Laboratories: Windows Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200,
+including actual x86 and emulated x64 target binaries. Original Sandboxie Plus
+1.18.6 / core 5.73.6 / ABI 0x57230, upstream source
 `cdba7096240b93d79c5373aa81a75a1c5c71b883`.
+These labs do not certify an installed Windows 11 x64 release tuple, paid
+entitlement, every plugin or future app/engine update.
 
-P08 supplies persistent/disposable retention, archive restoration, native confirmed
-Reset/Remove, generation invalidation and inspect-only journal recovery. Actual
-proof includes seven Reset and eight Remove executor interruptions, UI exit/crash,
-real native confirmation and cancellation, all-session idle, current unsafe hooks,
-locked files, replaced roots and old-generation operations. See
-[lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for exact retention and limits.
-No Windows security setting is weakened and no engine binary is bundled.
+Formal manifests retain original JSON, binary provenance, reviewed synthetic
+screenshots and exact hashes. Failed/cancelled investigations remain history;
+no reporter is killed/trusted/exempted, unknown window hidden, engine bundled or
+Windows security/TLS/signature/checksum/browser sandbox check weakened.
 
-The original 26-document specification is unchanged. All T01–T66 final installed-
-candidate acceptance entries remain NOT_STARTED until P12. Phase proof does not
-complete release acceptance. T48 packaging finishes in P11. No Windows 11 x64
-release tuple, paid entitlement or release certification is claimed by these labs.
+All 26 original specification documents are unchanged. Installed T01–T66 final
+acceptance remains NOT_STARTED until P12; T48 packaging completes in P11. P09
+phase proof does not complete release acceptance. No P10 implementation is included.
 
-The owner authorizes publication of every project change, including Markdown and
-reviewed JSON evidence, followed by normal merge after validation. Credentials,
+The owner authorizes automatic push of all project files, including Markdown and
+reviewed structured evidence, followed by ordinary validated merge. Credentials,
 private inventories and generated binaries remain excluded.

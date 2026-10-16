@@ -1,85 +1,61 @@
 # P09 application compatibility
 
-The following official packages are pinned in
-[the application fixture manifest](../tools/lab/p09-applications.json). Download
-integrity is checked before installation or extraction. Exact executable hashes,
-file versions and signature status are retained by each native run. Pinning and
-compilation alone do not establish compatibility.
+Status: PASSED for the workflows and owner-selected laboratory tuples below.
+Verified source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`;
+[full run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).
+Both targets passed all 22 native cases and 101 UI assertions. The
+[formal manifest](evidence/p09/manifest.json) binds original evidence and current
+sources; independent P03–P08 regressions passed on the same exact commit.
 
-| Application | Exact package version | Architectures | Required actual workflow | Current result |
+| Official application | Exact package version | Architectures | Actual workflow | Result |
 |---|---|---|---|---|
-| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Passed on both targets at `9df8149`, run 38874505825; final matching full run pending. |
-| 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
-| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | All four workflows passed on both targets in browser-only run 38878700124 at `784a4c9`, with effective content sandbox level 9. Diagnostic only; final matching full run pending. |
+| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, native GUI edit/Save As, exact boxed bytes and unchanged host input/output | PASSED on both |
+| 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, round-trip SHA-256 and absent host outputs | PASSED on both |
+| Firefox ESR | 153.5.0esr | x64, ARM64 | Existing clean host instance, separate boxed profile, actual main/child HTTP attribution, reachable boxed protocol handler and effective own sandbox | All four cases PASSED on both; effective content sandbox level 9 |
 
-Latest constituent workflows passed on Server in full run 38879931585 (`aa5b8f5`)
-and on ARM in focused run 38885566833 (`217f550`), including actual editor save,
-archive round trip and all four browser cases. ARM also passed real import/export
-and collision rename. Its remaining native Archive confirmation failure belongs
-to the manager lifecycle workflow, not the archive application. Complete matching
-full-source proof at `f9a9755` is still mandatory; constituent runs are not combined
-to close the formal gate.
+Downloads and per-architecture package hashes are pinned in
+[the fixture manifest](../tools/lab/p09-applications.json). Actual executable
+hashes, file versions and signature status are retained in each native run.
+Notepad++ and Firefox signatures must validate. The original 7-Zip package's
+pinned hash is mandatory even when its executable is unsigned. Pinning/compilation
+alone never establishes compatibility. No engine/application package is bundled.
 
-Full `0071e2c` later passed all 101 manager UI assertions and the complete real
-transfer/lifecycle chain on ARM, but its archive GUI exit timed out and browser
-welcome hit an unidentified foreign surface. Those are mandatory failures; the
-unknown owner is not hidden or exempted. Fresh complete matching proof remains
-required. The fixture now preserves create/extract outcomes separately without
-changing the original held-process wait or output/hash checks.
+The normal release manager, running as a Standard user, registered and launched
+these applications through its real native controls. The manager workflow also
+proved actual import/export hashes, collision rename preserving original bytes,
+Archive/Unarchive/Reset with native UUID/retention confirmation, generation change,
+empty reset root and unchanged host input/exports.
 
-Server full `f9a9755`, run 38891751077, then passed all 22 native and 101 UI
-cases, including every editor/archive/browser workflow and the complete manager
-transfer/lifecycle sequence. Its original files pass every independent formal
-P09 target check. ARM in that matrix refused environment eight before the
-reference workload; the phase remains blocked until fresh full matching ARM and
-all exact-source dependency gates pass.
+Browser proof requires original-driver box membership, a held live process birth
+and actual socket ownership. A process tree or window title alone is insufficient.
+The host profile supplies a positive-control cookie; boxed requests must not carry
+it. A reviewed rule blocks reads of that host profile. An explicitly registered
+synthetic protocol has an unboxed positive control; invocation through the actual
+boxed browser link must run boxed and leave no host marker. Native child-link
+navigation must produce its separately attributed request.
 
-Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
-matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated
-x64 target binaries. Native application results are reported per runner; they do
-not certify every Windows edition, plugin, browser integration or future update.
+Firefox's own effective sandbox is read from actual about:support data through
+its official copy control. Raw support text/JSON and clipboard content are not
+persisted. Its known first-run welcome can use guarded Windows OCR only after
+matching exact heading, terms, privacy notice and unique Continue on a freshly
+owned window; disappearance is verified. No unknown surface receives input.
+Browser preferences/arguments never disable its sandbox. Tests use synthetic
+profiles, documents, requests and protocol data, not a user's private browser data.
 
-Browser proof requires original-driver box membership, held process identity and
-actual loopback socket ownership for requests. A process tree alone is not
-containment proof. The synthetic host profile sets a positive-control cookie;
-the boxed request must not carry it. A reviewed exclusion protects that host
-profile. An explicitly registered synthetic protocol supplies an unboxed positive
-control; the browser-reachable invocation must execute boxed and leave no host
-marker. Firefox's own effective content sandbox must remain enabled. The lab
-adds no browser sandbox-disable flag, privileged product helper or broad engine
-exception. Only synthetic documents, profiles, requests and protocol data are used.
+Owner-selected targets are Server 2025 x64 build 26100 and Windows 11 ARM64 build
+26200 with original Sandboxie Plus 1.18.6/core 5.73.6. Matching regressions include
+actual x86 and emulated x64 binaries on ARM. Results do not certify every Windows
+edition, plugin, host integration, paid capability or future app/engine update;
+installed Windows 11 x64 acceptance remains P12.
 
-No engine binary or official application package is redistributed by the product.
-The official 7-Zip package's pinned hash is mandatory even when its executable is
-unsigned; Notepad++ and Firefox executable signatures must validate.
+Earlier failed and diagnostic-only trials remain in the manifest and
+[investigation log](phases/P09_INVESTIGATION_LOG.md), including setup refusals,
+archive timeouts and obstructed browser points. They are not combined to replace
+the successful full final-source matrix. No reporter is killed/trusted/exempted,
+unknown window hidden, OS security setting weakened or broad engine exception added.
 
-The authoritative result is the [P09 manifest](evidence/p09/manifest.json), which
-must reference successful immutable evidence on both targets and matching source.
-
-The window-class convention used by the editor fixture is verified against
+The editor window-class convention is checked against
 [pinned upstream guiclass.c](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/core/dll/guiclass.c#L124).
-Only the expected native member's exact box prefix is accepted. The browser
-protocol fixture activates a real HTTP canary link, and its own sandbox level is
-read from actual about:support JSON or rendered text. Raw support content is not
-retained. These automation corrections still require actual successful results.
-
-Earlier diagnostic profiles forced Firefox accessibility, but neither the address
-provider nor native navigation passed. That experiment is reverted. The current
-browser fixture reads only native window captions, delivers real keyboard input
-and observes synthetic address readback through a cleared clipboard before
-navigation. Clipboard visibility is diagnostic only; fresh native page titles and
-actual attributed requests remain mandatory. Only the known first-run welcome attempts UIA, with guarded native Windows OCR when that provider exposes no heading: the exact heading, terms, privacy notice and unique enabled Continue must match before interaction; diagnostic choices are observed off when available. The welcome must disappear before native navigation continues. Both targets exposed no welcome controls through UIA at `7a4000a`; Windows OCR positively recognized and dismissed the welcome on Server at `9111127`. Its actual child/protocol containment then passed; Server later positively read effective own-sandbox level 9 at `1dabb77`; that trial failed the protocol case during clipboard cleanup. Server passed all four browser-only cases at `8cc5e26`; ARM and the full final-source gate remain pending. The same modal is observed in the reviewed real visible screenshots on both targets at `7ccda2b`. Manager
-screen-reader/UIA checks remain mandatory. Actual requests, held driver membership,
-protocol output and a positive observed about:support sandbox level remain required.
-Server run 38862241469 had no observed browser GUI and retained a live WerFault
-associated with SandboxieRpcSs.exe; no causal claim or successful browser workflow
-is inferred from that failed run, and no reporter is killed or exempted.
-
-The latest complete browser diagnostic at `784a4c9` passed on both native targets.
-Each retained case proves actual driver/socket attribution or actual boxed output,
-and the effective own-sandbox level was 9 on both. ARM's native helper encountered
-two exact clipboard-busy HRESULTs and waited within the two-second bound. Native
-input reported complete delivery. Only an explicit zero-input foreground rejection
-may reacquire focus before typing; incomplete input, Enter and protocol invocation
-are never replayed. The normal manager and full reference workload remain separate
-mandatory gates; the browser-only result cannot satisfy the formal phase retainer.
+Only the expected native member's exact box prefix is accepted. See
+[UX/accessibility](PRODUCT_UX.md) and [performance/diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md)
+for additional measured scope and limits.

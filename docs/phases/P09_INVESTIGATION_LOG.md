@@ -1370,3 +1370,22 @@ working set 228076482 bytes (met), update 1048.8 ms and added launch 498 ms (met
 All 286 original reviewed Server JSON files are retained. The matrix's ARM setup
 failure is preserved and cannot be replaced by this target pass. Fresh exact-
 source full 38894071449 and matching dependencies remain mandatory.
+
+
+## Final closure — full matching P09 matrix
+
+Full run 38894071449 on immutable `f9a9755` passed on both owner-selected targets:
+22 native scenarios and 101 UI assertions each, zero failures. All exact-source
+P03–P08 regressions passed and their original formal evidence was retained before
+P09. The retainer independently accepted both full target reports and source
+bindings. Final P09 completion retains 690 original reviewed JSON and 22 visually
+reviewed synthetic PNGs, with original bytes/hashes preserved. Complete reference
+samples are Server 60190 ms/233 observations and ARM 60139 ms/223, with ten actual
+idle environments, 10000 files and complete job CPU including exited children.
+Server startup/CPU and ARM CPU/average-memory deviations remain false target flags
+with exact user impact under original acceptance gate 7; no mandatory scenario or
+workload is waived. All earlier failed/cancelled/diagnostic-only trials remain
+history, including the first same-source Server pass and ARM setup refusal. No
+unknown window/reporter exception, process termination, OS security/TLS/signature/
+checksum or browser sandbox weakening was introduced. P10–P12 are NOT_STARTED and
+installed T01–T66 acceptance remains reserved for P12.

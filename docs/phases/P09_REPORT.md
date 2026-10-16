@@ -1,200 +1,134 @@
 # P09 — Product UX and application compatibility
 
-Status: IN_PROGRESS. The [P09 manifest](../evidence/p09/manifest.json) is BLOCKED.
-Requested scope is full P09 only; P10–P12 remain NOT_STARTED. Final installed
-T01–T66 acceptance is reserved for P12 and remains unrun.
+Status: DONE. The [formal manifest](../evidence/p09/manifest.json) retains successful
+full proof on Windows Server 2025 x64 and Windows 11 ARM64. Each target passed all
+22 native scenarios and 101 UI assertions with zero failures.
 
-Current runtime/lab candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
-Documentation-only descendants do not replace the tested source. The implementation
-and reviewed evidence are published in [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Verified runtime/lab source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
+[Full P09 run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449)
+and all six P03–P08 regressions use this exact commit. Later documentation/evidence
+commits preserve those protected source bytes. Requested scope is P09 only;
+P10–P12 remain NOT_STARTED. Installed T01–T66 acceptance remains unrun until P12.
 
-## Implemented behavior and principal files
+## Delivered behavior and principal files
 
-The original native interface presents Applications, Processes, Files, Permissions,
-Activity and Retention/recovery using real backend state. Activity and launch
-eligibility are independent. Onboarding explains engine availability/trust,
-restart requirements, enforcement verification and Standard-user service-identity
-limits. Mandatory rules are read-only. Uncertain outcomes require inspection of
-recorded state before another action. English/Russian resources, keyboard access,
-visible focus, themes and 100/150/200 percent scaling are implemented in
-[the interface](../../ui/main.tsx), [resources](../../ui/strings.ts) and
-[product presentation](../../ui/product.ts).
+The [original native interface](../../ui/main.tsx) presents Applications, Processes,
+Files, Permissions, Activity and Retention/recovery using real backend state.
+Activity and launch eligibility are independent. Onboarding distinguishes missing,
+untrusted, unavailable, restart-required, untested and verified engines and explains
+Standard-user service-identity limitations. Mandatory rules are read-only; uncertain
+outcomes direct the user to inspect recorded state before another action.
 
-[Application controls](../../ui/controls.tsx) require loaded environment metadata
-and supply its current revision for launch; backend CAS refusal remains mandatory.
-[File views](../../ui/files.tsx) show complete inert escaped filenames, bounded
-pages, explicit imports/exports and rename-or-skip collisions. Metadata rename
-preserves policy/generation and stores a replay tombstone. Running policy changes
-require a reviewed diff, explicit queue, whole-environment Stop and independently
-verified stopped Apply. Archive/reset use native scoped confirmation.
+[English/Russian resources](../../ui/strings.ts), [presentation](../../ui/product.ts),
+visible keyboard focus, themes and actual 100/150/200 percent content/Windows scaling
+are complete. [Application controls](../../ui/controls.tsx) require loaded metadata
+and use the current environment revision for launch. Backend CAS refusal remains;
+mutations are never retried automatically after an uncertain result.
+
+[File views](../../ui/files.tsx) show complete inert escaped filenames and bounded
+pages. Selection does not launch or register a file. Exact native input, transfer
+hashes, rename-or-skip collision handling and host integrity are verified.
+Metadata rename preserves identity/policy/generation and stores a replay tombstone.
+Running policy changes require reviewed differences, explicit queue, whole-box
+Stop and independently verified stopped Apply. Archive/Unarchive/Reset use separate
+native confirmation naming the exact environment and retained/deleted state.
 
 [Native product commands](../../src-tauri/src/product.rs) and
-[adapter product state](../../crates/sandboxie-adapter/src/windows/provisioning/product.rs)
-provide bounded history, observation and diagnostics. Private history accepts typed
-fields, retains at most 512 events for 30 days and labels unavailable persistence.
-Shared diagnostics remove environment identities, limit events/bytes, require exact
-preview and an expiring one-use Save token, create new files only and never
-open/upload output. [Native pickers](../../src-tauri/src/native.rs) use a fresh
-thread with the actual parent window. Synthetic argv/environment/error canaries
-are checked against saved output, local history and UTF-8/UTF-16 captures.
+[adapter state](../../crates/sandboxie-adapter/src/windows/provisioning/product.rs)
+provide bounded observation/history and minimized diagnostics. Private history
+retains typed events for at most 30 days/512 entries. Shared export removes local
+environment identities, limits events/bytes, requires exact preview and an expiring
+one-use native Save token, creates new files only and never opens/uploads output.
+[Native pickers](../../src-tauri/src/native.rs) use a fresh thread and the actual
+parent window. Exact reviewed output and local UTF-8/UTF-16 captures passed secret-
+canary checks. Inert UTF-16 filename decoding preserves complete metadata while
+strict engine/configuration/output-name and containment guards remain enforced.
 
-The read-only observer holds authenticated immutable objects for at most 60 seconds,
-independently checking fresh driver/process/configuration/root state each frame.
-Mutations repeat their own guards. WebView2 uses its public low-memory target and
-normal rendering defaults. Complete kernel-job accounting includes exited manager
-workers/WebViews and excludes targets/engine. Completed enforcement diagnostics
-retire definitions only after verified idle, retaining data and bounded evidence;
-failed diagnostics remain fenced.
+Read-only observation holds authenticated immutable objects for at most 60 seconds,
+checking fresh driver/process/configuration/root state each frame. Mutations repeat
+their own guards. WebView2 uses its public low-memory target with normal rendering.
+Completed private enforcement definitions retire only after verified idle, retaining
+data/evidence; failed scopes remain fenced. No recursive diagnostic-data cleanup,
+browser sandbox disabling, host fallback or broad exception is introduced.
 
-The [native lab](../../tools/lab/Invoke-P09.ps1),
-[actor](../../tools/probe/p09_standard.ps1),
-[UI workflows](../../tools/probe/p09_ui.js),
-[accessibility/input fixture](../../tools/probe/p09_accessibility.ps1) and
-[Windows OCR fixture](../../tools/probe/p09_ocr.ps1) exercise the real release
-application. Diagnostic modes are explicitly partial. The
-[formal retainer](../../tools/lab/retain_p09_evidence.py) requires a complete
-successful run on both targets and matching P03–P08 evidence; all protected source
-lists include the current tools.
+## Exact-source validation
 
-## Actual validation
+| Gate | Actions run | Result per target |
+|---|---|---|
+| P03 | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430) | 19 foundation, 4 app, 3 frontend and 32 native command cases; portable job passed |
+| P04 | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564) | 61 adapter tests and 19 native observation/trust cases |
+| P05 | [38893332061](https://github.com/kurasis/SecureRun/actions/runs/38893332061) | 61 adapter tests and 45 applicable native cases; T52 N/A because no elevation/helper route exists |
+| P06 | [38893334893](https://github.com/kurasis/SecureRun/actions/runs/38893334893) | 21 Server / 22 ARM launch/control cases |
+| P07 | [38893338017](https://github.com/kurasis/SecureRun/actions/runs/38893338017) | 28 Server / 29 ARM safe-file/boxed-EXE cases; zero actor failures |
+| P08 | [38893340716](https://github.com/kurasis/SecureRun/actions/runs/38893340716) | 38 native lifecycle/recovery cases each; zero actor failures |
+| P09 | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449) | 22 native cases and 101 UI assertions each; zero failures |
 
-| Check | Result |
-|---|---|
-| Original specification, links, evidence and 66 unrun acceptance entries | Repository validator passed locally; current P01 [38884409654](https://github.com/kurasis/SecureRun/actions/runs/38884409654) passed |
-| Python tooling | 18 tests passed |
-| Frontend | Type check, 3 state/localization tests and 4 product tests passed after the launch revision correction |
-| Latest fixture changes | JavaScript syntax, PowerShell parser and native C# compilation passed locally; these are not Windows execution proof |
-| Native product build | Both targets passed 61 adapter and 4 app tests at `f9b719d`, [38854501737](https://github.com/kurasis/SecureRun/actions/runs/38854501737); fresh STA regression included |
-| Browser-only `784a4c9` | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124): all four actual cases passed on both, effective content sandbox level 9; diagnostic only |
-| Full `aa5b8f5` | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585): Server 21 native/95 UI passed, one failed case; ARM 16 native/95 UI passed before two failed cases and abort |
-| Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
-| First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
-| Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; superseded Server cancelled after 88 UI assertions before transfers. |
-| Full `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409): both completed reference measurements. Server 21 native/99 UI passed; next confirmation not observed. ARM completed the real transfer/lifecycle chain and all 101 UI assertions, but archive exit timed out and browser welcome hit an unidentified foreign surface. |
-| First full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): ARM refused environment eight with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and unassociated WerFault; no full sample. Server passed all 22 native/101 UI cases and every formal target check. |
-| Fresh full `f9a9755` | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449): unchanged exact source on a fresh matrix, pending. |
-| P03 exact-source regression | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430): both native targets and portable job passed; each native target passed 19 foundation/4 app/3 frontend/32 command cases. Formal original evidence retained. |
-| P04 exact-source regression | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564): both targets passed 61 adapter tests and 19 native observation/trust cases; original formal evidence retained. |
-| P05 exact-source regression | [38893332061](https://github.com/kurasis/SecureRun/actions/runs/38893332061): Each target passed 61 adapter tests and 45 applicable native policy/provisioning cases, with zero failures. T52 is explicitly not applicable because the product has no elevation/helper route; OS-current-user profile authority remains mandatory. Formal original evidence retained. |
-| P06 exact-source regression | [38893334893](https://github.com/kurasis/SecureRun/actions/runs/38893334893): Server passed 21 and ARM passed 22 actual launch/control cases, with zero failures. Matching regressions include actual x86 and emulated x64 targets; normal release fault features remain disabled. Formal original evidence retained. |
-| P07 exact-source regression | [38893338017](https://github.com/kurasis/SecureRun/actions/runs/38893338017): Server passed 28 and ARM passed 29 actual safe-file/boxed-EXE cases, with zero failures or actor failures. Normal/fault binary provenance and staged executable hashes are retained. Formal original evidence retained. |
-| P08 exact-source regression | [38893340716](https://github.com/kurasis/SecureRun/actions/runs/38893340716): Both targets passed all 38 actual lifecycle/recovery cases, with zero failures or actor failures. This includes interruption, native confirmation, generation, stale-root and unsafe-hook refusal checks. Formal original evidence retained. |
+Formal retainers accepted evidence in dependency order with every protected source,
+including lab tools, unchanged. P09 completion retains 690 original JSON files and
+22 reviewed synthetic PNGs with byte hashes. Historical failed/cancelled/diagnostic-
+only trials remain immutable history; none substitutes for the successful full run.
 
-Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
-the real native picker and observed the actual imported file. Server also passed
-the official editor/archive and all four browser workflows in the full run.
-The transfer/lifecycle case selected the lab-private ProgramData export folder;
-the product correctly refused DESTINATION_SENSITIVE_SCOPE. No export or downstream
-lifecycle success is inferred. The current fixture selects a unique ordinary
-owner-profile folder and requires actual UI Complete/TRANSFER_COMPLETED_UNTRUSTED without an error,
-then verifies real output hashes and unchanged original data.
+Each full target used the normal release manager as a Standard user, ten actual
+idle environments, 10000 files, complete 79-page traversal and at least 60 seconds
+of kernel-job CPU including exited workers/WebViews. Engine/targets and the separate
+inspected interaction instance are excluded from idle accounting.
 
-ARM browser welcome failed a real physical point guard: the hit belonged to an
-initial PickerHost Shell_SystemDialog surface. The controller acknowledged cleanup
-but existing lookups did not discover that window. The current lab adds the exact
-class to bounded discovery and scoped Hide after the same user, protected Microsoft
-image/signature and enrolled PID/creation-time checks. Replacements are never
-enrolled during product execution. Actual invisibility and subsequent target point
-ownership remain required. No process is terminated. The focused startup UIA
-failure remains recorded; full startup UIA passed. Fresh results are mandatory.
+Real keyboard/Windows UIA, native picker/confirmation, Chromium accessibility,
+English/Russian light/dark content scales and actual window DPI 96/144/192 passed.
+The official editor saved boxed bytes, the archive GUI created/extracted matching
+content, and Firefox proved separate host/boxed profiles, actual main/child socket
+ownership, boxed reachable protocol execution and effective content sandbox level 9.
+These are provider/automation results, not a subjective audit of every screen reader.
 
-All 889 original reviewed JSON files from these two matrix runs are retained with
-exact committed-byte hashes. Detailed earlier findings, failed trials, cancellation
-reasons and the prior report snapshot remain in the
-[investigation log](P09_INVESTIGATION_LOG.md) and manifest history. No failed,
-cancelled, diagnostic-only or earlier-source result closes the final gate.
+Production feature checks cover T30/T32/T41/T63/T66 without completing the separate
+installed-candidate acceptance registry. Local validation includes the repository/
+specification/evidence validator and 18 Python tooling tests. Windows/portable jobs
+include release builds, type checks, Rust tests/formatting/Clippy and frontend tests;
+fixture JavaScript/PowerShell/C# syntax/compilation checks also passed.
 
-The latest focused ARM `217f550` run positively passed exact diagnostic Save,
-import, exported SHA-256, collision rename preserving original bytes, real keyboard/
-DPI, editor/archive workflows and all four browser cases. All 98 UI assertions passed.
-Only the transfer/lifecycle case failed at its first Archive confirmation: the
-exact environment and retention text were available, but the immediate UIA OK
-lookup was absent/disabled. The current fixture uses the P08-proven rfd
-MessageBoxW IDOK notification after bounded exact-text, direct owner, native
-class, parent/button identity and enabled/visible checks. It dispatches once and
-requires actual closure before the independent backend state check. No native
-confirmation or destructive backend guard is bypassed. Original JSON is retained.
+Commands include `python tools/lab/validate_repository.py`,
+`python -m unittest discover -s tests -q`, `node --check tools/probe/p09_ui.js`,
+`gh workflow run p03.yml` through `p09.yml` on the exact pin, and the corresponding
+`retain_pXX_evidence.py --download-directory ... --tested-commit ... --run-id ...`
+commands. Linux checks alone are never native Windows proof.
 
-The first full `217f550` ARM attempt refused environment four before the reference
-workload. Read-only CIM observed WerFault without a verified component association;
-no cause is inferred. No reporter is killed, trusted or exempted. Its original
-JSON is retained. That run's remaining Server job and the fresh matrix
-38887488001 on `verify/p09-217f550` were cancelled after the actual confirmation
-failure required a fixture correction. The pin is superseded and cannot close a
-gate. Current full/focused runs use `0071e2c`; final matching P03–P08 regressions
-remain required.
+## Measured budgets and user impact
 
-Full `0071e2c` positively completed import/export SHA-256, collision rename,
-Archive/Unarchive/Reset with native UUID/retention confirmation, generation change,
-empty reset root and unchanged host data on ARM. All 101 UI assertions passed.
-Server passed 99 assertions and actual Archive, but the next native confirmation
-was not observed. Its fixture checked button.disabled, which does not include an
-ancestor disabled fieldset. It now waits on actual :disabled state for both click
-and completion, requiring both expected lifecycle actions to exist. Confirmation
-lookup accepts only the exact known title and records separate found/title flags.
-This fixes a definite fixture predicate defect; fresh results must establish the
-complete Server workflow.
+Original targets are unchanged. Specification
+[acceptance gate 7](../specification/08_TESTING_AND_ACCEPTANCE.md#acceptance-gates)
+requires measured deviations with impact explanations; no mandatory functional or
+reference-workload check is waived. Both assessments are MEASURED_DEVIATION.
 
-ARM's separate official archive case timed out, then browser welcome encountered
-an unidentified foreign window at the physical point. The archive's saved exit
-record belonged to its earlier successful step; the current fixture records
-create/extract separately and saves the current typed failure before rethrowing.
-Its 45-second held-process wait, actual output/hash requirements and browser point
-ownership guards remain unchanged. No cause is inferred for the unknown owner,
-no unknown window is hidden and no new process exception is accepted. All 680
-original reviewed JSON files from the failed full matrix are retained.
-
-Server `f9a9755` in run 38891751077 subsequently passed every complete target
-check: 22 native cases and 101 UI assertions, exact diagnostic Save, actual
-transfers/collision/Archive/Unarchive/Reset, editor/archive and all four browser
-cases. The formal target validator independently accepted its original files.
-Its reference sample is ten environments/10000 files/60014 ms/234 samples;
-process update was 1048.8 ms and added launch 498 ms (targets met). Startup
-5472.0596 ms and CPU 1.0804773398% deviated; average working set 228076482 bytes
-met target. All 286 original Server JSON files are retained. This target pass
-does not replace the missing full ARM result or remaining matching dependencies.
-
-## Measured budgets and remaining risks
-
-Both full `aa5b8f5` and `0071e2c` matrices completed ten actual idle environments, 10,000 files and
-more than 60 seconds of complete kernel-job CPU accounting, including exited
-workers/WebViews. Targets remain unchanged.
-
-| Runner | Startup ms / target ≤3000 | CPU % / target <1 | Average working set bytes / target <250000000 |
+| Metric | Original target | Server x64 | Windows 11 ARM64 |
 |---|---:|---:|---:|
-| Server x64 | 4008.2433 — deviation | 1.2475397684 — deviation | 230728418 — met |
-| Windows 11 ARM64 | 2872.8287 — met | 1.2869004001 — deviation | 239241041 — met |
-| Server x64, `0071e2c` | 5848.2869 — deviation | 0.7398902124 — met | 230532884 — met |
-| Windows 11 ARM64, `0071e2c` | 2411.0373 — met | 1.2273387172 — deviation | 244125310 — met |
-| Server x64, `f9a9755` | 5472.0596 — deviation | 1.0804773398 — deviation | 228076482 — met |
+| Interactive startup ms | ≤3000 | 3810.259 — deviation | 2365.5266 — met |
+| Complete-job idle CPU % | <1 | 1.1422099692 — deviation | 1.2406132546 — deviation |
+| Average working set bytes | <250000000 | 229795180 — met | 254373796 — deviation |
+| Process update ms | ≤2000 | 1186.4 — met | 1349 — met |
+| Added launch ms | <1000 | 541 — met | 552 — met |
 
-Slower startup delays interactive controls. Higher idle CPU can increase power use.
-These are measured deviations under specification acceptance gate 7; they do not
-waive a mandatory workflow or missing workload. See
-[performance and diagnostic limits](../PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md),
-[application matrix](../APPLICATION_COMPATIBILITY.md) and
-[accessibility report](../PRODUCT_UX.md).
+Server startup can delay interactive controls beyond three seconds. Higher idle CPU
+may increase power use. ARM average memory exceeds the target by 4373796 bytes,
+leaving less RAM for other applications. Samples lasted 60190/60139 ms with 233/223
+observations. See [performance/diagnostics](../PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md),
+[application compatibility](../APPLICATION_COMPATIBILITY.md) and
+[UX/accessibility](../PRODUCT_UX.md) for exact scope and original evidence.
 
-Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
-regressions include actual x86 targets and emulated x64 on ARM. This does not
-certify an installed Windows 11 x64 release tuple, other engine/application
-versions, paid entitlement, plugins or future updates. No browser sandbox, Windows
-security setting, TLS, signature or checksum check is weakened; no engine is bundled.
-GitHub authentication recovered after temporary expiry; publication is working.
+## Limits and handoff
 
-## Remaining exit gate
+Owner-selected labs are Server 2025 x64 build 26100 and Windows 11 ARM64 build 26200,
+with actual x86 and emulated x64 regressions. Engine: original Sandboxie Plus 1.18.6 /
+core 5.73.6 / ABI 0x57230. This does not certify an installed Windows 11 x64 release,
+other app/engine versions, plugins, paid entitlement or future updates.
 
-All six P03–P08 regressions now passed and are formally retained on the exact
-candidate `f9a9755`. Server passed every full P09 target check. Complete the fresh
-full P09 matrix on both targets, including ARM's ten-environment reference sample
-and every mandatory workflow, then retain P09 against those matching dependency
-manifests. Historical ARM manager-workflow success cannot replace that complete
-final-source run. Final reports/status and ordinary validated merge follow. No
-protected source list is reduced to reuse stale results.
+Earlier CI failures included unreviewed system-image refusals with unassociated
+WerFault and obstructed desktop surfaces. Their original failures remain in
+[the investigation log](P09_INVESTIGATION_LOG.md) and manifest history. No reporter
+was killed/trusted/exempted, no unknown window hidden and no OS security setting,
+TLS, signature, checksum or browser sandbox check weakened. The lab prepares only
+fixed authenticated initial Microsoft surfaces with exact process birth and scoped
+requests; actual target point ownership still must pass. No engine is bundled.
 
-Commands used include `python tools/lab/validate_repository.py`,
-`python -m unittest discover -s tests -q`, `npm run check`, `npm test`,
-`npm run test:product`, `node --check tools/probe/p09_ui.js`, native fixture
-parser/compiler checks and the linked Windows Actions workflows. Only actual
-Windows runs establish native behavior. Next eligible phase is P10 after P09;
-P10 implementation is outside the current request.
+The original 26 specification documents are unchanged. P10 is the next eligible
+phase, not part of this request. Packaging and installed acceptance remain P11/P12;
+all 66 final acceptance entries remain NOT_STARTED.

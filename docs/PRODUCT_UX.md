@@ -1,7 +1,9 @@
 # Product UX and accessibility
 
-P09 implementation; native validation is pending. This document describes the
-implemented behavior and the checks required to claim the phase exit gate.
+P09 is DONE for the owner-selected native laboratories at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[full run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).
+Both targets passed all 22 native scenarios and 101 UI assertions.
 
 The original interface uses neutral surfaces, a single accent, text status labels,
 visible focus, system/light/dark themes and English/Russian resources. Environments
@@ -52,13 +54,17 @@ check labels, clipping and computed text contrast; synthetic screenshots are
 retained. These checks demonstrate provider semantics and keyboard operation,
 not a subjective review by a person using every screen reader.
 
-Current result: pending [P09 manifest](evidence/p09/manifest.json). Compile-only
-checks and DOM assertions do not substitute for successful native execution.
+Current result: DONE in the [P09 manifest](evidence/p09/manifest.json), with
+matching P03–P08 source-bound regressions. Actual keyboard/UIA, native Save and
+confirmation, all bilingual/theme/content-scale/Windows-DPI checks and the complete
+real import/export/collision/Archive/Unarchive/Reset workflow passed on both.
+Compile-only checks and DOM assertions alone cannot establish that native proof.
 
 A four-environment focused diagnostic mode skips the performance gate. Its
 artifacts and summary are explicitly DIAGNOSTIC_ONLY. The evidence retainer
 rejects it even if another field is changed to PASSED. Only the full ten-box
-reference workload can close P09. Native product DPI execution remains pending.
+reference workload can close P09. The accepted full run measured actual native
+window DPI 96/144/192 on both targets.
 
 On disposable CI VMs the lab controller changes only the three fixed Windows
 scaling values. Owner-restricted named events carry these requests without paths,

@@ -6,7 +6,7 @@ Current P09 dependency regression: DONE at
 Both native targets passed 61 adapter tests and 19 observation/trust scenarios,
 with zero production mutations or target launches. Matching P03 passed on the
 same source. The [manifest](../evidence/p04/manifest.json) binds the original
-reports and all protected sources. This closes P04 only; P05–P09 remain pending.
+reports and all protected sources. P05–P09 also passed on this exact source; see the [P09 report](P09_REPORT.md).
 The sections below preserve the original completion and historical regressions.
 
 

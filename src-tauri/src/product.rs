@@ -289,17 +289,21 @@ pub async fn product_request(
                 }
                 preview.body
             };
+            let dialog_parent = window.clone();
             let saved = tauri::async_runtime::spawn_blocking(move || -> Result<bool> {
                 let title = if language == "ru" {
                     "Сохранить просмотренную диагностику"
                 } else {
                     "Save reviewed diagnostics"
                 };
-                let Some(path) = rfd::FileDialog::new()
-                    .set_title(title)
-                    .add_filter("JSON", &["json"])
-                    .set_file_name("SecureRun-diagnostics.json")
-                    .save_file()
+                let Some(path) = native::picker_thread(|| {
+                    rfd::FileDialog::new()
+                        .set_title(title)
+                        .set_parent(&dialog_parent)
+                        .add_filter("JSON", &["json"])
+                        .set_file_name("SecureRun-diagnostics.json")
+                        .save_file()
+                })?
                 else {
                     return Ok(false);
                 };

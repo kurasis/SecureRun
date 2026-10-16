@@ -839,3 +839,37 @@ first, allowing only the existing fixed controller delegation on refusal. The
 controller still requires a nonempty creation identity and repeats fresh owner,
 protected image and Microsoft signature/package checks before enrollment or
 cancellation. No access right, trust check or PID reuse protection is removed.
+
+### Actual b04a766 results and owned native picker correction
+
+Both focused targets proved all 10,000 entries on 79 pages, maximum 128 entries
+and 127 DOM rows; all 88 UI assertions passed. Server recorded 2786.2 ms first UI
+list / 178982 ms complete native walk; ARM 2502.6 ms / 85113.5 ms. The real inert
+Unicode path correction is confirmed. The secret EXE picker did not appear on
+either target. Editor Save As interaction on Server did not produce output even
+within 30 seconds. Browser URI paste did not produce the expected page title;
+keyboard typing now avoids a cross-boundary clipboard assumption. The helper
+requires the picker to close and types the editor filename through the verified
+native field before Enter. Byte equality/unchanged host requirements remain.
+
+Production policy and diagnostic file dialogs now have the requesting native
+window as parent and run on a dedicated joined thread. This keeps rfd's required
+STA initialization independent of a reused worker's COM apartment. A Windows
+regression initializes its caller as MTA and verifies that the picker thread can
+initialize STA. Existing path, identity, scope, expiry, preview and create-new
+checks are unchanged. The UI preserves only known typed native selection refusal
+codes; it does not render raw exceptions. Tauri's protected IPC is unchanged.
+
+The lab records bounded native hit/root/foreground visibility, known class kinds,
+interactive desktop/session booleans and counts of PickerHost child windows.
+The controller's zero visible top-level count did not establish a clear input
+point. No new window-cancellation authority is granted. Picker cleanup is now
+idempotent so a failed helper is not consumed twice. Only safe rendered error
+codes are retained for a missing picker, and startup traces retain numeric marks.
+
+The b04a766 full ARM run stopped at CREATE 10 with
+DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and one unassociated WerFault reporter. It has
+no full reference measurement. No reporter kill/whitelist or error-reporting
+change is added. P04 run 38852273760 recorded an unexpected boxed startup exit 1
+on Server; the unchanged-source repeat 38852853178 passed all cases on both
+platforms. Both outcomes remain historical, and the startup cause is undetermined.

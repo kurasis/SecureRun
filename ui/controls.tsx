@@ -43,7 +43,11 @@ export function Controls({ language, environmentId }: { language: Language;envir
     const e = envs.find(e => e.id === environment); if (!e) return;
     busyRef.current = true; setBusy(true); const operation = directory && selection ? selection.operation : crypto.randomUUID();
     try { const s = await invoke<{ selection_id: string; display_name: string }>('select_policy_path', { request: { operation_id: operation, environment_id: e.id, expected_revision: e.revision, directory,language } }); if (directory) setCwdSelection({ id: s.selection_id, label: s.display_name }); else { setCwdSelection(null); setSelection({ id: s.selection_id, label: s.display_name, operation, issued: Date.now() }); } }
-    catch { setError('SELECTION_UNAVAILABLE'); } finally { busyRef.current = false; setBusy(false); }
+    catch (error) {
+      const code=(error as {code?:unknown}|null)?.code;
+      const known=['UNAUTHORIZED','REVISION_CONFLICT','OPERATION_CONFLICT','SELECTION_EXPIRED','MANAGER_CONTEXT_UNSAFE','CAPABILITY_UNAVAILABLE','PATH_UNSAFE'];
+      setError(typeof code==='string'&&known.includes(code)?code:'SELECTION_UNAVAILABLE');
+    } finally { busyRef.current = false; setBusy(false); }
   }
   async function register(event: React.FormEvent) {
     event.preventDefault(); const e = envs.find(e => e.id === environment); if (!e || !selection) return; busyRef.current = true; setBusy(true);

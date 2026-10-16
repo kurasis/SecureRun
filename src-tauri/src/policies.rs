@@ -137,16 +137,21 @@ pub async fn select_policy_path(
         Some(PickerLanguage::Ru) => "Выбор ресурса SecureRun",
         _ => "SecureRun resource selection",
     };
+    let dialog_parent = window.clone();
     let selected = tauri::async_runtime::spawn_blocking(move || {
-        let dialog = rfd::FileDialog::new().set_title(title);
-        if directory {
-            dialog.pick_folder()
-        } else {
-            dialog.pick_file()
-        }
+        native::picker_thread(|| {
+            let dialog = rfd::FileDialog::new()
+                .set_title(title)
+                .set_parent(&dialog_parent);
+            if directory {
+                dialog.pick_folder()
+            } else {
+                dialog.pick_file()
+            }
+        })
     })
     .await
-    .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?
+    .map_err(|_| AppError::new(ErrorCode::PathUnsafe))??
     .ok_or_else(|| AppError::new(ErrorCode::SelectionExpired))?;
     authorize(&window)?;
     let path = selected

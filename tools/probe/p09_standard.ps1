@@ -61,7 +61,11 @@ function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',
   return Access 'DESKTOP_PREPARE' 0 -ParentPrepared
  };Require ($p.ExitCode -eq 0 -and $r.status -eq $expectedStatus) 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
-function Complete-Access($Pending){try{Require ($Pending.process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($Pending.process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}finally{if(-not $Pending.process.HasExited){$Pending.process.Kill($true)};$Pending.process.Dispose()}}
+function Complete-Access($Pending){
+ if($null -eq $Pending.process){return};$process=$Pending.process;$Pending.process=$null
+ try{Require ($process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}
+ finally{if(-not $process.HasExited){$process.Kill($true)};$process.Dispose()}
+}
 function Find-BoxFile($Environment,[string]$Name){$root=$Environment.compiled.section.FileRootPath[0];$found=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $Name);Require ($found.Count -eq 1 -and $found[0].FullName.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) 'P09_BOXED_FILE_NOT_UNIQUE';return $found[0]}
 function Wait-GuiPid($Environment,[string]$Executable){$clock=[Diagnostics.Stopwatch]::StartNew();do{$r=Native @{action='LIST'} 'control';$scope=@($r.environments|Where-Object environment_id -eq $Environment.id);if($scope.Count -eq 1 -and $scope[0].complete){foreach($member in $scope[0].processes){if(-not [P09Desktop]::IsExpectedMember($member.pid,[long]$member.creation_time,$Executable)){continue};try{$p=[Diagnostics.Process]::GetProcessById($member.pid);try{if($p.MainWindowHandle -ne [IntPtr]::Zero){return [int]$member.pid}}finally{$p.Dispose()}}catch [ArgumentException]{}}};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000);throw 'P09_TARGET_GUI_NOT_OBSERVED'}
 $gui=$null;$hostBrowser=$null;$browserProof=$null;$held=$null;$lab=$null;$registryCreated=$false
@@ -147,7 +151,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
    Require ($metrics.webview_processes -ge 2 -and $metrics.duration_ms -ge 60000 -and $metrics.samples -ge 200) 'P09_PROCESS_GROUP_MEASUREMENT_INCOMPLETE'
    $metrics|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'performance.json') -Encoding utf8
    $metrics
-  }finally{if($null -ne $gui){$gui.Dispose();$gui=$null};if(-not $watcher.HasExited){$watcher.Kill($true)};$watcher.Dispose()}
+  }finally{try{Startup-Trace|ConvertTo-Json -Depth 5|Set-Content (Join-Path $results 'startup-native-trace.json') -Encoding utf8}catch{};if($null -ne $gui){$gui.Dispose();$gui=$null};if(-not $watcher.HasExited){$watcher.Kill($true)};$watcher.Dispose()}
  }
  # Re-observe after the measured manager has closed, before the inspected GUI.
  $null=Access 'DESKTOP_PREPARE' 0
@@ -250,6 +254,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   @{actual_product_ui=$true;real_native_pickers=$true;import_export_sha256_equal=$true;collision_rename_preserved_original=$true;archive_preserved_data=$true;native_confirmations_scoped=$true;reset_generation_incremented=$true;reset_root_empty=$true;host_input_and_exports_unchanged=$true;automatic_open=$false}
  }
  }catch{
+  try{$diagnostic=Evaluate-P09 "({selection_error:Array.from(document.querySelectorAll('.error details code')).map(e=>e.textContent).filter(v=>/^[A-Z][A-Z0-9_]{1,100}$/.test(v)).slice(0,8),application_form_present:!!document.querySelector('#environment-panel form'),file_dialog_expected:true})";$diagnostic|ConvertTo-Json -Depth 5|Set-Content (Join-Path $results 'picker-command-observation.json') -Encoding utf8}catch{}
   @{status='FAILED';dependent_gui_sequence_completed=$false;code=$(if($script:failureCode){$script:failureCode}else{'P09_GUI_DEPENDENCY_FAILED'});independent_application_cases_continue=$true}|ConvertTo-Json|Set-Content (Join-Path $results 'gui-workflow.json') -Encoding utf8
  }finally{
   try{$null=Invoke-P09Stage 'RESET_PRESENTATION'}catch{}

@@ -1,4 +1,4 @@
-# Test-only inspector transport. No production command or remote endpoint.
+﻿# Test-only inspector transport. No production command or remote endpoint.
 $script:cdp=$null;$script:cdpId=0
 function Connect-P09Cdp([int]$Port){
  $clock=[Diagnostics.Stopwatch]::StartNew();$page=$null
@@ -45,7 +45,7 @@ function Wait-P09Document {
 }
 function Invoke-P09Stage([string]$Stage,[hashtable]$Config=@{}){
  $stageJson=ConvertTo-Json -InputObject $Stage -Compress;$configJson=ConvertTo-Json -InputObject $Config -Depth 8 -Compress
- $deadline=if($Stage -eq 'STOP_AND_APPLY'){660000}else{300000}
+ $deadline=if($Stage -in @('STOP_AND_APPLY','FILE_LIST')){660000}else{300000}
  $r=Evaluate-P09 "window.__p09_run($stageJson,$configJson)" $deadline;$script:lastUi=$r
  foreach($case in $r.cases){$script:uiCases.Add($case)}
  if($r.status -ne 'PASSED'){$r|ConvertTo-Json -Depth 12|Set-Content (Join-Path $results 'ui-failure.json') -Encoding utf8;if($r.code -cmatch '^P09_[A-Z0-9_]{1,100}$'){throw $r.code};throw 'P09_REAL_PRODUCT_UI_FAILED'}

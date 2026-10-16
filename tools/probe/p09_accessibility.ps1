@@ -1,5 +1,5 @@
 ﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents,[switch]$PrepareInput)
+param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_DIAGNOSTIC','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents,[switch]$PrepareInput)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
 trap {
@@ -38,6 +38,7 @@ public static class P09Access {
  }
  [DllImport("user32.dll")]public static extern bool ShowWindow(IntPtr window,int command);
  [DllImport("user32.dll")]public static extern bool GetWindowRect(IntPtr window,out P09Rect rectangle);
+ [DllImport("user32.dll")]public static extern bool PrintWindow(IntPtr window,IntPtr dc,uint flags);
  [DllImport("user32.dll")]public static extern bool IsChild(IntPtr parent,IntPtr child);
  [DllImport("user32.dll")]public static extern bool IsWindowEnabled(IntPtr window);
  [DllImport("user32.dll")]public static extern bool EnumChildWindows(IntPtr parent,Visit visit,IntPtr data);
@@ -251,6 +252,12 @@ if($Mode -eq 'DESKTOP_INPUT'){
   $result.struct_point_owned=[P09Access]::OwnedWindow($hit,$expected);$result.packed_point_owned=[P09Access]::OwnedWindow($packed,$expected);$result.point_apis_agree=($hit -eq $packed);$result.struct_point_kind=Native-HitKind $hit;$result.packed_point_kind=Native-HitKind $packed;$result.struct_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.packed_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($packed,2));$result.foreground_owned=[P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$expected)
   $provider=[Windows.Automation.AutomationElement]::FromPoint([Windows.Point]::new($point.X,$point.Y));$result.uia_point_owned=($provider.Current.ProcessId -eq $expected)
   $result.status='OBSERVED';$result.product_acceptance_claimed=$false;$result.input_dispatched=$false;$result.os_security_settings_modified=$false
+  if($result.struct_point_owned -and $result.foreground_owned){
+   Need ([P09Access]::Chord($root,$expected,[uint16]65,[uint16]17));Need ([P09Access]::TypeText($root,$expected,'P09_NATIVE_INPUT_CANARY'));$result.input_dispatched=$true;$clock=[Diagnostics.Stopwatch]::StartNew()
+   do{[Windows.Forms.Application]::DoEvents();if($field.Text -ceq 'P09_NATIVE_INPUT_CANARY'){break};Start-Sleep -Milliseconds 25}while($clock.ElapsedMilliseconds -lt 5000)
+   $result.native_keyboard_text_matched=($field.Text -ceq 'P09_NATIVE_INPUT_CANARY')
+  }
+
  }catch{$result.status='FAILED';$result.exception_type=$_.Exception.GetBaseException().GetType().FullName}
  finally{if($null -ne $form){$form.Close();$form.Dispose()}}
  $result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0
@@ -510,6 +517,15 @@ try{
   }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
   'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Focus-NativeEditor $hwnd $ManagerPid;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^%s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
+  'BROWSER_DIAGNOSTIC' {
+   $stage='OBSERVING_SYNTHETIC_BROWSER_CHROME';Need ($root.Current.Name.Contains('P09 browser canary'))
+   $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top;Need ($width -gt 0 -and $height -gt 0 -and $width -le 4096 -and $height -le 4096)
+   $bitmap=[Drawing.Bitmap]::new($width,$height);$graphics=$null;$dc=[IntPtr]::Zero
+   try{$graphics=[Drawing.Graphics]::FromImage($bitmap);$dc=$graphics.GetHdc();$result.synthetic_browser_window_captured=[P09Access]::PrintWindow($hwnd,$dc,2);$graphics.ReleaseHdc($dc);$dc=[IntPtr]::Zero;if($result.synthetic_browser_window_captured){$bitmap.Save($ResultFile+'.png',[Drawing.Imaging.ImageFormat]::Png)}}
+   finally{if($null -ne $graphics){if($dc -ne [IntPtr]::Zero){$graphics.ReleaseHdc($dc)};$graphics.Dispose()};$bitmap.Dispose()}
+   $types=@{};$elements=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);Need ($elements.Count -le 10000)
+   foreach($element in $elements){$kind=$element.Current.ControlType.ProgrammaticName;if(-not $types.ContainsKey($kind)){$types[$kind]=0};$types[$kind]++};$result.accessible_control_type_counts=$types;$result.synthetic_canary_title_verified=$true;$result.raw_support_content_captured=$false
+  }
   'BROWSER_PROTOCOL' {
    $stage='REQUESTING_SYNTHETIC_PROTOCOL_LINK';Need ($ProtocolUri -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/protocol/[0-9a-f-]{36}$');Need (([Uri]$ProtocolUri).Port -ge 1024 -and ([Uri]$ProtocolUri).Port -le 65535)
    Browser-Document $root $hwnd $ManagerPid $ProtocolUri 'P09 protocol canary';$result.protocol_link_action=Activate-CanaryLink $root $hwnd $ManagerPid 'Open synthetic handler';$result.actual_browser_address_action=$true

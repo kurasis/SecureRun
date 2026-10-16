@@ -303,6 +303,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   $application=Register-App $web 'P09 official browser isolated profile' $browser @('-no-remote','-profile',$boxedProfile,('http://127.0.0.1:'+$browserProof.Port+'/main/'+$nonce));$script:browserReceipt=Launch-App $web $application;$script:browserGuiPid=Wait-GuiPid $web $browser
   $clock=[Diagnostics.Stopwatch]::StartNew();do{$records=@($browserProof.Snapshot());$main=@($records|Where-Object {$_.request_kind -eq 'BOXED_MAIN'});if($main.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
   Require ($main.Count -gt 0 -and @($main|Where-Object {-not $_.source_scope_verified -or -not $_.source_boxed -or $_.host_profile_cookie_present}).Count -eq 0) 'P09_BROWSER_HANDOFF_OR_MEMBERSHIP_UNVERIFIED'
+  try{$null=Access 'BROWSER_DIAGNOSTIC' $script:browserGuiPid}catch{}
   @{preexisting_host_browser_verified=$true;separate_clean_profiles=$true;explicit_profile_and_no_remote=$true;actual_http_requests=$main;socket_owner_and_held_birth_verified=$true;host_profile_cookie_absent_in_boxed_request=$true;host_profile_read_blocked_by_reviewed_rule=$true;unboxed_handoff=$false;browser_sandbox_disabled=$false}
  }
  Case 'T41' 'browser_own_child_request_stays_boxed' {

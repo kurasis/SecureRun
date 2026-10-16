@@ -206,6 +206,7 @@ function Window([int]$id,[bool]$dialog=$false){
  $windows=@($script:ownedCandidateWindows|Select-Object -Unique)
  foreach($hwnd in $windows){
   $caption=[P09Access]::Caption($hwnd);$isDialog=([P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox) -or (Known-PickerTitle $caption))
+  if($dialog -and $Mode -eq 'CONFIRM' -and $caption -cne 'SecureRun — environment confirmation'){continue}
   if($dialog -and $isDialog -and [P09Access]::IsWindowEnabled($hwnd)){return $hwnd}
   if(-not $dialog -and -not $isDialog -and $Mode.StartsWith('BROWSER_') -and ([P09Access]::GetWindowLong($hwnd,-16) -band 0x00c00000) -ne 0x00c00000){continue}
   if(-not $dialog -and -not $isDialog){$rectangle=[P09Rect]::new();if(-not [P09Access]::GetWindowRect($hwnd,[ref]$rectangle)){continue};$area=([long]$rectangle.Right-$rectangle.Left)*($rectangle.Bottom-$rectangle.Top);if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
@@ -621,7 +622,7 @@ try{
    $stage='CONFIRMING_EXACT_ENVIRONMENT';Need ($EnvironmentId -cmatch '^[0-9a-f-]{36}$');$expected=switch($Intent){'ARCHIVE'{'Keep the definition, applications and all data.'};'UNARCHIVE'{'Keep all data. Revalidate ownership, roots and policy'};'RESET'{'Keep the environment definition and application records.'};default{throw 'P09_CONFIRMATION_INTENT_INVALID'}}
    $clock=[Diagnostics.Stopwatch]::StartNew();$confirm=[IntPtr]::Zero
    do{$confirm=Window $ManagerPid $true;if($confirm -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 45000)
-   Need ($confirm -ne [IntPtr]::Zero);$dialog=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($dialog.Current.Name -eq 'SecureRun — environment confirmation')
+   $result.native_confirmation_window_found=($confirm -ne [IntPtr]::Zero);Need $result.native_confirmation_window_found;$dialog=[Windows.Automation.AutomationElement]::FromHandle($confirm);$result.native_confirmation_title_verified=($dialog.Current.Name -ceq 'SecureRun — environment confirmation');Need $result.native_confirmation_title_verified
    $stage='WAITING_FOR_ENABLED_SCOPED_CONFIRMATION';$clock.Restart()
    do{$elements=$dialog.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);Need ($elements.Count -le 128);$content=($elements|ForEach-Object {$_.Current.Name}) -join "`n";$ready=$content.Contains($EnvironmentId) -and $content.Contains($expected) -and [P09Access]::ConfirmationReady($confirm,$ManagerPid);if($ready){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 10000)
    Need $ready;$result.exact_environment_and_retention_verified=$true;$stage='ACCEPTING_VERIFIED_NATIVE_CONFIRMATION';Need ([P09Access]::AcceptConfirmation($confirm,$ManagerPid));$result.native_confirmation_button='VERIFIED_NATIVE_IDOK';$result.native_confirmation_accepted=$true

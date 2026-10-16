@@ -110,10 +110,10 @@ window.__p09_run=async function(stage,config={}) {
     const dialog=await wait(()=>document.querySelector('dialog[open]'));check('T32','export_collision_offers_only_rename_and_skip',!!button('Rename and export',dialog)&&!!button('Skip',dialog)&&!button('Replace',dialog));set(dialog.querySelector('input'),'workflow-renamed.txt');await click('Rename and export',dialog);break;
    }
    case 'LIFECYCLE_PICK':{
-    await tab('Retention and recovery');const label={ARCHIVE:'Archive',UNARCHIVE:'Unarchive',RESET:'Reset contents'}[config.intent];const b=await wait(()=>button(label)&&!button(label).disabled&&button(label));b.click();break;
+    await tab('Retention and recovery');const label={ARCHIVE:'Archive',UNARCHIVE:'Unarchive',RESET:'Reset contents'}[config.intent];await click(label);break;
    }
    case 'LIFECYCLE_CHECK':{
-    await wait(()=>Array.from(document.querySelectorAll('button')).every(b=>!['Archive','Unarchive','Reset contents'].includes(text(b))||!b.disabled));
+    await wait(()=>{const actions=Array.from(document.querySelectorAll('button')).filter(b=>['Archive','Unarchive','Reset contents'].includes(text(b)));return actions.length===2&&actions.every(b=>!b.matches(':disabled'));});
     const r=await native({action:'LIST'},'lifecycle_request');const e=r.reply.environments.find(e=>e.environment_id===config.environment_id);check('T32',`actual_ui_${config.intent.toLowerCase()}_verified`,r.reply.reason==='OBSERVED'&&e?.lifecycle===(config.intent==='ARCHIVE'?'ARCHIVED':'ACTIVE')&&(config.intent!=='RESET'||e.generation===config.generation+1));break;
    }
    case 'DIAGNOSTIC_PREVIEW':{

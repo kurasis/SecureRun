@@ -38,10 +38,16 @@ function Register-App($Environment,[string]$Name,[string]$Executable,[string[]]$
  $a=@($r.applications|Where-Object {$_.environment_id -eq $Environment.id -and $_.display_name -eq $Name});Require ($a.Count -eq 1) 'P09_REGISTRATION_MISSING';return $a[0]
 }
 function Launch-App($Environment,$Application){$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$Environment.id;expected_revision=$Environment.revision;application_id=$Application.id;operation_id=$op} 'control';$receipt=@($r.receipts|Where-Object operation_id -eq $op);Require ($r.environment_scope -eq $Environment.id -and @($r.environments).Count -eq 1) 'P09_LAUNCH_RESPONSE_SCOPE_INVALID';Require ($receipt.Count -eq 1 -and $null -ne $receipt[0].process -and $receipt[0].state -ne 'REFUSED') 'P09_NATIVE_LAUNCH_NOT_OBSERVED';return $receipt[0]}
-function Wait-Launched($Receipt){
- $observed=[P09Desktop]::WaitMemberExit($Receipt.process.pid,[long]$Receipt.process.creation_time,45000)
- $observed.case=$script:stage;$observed.synthetic_fixture_only=$true
+function Wait-Launched($Receipt,[string]$Operation){
+ Require ($Operation -in @('ARCHIVE_CREATE','ARCHIVE_EXTRACT')) 'P09_APPLICATION_OPERATION_INVALID'
+ try{$observed=[P09Desktop]::WaitMemberExit($Receipt.process.pid,[long]$Receipt.process.creation_time,45000)}catch{
+  $code=$_.Exception.GetBaseException().Message;if($code -cnotmatch '^P09_[A-Z0-9_]{1,100}$'){$code='P09_APPLICATION_WAIT_FAILED'}
+  $observed=@{status='FAILED';case=$script:stage;operation=$Operation;code=$code;exit_code_observed=$false;synthetic_fixture_only=$true}
+  $observed|ConvertTo-Json|Set-Content (Join-Path $results 'application-exit.json') -Encoding utf8;$observed|ConvertTo-Json|Set-Content (Join-Path $results ($Operation.ToLowerInvariant()+'-exit.json')) -Encoding utf8;throw
+ }
+ $observed.case=$script:stage;$observed.operation=$Operation;$observed.synthetic_fixture_only=$true
  $observed|ConvertTo-Json|Set-Content (Join-Path $results 'application-exit.json') -Encoding utf8
+ $observed|ConvertTo-Json|Set-Content (Join-Path $results ($Operation.ToLowerInvariant()+'-exit.json')) -Encoding utf8
  if($observed.exit_code_observed){Require ($observed.exit_code -eq 0) 'P09_APPLICATION_EXIT_FAILED'}
  # A process already completed/reused before a handle could be held has an
  # unknown exit code. Actual boxed output and unchanged-host checks still follow.
@@ -301,9 +307,9 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   $inputFile=Join-Path $Fixture 'archive-source.txt';$zip=Join-Path $Fixture 'created-archive.zip';$unpack=Join-Path $Fixture 'archive-unpacked';[IO.File]::WriteAllText($inputFile,'P09_ARCHIVE_ROUND_TRIP');$hash=(Get-FileHash -LiteralPath $inputFile).Hash
   $archiveGui=Join-Path (Split-Path $archive) '7zG.exe';Require (Test-Path -LiteralPath $archiveGui -PathType Leaf) 'P09_OFFICIAL_ARCHIVE_GUI_MISSING'
   $create=Register-App $apps 'P09 archive create' $archiveGui @('a','-tzip',$zip,$inputFile,'-y');$receipt=Launch-App $apps $create
-  Wait-Launched $receipt;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$created=Find-BoxFile $apps 'created-archive.zip';Require ($created.Length -gt 0 -and -not(Test-Path -LiteralPath $zip)) 'P09_ARCHIVE_NOT_BOXED'
+  Wait-Launched $receipt 'ARCHIVE_CREATE';Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$created=Find-BoxFile $apps 'created-archive.zip';Require ($created.Length -gt 0 -and -not(Test-Path -LiteralPath $zip)) 'P09_ARCHIVE_NOT_BOXED'
   $extract=Register-App $apps 'P09 archive extract' $archiveGui @('x',$zip,('-o'+$unpack),'-y');$receipt=Launch-App $apps $extract
-  Wait-Launched $receipt;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$output=Find-BoxFile $apps 'archive-source.txt'
+  Wait-Launched $receipt 'ARCHIVE_EXTRACT';Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control';$output=Find-BoxFile $apps 'archive-source.txt'
   Require ((Get-FileHash -LiteralPath $output.FullName).Hash -eq $hash -and -not(Test-Path -LiteralPath $unpack) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $hash) 'P09_ARCHIVE_ROUND_TRIP_DIFFER'
   @{official_gui_observed_boxed=$true;gui_operation_executable_sha256=(Get-FileHash -LiteralPath $archiveGui).Hash.ToLowerInvariant();actual_gui_create_and_extract=$true;actual_archive_created=$true;actual_archive_extracted=$true;round_trip_sha256_matches=$true;host_input_unchanged=$true;host_zip_and_extraction_absent=$true;engine_hooks_or_security_exceptions_added=$false}
  }

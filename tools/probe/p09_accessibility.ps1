@@ -146,12 +146,11 @@ function Picker([int]$id,[string]$path){
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
  $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  Need ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
- Focus-OwnedWindow $window $id;[Windows.Forms.SendKeys]::SendWait('%n') # Standard File name mnemonic activates lazy native/COM edit controls.
- $script:stage='WAITING_FOR_ENABLED_NATIVE_FILENAME';$clock.Restart();$edit=$null;$nativeField=[IntPtr]::Zero
+ $script:stage='WAITING_FOR_ENABLED_NATIVE_FILENAME';$clock.Restart();$edit=$null;$nativeField=[IntPtr]::Zero;$activationTried=$false
  do{
   $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.OrCondition]::new([Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit),[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ComboBox)))
   foreach($item in $edits){$known=($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder'));if(-not $known -and $item.Current.AutomationId -eq '1001'){$parent=[Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($item);$known=($null -ne $parent -and ($parent.Current.AutomationId -eq '1148' -or $parent.Current.Name -in @('File name:','File name','Folder:','Folder')))};if($item.Current.IsEnabled -and $known){$candidateValue=$null;if($item.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$candidateValue) -and -not $candidateValue.Current.IsReadOnly){$edit=$item;break}}}
-  if($null -ne $edit){break};$nativeField=[P09Access]::Filename($window,$id,$ExpectedBox);if($nativeField -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100
+  if($null -ne $edit){break};$nativeField=[P09Access]::Filename($window,$id,$ExpectedBox);if($nativeField -ne [IntPtr]::Zero){break};if(-not $activationTried -and $clock.ElapsedMilliseconds -ge 1000){$activationTried=$true;Focus-OwnedWindow $window $id;[Windows.Forms.SendKeys]::SendWait('%n')};Start-Sleep -Milliseconds 100
  }while($clock.ElapsedMilliseconds -lt 15000)
  $usedValue=($null -ne $edit);$result.native_filename_field_present=($nativeField -ne [IntPtr]::Zero)
  if($usedValue){$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path)}else{Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::SetFilename($nativeField,$path))}

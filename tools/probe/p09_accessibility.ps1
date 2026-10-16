@@ -463,16 +463,20 @@ function Picker([int]$id,[string]$path){
    $nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::Chord($window,$id,[uint16]65,[uint16]17));Need ([P09Access]::TypeText($window,$id,$path));Need ([P09Access]::FilenameEquals($nativeField,$path));$result.native_filename_keyboard_verified=$true
   }
  }
- if($Mode -eq 'EDITOR'){[Windows.Forms.SendKeys]::SendWait('{ENTER}')}else{
+ $keyboardSave=$false;if($Mode -eq 'EDITOR'){[Windows.Forms.SendKeys]::SendWait('{ENTER}')}else{
  $script:stage='ACCEPTING_EXACT_NATIVE_PICKER';$saving=($title -in @('Save reviewed diagnostics','Сохранить просмотренную диагностику','Save As','Save as','Save File'))
  $buttonName=if($saving){'Save'}else{'Open'};$button=Find $root ([Windows.Automation.ControlType]::Button) $buttonName
  if($null -eq $button -and -not $saving){$buttonName='Select Folder';$button=Find $root ([Windows.Automation.ControlType]::Button) $buttonName}
  $result.native_accept_button_kind=if($null -ne $button){$buttonName}else{'NATIVE_IDOK'};$result.native_save_dialog=$saving
- if($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
+ if($saving){
+  $script:stage='CONFIRMING_NATIVE_SAVE_WITH_REAL_KEYBOARD';Focus-OwnedWindow $window $id;Need ([P09Access]::Chord($window,$id,[uint16]78,[uint16]18));Start-Sleep -Milliseconds 100
+  $nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::Chord($window,$id,[uint16]65,[uint16]17));Need ([P09Access]::TypeText($window,$id,$path));Need ([P09Access]::FilenameEquals($nativeField,$path));Need ([P09Access]::Chord($window,$id,[uint16]13,0))
+  $keyboardSave=$true;$result.native_accept_button_kind='NATIVE_KEYBOARD_SAVE';$result.native_filename_keyboard_verified=$true
+ }elseif($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
  }
  if($AllowOverwrite){Start-Sleep -Milliseconds 300;$confirm=Window $id $true;if($confirm -ne [IntPtr]::Zero){$confirmRoot=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($confirmRoot.Current.Name -eq 'Confirm Save As');Click (Find $confirmRoot ([Windows.Automation.ControlType]::Button) 'Yes')}}
  $script:stage='WAITING_FOR_NATIVE_PICKER_CLOSE';$clock.Restart();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 10000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.picker_window_closed=$true
- return @{real_native_picker=$true;value_pattern_used=$usedValue;native_filename_control_used=(-not $usedValue);explicit_button_invoked=($Mode -ne 'EDITOR');native_enter_accept=($Mode -eq 'EDITOR');picker_window_closed=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
+ return @{real_native_picker=$true;value_pattern_used=$usedValue;native_filename_control_used=(-not $usedValue);explicit_button_invoked=($Mode -ne 'EDITOR' -and -not $keyboardSave);native_enter_accept=($Mode -eq 'EDITOR' -or $keyboardSave);picker_window_closed=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
 function Collapse-DisplayCombo($root,[string]$automationId){
  $combo=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,$automationId));Need ($null -ne $combo)

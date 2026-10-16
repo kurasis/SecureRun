@@ -455,3 +455,14 @@ Its layout sequence exposed a lab transport defect: direct screenshot/AX calls
 referenced an undeclared timeout, whereas evaluation calls inherited the caller's
 variable. The transport now declares its bounded default explicitly. Source-line
 numbers on accessibility failures are retained without stack paths or raw text.
+
+Full ARM run `38824148996` at `496272b` refused the tenth CREATE with
+`NETWORK_ENFORCEMENT_FAILED`. Its 139 retained raw reports show one online incoming
+IPv4 TCP failure; the other three incoming and all outbound channels succeeded.
+The boxed incoming listeners previously waited sequentially while the host
+observer used concurrent 900 ms reads. They now observe all four channels
+concurrently with independent finite windows. A synthetic online TCP availability
+connect may retry only before any connection exists, for at most four seconds;
+offline still makes one attempt and every required positive/negative channel
+must match. No engine rule, user dispatch, firewall or security setting changes.
+Fresh matching P03–P09 native regressions remain required.

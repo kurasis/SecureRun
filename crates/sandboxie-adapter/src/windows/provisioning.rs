@@ -1614,7 +1614,7 @@ pub fn run_canary(encoded: &str) -> i32 {
             .err()
             .is_some_and(|e| e.raw_os_error() == Some(5));
         let child_network = spawn_canary_child(&canary)?;
-        let incoming = network::incoming_probe(&canary.incoming_output)?;
+        let incoming = network::incoming_probe(&canary.incoming_output, canary.offline)?;
         let network = exercise_network(&canary);
         let report = CanaryReport {
             member: true,
@@ -2391,6 +2391,7 @@ impl NativeEngine {
                 .and_then(|v| v.to_str())
                 .ok_or("CANARY_SCOPE_INVALID")?
                 .to_owned(),
+            owned.compiled.offline,
         );
         let canary = Canary {
             box_name: diagnostic.name(),

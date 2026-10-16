@@ -243,17 +243,22 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  }
  Case 'T32' 'actual_ui_import_export_collision_archive_and_reset_workflow' {
   $workflow=(Native @{action='LIST'}).environments|Where-Object display_name -eq ('P09 reference {0:00}' -f $environmentCount);Require ($null -ne $workflow) 'P09_WORKFLOW_ENVIRONMENT_MISSING'
-  $inputFile=Join-Path $Fixture 'workflow-source.txt';[IO.File]::WriteAllText($inputFile,'P09_UI_TRANSFER_CANARY');$hash=(Get-FileHash -LiteralPath $inputFile).Hash;$destination=Join-Path $Fixture 'workflow-export';$null=New-Item -ItemType Directory -Path $destination
+  $inputFile=Join-Path $Fixture 'workflow-source.txt';[IO.File]::WriteAllText($inputFile,'P09_UI_TRANSFER_CANARY');$hash=(Get-FileHash -LiteralPath $inputFile).Hash
+  # ProgramData contains this lab's private fixture and is intentionally refused
+  # by the production export guard. Select a fresh ordinary owner-profile folder.
+  $destination=Join-Path ([Environment]::GetFolderPath('UserProfile')) ('SecureRun-P09-Output-'+[Guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $destination
   $pending=Access 'PICKER' $gui.ProcessId $inputFile -Async
   try{$null=Invoke-P09Stage 'TRANSFER_IMPORT_PICK' @{environment_id=$workflow.id;environment_name=$workflow.display_name};$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
   $pending=Access 'PICKER' $gui.ProcessId $destination -Async
   try{$null=Invoke-P09Stage 'TRANSFER_EXPORT_PICK' @{environment_id=$workflow.id};$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
-  $exported=Join-Path $destination 'workflow-source.txt';$clock=[Diagnostics.Stopwatch]::StartNew();while(-not(Test-Path -LiteralPath $exported) -and $clock.ElapsedMilliseconds -lt 30000){Start-Sleep -Milliseconds 100};Require ((Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_EXPORT_BYTES_DIFFER'
+  $null=Invoke-P09Stage 'TRANSFER_EXPORTED' @{renamed=$false}
+  $exported=Join-Path $destination 'workflow-source.txt';Require (Test-Path -LiteralPath $exported -PathType Leaf) 'P09_UI_EXPORT_MISSING';Require ((Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_EXPORT_BYTES_DIFFER'
   $pending=Access 'PICKER' $gui.ProcessId $destination -Async
   try{$null=Invoke-P09Stage 'TRANSFER_COLLISION_PICK';$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
   $pending=Access 'PICKER' $gui.ProcessId $destination -Async
   try{$null=Invoke-P09Stage 'TRANSFER_RENAME_PICK';$null=Complete-Access $pending;$pending=$null}finally{if($null -ne $pending){$null=Complete-Access $pending}}
-  $renamed=Join-Path $destination 'workflow-renamed.txt';$clock.Restart();while(-not(Test-Path -LiteralPath $renamed) -and $clock.ElapsedMilliseconds -lt 30000){Start-Sleep -Milliseconds 100};Require ((Get-FileHash -LiteralPath $renamed).Hash -eq $hash -and (Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_COLLISION_OVERWROTE_OUTPUT'
+  $null=Invoke-P09Stage 'TRANSFER_EXPORTED' @{renamed=$true}
+  $renamed=Join-Path $destination 'workflow-renamed.txt';Require (Test-Path -LiteralPath $renamed -PathType Leaf) 'P09_UI_RENAMED_EXPORT_MISSING';Require ((Get-FileHash -LiteralPath $renamed).Hash -eq $hash -and (Get-FileHash -LiteralPath $exported).Hash -eq $hash) 'P09_UI_COLLISION_OVERWROTE_OUTPUT'
   foreach($intent in @('ARCHIVE','UNARCHIVE','RESET')){
    $pending=Access 'CONFIRM' $gui.ProcessId $workflow.id $intent -Async
    try{$null=Invoke-P09Stage 'LIFECYCLE_PICK' @{intent=$intent};$confirmation=Complete-Access $pending;$pending=$null;Require $confirmation.exact_environment_and_retention_verified 'P09_UI_CONFIRMATION_SCOPE_UNVERIFIED';$null=Invoke-P09Stage 'LIFECYCLE_CHECK' @{intent=$intent;environment_id=$workflow.id;generation=$workflow.generation}}finally{if($null -ne $pending){$null=Complete-Access $pending}}

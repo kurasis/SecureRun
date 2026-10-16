@@ -781,3 +781,16 @@ All six `cf6edad` P03–P08 regressions passed on both targets. Their reviewed r
 JSON is retained as historical exact-commit evidence; newer P09 fixture changes
 require final matching-source validation. The unsuccessful `ec2a16b` full run and
 cancelled `cf6edad` partial runs are also retained without a completion claim.
+
+### Inert directional filename omission corrected
+
+Source review found the cause of the T63 omission: `canonical_validated` used
+`windows::text` for final/long path buffers, and that engine-text decoder rejects
+direction controls. Listing then skipped the otherwise ordinary held file. Only
+the `file_names` inert-I/O branch now decodes these bounded UTF-16 path buffers
+without the engine/INI text restriction. The validated source grammar and exact
+native path equality remain; reparse, hardlink, fixed NTFS, private root and held
+identity checks are unchanged. Output names and engine paths still reject the
+controls. A real Windows filesystem regression checks the held identity, escaped
+full suffix, strict engine-path refusal and output-name refusal. Windows Clippy
+cross-check passed; native execution and matching P03–P08 proof are pending.

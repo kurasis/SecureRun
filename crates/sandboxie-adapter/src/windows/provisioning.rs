@@ -217,6 +217,16 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
         })
         .collect::<R<Vec<File>>>()?;
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
+    // Inert source filenames may contain direction controls. Decode these exact
+    // native path buffers without the stricter engine/INI text grammar; the
+    // source path grammar and held-object equality checks still apply below.
+    let path_text = |data: &[u16]| -> R<String> {
+        if !file_names {
+            return text(data);
+        }
+        let end = data.iter().position(|v| *v == 0).ok_or("PATH_TEXT_BOUND")?;
+        String::from_utf16(&data[..end]).map_err(|_| "PATH_TEXT_INVALID")
+    };
     let mut final_name = [0u16; 1024];
     let n = unsafe {
         GetFinalPathNameByHandleW(
@@ -228,7 +238,7 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
     };
     if n == 0
         || n >= 1024
-        || !text(&final_name)?
+        || !path_text(&final_name)?
             .strip_prefix("\\\\?\\")
             .is_some_and(|s| s.eq_ignore_ascii_case(value))
     {
@@ -236,7 +246,7 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
     }
     let mut long = [0u16; 1024];
     let n = unsafe { GetLongPathNameW(wide(value).as_ptr(), long.as_mut_ptr(), 1024) };
-    if n == 0 || n >= 1024 || !text(&long)?.eq_ignore_ascii_case(value) {
+    if n == 0 || n >= 1024 || !path_text(&long)?.eq_ignore_ascii_case(value) {
         return Err("PATH_ALIAS_UNSUPPORTED");
     }
     for file in &held {

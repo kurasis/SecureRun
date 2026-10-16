@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
   "run_id": 38842216379,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38842216379",
@@ -1049,7 +1049,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.",
+  "note": "Historical passing proof is retained. The P09 inert filename path-decoding correction requires final matching-source Windows regressions.",
   "historical_runs": [
     {
       "tested_commit": "cf6edad614cdfb5160cf223108e7eeaf2376c9c6",
@@ -1057,6 +1057,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38846698162",
       "result": "PASSED",
       "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
+    },
+    {
+      "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
+      "run_id": 38842216379,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38842216379",
+      "result": "DONE",
+      "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
     }
   ]
 }

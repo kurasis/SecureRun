@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38842214153,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38842214153",
   "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
@@ -1303,8 +1303,15 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38846696355",
       "result": "PASSED",
       "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
+    },
+    {
+      "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
+      "run_id": 38842214153,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38842214153",
+      "result": "DONE",
+      "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Historical passing proof is retained. The P09 inert filename path-decoding correction requires final matching-source Windows regressions."
 }

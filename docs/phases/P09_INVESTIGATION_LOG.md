@@ -818,3 +818,13 @@ manager closes and before the inspected GUI starts. No process is terminated,
 application/default selected, product dialog dismissed or target action retried.
 PowerShell/C# compilation, native input layout, the repository validator and all
 18 tooling tests passed; the recurring-window path needs actual Windows proof.
+
+### Standalone display fixture channel alignment
+
+The separate `Test-P09-Display.ps1` diagnostic still created the old five-event
+channel after the controller gained a sixth fixed preparation event. Both
+`38850034600` jobs correctly refused to start the incomplete channel. This missed
+companion fixture is now aligned with the production lab's six events and tests
+preparation acknowledgement before the four actual DPI requests. No product
+logic or Windows security setting changes. Matching source regression will be
+rerun for the final fixture tree; superseded evidence stays historical.

@@ -1275,3 +1275,15 @@ Generated binaries, credentials, raw support content and private machine
 inventory stay excluded. Detailed superseded investigations are preserved in
 [the investigation log](P09_INVESTIGATION_LOG.md). Next eligible phase: P10 only
 after complete matching P09 proof, final reports and ordinary validated merge.
+
+
+## Correct the completion assertion against the actual transfer journal
+
+Source inspection after `2aef3c7` found an error in the newly added UI fixture:
+its successful row expected Complete / OBSERVED, but the persisted transfer
+reason is TRANSFER_COMPLETED_UNTRUSTED. The response-level reason OBSERVED is
+not the row's transfer reason. The assertion now requires the actual displayed
+Complete / TRANSFER_COMPLETED_UNTRUSTED label, no UI error, real output bytes and
+SHA-256 equality. No production code or guard changed. Runs 38884281687 and
+38884280563 were cancelled as superseded by this known assertion correction;
+they cannot close a gate. Fresh runs use the corrected exact source.

@@ -15,7 +15,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `2aef3c7e895418c1af11c055bee35e4113b76b19`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Current P09 source candidate: `217f550d0e95bd632dcc0b8a0ec4aa94bf89ccf4`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
 prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
 at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and

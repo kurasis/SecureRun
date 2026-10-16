@@ -73096,6 +73096,20 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38879931585",
       "result": "FAILED",
       "note": "Server passed 21 native cases and 95 UI assertions; only the private ProgramData export destination failed. ARM passed 16 and 95 before the same export refusal and an undiscovered initial PickerHost Shell_SystemDialog blocked browser welcome. Both positively saved exact reviewed diagnostics and completed ten environments/10000 files/at least 60 seconds complete-job CPU. Server startup 4008.2433 ms / CPU 1.2475397684 percent deviated; ARM startup 2872.8287 ms met / CPU 1.2869004001 percent deviated. Working sets 230728418 / 239241041 bytes met target. Mandatory workflow failures remain; no gate is closed."
+    },
+    {
+      "tested_commit": "2aef3c7e895418c1af11c055bee35e4113b76b19",
+      "run_id": 38884281687,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38884281687",
+      "result": "CANCELLED",
+      "note": "Superseded after source review found the newly added UI assertion expected response-level OBSERVED instead of the actual persisted TRANSFER_COMPLETED_UNTRUSTED completion row. No passing gate is inferred; the corrected exact-source full/focused runs remain required."
+    },
+    {
+      "tested_commit": "2aef3c7e895418c1af11c055bee35e4113b76b19",
+      "run_id": 38884280563,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38884280563",
+      "result": "CANCELLED",
+      "note": "Superseded after source review found the newly added UI assertion expected response-level OBSERVED instead of the actual persisted TRANSFER_COMPLETED_UNTRUSTED completion row. No passing gate is inferred; the corrected exact-source full/focused runs remain required."
     }
   ]
 }

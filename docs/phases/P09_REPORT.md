@@ -4,7 +4,7 @@ Status: IN_PROGRESS. The [P09 manifest](../evidence/p09/manifest.json) is BLOCKE
 Requested scope is full P09 only; P10–P12 remain NOT_STARTED. Final installed
 T01–T66 acceptance is reserved for P12 and remains unrun.
 
-Current runtime/lab candidate: `2aef3c7e895418c1af11c055bee35e4113b76b19`.
+Current runtime/lab candidate: `217f550d0e95bd632dcc0b8a0ec4aa94bf89ccf4`.
 Documentation-only descendants do not replace the tested source. The implementation
 and reviewed evidence are published in [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 
@@ -68,7 +68,7 @@ lists include the current tools.
 | Browser-only `784a4c9` | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124): all four actual cases passed on both, effective content sandbox level 9; diagnostic only |
 | Full `aa5b8f5` | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585): Server 21 native/95 UI passed, one failed case; ARM 16 native/95 UI passed before two failed cases and abort |
 | Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
-| Current full/focused | [38884280563](https://github.com/kurasis/SecureRun/actions/runs/38884280563) / [38884281687](https://github.com/kurasis/SecureRun/actions/runs/38884281687): results pending |
+| Current full/focused | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690) / [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): results pending |
 | Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
@@ -77,7 +77,7 @@ the official editor/archive and all four browser workflows in the full run.
 The transfer/lifecycle case selected the lab-private ProgramData export folder;
 the product correctly refused DESTINATION_SENSITIVE_SCOPE. No export or downstream
 lifecycle success is inferred. The current fixture selects a unique ordinary
-owner-profile folder and requires actual UI Complete/OBSERVED without an error,
+owner-profile folder and requires actual UI Complete/TRANSFER_COMPLETED_UNTRUSTED without an error,
 then verifies real output hashes and unchanged original data.
 
 ARM browser welcome failed a real physical point guard: the hit belonged to an

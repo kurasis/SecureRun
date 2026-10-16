@@ -1,0 +1,283 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "all_successful_definitions_retired": true,
+      "synthetic_reports_unchanged": true,
+      "retained_diagnostics": 30,
+      "completed_definition_count": 0,
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "no_recursive_data_deletion": true
+    },
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "inspector_enabled": false,
+      "performance_exit_gate_claimed": false,
+      "environment_count": 4,
+      "startup_interactive_upper_bound_ms": 2239.9825,
+      "native_startup": {
+        "native_window_created_ms": 907,
+        "native_before_webview_ms": 164,
+        "native_observation_ms": 154,
+        "webview_memory_target_low": true,
+        "completed_observer_frames": 36,
+        "completed_observer_cpu_seconds": 0.234375,
+        "observer_cpu_attribution_complete": false,
+        "completed_observer_streams": 1
+      },
+      "native_window_present_ms": 493.7845
+    },
+    "name": "normal_manager_startup_diagnostic_only",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "real_backend": true,
+      "ten_owned_environments": false,
+      "normal_production_binary": true,
+      "mock_state": false
+    },
+    "name": "actual_normal_webview_environment_navigation",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "policy_and_generation_unchanged": true,
+      "permanent_replay_tombstone": true,
+      "actual_product_ui": true,
+      "metadata_only": true
+    },
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "id": "T32"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 6919,
+    "line": 15,
+    "id": "T32",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "real_keyboard_and_windows_screen_reader_provider"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "labeled_comboboxes": 3,
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "real_chromium_accessibility_tree": true,
+      "actual_native_webview_zoom": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "os_display_setting_modified": false
+    },
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actual_windows_display_changes": true,
+      "production_manager_window_measured": true,
+      "os_security_settings_modified": false,
+      "content_scale_percent": 100,
+      "native_dpi_observations": [
+        {
+          "percent": 100,
+          "native_window_dpi": 96
+        },
+        {
+          "percent": 150,
+          "native_window_dpi": 144
+        },
+        {
+          "percent": 200,
+          "native_window_dpi": 192
+        }
+      ]
+    },
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "update_upper_bound_ms": 182,
+      "real_external_boxed_member": true,
+      "refresh_interval_ms": 1700
+    },
+    "name": "real_process_activity_update_latency",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "queued_in_backend": true,
+      "managed_launch_receipt_verified": true,
+      "independent_policy_readback": true,
+      "external_fixture_conflict_explicitly_repaired": false,
+      "explicit_whole_box_stop": true,
+      "real_native_picker": true,
+      "applied_while_running": false
+    },
+    "name": "running_policy_diff_queue_requires_explicit_stopped_apply",
+    "id": "T32"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "first_ui_list_ms": 2375.9000000000233,
+      "all_page_walk_ms": 102624.1000000001,
+      "total_files": 10000,
+      "pages": 79,
+      "maximum_page": 128,
+      "maximum_dom_rows": 127
+    },
+    "name": "ten_thousand_files_bounded_ui_and_complete_pagination",
+    "id": "T63"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "inherited_environment_secret_absent": true,
+      "synthetic_argv_received": true,
+      "raw_target_errors_not_manager_events": true,
+      "real_boxed_target_executed": true
+    },
+    "name": "synthetic_argv_and_environment_do_not_enter_manager_logs",
+    "id": "T66"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_NATIVE_PICKER_FAILED",
+    "elapsed_ms": 13191,
+    "line": 15,
+    "id": "T66",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "native_diagnostic_save_matches_reviewed_minimized_bytes"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "persistent_history_present": true,
+      "inspected_manager_stderr_scanned": true,
+      "untrusted_text_cannot_add_event_fields": true,
+      "native_worker_error_capture_scanned": true,
+      "argv_environment_error_canaries_absent": true,
+      "utf8_and_utf16_scanned": true,
+      "normal_manager_stderr_scanned": true,
+      "local_history_and_wal_scanned": true
+    },
+    "name": "local_history_and_debug_error_capture_remain_minimized",
+    "id": "T66"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 9274,
+    "line": 15,
+    "id": "T30",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "official_editor_saves_boxed_document_without_host_write"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "host_input_unchanged": true,
+      "actual_archive_extracted": true,
+      "actual_archive_created": true,
+      "official_gui_observed_boxed": true,
+      "host_zip_and_extraction_absent": true,
+      "engine_hooks_or_security_exceptions_added": false,
+      "round_trip_sha256_matches": true,
+      "gui_operation_executable_sha256": "a10b9cda81af22abb9e0d7c896d5edd128bcca7defe40fbcdc57e8921b853588",
+      "actual_gui_create_and_extract": true
+    },
+    "name": "official_archive_gui_and_create_extract_round_trip",
+    "id": "T30"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "explicit_profile_and_no_remote": true,
+      "unboxed_handoff": false,
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "socket_owner_and_held_birth_verified": true,
+      "separate_clean_profiles": true,
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "preexisting_host_browser_verified": true,
+      "browser_sandbox_disabled": false
+    },
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "id": "T41"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 7047,
+    "line": 15,
+    "id": "T41",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_child_request_stays_boxed"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 6931,
+    "line": 15,
+    "id": "T41",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_reachable_protocol_handler_does_not_escape"
+  },
+  {
+    "status": "FAILED",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 9316,
+    "line": 15,
+    "id": "T30",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_content_sandbox_remains_enabled"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_manager_dispatch_ms": 567.1658,
+      "manager_added_upper_bound_ms": 556,
+      "no_required_check_removed": true,
+      "original_dispatch_ms": 11.0124,
+      "target_startup_included_in_both": true,
+      "target_met": true,
+      "same_fixed_benign_probe": true
+    },
+    "name": "launch_overhead_observed_against_same_fixed_original_dispatch",
+    "id": "T32"
+  }
+]

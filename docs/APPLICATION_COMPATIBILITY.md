@@ -46,7 +46,7 @@ provider nor native navigation passed. That experiment is reverted. The current
 browser fixture reads only native window captions, delivers real keyboard input
 and observes synthetic address readback through a cleared clipboard before
 navigation. Clipboard visibility is diagnostic only; fresh native page titles and
-actual attributed requests remain mandatory. It avoids optional cross-box COM/UIA queries to Firefox. Manager
+actual attributed requests remain mandatory. Only the known first-run welcome uses UIA: the exact heading, terms, privacy notice and unique enabled Continue must match before interaction; diagnostic choices are observed off when available. The welcome must disappear before native navigation continues. This handles the modal observed in the real visible screenshot at `7ccda2b`. Manager
 screen-reader/UIA checks remain mandatory. Actual requests, held driver membership,
 protocol output and a positive observed about:support sandbox level remain required.
 Server run 38862241469 had no observed browser GUI and retained a live WerFault

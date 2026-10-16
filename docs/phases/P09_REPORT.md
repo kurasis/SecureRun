@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `7ccda2b199464daa9055ccd3ad398bb7986339d6`.
+Current runtime/lab candidate: `4a98aa48e281064781cc43e21e751ccb355971a2`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -60,7 +60,7 @@ Documentation-only descendants do not replace the required tested source.
 | P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
 | P09 full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695), pending |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
-| P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at UI correction `7e62fd9`, in progress; cannot close the full gate |
+| P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at `7e62fd9`: both completed 93 UI assertions, 10000 files/79 pages and the actual synthetic target secret-isolation proof. Native diagnostic save failed on both; ARM keyboard/editor and three browser continuations also failed. Diagnostic only; 220 original JSON files retained. |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
@@ -111,6 +111,25 @@ It now requires one exact app row. The production interface also used a stored
 application revision for launch after policy changes. It now supplies the loaded
 current environment revision, retaining backend CAS refusal and requiring loaded
 metadata before enabling launch. No mutation is retried automatically.
+
+At `7e62fd9`, both targets positively observed the corrected fresh launch,
+its held-process exit code 41, its boxed marker and absent host marker. The
+argument was received and the inherited environment secret was absent; local
+history and captured manager errors remained minimized. Both completed all
+10000 files over 79 pages and 93 frontend assertions. Native diagnostic Save
+failed before the dependent import/export/archive/reset sequence. Its current
+fixture waits for an enabled owned dialog, verifies the selected filename, and
+uses verified native keyboard input if direct filename messaging is refused.
+The saved output must still exactly match the reviewed minimized bytes.
+
+A real visible Server screenshot at `7ccda2b` revealed the official Firefox
+first-run Terms of Use/Privacy Notice modal above the loaded canary page. This
+explains that run's blocked address/navigation controls; PrintWindow's earlier
+branding-only surface did not establish browser readiness. A diagnostic now
+recognizes the exact welcome heading, both notices and one enabled Continue
+through the real UIA provider, observes available diagnostic choices off, then
+requires the heading to disappear. It changes no browser sandbox setting and
+cannot replace the mandatory child/protocol/effective-sandbox observations.
 
 The synthetic target proof requires the newly observed dispatch in the exact
 environment, its actual boxed marker, intended argument, absent inherited secret

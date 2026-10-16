@@ -1343,3 +1343,17 @@ Exact confirmation title selection and separate found/title flags improve failur
 attribution. All 680 original reviewed JSON files are retained. Queued diagnostic
 38887959182 was cancelled as a duplicate of the already-running full matrix; no
 mandatory full coverage was removed. Fresh full `f9a9755` is 38891751077.
+
+
+## First f9a9755 ARM attempt refuses environment eight; exact-source regressions
+
+Run 38891751077 ARM stopped at SEEDING_ENVIRONMENT_08 with
+DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. Read-only CIM observed unassociated WerFault;
+no component cause or authority to act is inferred and no full sample exists.
+All 192 original reviewed JSON files are retained. Fresh full 38894071449 repeats
+unchanged `f9a9755` on `verify/p09-f9a9755`. Independent P03–P08 regressions were
+also dispatched on this exact immutable candidate while full P09 was running;
+source changes would invalidate their use. P03 run 38893325430 passed portable
+and both native targets (19 foundation/4 app/3 frontend/32 command cases each),
+and its formal source-bound evidence is retained. Other phases remain pending;
+no source list or mandatory gate is reduced.

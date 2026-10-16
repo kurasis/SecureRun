@@ -1,5 +1,16 @@
 # P03 phase report
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430).
+Each target passed 19 foundation tests, 4 native app tests, 3 frontend tests and
+32 actual Windows command-boundary cases with zero engine operations. Both actual
+Windows architectures and the portable job passed. The [manifest](../evidence/p03/manifest.json)
+binds original reports and every protected source, including current lab tools.
+This closes P03 only; complete matching P04–P09 proof is still pending.
+The sections below preserve the original completion and historical regressions.
+
+
 Status: DONE. Requested scope: full P03. P01/P02 remain DONE with their original
 retained evidence. All 26 specification documents remain byte-for-byte unchanged.
 This historical report describes the original P03 scope; P04 observation is documented separately.

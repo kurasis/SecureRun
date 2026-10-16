@@ -71,8 +71,10 @@ lists include the current tools.
 | First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
 | Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; superseded Server cancelled after 88 UI assertions before transfers. |
 | Full `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409): both completed reference measurements. Server 21 native/99 UI passed; next confirmation not observed. ARM completed the real transfer/lifecycle chain and all 101 UI assertions, but archive exit timed out and browser welcome hit an unidentified foreign surface. |
-| Current full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): pending. Queued diagnostic 38887959182 was cancelled as a duplicate; the full run includes all mandatory UI/native/workload cases. |
-| Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
+| First full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): ARM refused environment eight with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and unassociated WerFault; no full sample. Server pending. |
+| Fresh full `f9a9755` | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449): unchanged exact source on a fresh matrix, pending. |
+| P03 exact-source regression | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430): both native targets and portable job passed; each native target passed 19 foundation/4 app/3 frontend/32 command cases. Formal original evidence retained. |
+| P04–P08 exact-source regressions | Running at the same immutable candidate; final matching success remains required |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
 the real native picker and observed the actual imported file. Server also passed

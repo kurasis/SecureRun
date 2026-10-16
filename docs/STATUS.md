@@ -6,7 +6,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
-| P03 | BLOCKED — final P09 runtime regression pending | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
+| P03 | DONE — matching P09 regression passed | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | BLOCKED — final P09 runtime regression pending | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED — final P09 runtime regression pending | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
 | P06 | BLOCKED — final P09 runtime regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
@@ -17,8 +17,14 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 
 Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
 [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
-Full run [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077)
-is pending. P09 remains IN_PROGRESS; final matching P03–P08 regressions are pending.
+Fresh full run [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449)
+is pending. P09 remains IN_PROGRESS; P03 passed at this exact source; matching P04–P08 regressions are running.
+
+First full `f9a9755` ARM attempt 38891751077 refused environment eight with
+DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault; no full sample
+exists. Its Server job continues. Fresh matrix 38894071449 and the P03–P08
+regressions use the same immutable `verify/p09-f9a9755` source. No reporter is
+killed/trusted/exempted and no failed attempt is relabelled successful.
 
 Latest full `0071e2c`, run 38887959409, completed ten environments, 10000 files and
 at least 60 seconds of complete-job measurement on both targets. ARM passed all

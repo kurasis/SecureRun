@@ -618,3 +618,11 @@ just like the already-scoped editor/filename enumerators. Browser navigation
 pastes only its fixed synthetic address, verifies selected-address readback,
 and clears the clipboard. Actual native title, socket attribution, boxed
 outputs and unchanged host data remain mandatory. Windows proof is pending.
+
+An additional incoming positive-control timing mismatch remained: the online
+host waited five seconds for a response, but an accepted boxed TCP peer had
+only 900 ms to send its first byte. The online target now uses the same bounded
+five-second handshake window; offline negative-control timing is unchanged.
+The native receiver test deliberately delays a connected peer for 1100 ms and
+still requires exact IPv6 and both UDP responses while IPv4 stays unanswered.
+No failed observation is converted to success and no policy rule is changed.

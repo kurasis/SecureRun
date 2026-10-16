@@ -104,8 +104,12 @@ pub(super) fn incoming_probe(output: &str, offline: bool) -> R<[bool; 4]> {
                         if !peer.ip().is_loopback() {
                             return false;
                         }
-                        let _ = socket.set_read_timeout(Some(Duration::from_millis(900)));
-                        let _ = socket.set_write_timeout(Some(Duration::from_millis(900)));
+                        // A connected online peer may still be descheduled on an
+                        // emulated target. Keep its positive handshake window as
+                        // long as the host read; offline observations stay short.
+                        let handshake = Duration::from_millis(if offline { 900 } else { 5000 });
+                        let _ = socket.set_read_timeout(Some(handshake));
+                        let _ = socket.set_write_timeout(Some(handshake));
                         let mut bytes = [0u8; 1];
                         return socket.read_exact(&mut bytes).is_ok()
                             && bytes == *b"P"
@@ -742,6 +746,9 @@ mod incoming_tests {
         let mut tcp =
             std::net::TcpStream::connect_timeout(&address, Duration::from_secs(2)).unwrap();
         tcp.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        // Positive online traffic must tolerate scheduling after connection;
+        // the former 900 ms target read expired before this byte was sent.
+        std::thread::sleep(Duration::from_millis(1100));
         tcp.write_all(b"P").unwrap();
         let mut response = [0u8; 1];
         tcp.read_exact(&mut response).unwrap();

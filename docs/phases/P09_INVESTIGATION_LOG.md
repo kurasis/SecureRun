@@ -828,3 +828,14 @@ companion fixture is now aligned with the production lab's six events and tests
 preparation acknowledgement before the four actual DPI requests. No product
 logic or Windows security setting changes. Matching source regression will be
 rerun for the final fixture tree; superseded evidence stays historical.
+
+### Standard-user process query precedes owner delegation
+
+The `4956792` ARM diagnostic stopped during initial desktop preparation: the
+standard actor could enumerate the foreign picker window but could not query its
+process creation time. The new birth check ran before the existing same-user
+refusal and therefore prevented delegation. Same-user authentication now runs
+first, allowing only the existing fixed controller delegation on refusal. The
+controller still requires a nonempty creation identity and repeats fresh owner,
+protected image and Microsoft signature/package checks before enrollment or
+cancellation. No access right, trust check or PID reuse protection is removed.

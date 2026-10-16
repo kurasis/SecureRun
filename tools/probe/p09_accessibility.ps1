@@ -150,10 +150,10 @@ function Prepare-InitialDesktop{
   if($script:initialPickers.Count -gt 0){
    $foreground=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
    if($script:initialPickers.Contains($foreground)){$window=$foreground}else{Need ($script:initialPickers.Count -eq 1);$window=$script:initialPickers[0]}
+   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
    Need ($noProductProcesses -or $enrolled)
-   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
    $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -ieq 'PickerHost.exe')
    $windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows);$programs=[Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
    $protected=$image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($programs+'\WindowsApps\',[StringComparison]::OrdinalIgnoreCase)

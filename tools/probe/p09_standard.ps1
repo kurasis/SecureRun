@@ -26,7 +26,7 @@ function Register-App($Environment,[string]$Name,[string]$Executable,[string[]]$
  $r=Native @{action='REGISTER';environment_id=$Environment.id;expected_revision=$Environment.revision;operation_id=[Guid]::NewGuid().ToString();display_name=$Name;executable=$Executable;arguments=@($Arguments);working_directory=$null} 'control'
  $a=@($r.applications|Where-Object {$_.environment_id -eq $Environment.id -and $_.display_name -eq $Name});Require ($a.Count -eq 1) 'P09_REGISTRATION_MISSING';return $a[0]
 }
-function Launch-App($Environment,$Application){$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$Environment.id;expected_revision=$Environment.revision;application_id=$Application.id;operation_id=$op} 'control';$receipt=@($r.receipts|Where-Object operation_id -eq $op);Require ($receipt.Count -eq 1 -and $null -ne $receipt[0].process -and $receipt[0].state -ne 'REFUSED') 'P09_NATIVE_LAUNCH_NOT_OBSERVED';return $receipt[0]}
+function Launch-App($Environment,$Application){$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$Environment.id;expected_revision=$Environment.revision;application_id=$Application.id;operation_id=$op} 'control';$receipt=@($r.receipts|Where-Object operation_id -eq $op);Require ($r.environment_scope -eq $Environment.id -and @($r.environments).Count -eq 1) 'P09_LAUNCH_RESPONSE_SCOPE_INVALID';Require ($receipt.Count -eq 1 -and $null -ne $receipt[0].process -and $receipt[0].state -ne 'REFUSED') 'P09_NATIVE_LAUNCH_NOT_OBSERVED';return $receipt[0]}
 function Wait-Launched($Receipt){
  $observed=[P09Desktop]::WaitMemberExit($Receipt.process.pid,[long]$Receipt.process.creation_time,45000)
  $observed.case=$script:stage;$observed.synthetic_fixture_only=$true

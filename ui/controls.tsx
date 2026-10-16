@@ -6,7 +6,7 @@ import {ErrorView} from './error';
 type Env = { id: string; revision: number; display_name: string };
 type Process = { pid: number; creation_time: string; session: number };
 type Receipt = { operation_id: string; state: string; reason: string };
-type Reply = { diagnostic_id?:string;reason: string; applications: { id: string; environment_id: string; revision: number; display_name: string; boxed: boolean; available: boolean; unavailable_reason: string | null }[]; environments: { environment_id: string; activity: string; complete: boolean; launch_eligible: boolean; launch_reason: string; reason: string; processes: Process[] }[]; receipts: Receipt[] };
+type Reply = { environment_scope:string|null;diagnostic_id?:string;reason: string; applications: { id: string; environment_id: string; revision: number; display_name: string; boxed: boolean; available: boolean; unavailable_reason: string | null }[]; environments: { environment_id: string; activity: string; complete: boolean; launch_eligible: boolean; launch_reason: string; reason: string; processes: Process[] }[]; receipts: Receipt[] };
 export function Controls({ language, environmentId }: { language: Language;environmentId?:string }) {
   const ru = language === 'ru';const product=productText[language]; const [reply, setReply] = useState<Reply | null>(null); const [envs, setEnvs] = useState<Env[]>([]);
   const [environment, setEnvironment] = useState(environmentId??''); const [name, setName] = useState(''); const [args, setArgs] = useState('[]');

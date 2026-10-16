@@ -3,7 +3,7 @@ param([switch]$Focused,[switch]$LayoutOnly)
 if($LayoutOnly){$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
-$repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim()
+$repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim();$labStarted=[DateTime]::UtcNow
 @{phase='P09';stage='STARTED';manager_commit=$commit}|ConvertTo-Json|Set-Content (Join-Path $out 'stage.json') -Encoding utf8
 $target=if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aarch64-pc-windows-msvc'}else{'x86_64-pc-windows-msvc'};$env:RUSTUP_TOOLCHAIN="1.90.0-$target"
 $controller=$null;$actor=$null;$password=$null;$name=$null;$owned=$null;$shareCreated=$false;$displayEvents=@()
@@ -102,5 +102,20 @@ try {
  if($null -ne $controller){if(-not $controller.HasExited){$controller.Kill($true);$null=$controller.WaitForExit(10000)};$controller.Dispose()}
  foreach($event in $displayEvents){$event.Dispose()}
  if($owned){$partial=Join-Path $owned 'results';if(Test-Path -LiteralPath $partial){Get-ChildItem -LiteralPath $partial -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}}
+ # Read-only diagnosis of crashes in the fixed synthetic/engine components.
+ # Never retain event messages, command lines, paths, SIDs or arbitrary app names.
+ $faults=[Collections.Generic.List[object]]::new();$faultLogAvailable=$true
+ try{
+  $known=@('securerun-policy-probe.exe','securerun-policy-probe-x86.exe','securerun-policy-probe-x64.exe','securerun-launch-probe.exe','SandboxieRpcSs.exe','SandboxieDcomLaunch.exe','SandboxieCrypto.exe','SandboxieBITS.exe','SbieSvc.exe')
+  $modules=@('SbieDll.dll','ntdll.dll','KERNELBASE.dll','kernel32.dll','ucrtbase.dll','wow64.dll','wow64win.dll','wow64cpu.dll')+$known
+  foreach($event in @(Get-WinEvent -FilterHashtable @{LogName='Application';Id=@(1000,1001);StartTime=$labStarted} -MaxEvents 256 -ErrorAction SilentlyContinue)){
+   $xml=[xml]$event.ToXml();$fields=@{};foreach($item in $xml.Event.EventData.Data){$fields[$item.GetAttribute('Name')]=$item.InnerText}
+   $app=if($fields.ContainsKey('AppName')){$fields['AppName']}elseif($fields.ContainsKey('P1')){$fields['P1']}else{''}
+   if($app -notin $known){continue};$module=if($fields.ContainsKey('ModuleName') -and $fields['ModuleName'] -in $modules){$fields['ModuleName']}else{'WITHHELD'}
+   $exception=if($fields.ContainsKey('ExceptionCode') -and $fields['ExceptionCode'] -cmatch '^(0x)?[0-9a-fA-F]{8}$'){$fields['ExceptionCode'].ToLowerInvariant()}else{'WITHHELD'}
+   $faults.Add(@{event_id=$event.Id;application_kind=$app;fault_module_kind=$module;exception_code_hex=$exception});if($faults.Count -ge 64){break}
+  }
+ }catch{$faultLogAvailable=$false}
+ @{schema=1;read_only_fault_log_available=$faultLogAvailable;fixed_component_events=@($faults.ToArray());raw_event_messages_retained=$false;os_error_reporting_modified=$false}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $out 'component-faults.json') -Encoding utf8
  if($null -ne $password){$password.Dispose()};if($name){Disable-LocalUser -Name $name -ErrorAction SilentlyContinue};if($shareCreated){Remove-SmbShare -Name 'SecureRunP05Synthetic' -Force -Confirm:$false};Pop-Location
 }

@@ -189,3 +189,10 @@ P09 control environment views retain `reason` for process observation and add
 scope may have an exact WFP, ownership, policy or unresolved-operation refusal.
 Neither field is authority to launch or Stop; both actions repeat their own full
 native prerequisite and held-scope checks.
+
+Control replies carry `environment_scope`: Register/Launch/Stop observe exactly
+the requested environment; LIST, StopManaged and Reconcile retain the complete
+owned collection (`null` scope). The parent verifies scope and row IDs before
+returning a successful response. This limits response-only availability work;
+namespace, policy, ownership, target identity and actual dispatch/Stop guards
+still run in full. A scoped response never claims another environment is absent.

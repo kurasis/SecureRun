@@ -651,7 +651,14 @@ pub fn execute(
             })
             .collect();
         reply.receipts = control.receipts()?;
-        for e in &all {
+        // Mutation guards above still use the complete owned namespace. Their
+        // response observes the requested environment; LIST/StopManaged/Reconcile
+        // retain all owned views. Unrelated availability work is not dispatch.
+        reply.environment_scope = request.environment_scope();
+        for e in all
+            .iter()
+            .filter(|e| reply.environment_scope.is_none_or(|id| e.id == id))
+        {
             // Launch prerequisites and process visibility are independent facts.
             // Preserve the exact native refusal instead of reducing it to false.
             let eligibility = if e.lifecycle != crate::lifecycle::State::Active {
@@ -733,6 +740,16 @@ pub fn bounded_request(request: &contract::Request) -> contract::Reply {
             || reply.applications.len() > 128
             || reply.environments.len() > 12
             || reply.receipts.len() > 64
+            || (reply.reason == "OBSERVED"
+                && reply.environment_scope != request.environment_scope())
+            || reply.environment_scope.is_some_and(|id| {
+                request.environment_scope() != Some(id)
+                    || (reply.reason == "OBSERVED" && reply.environments.len() != 1)
+                    || reply
+                        .environments
+                        .iter()
+                        .any(|environment| environment.environment_id != id)
+            })
         {
             return Err("CONTROL_RESPONSE_INVALID");
         }

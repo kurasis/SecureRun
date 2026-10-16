@@ -535,3 +535,20 @@ The fixture uses WindowFromPhysicalPoint for UIA's documented physical screen
 coordinates on both architectures. Native owner/provider agreement remains
 mandatory; the change does not accept a foreign window or translate an unknown
 hit into success. Only a boolean native-bounds comparison is added to failures.
+
+ARM focused launch added 1078 ms at `ba8b1cf`, exceeding the 1000 ms target.
+Register/Launch/Stop responses now observe only their requested environment and
+carry an explicit parent-validated `environment_scope`. Their pre-dispatch/full
+namespace, component, root, executable, receipt and Stop guards are unchanged;
+LIST/StopManaged/Reconcile still observe all owned environments. This removes
+unrelated response-only availability calculations from ordinary dispatch timing.
+Fresh actual latency and P06–P09 regression proof remain required.
+
+Full `e6ccf0e` measured 1.18046% CPU / 232257623-byte average working set on
+Server; startup 8356.7 ms still failed. ARM refused CREATE 5 after the same held
+WerFault process remained live for 60 seconds. The refusal/retained data are
+preserved and no reporter termination is authorized. The parent lab now reads
+only bounded Application Error/WER records for an exact known component list,
+retaining whitelisted module kinds and numeric exception codes. It changes no
+error-reporting, firewall, Defender, engine or OS security setting. This is
+optional fault diagnosis, never a passing containment result.

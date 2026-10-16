@@ -1,5 +1,8 @@
 name: P09 readonly input desktop diagnosis
 on:
+  push:
+    branches: ['p09/**']
+    paths: ['.github/workflows/p09-desktop.yml']
   workflow_dispatch:
 permissions:
   contents: read

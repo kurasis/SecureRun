@@ -69,7 +69,7 @@ lists include the current tools.
 | Full `aa5b8f5` | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585): Server 21 native/95 UI passed, one failed case; ARM 16 native/95 UI passed before two failed cases and abort |
 | Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
 | First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
-| Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; Server pending. |
+| Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; superseded Server cancelled after 88 UI assertions before transfers. |
 | Current full/focused `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409) / [38887959182](https://github.com/kurasis/SecureRun/actions/runs/38887959182): results pending |
 | Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
 
@@ -99,7 +99,7 @@ cancelled, diagnostic-only or earlier-source result closes the final gate.
 
 The latest focused ARM `217f550` run positively passed exact diagnostic Save,
 import, exported SHA-256, collision rename preserving original bytes, real keyboard/
-DPI and all four editor/archive/browser workflows. All 98 UI assertions passed.
+DPI, editor/archive workflows and all four browser cases. All 98 UI assertions passed.
 Only the transfer/lifecycle case failed at its first Archive confirmation: the
 exact environment and retention text were available, but the immediate UIA OK
 lookup was absent/disabled. The current fixture uses the P08-proven rfd

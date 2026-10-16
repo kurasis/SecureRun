@@ -1315,3 +1315,10 @@ backend lifecycle/generation. No production guard or confirmation is bypassed.
 The remaining first-full Server job and fresh full 38887488001 were cancelled as
 superseded by this observed correction; they do not close a gate. The next full/
 focused source is 0071e2c. Original reviewed JSON and hashes are retained.
+
+
+The cancelled `217f550` focused Server artifact retained 88 passed UI assertions;
+its secret-isolation case was still IN_PROGRESS. It supplies no Save, transfer,
+confirmation or lifecycle success for that attempt. Its original partial JSON is
+retained separately from ARM's completed diagnostic result. Both require the
+fresh full-source gate; cancellation is never counted as a pass.

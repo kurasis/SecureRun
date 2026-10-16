@@ -15,7 +15,7 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `217f550d0e95bd632dcc0b8a0ec4aa94bf89ccf4`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Current P09 source candidate: `0071e2c00ccdd1260d945251f5f14fbac405efd1`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
 prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
 at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and
@@ -30,11 +30,16 @@ measurement completed, but an initial PickerHost Shell_SystemDialog surface
 blocked browser welcome. The lab now discovers that exact class under the same
 initial-process identity and trust guards. Complete matching final-source gates
 remain pending. P09 is not DONE.
-First full `217f550` ARM attempt 38885567690 refused environment four with
-DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault. No full ARM sample
-exists for that attempt. Fresh full matrix 38887488001 uses the unchanged exact
-source on `verify/p09-217f550`; Server/focused results and final regressions remain
-pending. No reporter is killed, trusted or exempted.
+At `217f550`, focused ARM run 38885566833 passed 20 native cases and 98 UI
+assertions, including actual export/collision rename and all four browser cases.
+Only native Archive confirmation failed because immediate UIA OK was absent/
+disabled. The current fixture uses the P08-proven exact native IDOK after bounded
+UUID/retention/owner/class/button checks and requires actual dialog closure and
+backend state. Current full/focused runs are 38887959409 / 38887959182.
+First full `217f550` ARM attempt refused environment four with an unassociated
+WerFault and has no full sample; its remaining Server job and fresh retry
+38887488001 were cancelled as superseded by the confirmation correction. No
+reporter is killed, trusted or exempted. No final gate is closed.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

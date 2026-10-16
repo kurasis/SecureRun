@@ -1299,3 +1299,19 @@ reviewed JSON and hashes are retained. No reporter is killed/trusted/exempted.
 Fresh full matrix 38887488001 repeats exactly unchanged `217f550` on the immutable
 candidate pin `verify/p09-217f550`. This is a fresh VM retry, not a waived failure
 or successful gate; focused and final matching regressions remain required.
+
+
+## ARM 217f550 reaches native Archive confirmation after real transfers
+
+Focused 38885566833 ARM passed 20 native cases and all 98 UI assertions. Actual
+Save bytes, import, export SHA-256, collision rename with original preservation,
+keyboard/DPI and all four browser workflows passed. Only the transfer/lifecycle
+case failed at Archive: exact environment/retention text was read, but immediate
+UIA OK was absent/disabled. The native fixture now uses the same exact MessageBoxW
+IDOK notification proven by P08, after bounded UIA UUID/retention verification and
+native direct-owner, exact title/class, parent, control ID, visible/enabled guards.
+It sends once and requires actual closure, then the UI stage independently reads
+backend lifecycle/generation. No production guard or confirmation is bypassed.
+The remaining first-full Server job and fresh full 38887488001 were cancelled as
+superseded by this observed correction; they do not close a gate. The next full/
+focused source is 0071e2c. Original reviewed JSON and hashes are retained.

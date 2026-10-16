@@ -12,6 +12,14 @@ compilation alone do not establish compatibility.
 | 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
 | Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | All four workflows passed on both targets in browser-only run 38878700124 at `784a4c9`, with effective content sandbox level 9. Diagnostic only; final matching full run pending. |
 
+Latest constituent workflows passed on Server in full run 38879931585 (`aa5b8f5`)
+and on ARM in focused run 38885566833 (`217f550`), including actual editor save,
+archive round trip and all four browser cases. ARM also passed real import/export
+and collision rename. Its remaining native Archive confirmation failure belongs
+to the manager lifecycle workflow, not the archive application. Complete matching
+full-source proof at `0071e2c` is still mandatory; constituent runs are not combined
+to close the formal gate.
+
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated
 x64 target binaries. Native application results are reported per runner; they do

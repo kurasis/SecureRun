@@ -4,7 +4,7 @@ Status: IN_PROGRESS. The [P09 manifest](../evidence/p09/manifest.json) is BLOCKE
 Requested scope is full P09 only; P10–P12 remain NOT_STARTED. Final installed
 T01–T66 acceptance is reserved for P12 and remains unrun.
 
-Current runtime/lab candidate: `217f550d0e95bd632dcc0b8a0ec4aa94bf89ccf4`.
+Current runtime/lab candidate: `0071e2c00ccdd1260d945251f5f14fbac405efd1`.
 Documentation-only descendants do not replace the tested source. The implementation
 and reviewed evidence are published in [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 
@@ -68,8 +68,9 @@ lists include the current tools.
 | Browser-only `784a4c9` | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124): all four actual cases passed on both, effective content sandbox level 9; diagnostic only |
 | Full `aa5b8f5` | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585): Server 21 native/95 UI passed, one failed case; ARM 16 native/95 UI passed before two failed cases and abort |
 | Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
-| First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server pending. |
-| Current fresh full/focused | [38887488001](https://github.com/kurasis/SecureRun/actions/runs/38887488001) / [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): results pending |
+| First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
+| Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; Server pending. |
+| Current full/focused `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409) / [38887959182](https://github.com/kurasis/SecureRun/actions/runs/38887959182): results pending |
 | Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
@@ -96,12 +97,25 @@ reasons and the prior report snapshot remain in the
 [investigation log](P09_INVESTIGATION_LOG.md) and manifest history. No failed,
 cancelled, diagnostic-only or earlier-source result closes the final gate.
 
+The latest focused ARM `217f550` run positively passed exact diagnostic Save,
+import, exported SHA-256, collision rename preserving original bytes, real keyboard/
+DPI and all four editor/archive/browser workflows. All 98 UI assertions passed.
+Only the transfer/lifecycle case failed at its first Archive confirmation: the
+exact environment and retention text were available, but the immediate UIA OK
+lookup was absent/disabled. The current fixture uses the P08-proven rfd
+MessageBoxW IDOK notification after bounded exact-text, direct owner, native
+class, parent/button identity and enabled/visible checks. It dispatches once and
+requires actual closure before the independent backend state check. No native
+confirmation or destructive backend guard is bypassed. Original JSON is retained.
+
 The first full `217f550` ARM attempt refused environment four before the reference
 workload. Read-only CIM observed WerFault without a verified component association;
 no cause is inferred. No reporter is killed, trusted or exempted. Its original
-JSON is retained, and a fresh full matrix repeats the unchanged exact source at
-`verify/p09-217f550`. This pin is a test candidate, not a completed gate. The
-focused workflow and final exact-source P03–P08 regressions remain required.
+JSON is retained. That run's remaining Server job and the fresh matrix
+38887488001 on `verify/p09-217f550` were cancelled after the actual confirmation
+failure required a fixture correction. The pin is superseded and cannot close a
+gate. Current full/focused runs use `0071e2c`; final matching P03–P08 regressions
+remain required.
 
 ## Measured budgets and remaining risks
 

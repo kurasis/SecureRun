@@ -36,6 +36,15 @@ public static class P09Access {
   var keys=new Input[text.Length*2];for(int i=0;i<text.Length;i++){keys[2*i]=Key(text[i],4);keys[2*i+1]=Key(text[i],6);}int size=Marshal.SizeOf(typeof(Input));uint count=SendInput((uint)keys.Length,keys,size);
   if(count==keys.Length)return true;if((count&1)!=0){Input release=keys[count-1];release.Data.Keyboard.Flags|=2;SendInput(1,new[]{release},size);}return false;
  }
+ [DllImport("user32.dll")]static extern IntPtr GetKeyboardLayout(uint thread);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern short VkKeyScanEx(char value,IntPtr layout);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern uint MapVirtualKeyEx(uint code,uint kind,IntPtr layout);
+ public static bool TypeAscii(IntPtr root,uint expected,string text){
+  if(!ExactForeground(root,expected)||text.Length>512)return false;uint ignored;IntPtr layout=GetKeyboardLayout(GetWindowThreadProcessId(root,out ignored));if(layout==IntPtr.Zero)return false;
+  var keys=new System.Collections.Generic.List<Input>();ushort shift=(ushort)MapVirtualKeyEx(16,0,layout);if(shift==0)return false;
+  foreach(char value in text){if(value<32||value>126)return false;short mapped=VkKeyScanEx(value,layout);if(mapped<0||((mapped>>8)&255)>1)return false;ushort scan=(ushort)MapVirtualKeyEx((uint)(mapped&255),0,layout);if(scan==0)return false;bool shifted=(mapped&256)!=0;if(shifted)keys.Add(Key(shift,8));keys.Add(Key(scan,8));keys.Add(Key(scan,10));if(shifted)keys.Add(Key(shift,10));}
+  if(!ExactForeground(root,expected))return false;Input[] input=keys.ToArray();return SendInput((uint)input.Length,input,Marshal.SizeOf(typeof(Input)))==input.Length;
+ }
  [DllImport("user32.dll")]public static extern bool ShowWindow(IntPtr window,int command);
  [DllImport("user32.dll")]public static extern bool GetWindowRect(IntPtr window,out P09Rect rectangle);
  [DllImport("user32.dll")]public static extern bool PrintWindow(IntPtr window,IntPtr dc,uint flags);
@@ -399,7 +408,7 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  try{
   [Windows.Forms.Clipboard]::Clear();Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
   $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
-  $result.address_text_verified=([Windows.Forms.Clipboard]::GetText() -ceq $address);Browser-Key $id 13
+  $result.address_text_verified=([Windows.Forms.Clipboard]::GetText() -ceq $address);if(-not $result.address_text_verified){Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeAscii($hwnd,$id,$address));$result.ascii_scancode_uri_used=$true;Start-Sleep -Milliseconds 200};Browser-Key $id 13
  }finally{[Windows.Forms.Clipboard]::Clear()}
  $result.native_keyboard_delivery_checked=$true;$result.navigation_input='NATIVE_KEYBOARD_WITH_EXACT_SYNTHETIC_ADDRESS_READBACK'
 }

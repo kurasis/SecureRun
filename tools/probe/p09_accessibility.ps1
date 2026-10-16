@@ -570,7 +570,7 @@ try{
    try{$graphics=[Drawing.Graphics]::FromImage($bitmap);$dc=$graphics.GetHdc();$result.synthetic_browser_window_captured=[P09Access]::PrintWindow($hwnd,$dc,2);$graphics.ReleaseHdc($dc);$dc=[IntPtr]::Zero;if($result.synthetic_browser_window_captured){$bitmap.Save($ResultFile+'.png',[Drawing.Imaging.ImageFormat]::Png)}}
    finally{if($null -ne $graphics){if($dc -ne [IntPtr]::Zero){$graphics.ReleaseHdc($dc)};$graphics.Dispose()};$bitmap.Dispose()}
    $class=[Text.StringBuilder]::new(128);$null=[P09Access]::GetClassName($hwnd,$class,128);$baseClass=$class.ToString() -replace '^Sandbox:SR_[0-9a-f]{32}:','';$result.browser_native_window_class=if($baseClass -cin @('MozillaWindowClass','MozillaDialogClass','MozillaCompositorWindowClass','MozillaHiddenWindowClass')){$baseClass}else{'WITHHELD'}
-   Focus-OwnedWindow $hwnd $ManagerPid;$allOwned=$true
+   Focus-OwnedWindow $hwnd $ManagerPid;Need ([P09Access]::GetWindowRect($hwnd,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top;$allOwned=$true
    foreach($fx in @(0.1,0.5,0.9)){foreach($fy in @(0.1,0.5,0.9)){$sample=[P09Point]::new();$sample.X=$rect.Left+[int]($width*$fx);$sample.Y=$rect.Top+[int]($height*$fy);$sampleHit=[P09Access]::WindowFromPoint($sample);if(-not ([P09Access]::OwnedWindow($sampleHit,$ManagerPid) -and [P09Access]::GetAncestor($sampleHit,2) -eq $hwnd)){$allOwned=$false}}}
    $result.screen_capture_points_owned=$allOwned;$result.synthetic_browser_screen_captured=$false
    if($allOwned -and $width -gt 40 -and $height -gt 40){

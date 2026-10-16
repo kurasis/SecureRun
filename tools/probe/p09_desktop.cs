@@ -30,6 +30,10 @@ public sealed class P09Desktop : IDisposable {
  [DllImport("user32.dll")] static extern bool EnumWindows(Visit visit,IntPtr parameter);
  [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hwnd,out uint pid);
  delegate bool Visit(IntPtr hwnd,IntPtr parameter);
+ [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr window);
+ [DllImport("user32.dll",EntryPoint="GetWindowLongW")] static extern int GetWindowLong(IntPtr window,int index);
+ public static bool HasCaptionedWindow(int expected){bool found=false;EnumWindows((window,data)=>{uint pid;GetWindowThreadProcessId(window,out pid);if(pid==(uint)expected&&IsWindowVisible(window)&&(GetWindowLong(window,-16)&0x00c00000)==0x00c00000){found=true;return false;}return true;},IntPtr.Zero);return found;}
+
  int disposed;readonly IntPtr job,process;readonly bool hostFixture;public readonly int ProcessId;public readonly long StartedTicks;
  public P09Desktop(string executable,string cwd,string trace,int port):this(executable,cwd,trace,port,null) {}
  static string Quote(string value){if(value.IndexOfAny(new[]{'"','\0','\r','\n'})>=0||value.EndsWith("\\",StringComparison.Ordinal))throw new InvalidOperationException("P09_LAB_ARGUMENT_INVALID");return "\""+value+"\"";}

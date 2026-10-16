@@ -142,6 +142,9 @@ public static class P09Access {
  [DllImport("user32.dll")]public static extern uint GetWindowThreadProcessId(IntPtr hwnd,out uint pid);
  [DllImport("user32.dll")]public static extern bool IsWindowVisible(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool IsWindow(IntPtr hwnd);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern IntPtr SendMessageTimeout(IntPtr window,uint message,IntPtr wparam,IntPtr lparam,uint flags,uint timeout,out UIntPtr result);
+ public static int Responsive(IntPtr window){UIntPtr result;return SendMessageTimeout(window,0,IntPtr.Zero,IntPtr.Zero,2,500,out result)!=IntPtr.Zero?0:Marshal.GetLastWin32Error();}
+
  [DllImport("user32.dll")]public static extern bool IsIconic(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern uint GetDpiForWindow(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool SetForegroundWindow(IntPtr hwnd);
@@ -178,6 +181,7 @@ function Window([int]$id,[bool]$dialog=$false){
  foreach($hwnd in $windows){
   $caption=[P09Access]::Caption($hwnd);$isDialog=([P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox) -or (Known-PickerTitle $caption))
   if($dialog -and $isDialog){return $hwnd}
+  if(-not $dialog -and -not $isDialog -and $Mode.StartsWith('BROWSER_') -and ([P09Access]::GetWindowLong($hwnd,-16) -band 0x00c00000) -ne 0x00c00000){continue}
   if(-not $dialog -and -not $isDialog){$rectangle=[P09Rect]::new();if(-not [P09Access]::GetWindowRect($hwnd,[ref]$rectangle)){continue};$area=([long]$rectangle.Right-$rectangle.Left)*($rectangle.Bottom-$rectangle.Top);if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
  }
  if($dialog){$result.picker_owned_visible_window_count=$windows.Count}
@@ -568,12 +572,15 @@ try{
   'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Focus-NativeEditor $hwnd $ManagerPid;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^%s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
   'BROWSER_DIAGNOSTIC' {
    $stage='OBSERVING_SYNTHETIC_BROWSER_CHROME';Need (([P09Access]::Caption($hwnd)).Contains('P09 browser canary'))
+   $result.native_window_response_error=[P09Access]::Responsive($hwnd);$result.native_browser_has_caption=(([P09Access]::GetWindowLong($hwnd,-16) -band 0x00c00000) -eq 0x00c00000)
+   $work=[Windows.Forms.Screen]::PrimaryScreen.WorkingArea;$width=[Math]::Min(1000,$work.Width-40);$height=[Math]::Min(700,$work.Height-40);Need ($width -ge 480 -and $height -ge 360);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),$work.Left+20,$work.Top+20,$width,$height,0x50));$script:raisedWindows.Add($hwnd);$result.synthetic_window_geometry_controlled=$true;Start-Sleep -Milliseconds 300
+
    $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top;Need ($width -gt 0 -and $height -gt 0 -and $width -le 4096 -and $height -le 4096)
    $bitmap=[Drawing.Bitmap]::new($width,$height);$graphics=$null;$dc=[IntPtr]::Zero
    try{$graphics=[Drawing.Graphics]::FromImage($bitmap);$dc=$graphics.GetHdc();$result.synthetic_browser_window_captured=[P09Access]::PrintWindow($hwnd,$dc,2);$graphics.ReleaseHdc($dc);$dc=[IntPtr]::Zero;if($result.synthetic_browser_window_captured){$bitmap.Save($ResultFile+'.png',[Drawing.Imaging.ImageFormat]::Png)}}
    finally{if($null -ne $graphics){if($dc -ne [IntPtr]::Zero){$graphics.ReleaseHdc($dc)};$graphics.Dispose()};$bitmap.Dispose()}
    $class=[Text.StringBuilder]::new(128);$null=[P09Access]::GetClassName($hwnd,$class,128);$baseClass=$class.ToString() -replace '^Sandbox:SR_[0-9a-f]{32}:','';$result.browser_native_window_class=if($baseClass -cin @('MozillaWindowClass','MozillaDialogClass','MozillaCompositorWindowClass','MozillaHiddenWindowClass')){$baseClass}else{'WITHHELD'}
-   Focus-OwnedWindow $hwnd $ManagerPid;Need ([P09Access]::GetWindowRect($hwnd,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top;$allOwned=$true
+   Focus-OwnedWindow $hwnd $ManagerPid;Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),$work.Left+20,$work.Top+20,[Math]::Min(1000,$work.Width-40),[Math]::Min(700,$work.Height-40),0x50));Need ([P09Access]::GetWindowRect($hwnd,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top;$allOwned=$true
    foreach($fx in @(0.1,0.5,0.9)){foreach($fy in @(0.1,0.5,0.9)){$sample=[P09Point]::new();$sample.X=$rect.Left+[int]($width*$fx);$sample.Y=$rect.Top+[int]($height*$fy);$sampleHit=[P09Access]::WindowFromPoint($sample);if(-not ([P09Access]::OwnedWindow($sampleHit,$ManagerPid) -and [P09Access]::GetAncestor($sampleHit,2) -eq $hwnd)){$allOwned=$false}}}
    $result.screen_capture_points_owned=$allOwned;$result.synthetic_browser_screen_captured=$false
    if($allOwned -and $width -gt 40 -and $height -gt 40){

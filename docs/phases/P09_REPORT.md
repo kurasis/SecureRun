@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `8cc5e265059a790b3de57df2516023d6ad5f9e2b`.
+Current runtime/lab candidate: `aa5b8f5257aafcbe24fbe1e35045d87806d10a31`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -73,10 +73,10 @@ artifacts remained readable anonymously. Authenticated API and Git access later
 recovered, and all prepared reports/evidence were pushed. The phase is blocked
 by actual final-source verification, not by an assumed successful result.
 
-A complete full P09 run is now pinned to exact source `8cc5e26`,
-[38877810087](https://github.com/kurasis/SecureRun/actions/runs/38877810087).
-Final matching-source P03–P08 dispatch/retention waits for the remaining native
-Save and dependent product UI results. No protected source list is reduced.
+The `8cc5e26` full pin run 38877810087 was cancelled after newer native Save
+and file-panel assertion corrections superseded it. Current source waits for
+complete functional proof before final P03–P08 dispatch and formal P09 retention.
+No protected source list is reduced, and cancelled runs cannot close a gate.
 
 ## Findings and remaining exit gate
 
@@ -142,7 +142,11 @@ Server full run 38872735865 confirmed an enabled native Save dialog and exact
 filename write/readback, but NATIVE_IDOK did not close it. The current fixture
 focuses the actual filename field, types and verifies the exact path, then uses
 real Enter. The saved output must still exactly match the reviewed minimized
-bytes; the keyboard correction has no passing Windows result yet.
+bytes; ARM focused run 38876095323 did positively save and compare the exact reviewed
+bytes; Server still failed the older native keyboard preparation. The current
+Save fixture uses the already-passing editor SendKeys sequence, with no preliminary
+WM_SETTEXT, exact field focus/path verification and one Enter. Its final-source
+result remains pending.
 
 Reviewed real visible screenshots on both targets at `7ccda2b` reveal the
 same official Firefox first-run Terms of Use/Privacy Notice modal above the
@@ -210,6 +214,28 @@ SocketException before the secret/export sequence; no UI assertion failed. The
 observer now gives the bounded full traversal a separate deadline and records
 socket kind and elapsed failure time. First-page measurement and original page/
 DOM bounds remain unchanged. An extended observer deadline does not establish full-workload completion.
+
+ARM focused run 38876095323 reached import after its successful minimized Save.
+The imported filename appeared, but the fixture checked the outer action-scope
+legend (Files) instead of the selected file legend. The assertion now scopes the
+actual file section, waits for an enabled exact filename and requires that
+section's exact selected-file legend. Export/collision/archive/reset still need
+complete actual results; this is not a waived assertion.
+
+Server full run 38876095712 at `96159c8` passed 20 native cases, including all
+four browser workflows, and 93 UI assertions. Its complete ten-environment/
+10000-file/60227-ms workload measured startup 7028.298 ms (deviation), CPU
+0.7393844823% and average working set 233778657 bytes (both targets met). Native
+diagnostic Save failed and the dependent UI sequence was not reached. ARM
+refused environment five with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and a read-only
+reporter association with SandboxieRpcSs.exe; no complete ARM sample exists for
+that run. No fault reporter is terminated or trusted.
+
+ARM browser-only `8cc5e26` passed main/child/protocol cases but native TypeText
+declined during about:support entry. Current native metadata distinguishes the
+pre-send foreground guard from incomplete SendInput. Only explicit zero-input
+foreground rejection can reacquire focus before typing; no partial input,
+Enter or protocol action is replayed. The combined ARM result remains pending.
 
 Final matching editor save, all browser cases, actual manager keyboard and the
 complete diagnostic/export/transfer/lifecycle UI sequence remain mandatory.

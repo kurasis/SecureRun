@@ -1,0 +1,44 @@
+[
+  {
+    "kind": "editor",
+    "hash_algorithm": "SHA256",
+    "bytes": 8090883,
+    "package_hash": "43bf78c7569fd43b03d4f86a1073ac4306b31099e4487bdbf536c42d16d03f48",
+    "source": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/tag/v8.9.8.1",
+    "architecture": "arm64",
+    "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.portable.arm64.zip",
+    "product": "Notepad++",
+    "file_version": "8.9.8.1",
+    "executable_sha256": "032e6a2a13727006ee69a40e21dcaef8c0aee7df4eeb40d4e4ba59d317c7c21c",
+    "version": "8.9.8.1",
+    "signature_status": "Valid"
+  },
+  {
+    "kind": "archive",
+    "hash_algorithm": "SHA256",
+    "bytes": 1593683,
+    "package_hash": "d4117b95495b0e925334ae7b5bddf2853513274603de15dee6acf03999fbc09c",
+    "source": "https://github.com/ip7z/7zip/releases/tag/26.04",
+    "architecture": "arm64",
+    "url": "https://github.com/ip7z/7zip/releases/download/26.04/7z2604-arm64.exe",
+    "product": "7-Zip",
+    "file_version": "26.04",
+    "executable_sha256": "68dc77e7c597644b9f69ae954b3f057bf94ae172472996be438a1ee63ac9cd98",
+    "version": "26.04",
+    "signature_status": "NotSigned"
+  },
+  {
+    "kind": "browser",
+    "hash_algorithm": "SHA512",
+    "bytes": 84079720,
+    "package_hash": "62220e7b64ce46803fe091b016d5f30353de363c1ffa9010d7aa9bf8bd1b823033f81173a2e4e6747524ef9778b1f0d4b69a7db2484b08130aaf457ed9d50b19",
+    "source": "https://archive.mozilla.org/pub/firefox/releases/153.5.0esr/SHA512SUMS",
+    "architecture": "arm64",
+    "url": "https://archive.mozilla.org/pub/firefox/releases/153.5.0esr/win64-aarch64/en-US/Firefox%20Setup%20153.5.0esr.exe",
+    "product": "Firefox ESR",
+    "file_version": "153.5.0",
+    "executable_sha256": "4a12886ffd8b09d858cf643c09e96855e7f7630ce4e2a76e6400372ce0f49f39",
+    "version": "153.5.0esr",
+    "signature_status": "Valid"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "status": "FAILED",
+  "cases": [
+    {
+      "id": "T32",
+      "name": "actual_ui_import_is_visible_without_opening",
+      "passed": false
+    }
+  ],
+  "code": "P09_UI_ASSERTION_FAILED",
+  "stage": "TRANSFER_EXPORT_PICK",
+  "exception_type": "Error",
+  "diagnostic": {
+    "secret_dispatch_reason": "WITHHELD",
+    "file_ui_pages": 1,
+    "file_canary_found": true,
+    "file_canary_escaped": true,
+    "file_canary_suffix": true,
+    "file_step": "FILE_ROWS",
+    "file_root_present": true,
+    "file_panel_error": "WITHHELD",
+    "file_table_rows": 1,
+    "selected_policy_stage": "VERIFIED",
+    "selected_policy_reason": "POLICY_VERIFIED_TARGET_LAUNCH_DEFERRED",
+    "edit_policy_button_present": false,
+    "policy_editor_present": false,
+    "document_complete": true,
+    "setup": "setup-ready",
+    "card_count": 0,
+    "has_selected_tabs": true,
+    "health_fresh": true,
+    "control_plane_safe": false,
+    "service_identity_complete": false,
+    "service_identity_reason": "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN",
+    "manager_unboxed": true,
+    "bridge_unboxed": true,
+    "health_reason": "OBSERVED",
+    "policy_reason": "OBSERVED",
+    "owned_environment_count": 4
+  }
+}

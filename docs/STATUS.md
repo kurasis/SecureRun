@@ -15,11 +15,12 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `8cc5e265059a790b3de57df2516023d6ad5f9e2b`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Current P09 source candidate: `aa5b8f5257aafcbe24fbe1e35045d87806d10a31`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
 prepared reports/evidence were pushed. Server passed the four-case browser-only
 diagnostic at `8cc5e26`; both targets passed actual manager keyboard/UIA and
-editor edit/Save As at `9df8149`. Native diagnostic Save, its dependent UI
+editor edit/Save As at `9df8149`. ARM positively saved the exact reviewed diagnostic bytes at `96159c8`, while
+Server failed the older input sequence. Final native Save, its dependent UI
 sequence and complete matching final-source gates remain pending. P09 is not DONE.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.

@@ -1,0 +1,75 @@
+[
+  {
+    "evidence": {
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "browser_sandbox_disabled": false,
+      "preexisting_host_browser_verified": true,
+      "unboxed_handoff": false,
+      "explicit_profile_and_no_remote": true,
+      "separate_clean_profiles": true,
+      "socket_owner_and_held_birth_verified": true
+    },
+    "status": "PASSED",
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "id": "T41"
+  },
+  {
+    "evidence": {
+      "actual_browser_child_action": true,
+      "host_url_handoff": false,
+      "process_tree_alone_used_as_proof": false,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_CHILD",
+          "host_profile_cookie_present": false
+        }
+      ]
+    },
+    "status": "PASSED",
+    "name": "browser_own_child_request_stays_boxed",
+    "id": "T41"
+  },
+  {
+    "evidence": {
+      "generic_external_protocol_support_claimed": false,
+      "reachable_handler_executed_boxed": true,
+      "browser_sandbox_disable_flag": false,
+      "host_protocol_positive_control": true,
+      "host_marker_absent": true,
+      "real_browser_address_action": true,
+      "original_registered_handler_fixture": true,
+      "actual_boxed_protocol_link_page": true
+    },
+    "status": "PASSED",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "id": "T41"
+  },
+  {
+    "status": "FAILED",
+    "line": 15,
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T30",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "elapsed_ms": 2344
+  }
+]

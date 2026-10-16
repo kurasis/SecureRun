@@ -1,0 +1,56 @@
+[
+  {
+    "id": "T32",
+    "evidence": {
+      "retention_limit": 256,
+      "all_successful_definitions_retired": true,
+      "retained_diagnostics": 20,
+      "completed_definition_count": 0,
+      "synthetic_reports_unchanged": true,
+      "no_recursive_data_deletion": true,
+      "root_data_retained": true
+    },
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED"
+  },
+  {
+    "id": "T30",
+    "evidence": {
+      "clean_portable_profile": true,
+      "plugins_and_host_update_integrations_outside_validated_workflow": true,
+      "original_driver_member_observed": true,
+      "boxed_saved_bytes_verified": true,
+      "real_gui_editor": true,
+      "actual_keyboard_edit_and_save": true,
+      "official_executable": true,
+      "host_output_absent": true,
+      "host_input_unchanged": true
+    },
+    "name": "official_editor_saves_boxed_document_without_host_write",
+    "status": "PASSED"
+  },
+  {
+    "id": "T30",
+    "evidence": {
+      "host_zip_and_extraction_absent": true,
+      "gui_operation_executable_sha256": "363fb45bb3ea1cab98ae5ab4a564c859277ee668e58c08ffd2ecb6fe9afcd534",
+      "actual_gui_create_and_extract": true,
+      "official_gui_observed_boxed": true,
+      "actual_archive_extracted": true,
+      "engine_hooks_or_security_exceptions_added": false,
+      "round_trip_sha256_matches": true,
+      "actual_archive_created": true,
+      "host_input_unchanged": true
+    },
+    "name": "official_archive_gui_and_create_extract_round_trip",
+    "status": "PASSED"
+  },
+  {
+    "status": "FAILED",
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "id": "T41",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "line": 70,
+    "code": "P09_TARGET_GUI_NOT_OBSERVED"
+  }
+]

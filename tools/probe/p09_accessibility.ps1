@@ -107,6 +107,18 @@ public static class P09Access {
  [DllImport("user32.dll")]public static extern bool IsWindowVisible(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern uint GetDpiForWindow(IntPtr hwnd);
  [DllImport("user32.dll")]public static extern bool SetForegroundWindow(IntPtr hwnd);
+ [DllImport("user32.dll",SetLastError=true)]static extern bool AttachThreadInput(uint from,uint to,bool attach);
+ [DllImport("user32.dll")]static extern bool BringWindowToTop(IntPtr window);
+ public static bool ActivateOwned(IntPtr window,uint expected){
+  if(!OwnedWindow(window,expected))return false;
+  uint ignored,current=GetCurrentThreadId(),target=GetWindowThreadProcessId(window,out ignored),foreground=GetWindowThreadProcessId(GetForegroundWindow(),out ignored);bool attachedForeground=false,attachedTarget=false;
+  try{
+   if(foreground!=0&&foreground!=current)attachedForeground=AttachThreadInput(current,foreground,true);
+   if(target!=0&&target!=current&&target!=foreground)attachedTarget=AttachThreadInput(current,target,true);
+   ShowWindow(window,9);BringWindowToTop(window);SetForegroundWindow(window);return ExactForeground(window,expected);
+  }finally{if(attachedTarget)AttachThreadInput(current,target,false);if(attachedForeground)AttachThreadInput(current,foreground,false);}
+ }
+
  [DllImport("user32.dll")]public static extern IntPtr GetForegroundWindow();
 }
 '@
@@ -231,7 +243,7 @@ if($Mode -eq 'DESKTOP_INPUT'){
   if($PrepareInput){$preparation=Prepare-InitialDesktop;$preparation|ConvertTo-Json -Depth 5|Set-Content -LiteralPath ($ResultFile+'.preparation.json') -Encoding UTF8;Need ($preparation.status -eq 'OBSERVED');$result.initial_preparation_observed=$true}
   $form=[Windows.Forms.Form]::new();$form.Text='SecureRun synthetic native input probe';$form.StartPosition='CenterScreen';$form.Width=640;$form.Height=480;$form.TopMost=$true
   $field=[Windows.Forms.TextBox]::new();$field.Left=40;$field.Top=60;$field.Width=400;$form.Controls.Add($field);$form.Show();[Windows.Forms.Application]::DoEvents();Start-Sleep -Milliseconds 300
-  $root=$form.Handle;$null=[P09Access]::SetForegroundWindow($root);$field.Focus()|Out-Null;[Windows.Forms.Application]::DoEvents()
+  $root=$form.Handle;$result.owned_activation_accepted=[P09Access]::ActivateOwned($root,[Diagnostics.Process]::GetCurrentProcess().Id);$field.Focus()|Out-Null;[Windows.Forms.Application]::DoEvents()
   $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($field.Handle,[ref]$rect));$point=[P09Point]::new();$point.X=[int](($rect.Left+$rect.Right)/2);$point.Y=[int](($rect.Top+$rect.Bottom)/2)
   $hit=[P09Access]::WindowFromPoint($point);$packed=[P09Access]::PackedPoint($point);$expected=[Diagnostics.Process]::GetCurrentProcess().Id
   $result.struct_point_owned=[P09Access]::OwnedWindow($hit,$expected);$result.packed_point_owned=[P09Access]::OwnedWindow($packed,$expected);$result.point_apis_agree=($hit -eq $packed);$result.struct_point_kind=Native-HitKind $hit;$result.packed_point_kind=Native-HitKind $packed;$result.struct_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.packed_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($packed,2));$result.foreground_owned=[P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$expected)
@@ -277,7 +289,7 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  # Only this exact owned fixture window is raised. Keep it above unrelated
  # desktop overlays during the action, then restore its original z-order band.
  if(([P09Access]::GetWindowLong($hwnd,-20) -band 8) -eq 0){Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$script:raisedWindows.Add($hwnd);$result.owned_window_temporarily_raised=$true}
- $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd)
+ $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$result.owned_activation_accepted=[P09Access]::ActivateOwned($hwnd,$id)
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
   $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
@@ -285,7 +297,7 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
    # Only the controller's independently enrolled, same-user initial process
    # may be cancelled. No target/product dialog is enrolled after GUI startup.
    Request-EnrolledPickerCancellation
-   $null=[P09Access]::SetForegroundWindow($hwnd);$visible.Restart()
+   $result.owned_activation_accepted=[P09Access]::ActivateOwned($hwnd,$id);$visible.Restart()
    do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
   }
   Observe-NativePoint $hit $hwnd
@@ -484,7 +496,7 @@ try{
    finally{foreach($event in @($request,$done,$failed)){if($null -ne $event){$event.Dispose()}}}
    $stage='VERIFYING_ACTUAL_MANAGER_WINDOW_DPI';$clock.Restart()
    do{$dpi=[P09Access]::GetDpiForWindow($hwnd);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
-   Need ($dpi -eq 96*$Scale/100);$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Maximized);$null=[P09Access]::SetForegroundWindow($hwnd)
+   Need ($dpi -eq 96*$Scale/100);$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Maximized);$result.owned_activation_accepted=[P09Access]::ActivateOwned($hwnd,$ManagerPid)
    $result.requested_windows_scale=$Scale;$result.native_window_dpi=$dpi;$result.actual_windows_display_change=$true;$result.production_manager_window_measured=$true;$result.os_security_settings_modified=$false
   }
   'CONFIRM' {

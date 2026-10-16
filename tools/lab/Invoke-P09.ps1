@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([switch]$Focused,[switch]$LayoutOnly)
 if($LayoutOnly){$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
@@ -58,12 +58,12 @@ try {
  $name='SRP09_'+$run.Substring(0,10);$password=ConvertTo-SecureString ('P09aA!'+[Guid]::NewGuid().ToString('N')) -AsPlainText -Force;$user=New-LocalUser -Name $name -Password $password -AccountNeverExpires;$group=$users.Split('\')[-1];Add-LocalGroupMember -Group $group -Member $name
  $owned=Join-Path $fixture 'owner';$null=New-Item -ItemType Directory -Path $owned;$acl=[Security.AccessControl.DirectorySecurity]::new();$acl.SetAccessRuleProtection($true,$false)
  foreach($sid in @($user.SID,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'),[Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))){$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))};Set-Acl $owned $acl
- # Lab-only fixed display actions. No actor-supplied paths, scripts or data cross
+ # Lab-only fixed display and initial-desktop actions. No actor-supplied paths, scripts or data cross
  # this boundary. The normal product never receives these event names.
  $displayPrefix='Local\SecureRunP09Display-'+$run;$eventAcl=[Security.AccessControl.EventWaitHandleSecurity]::new()
  $eventAcl.AddAccessRule([Security.AccessControl.EventWaitHandleAccessRule]::new([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.AccessControl.EventWaitHandleRights]::FullControl,[Security.AccessControl.AccessControlType]::Allow))
  $eventAcl.AddAccessRule([Security.AccessControl.EventWaitHandleAccessRule]::new($user.SID,([Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify),[Security.AccessControl.AccessControlType]::Allow))
- foreach($suffix in @('100','150','200','done','failed')){$created=$false;$event=[Threading.EventWaitHandleAcl]::Create($false,[Threading.EventResetMode]::AutoReset,$displayPrefix+'-'+$suffix,[ref]$created,$eventAcl);if(-not $created){$event.Dispose();throw 'P09_PREEXISTING_DISPLAY_EVENT'};$displayEvents+=,$event}
+ foreach($suffix in @('100','150','200','prepare','done','failed')){$created=$false;$event=[Threading.EventWaitHandleAcl]::Create($false,[Threading.EventResetMode]::AutoReset,$displayPrefix+'-'+$suffix,[ref]$created,$eventAcl);if(-not $created){$event.Dispose();throw 'P09_PREEXISTING_DISPLAY_EVENT'};$displayEvents+=,$event}
  $start=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$start.UseShellExecute=$false;$start.WorkingDirectory=$engine;$start.WindowStyle=[Diagnostics.ProcessWindowStyle]::Hidden;$start.UserName=$name;$start.Domain=[Environment]::MachineName;$start.Password=$password;$start.LoadUserProfile=$true
  $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['GITHUB_ACTIONS']='true'
  $actorTemp=Join-Path $owned 'temp';$null=New-Item -ItemType Directory -Path $actorTemp;$start.Environment['TEMP']=$actorTemp;$start.Environment['TMP']=$actorTemp
@@ -73,10 +73,10 @@ try {
  if($LayoutOnly){$start.ArgumentList.Add('-LayoutOnly')}
  $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.CreateNoWindow=$true;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
- $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
+ $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP','ProgramFiles','ProgramW6432')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
  $controller=[Diagnostics.Process]::Start($display)
  $readyClock=[Diagnostics.Stopwatch]::StartNew();$readyIndex=258
- do{$readyIndex=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[3..4],250);if($readyIndex -lt 2 -or $controller.HasExited){break}}while($readyClock.ElapsedMilliseconds -lt 90000)
+ do{$readyIndex=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[4..5],250);if($readyIndex -lt 2 -or $controller.HasExited){break}}while($readyClock.ElapsedMilliseconds -lt 90000)
  $controllerReady=($readyIndex -eq 0 -and -not $controller.HasExited)
  if(-not $controllerReady -and -not $controller.HasExited){$controller.Kill($true);$null=$controller.WaitForExit(10000)}
  @{startup_ready=$controllerReady;process_completed=$controller.HasExited;exit_code=$(if($controller.HasExited){$controller.ExitCode}else{$null});fixture_only=$true;independent_product_cases_continue=$true}|ConvertTo-Json|Set-Content (Join-Path $out 'display-controller.lifecycle.json') -Encoding utf8
@@ -90,7 +90,7 @@ try {
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}
   if($controller.HasExited){$controllerReady=$false}
-  if(-not $controllerReady){$index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[0..2],0);if($index -lt 3){$null=$displayEvents[4].Set()}}
+  if(-not $controllerReady){$index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[0..3],0);if($index -lt 4){$null=$displayEvents[5].Set()}}
  }
  $resultHome=Join-Path $owned 'results';if(Test-Path -LiteralPath $resultHome){Get-ChildItem -LiteralPath $resultHome -File|Where-Object {$_.Extension -in @('.json','.png')}|Copy-Item -Destination $out}
  if(-not(Test-Path -LiteralPath (Join-Path $out 'standard-product.json'))){throw 'P09_ACTOR_REPORT_MISSING'}

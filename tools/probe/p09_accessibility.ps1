@@ -134,7 +134,8 @@ function Native-HitKind([IntPtr]$window){
  }finally{$process.Dispose()}}catch{return 'UNAVAILABLE'}
 }
 $result.powershell_major=$PSVersionTable.PSVersion.Major;try{$null=[ushort]1;$result.ushort_alias_available=$true}catch{$result.ushort_alias_available=$false}
-if($Mode -eq 'DESKTOP_PREPARE'){
+function Prepare-InitialDesktop{
+ $result=@{mode='DESKTOP_PREPARE';real_windows_uia=$true;synthetic_fixture_only=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()}
  $script:stage='PREPARING_INITIAL_CI_DESKTOP';$result.process_termination_dispatched=$false;$result.os_security_settings_modified=$false;$result.initial_picker_cancelled=$false
  try{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
@@ -159,8 +160,9 @@ $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
   }
   $result.status='OBSERVED'
  }catch{$result.status='BLOCKED';$result.code='P09_INITIAL_DESKTOP_PREPARATION_FAILED';$kind=$_.FullyQualifiedErrorId.Split(',')[0];$result.error_record_kind=if($kind -cmatch '^[A-Za-z][A-Za-z0-9_.]{0,100}$'){$kind}else{'WITHHELD'}}
- $result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0
+ return $result
 }
+if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0}
 if($Mode -eq 'DESKTOP_DIAGNOSTIC'){$result.status='OBSERVED';$result.foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow());$result.os_security_settings_modified=$false;$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8;exit 0}
 function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  Need ([P09Access]::OwnedWindow($hwnd,$id))
@@ -277,27 +279,36 @@ function Set-ActualDisplayScale([int]$Scale){
 }
 if($Mode -eq 'DISPLAY_SERVER'){
  Need ($DisplayEvents -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$' -and [IO.Path]::IsPathRooted($ResultFile))
- $events=@();$serverClock=[Diagnostics.Stopwatch]::StartNew();$requests=0
+ $events=@();$serverClock=[Diagnostics.Stopwatch]::StartNew();$requests=0;$desktopRequests=0
  try{
   $script:stage='OPENING_OWNER_RESTRICTED_EVENTS'
   $rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
-  foreach($suffix in @('100','150','200','done','failed')){$events+=,[Threading.EventWaitHandle]::OpenExisting($DisplayEvents+'-'+$suffix,$rights)}
+  foreach($suffix in @('100','150','200','prepare','done','failed')){$events+=,[Threading.EventWaitHandle]::OpenExisting($DisplayEvents+'-'+$suffix,$rights)}
   Server-Status 'EVENTS_OPENED'
   $prepared=@{mode='DISPLAY_PREPARATION';requested_windows_scale=100;status='FAILED';real_windows_uia=$true;synthetic_fixture_only=$true;os_security_settings_modified=$false;excluded_from_product_startup_measurement=$true}
   try{Set-ActualDisplayScale 100;$prepared.status='PASSED'}catch{$prepared.stage=$script:stage;$prepared.exception_type=$_.Exception.GetBaseException().GetType().FullName}
   $prepared|ConvertTo-Json|Set-Content -LiteralPath ($ResultFile+'.preparation.json') -Encoding UTF8
-  if($prepared.status -ne 'PASSED'){$null=$events[4].Set();exit 1}
+  if($prepared.status -ne 'PASSED'){$null=$events[5].Set();exit 1}
   Server-Status 'READY'
-  $null=$events[3].Set() # Parent consumes readiness before starting the actor.
+  $null=$events[4].Set() # Parent consumes readiness before starting the actor.
   while($serverClock.ElapsedMilliseconds -lt 3000000){
-   $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$events[0..2],1000)
-   if($index -ge 3){continue}
-   $requests++;if($requests -gt 8){$null=$events[4].Set();break}
+   $index=[Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$events[0..3],1000)
+   if($index -ge 4){continue}
+   if($index -eq 3){
+    $desktopRequests++
+    if($desktopRequests -gt 4){$null=$events[5].Set();break}
+    $record=Prepare-InitialDesktop
+    $record.controller_same_user_preparation=$true
+    $record|ConvertTo-Json -Depth 5|Set-Content -LiteralPath ($ResultFile+'.desktop-preparation-'+$desktopRequests+'.json') -Encoding UTF8
+    if($record.status -eq 'OBSERVED'){$null=$events[4].Set()}else{$null=$events[5].Set()}
+    continue
+   }
+   $requests++;if($requests -gt 8){$null=$events[5].Set();break}
    $record=@{mode='DISPLAY_CONTROLLER';requested_windows_scale=@(100,150,200)[$index];status='FAILED';real_windows_uia=$true;synthetic_fixture_only=$true;os_security_settings_modified=$false}
    try{$script:CloseSettings=($index -eq 0 -and $requests -gt 1);Set-ActualDisplayScale $record.requested_windows_scale;$record.status='PASSED'}
    catch{$record.code='P09_NATIVE_ACCESSIBILITY_FAILED';$record.stage=$script:stage;$record.exception_type=$_.Exception.GetBaseException().GetType().FullName}
    $record|ConvertTo-Json|Set-Content -LiteralPath ($ResultFile+'.'+$requests+'.json') -Encoding UTF8
-   if($record.status -eq 'PASSED'){$null=$events[3].Set()}else{$null=$events[4].Set()}
+   if($record.status -eq 'PASSED'){$null=$events[4].Set()}else{$null=$events[5].Set()}
   }
  }finally{foreach($event in $events){$event.Dispose()}}
  exit 0

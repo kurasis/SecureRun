@@ -1,4 +1,4 @@
-param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly)
+﻿param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Generic.List[object]]::new();$script:lastUi=$null;$script:stage='INITIALIZING';$script:capturesClean=$true;$script:failureCode=$null;$script:browserGuiPid=0;$script:browserReceipt=$null
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
@@ -45,14 +45,21 @@ function Wait-Launched($Receipt){
  # A process already completed/reused before a handle could be held has an
  # unknown exit code. Actual boxed output and unchanged-host checks still follow.
 }
-function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0,[string]$Box=''){
+function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0,[string]$Box='',[switch]$ParentPrepared){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.CreateNoWindow=$true;$ps.WorkingDirectory=$EngineHome
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode',$Mode,'-ManagerPid',[string]$ProcessId,'-ResultFile',$result)){$ps.ArgumentList.Add($arg)}
  if($Path){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-EnvironmentId'}else{'-SelectedPath'}));$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-Intent'}else{'-ProtocolUri'}));$ps.ArgumentList.Add($Uri)}
  if($Box){$ps.ArgumentList.Add('-ExpectedBox');$ps.ArgumentList.Add($Box)}
  if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
- try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;$expectedStatus=if($Mode -eq 'DESKTOP_PREPARE'){'OBSERVED'}else{'PASSED'};Require ($p.ExitCode -eq 0 -and $r.status -eq $expectedStatus) 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+ try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;$expectedStatus=if($Mode -eq 'DESKTOP_PREPARE'){'OBSERVED'}else{'PASSED'};if($Mode -eq 'DESKTOP_PREPARE' -and -not $ParentPrepared -and $r.status -eq 'BLOCKED' -and $r.same_user -eq $false -and $r.initial_picker_window_count -ge 1){
+  # Only a fixed lab action crosses the existing owner-restricted event channel.
+  # The controller independently re-authenticates the Windows component as its owner.
+  $request=$null;$done=$null;$failed=$null
+  try{$rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify;$prefix=$env:SECURERUN_P09_DISPLAY_EVENTS;Require ($prefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$') 'P09_LAB_DISPLAY_CHANNEL_MISSING';$request=[Threading.EventWaitHandleAcl]::OpenExisting($prefix+'-prepare',$rights);$done=[Threading.EventWaitHandleAcl]::OpenExisting($prefix+'-done',$rights);$failed=[Threading.EventWaitHandleAcl]::OpenExisting($prefix+'-failed',$rights);$null=$request.Set();Require ([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]@($done,$failed),90000) -eq 0) 'P09_CONTROLLER_DESKTOP_PREPARATION_FAILED'}
+  finally{foreach($event in @($request,$done,$failed)){if($null -ne $event){$event.Dispose()}}}
+  return Access 'DESKTOP_PREPARE' 0 -ParentPrepared
+ };Require ($p.ExitCode -eq 0 -and $r.status -eq $expectedStatus) 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
 function Complete-Access($Pending){try{Require ($Pending.process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($Pending.process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}finally{if(-not $Pending.process.HasExited){$Pending.process.Kill($true)};$Pending.process.Dispose()}}
 function Find-BoxFile($Environment,[string]$Name){$root=$Environment.compiled.section.FileRootPath[0];$found=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $Name);Require ($found.Count -eq 1 -and $found[0].FullName.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) 'P09_BOXED_FILE_NOT_UNIQUE';return $found[0]}
@@ -63,8 +70,8 @@ try{
  $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData');$env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
  $displayPrefix=$env:SECURERUN_P09_DISPLAY_EVENTS;Require ($displayPrefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$') 'P09_LAB_DISPLAY_CHANNEL_MISSING'
  $displayRights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify
- foreach($suffix in @('100','150','200','done','failed')){$event=[Threading.EventWaitHandleAcl]::OpenExisting($displayPrefix+'-'+$suffix,$displayRights);$event.Dispose()}
- @{schema=1;standard_user_event_access_verified=$true;fixed_display_actions_only=$true;event_count=5;normal_product_receives_channel=$false}|ConvertTo-Json|Set-Content (Join-Path $results 'lab-display-channel.json') -Encoding utf8
+ foreach($suffix in @('100','150','200','prepare','done','failed')){$event=[Threading.EventWaitHandleAcl]::OpenExisting($displayPrefix+'-'+$suffix,$displayRights);$event.Dispose()}
+ @{schema=1;standard_user_event_access_verified=$true;fixed_lab_ui_actions_only=$true;event_count=6;normal_product_receives_channel=$false}|ConvertTo-Json|Set-Content (Join-Path $results 'lab-display-channel.json') -Encoding utf8
  foreach($name in @('p05_lab.cs','p09_desktop.cs','p09_browser.cs')){Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)))}
  . (Join-Path $PSScriptRoot 'p09_cdp.ps1')
  $productHome=Split-Path $Manager;$lab=[P05Lab]::new($EngineHome,$Fixture,$productHome)

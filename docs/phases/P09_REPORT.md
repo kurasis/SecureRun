@@ -747,3 +747,18 @@ caller now expects that exact setup status instead of a product-case PASSED. All
 other accessibility helpers still require PASSED. Preparation also runs before
 seeding to expose setup errors promptly, then repeats before the first GUI to
 catch delayed initial Windows prompts. Both invocations precede product targets.
+
+### Owner-scoped initial desktop preparation
+
+The `cf6edad` focused ARM run identified the visible input obstruction as
+Windows `PickerHost`, owned by a different account from the standard-user
+actor. The actor correctly refused to close it. The lab controller now accepts
+one additional fixed `prepare` event through the existing owner-restricted
+kernel event channel. It independently repeats the same-user, protected Windows
+component and signature/package checks before cancelling the initial chooser.
+The actor re-observes the desktop once after acknowledgement. Preparation is
+bounded to four controller requests, accepts no paths or commands, runs before
+product windows and never changes application defaults or terminates processes.
+The product receives no event names. PowerShell parsing, fixture compilation,
+JavaScript syntax, the repository validator and all 18 tooling tests passed;
+actual Windows execution remains required.

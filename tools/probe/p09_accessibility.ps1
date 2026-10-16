@@ -152,7 +152,7 @@ function Native-HitKind([IntPtr]$window){
    'systemsettings'{return 'DISPLAY_SETTINGS'};'applicationframehost'{return 'APPLICATION_FRAME_HOST'};'textinputhost'{return 'TEXT_INPUT_HOST'}
    'explorer'{return 'DESKTOP_SHELL'};'shellexperiencehost'{return 'DESKTOP_SHELL'};'dwm'{return 'DESKTOP_COMPOSITOR'}
    'powershell'{return 'POWERSHELL_HOST'};'pwsh'{return 'POWERSHELL_HOST'};'conhost'{return 'CONSOLE_HOST'};'windowsterminal'{return 'TERMINAL_HOST'}
-   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};'pickerhost'{return 'WINDOWS_PICKER_HOST'};'wwahost'{return 'WINDOWS_WEB_APP_HOST'};default{
+   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};'pickerhost'{return 'WINDOWS_PICKER_HOST'};'wwahost'{return 'WINDOWS_WEB_APP_HOST'};'startmenuexperiencehost'{return 'WINDOWS_START_MENU'};default{
     $nativeName=$process.ProcessName.ToLowerInvariant();$hash=[Security.Cryptography.SHA256]::Create();try{$result.native_hit_name_sha256=([BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes($nativeName)))).Replace('-','').ToLowerInvariant()}finally{$hash.Dispose()}
     $image=[P09Access]::HitImage($window);$windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
     if($image -and ($image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SysWOW64\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase))){
@@ -174,7 +174,7 @@ function Prepare-InitialDesktop{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
   $noProductProcesses=(@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0);$result.product_process_present=(-not $noProductProcesses)
   $script:initialPickers=[Collections.Generic.List[IntPtr]]::new();$script:initialPickerIds=[Collections.Generic.HashSet[int]]::new()
-  foreach($candidate in @(Get-Process -Name PickerHost,WWAHost -ErrorAction SilentlyContinue)){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
+  foreach($candidate in @(Get-Process -Name PickerHost,WWAHost,StartMenuExperienceHost -ErrorAction SilentlyContinue)){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
   $null=[P09Access]::EnumWindows({param($window,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($window,[ref]$owner);if($script:initialPickerIds.Contains($owner) -and [P09Access]::IsWindowVisible($window)){$script:initialPickers.Add($window)};return $true},[IntPtr]::Zero)
   $script:pickerChildren=0;$script:visiblePickerChildren=0;$script:pickerTopLevels=0;$script:scannedChildren=0
   $null=[P09Access]::EnumWindows({param($top,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($top,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerTopLevels++};$null=[P09Access]::EnumChildWindows($top,{param($child,$data);$script:scannedChildren++;if($script:scannedChildren -gt 8192){return $false};$owner=0;$null=[P09Access]::GetWindowThreadProcessId($child,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerChildren++;if([P09Access]::IsWindowVisible($child)){$script:visiblePickerChildren++}};return $true},[IntPtr]::Zero);return ($script:scannedChildren -le 8192)},[IntPtr]::Zero)
@@ -190,7 +190,7 @@ function Prepare-InitialDesktop{
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
    Need ($noProductProcesses -or $enrolled)
-   $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -iin @('PickerHost.exe','WWAHost.exe'))
+   $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -iin @('PickerHost.exe','WWAHost.exe','StartMenuExperienceHost.exe'))
    $windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows);$programs=[Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
    $protected=$image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($programs+'\WindowsApps\',[StringComparison]::OrdinalIgnoreCase)
    Need $protected;$trusted=$false;$signature=Get-AuthenticodeSignature -LiteralPath $image
@@ -251,7 +251,7 @@ function Request-EnrolledPickerCancellation{
 }
 function Owned-Point($point,[IntPtr]$target,[int]$id){
  $hit=[P09Access]::WindowFromPoint($point)
- if(-not ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target) -and (Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST')){
+ if(-not ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target) -and (Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST','WINDOWS_START_MENU')){
   Request-EnrolledPickerCancellation;$null=[P09Access]::SetForegroundWindow($target);$clock=[Diagnostics.Stopwatch]::StartNew()
   do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  }
@@ -268,7 +268,7 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
   $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
-  if((Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST')){
+  if((Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST','WINDOWS_START_MENU')){
    # Only the controller's independently enrolled, same-user initial process
    # may be cancelled. No target/product dialog is enrolled after GUI startup.
    Request-EnrolledPickerCancellation

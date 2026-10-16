@@ -31,9 +31,15 @@ public static class P09Access {
   if(SendInput((uint)keys.Length,keys,size)==keys.Length)return true;
   Input[] release=modifier==0?new[]{Key(scan,10)}:new[]{Key(scan,10),Key(mod,10)};SendInput((uint)release.Length,release,size);return false;
  }
+ public static string LastTextInputResult="NOT_ATTEMPTED";
+ public static uint LastTextInputCount=0;
+ public static int LastTextInputError=0;
  public static bool TypeText(IntPtr root,uint expected,string text){
-  if(!ExactForeground(root,expected)||text.Length>512||text.IndexOfAny(new[]{'\0','\r','\n'})>=0)return false;
+  LastTextInputCount=0;LastTextInputError=0;
+  if(!ExactForeground(root,expected)){LastTextInputResult="FOREGROUND_CHANGED_NO_INPUT";return false;}
+  if(text.Length>512||text.IndexOfAny(new[]{'\0','\r','\n'})>=0){LastTextInputResult="INVALID_TEXT_NO_INPUT";return false;}
   var keys=new Input[text.Length*2];for(int i=0;i<text.Length;i++){keys[2*i]=Key(text[i],4);keys[2*i+1]=Key(text[i],6);}int size=Marshal.SizeOf(typeof(Input));uint count=SendInput((uint)keys.Length,keys,size);
+  LastTextInputCount=count;LastTextInputError=count==keys.Length?0:Marshal.GetLastWin32Error();LastTextInputResult=count==keys.Length?"DELIVERED":"INCOMPLETE_SEND_INPUT";
   if(count==keys.Length)return true;if((count&1)!=0){Input release=keys[count-1];release.Data.Keyboard.Flags|=2;SendInput(1,new[]{release},size);}return false;
  }
  [DllImport("user32.dll")]static extern IntPtr GetKeyboardLayout(uint thread);
@@ -431,11 +437,22 @@ function Focus-BrowserDocument($root,[IntPtr]$hwnd,[int]$id){
  }
  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::FocusWithin($hwnd)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000);Need ([P09Access]::FocusWithin($hwnd))
 }
+function Type-BrowserAddress([IntPtr]$window,[int]$owner,[string]$address){
+ $clock=[Diagnostics.Stopwatch]::StartNew();$attempts=0
+ do{
+  $typed=[P09Access]::TypeText($window,$owner,$address);$result.browser_text_input_result=[P09Access]::LastTextInputResult;$result.browser_text_input_count=[P09Access]::LastTextInputCount;$result.browser_text_input_error=[P09Access]::LastTextInputError
+  if($typed){return}
+  # Only the pre-send foreground guard is retryable: it proves zero input was
+  # delivered. Never repeat a partial SendInput, Enter or protocol invocation.
+  Need ([P09Access]::LastTextInputResult -ceq 'FOREGROUND_CHANGED_NO_INPUT' -and [P09Access]::LastTextInputCount -eq 0 -and $clock.ElapsedMilliseconds -lt 5000)
+  $attempts++;$result.browser_readonly_focus_recoveries=$attempts;Focus-OwnedWindow $window $owner;Need ([P09Access]::Chord($window,$owner,[uint16]76,[uint16]17));Start-Sleep -Milliseconds 100
+ }while($true)
+}
 function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  Need ($address -in @('about:blank','about:support') -or $address -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/(?:main|protocol)/[0-9a-f-]{36}$')
  Focus-BrowserDocument $root $hwnd $id
  try{
-  Clear-TransientClipboard;Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
+  Clear-TransientClipboard;Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Type-BrowserAddress $hwnd $id $address;Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
   $clock=[Diagnostics.Stopwatch]::StartNew();do{if((Read-TransientClipboardText) -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
   $result.address_text_verified=((Read-TransientClipboardText) -ceq $address);if(-not $result.address_text_verified){Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeAscii($hwnd,$id,$address));$result.ascii_scancode_uri_used=$true;Start-Sleep -Milliseconds 200};Browser-Key $id 13
  }finally{Clear-TransientClipboard}

@@ -15,40 +15,29 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
-Authenticated GitHub access recovered after a temporary credential expiry; all
-prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
-at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and
-editor edit/Save As at `9df8149`. ARM positively saved the exact reviewed diagnostic bytes at `96159c8`; Server
-subsequently passed that exact Save at `aa5b8f5` in both focused and full runs.
-Server full run 38879931585 passed 21 native cases and 95 UI assertions; its only
-failed case selected the private ProgramData fixture for export and was refused
-with DESTINATION_SENSITIVE_SCOPE. The current fixture selects a fresh ordinary
-owner-profile folder and observes actual UI completion before hashing output.
-ARM also passed that exact Save and all 95 UI assertions in both runs; full
-measurement completed, but an initial PickerHost Shell_SystemDialog surface
-blocked browser welcome. The lab now discovers that exact class under the same
-initial-process identity and trust guards. Complete matching final-source gates
-remain pending. P09 is not DONE.
-At `217f550`, focused ARM run 38885566833 passed 20 native cases and 98 UI
-assertions, including actual export/collision rename and all four browser cases.
-Only native Archive confirmation failed because immediate UIA OK was absent/
-disabled. The current fixture uses the P08-proven exact native IDOK after bounded
-UUID/retention/owner/class/button checks and requires actual dialog closure and
-backend state. Current full/focused runs are 38887959409 / 38887959182.
-First full `217f550` ARM attempt refused environment four with an unassociated
-WerFault and has no full sample; its remaining Server job and fresh retry
-38887488001 were cancelled as superseded by the confirmation correction. No
-reporter is killed, trusted or exempted. No final gate is closed.
-Full `0071e2c` run 38887959409 completed reference measurements on both targets.
-ARM passed the complete real transfer/Archive/Unarchive/Reset chain and all 101 UI
-assertions, then archive exit and browser point ownership failed. Server passed
-99 UI assertions and Archive, but the next confirmation was not observed. The
-fixture now respects inherited fieldset availability and records archive create/
-extract failures separately without changing the wait or containment requirements.
-Current full run 38891751077 uses `f9a9755`. Queued focused 38887959182 was cancelled
-as a duplicate after the full matrix started; full mandatory coverage is retained.
-No final gate is closed.
+Current P09 source candidate: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Full run [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077)
+is pending. P09 remains IN_PROGRESS; final matching P03–P08 regressions are pending.
+
+Latest full `0071e2c`, run 38887959409, completed ten environments, 10000 files and
+at least 60 seconds of complete-job measurement on both targets. ARM passed all
+101 UI assertions and the complete real import/export/collision/Archive/Unarchive/
+Reset workflow with native confirmations, generation/root and host-integrity
+checks. Its separate archive GUI exit and browser point ownership failed.
+Server passed 21 native cases and 99 UI assertions, including exact reviewed Save,
+transfers, actual Archive and every editor/archive/browser case; the next lifecycle
+confirmation was not observed. The fixture now waits for actual inherited
+fieldset availability and logs archive create/extract outcomes separately.
+Native waits, scoped confirmation, file hashes and browser guards are unchanged.
+
+Both targets have positively saved exact reviewed minimized diagnostics. Historical
+browser/editor/archive constituents do not replace complete final-source proof.
+All reviewed original JSON, hashes, failures and cancellation reasons are retained
+and published. Earlier full ARM setup refusals with unassociated WerFault have no
+complete sample; no reporter is killed/trusted/exempted and no unknown window is
+hidden. Performance targets remain unchanged; measured startup/CPU deviations and
+user impact are recorded explicitly. GitHub authentication and publication work.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

@@ -8,9 +8,9 @@ compilation alone do not establish compatibility.
 
 | Application | Exact package version | Architectures | Required actual workflow | Current result |
 |---|---|---|---|---|
-| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Passed on Server at `f9b719d`: actual keyboard edit, native Save As, exact boxed bytes and unchanged host data. Repeated on Server at `99abd22`; ARM also passed actual editor keyboard edit/Save As at `9df8149`; the final matching full run remains pending. |
+| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Passed on both targets at `9df8149`, run 38874505825; final matching full run pending. |
 | 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
-| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: Server passed actual main/child HTTP attribution and the reachable boxed protocol handler at `9111127` after the recognized first-run welcome was dismissed. Server separately observed effective content-sandbox level 9 at `1dabb77`, whose protocol case failed during clipboard cleanup. ARM at `1dabb77` passed actual main/child/protocol containment but failed its own-sandbox clipboard read. Server passed all four in one browser-only diagnostic at `8cc5e26`. ARM and final matching full runs remain pending |
+| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | All four workflows passed on both targets in browser-only run 38878700124 at `784a4c9`, with effective content sandbox level 9. Diagnostic only; final matching full run pending. |
 
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated
@@ -52,3 +52,12 @@ protocol output and a positive observed about:support sandbox level remain requi
 Server run 38862241469 had no observed browser GUI and retained a live WerFault
 associated with SandboxieRpcSs.exe; no causal claim or successful browser workflow
 is inferred from that failed run, and no reporter is killed or exempted.
+
+The latest complete browser diagnostic at `784a4c9` passed on both native targets.
+Each retained case proves actual driver/socket attribution or actual boxed output,
+and the effective own-sandbox level was 9 on both. ARM's native helper encountered
+two exact clipboard-busy HRESULTs and waited within the two-second bound. Native
+input reported complete delivery. Only an explicit zero-input foreground rejection
+may reacquire focus before typing; incomplete input, Enter and protocol invocation
+are never replayed. The normal manager and full reference workload remain separate
+mandatory gates; the browser-only result cannot satisfy the formal phase retainer.

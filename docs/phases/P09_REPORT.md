@@ -59,7 +59,7 @@ Documentation-only descendants do not replace the required tested source.
 | P07 historical `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), both targets passed; final matching source pending |
 | P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
 | P09 Server reference workload | [38872735865](https://github.com/kurasis/SecureRun/actions/runs/38872735865), `be0b4c7`: ten environments, 10000 files, 60200 ms/234 samples, 93 UI assertions. Startup 5210.3185 ms and CPU 1.090117483% deviated; average working set 228568370 bytes met target. Four mandatory cases failed; ARM cancelled. |
-| P09 Server browser diagnostic | [38874970770](https://github.com/kurasis/SecureRun/actions/runs/38874970770), `1dabb77`: actual main/child requests and effective own-sandbox level 9 passed; protocol failed during clipboard cleanup. The public ARM artifact was later retrieved anonymously: actual main/child requests and boxed protocol passed; own-sandbox observation failed at a clipboard operation. |
+| P09 browser diagnostic | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124), `784a4c9`: all four real cases passed on both targets; effective own-sandbox level 9. ARM exercised two bounded clipboard-busy waits. Diagnostic only; normal manager/workload gates remain. |
 | P09 historical full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695): ARM completed ten environments, 10000 files, 60135 ms/223 samples of complete-job measurement and 93 UI assertions. Startup 2616.9734 ms and average working set 243431929 bytes met targets; CPU 1.143244435% deviated. Six mandatory cases failed; Server cancelled. Final matching full run pending. |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
 | P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at `7e62fd9`: both completed 93 UI assertions, 10000 files/79 pages and the actual synthetic target secret-isolation proof. Native diagnostic save failed on both; ARM keyboard/editor and three browser continuations also failed. Diagnostic only; 220 original JSON files retained. |
@@ -235,7 +235,9 @@ ARM browser-only `8cc5e26` passed main/child/protocol cases but native TypeText
 declined during about:support entry. Current native metadata distinguishes the
 pre-send foreground guard from incomplete SendInput. Only explicit zero-input
 foreground rejection can reacquire focus before typing; no partial input,
-Enter or protocol action is replayed. The combined ARM result remains pending.
+Enter or protocol action is replayed. Both targets subsequently passed all four in the same diagnostic matrix at
+`784a4c9`, run 38878700124, including effective level 9. The complete final-source
+manager/workload gate remains pending.
 
 Final matching editor save, all browser cases, actual manager keyboard and the
 complete diagnostic/export/transfer/lifecycle UI sequence remain mandatory.

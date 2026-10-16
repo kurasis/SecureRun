@@ -17,8 +17,8 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 
 Current P09 source candidate: `aa5b8f5257aafcbe24fbe1e35045d87806d10a31`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
-prepared reports/evidence were pushed. Server passed the four-case browser-only
-diagnostic at `8cc5e26`; both targets passed actual manager keyboard/UIA and
+prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
+at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and
 editor edit/Save As at `9df8149`. ARM positively saved the exact reviewed diagnostic bytes at `96159c8`, while
 Server failed the older input sequence. Final native Save, its dependent UI
 sequence and complete matching final-source gates remain pending. P09 is not DONE.

@@ -78,6 +78,13 @@ public static class P09Access {
  public static bool SameUser(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr process=OpenProcess(0x1000,false,pid);if(process==IntPtr.Zero)return false;try{IntPtr token;if(!OpenProcessToken(process,8,out token))return false;try{using(var identity=new System.Security.Principal.WindowsIdentity(token))using(var current=System.Security.Principal.WindowsIdentity.GetCurrent())return identity.User!=null&&current.User!=null&&identity.User.Value==current.User.Value;}finally{CloseHandle(token);}}finally{CloseHandle(process);}}
  public static IntPtr FocusedFilename(IntPtr root,uint expected,string box){uint pid;uint thread=GetWindowThreadProcessId(root,out pid);var info=new P09GuiInfo{Size=(uint)Marshal.SizeOf(typeof(P09GuiInfo))};return pid==expected&&GetGUIThreadInfo(thread,ref info)&&IsChild(root,info.Focus)&&OwnedWindow(info.Focus,expected)&&FilenameEdit(info.Focus,box)&&IsWindowVisible(info.Focus)&&IsWindowEnabled(info.Focus)?info.Focus:IntPtr.Zero;}
  public static int InputSize(){return Marshal.SizeOf(typeof(Input));}
+ [DllImport("user32.dll")]static extern IntPtr GetTopWindow(IntPtr parent);
+ [DllImport("user32.dll")]static extern IntPtr GetWindow(IntPtr window,uint relation);
+ public static IntPtr[] VisiblePickerWindows(System.Collections.Generic.HashSet<int> pids,out bool complete){
+  var found=new System.Collections.Generic.List<IntPtr>();var seen=new System.Collections.Generic.HashSet<IntPtr>();IntPtr window=GetTopWindow(IntPtr.Zero);int scanned=0;
+  while(window!=IntPtr.Zero&&scanned++<4096&&seen.Add(window)){uint pid;GetWindowThreadProcessId(window,out pid);if(pids.Contains((int)pid)&&IsWindowVisible(window))found.Add(window);window=GetWindow(window,2);}
+  complete=window==IntPtr.Zero;IntPtr foreground=GetAncestor(GetForegroundWindow(),2);uint owner;GetWindowThreadProcessId(foreground,out owner);if(pids.Contains((int)owner)&&IsWindowVisible(foreground)&&!found.Contains(foreground))found.Add(foreground);return found.ToArray();
+ }
  public static bool CancelInitialWindow(IntPtr window){return PostMessage(window,16,IntPtr.Zero,IntPtr.Zero);}
 
  public static string HitImage(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr held=OpenProcess(0x1000,false,pid);if(held==IntPtr.Zero)return null;try{uint size=32768;var image=new System.Text.StringBuilder((int)size);return QueryFullProcessImageName(held,0,image,ref size)?image.ToString():null;}finally{CloseHandle(held);}}
@@ -157,11 +164,14 @@ function Prepare-InitialDesktop{
   $script:pickerChildren=0;$script:visiblePickerChildren=0;$script:pickerTopLevels=0;$script:scannedChildren=0
   $null=[P09Access]::EnumWindows({param($top,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($top,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerTopLevels++};$null=[P09Access]::EnumChildWindows($top,{param($child,$data);$script:scannedChildren++;if($script:scannedChildren -gt 8192){return $false};$owner=0;$null=[P09Access]::GetWindowThreadProcessId($child,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerChildren++;if([P09Access]::IsWindowVisible($child)){$script:visiblePickerChildren++}};return $true},[IntPtr]::Zero);return ($script:scannedChildren -le 8192)},[IntPtr]::Zero)
   $result.picker_all_top_level_windows=$script:pickerTopLevels;$result.picker_child_windows=$script:pickerChildren;$result.picker_visible_child_windows=$script:visiblePickerChildren;$result.picker_child_enumeration_complete=($script:scannedChildren -le 8192);$result.controller_foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow())
+  $zComplete=$false;$zWindows=@([P09Access]::VisiblePickerWindows($script:initialPickerIds,[ref]$zComplete));$result.picker_z_order_enumeration_complete=$zComplete;Need $zComplete
+  foreach($candidateWindow in $zWindows){if(-not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
+  $result.picker_z_order_visible_windows=$zWindows.Count;Need ($script:initialPickers.Count -le 8)
   $result.initial_picker_window_count=$script:initialPickers.Count
-  if($script:initialPickers.Count -gt 0){
-   $foreground=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
-   if($script:initialPickers.Contains($foreground)){$window=$foreground}else{Need ($script:initialPickers.Count -eq 1);$window=$script:initialPickers[0]}
-   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
+  $result.cancelled_window_count=0
+  foreach($window in $script:initialPickers){
+   if(-not [P09Access]::IsWindowVisible($window)){continue}
+   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user;Need ([P09Access]::SameUser([P09Access]::GetAncestor($window,3)))
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
    Need ($noProductProcesses -or $enrolled)
@@ -174,8 +184,9 @@ function Prepare-InitialDesktop{
    $result.authenticated_windows_component=$trusted;Need $trusted;Need ([P09Access]::HitBirthKey($window) -ceq $birthKey)
    if($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER'){$null=$script:enrolledInitialPickers.Add($birthKey)}
    $element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;if($element.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.Close();$result.close_mechanism='UIA_WINDOW_CLOSE'}else{Need ([P09Access]::CancelInitialWindow($window));$result.close_mechanism='SCOPED_WM_CLOSE'}
-   $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
+   $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;$result.cancelled_window_count++
   }
+  foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
   $result.status='OBSERVED'
  }catch{$result.status='BLOCKED';$result.code='P09_INITIAL_DESKTOP_PREPARATION_FAILED';$kind=$_.FullyQualifiedErrorId.Split(',')[0];$result.error_record_kind=if($kind -cmatch '^[A-Za-z][A-Za-z0-9_.]{0,100}$'){$kind}else{'WITHHELD'}}
  return $result

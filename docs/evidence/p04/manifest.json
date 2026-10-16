@@ -784,6 +784,86 @@
       "path": "investigation-4956792/windows-2025/standard-user.json",
       "size": 430,
       "sha256": "b73f7062ddd66b230e392bef8384a5247170555e41fc310f72630a9282448277"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "471f42fc76b133424227f5ce425f0b5fac960a4e54093e45518aebab3b1b50d4"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "c21d15b8066cddc4d174582632a534f92465780dfebfbb10f4a13fa627665f5d"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "d807a8564ba9052ae1d056baa0f144b2272d68d5422c3360291dd7e64990b38f"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "f2065ee19d32bc1ab0ea3db084af03549a3d4dc769d58a576a9d044cf38f8dd3"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/observation-cases.json",
+      "size": 7203,
+      "sha256": "f9f70c3f1e5bc1142e79e26e848821c641825a8da2e90c1912c4984ac19b73ac"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "960640dabfdc98be5d9604886b8891810d3b00cfc39778f55433aa3413f66c59"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "918f60b26fc006461265e52ef1ec4a32f3cd30c53d048ecf23b707127b482532"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "54f9fefefa39d550a17e9980670e42275cc339e9d94054e146f436e3aa6bd158"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "2e4d8d4b0dff702001c1fa1944ba483b0cdf278e70341f342f1976f6529c95ff"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "1898f8e7900db1841f83cb20bca13530c8f3e75b5cede303c2d9c3b95637ad0b"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "370acf7efdd98f0f0596f6442b3f2391bc279ac636622531c1657a1ba28702a4"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "00db1aea984ef75a5c38c462dd0b12717d539e9d775bef39421d95ef17b191e2"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "20ea2008855dd2d85011b8ab9410a5e612fb465c265a747c8548fe001e6e4fa7"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "94b4aa1b94189ead35d193fd0a99b37225a7e667c952d3940f03534871678eba"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "7d5435bf26876b449cd6b16c19f538c223d7dddf7719d05d6abc87476d3961f9"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "84ef859f8ffc15a73dd4038b0208c37622fddcba3cce45cac5b77ccb83b15274"
     }
   ],
   "tested_sources": [
@@ -1111,6 +1191,20 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38850064355",
       "result": "PASSED",
       "note": "Actual regression passed on both Windows targets, including the inert Unicode path correction. Subsequent P09 lab fixture changes require final matching-source retention."
+    },
+    {
+      "tested_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+      "run_id": 38852273760,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38852273760",
+      "result": "FAILED",
+      "note": "Server recorded an unexpected exit code 1 instead of 78 for normal boxed desktop startup. ARM passed. Cause undetermined; no weakened exit criterion."
+    },
+    {
+      "tested_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+      "run_id": 38852853178,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38852853178",
+      "result": "PASSED",
+      "note": "Clean VM repeat passed both targets at the unchanged commit and original exit criterion. Earlier startup failure remains historical with undetermined cause."
     }
   ]
 }

@@ -1254,6 +1254,96 @@
       "path": "investigation-4956792/windows-2025/standard-sessions.json",
       "size": 549,
       "sha256": "721dab3239198fd789ad7ea69afc390edbbc51f4f3350c284886eb1e6261a543"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/control-cases.json",
+      "size": 7222,
+      "sha256": "6c33dd93075d3f0e7b7f39c4cdf316489f8abea8e0d87aaed0e3a947d9051b20"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/driver-unload.json",
+      "size": 120,
+      "sha256": "845fcf9531b7e8c4617a512b3b48cbe6ea1790f40716d7ea8f4cad0838cae6f8"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/run-summary.json",
+      "size": 536,
+      "sha256": "4481e56a90e12b5cbaca5430c07cfa51651100e00290b290a7de9bd654ffbbf8"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "309cd1853f33dfd88f60322e94854921a2f4dad467c99a6187e0256da0fc8ecc"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/standard-accepted.json",
+      "size": 489,
+      "sha256": "cf0cbb3811add2ce6f6f9d520cd4f875c8344965744a8d38abc1b8b39cdd8aa4"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/standard-normal.json",
+      "size": 5479,
+      "sha256": "61c074e0a1cbe18dfc7456a1e5b6c1210a18315c5322252749fcd25e81357fc1"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/standard-reserved.json",
+      "size": 489,
+      "sha256": "ddfcb337adbe2e87e3f5b7d2d48bf9d0bd29bd093193cb6e682affc328581eb6"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/standard-scope.json",
+      "size": 913,
+      "sha256": "3237bb3459175cd4b3ddc692a792bf053639e7d99e9e2d40956178bd9c3e41b1"
+    },
+    {
+      "path": "investigation-b04a766/windows-11-arm/standard-sessions.json",
+      "size": 549,
+      "sha256": "eae7512937e11991a7ce439697c36c10c2d48bd36b4f7f5c6e245071097e3d63"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/control-cases.json",
+      "size": 6908,
+      "sha256": "f7a6c2b50eb3f02d6db39c06694b3487c5822f2385afc45b187d4b6c22ebadbd"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/driver-unload.json",
+      "size": 120,
+      "sha256": "845fcf9531b7e8c4617a512b3b48cbe6ea1790f40716d7ea8f4cad0838cae6f8"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/run-summary.json",
+      "size": 536,
+      "sha256": "322ce70ac9da1a63cc711c29a5ec711f5a7acfffe65853d3da2c3240129f989c"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "6afc05a5b33f976095643bc15e2b9d65da672ef8eb2172e87e37916b62659411"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/standard-accepted.json",
+      "size": 489,
+      "sha256": "49aafcaf5ddc8afc24c2739e7e3b739eeca66b1604f657fcc4a3fd9956534664"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/standard-normal.json",
+      "size": 5141,
+      "sha256": "18a9af4b968fa5518adaa9ab4064b7e2e03189a538b635c4f19996250a0e8f08"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/standard-reserved.json",
+      "size": 489,
+      "sha256": "7e1765531504d1589319412c422da1c465a7168c6f5ba8a456e52ecf6c3a9cb6"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/standard-scope.json",
+      "size": 913,
+      "sha256": "768bafa0a567f08fec25b41fee9052e3f11fcd5a65e6c52ed9f31c32fc32ab26"
+    },
+    {
+      "path": "investigation-b04a766/windows-2025/standard-sessions.json",
+      "size": 549,
+      "sha256": "5e0870c1ea5a1ae0c7bcc0ba9860a4ea630249bec413c521d4ca5a50b1b3acd7"
     }
   ],
   "tested_sources": [
@@ -1847,6 +1937,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38850068349",
       "result": "PASSED",
       "note": "Actual regression passed on both Windows targets, including the inert Unicode path correction. Subsequent P09 lab fixture changes require final matching-source retention."
+    },
+    {
+      "tested_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+      "run_id": 38852277993,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38852277993",
+      "result": "PASSED",
+      "note": "Both actual Windows targets passed. Subsequent owned native dialog and picker COM apartment changes require final matching-source retention."
     }
   ]
 }

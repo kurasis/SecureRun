@@ -873,3 +873,24 @@ no full reference measurement. No reporter kill/whitelist or error-reporting
 change is added. P04 run 38852273760 recorded an unexpected boxed startup exit 1
 on Server; the unchanged-source repeat 38852853178 passed all cases on both
 platforms. Both outcomes remain historical, and the startup cause is undetermined.
+
+### Visible initial picker enumeration and targeted application diagnosis
+
+The f9b719d ARM layout diagnostic proved an active console session, interactive
+WinSta0 and Default thread/input desktops for both users. Startup and all 76 UI
+assertions passed. Physical input still hit a visible top-level PickerHost, while
+the controller's EnumWindows-derived list had zero visible candidates and its own
+foreground was PickerHost. The lab now supplements enumeration with a bounded,
+cycle-checked top-level z-order walk and the independently queried foreground.
+Only known PickerHost PIDs are candidates. At most eight visible windows are
+handled, each with fresh same-user/root-owner, protected Microsoft image and
+process-birth checks. Enrollment still occurs before products; later requests
+require an enrolled process birth. No broader process/window authority or kill
+path is introduced. The intended input window/point must still be reverified.
+
+An explicit apps-only diagnostic executes the existing real CLI/boxed pinned
+editor, archive and browser scenarios without manager GUI or performance claims.
+It is always DIAGNOSTIC_ONLY, records that the normal manager WebView was not
+exercised, and cannot satisfy the full P09 retainer. The default full workload
+and every mandatory full case remain unchanged. This reduces iteration time for
+remaining native app input work while the complete gate runs independently.

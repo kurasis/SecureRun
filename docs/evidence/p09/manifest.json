@@ -41617,6 +41617,3826 @@
       "path": "investigation-b04a766-display/windows-2025/fixture.json",
       "size": 567,
       "sha256": "217367d464ac2f5f0d1238e0e663235b489825bfd03bc0e0a8cf8d1160ae8db7"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-browser_child-c93c874b87eb413e899e3c41cd2ef000.json",
+      "size": 1033,
+      "sha256": "34ddd7c2457911846a5eb8d4680b91b735da35b85eb4e7ecb45b1ea296c932ed"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-browser_protocol-27ce04b296da4fe1a1fbe19c8e6afe5c.json",
+      "size": 1033,
+      "sha256": "45403d5bb26e78618b5088c116d89334f0c2a736e82e97a783c1af17d124cbf5"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-browser_sandbox-b1b42cc0d2a8450188411baa64d3555a.json",
+      "size": 1027,
+      "sha256": "085298831494af96554b9269065393371551aec151583984a97a15dd8bc24585"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-desktop_prepare-375c12d4fefb4f8b8e5d2dcc140f2966.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-desktop_prepare-78eb37552a2f4e65bc004c62fc394c4e.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-desktop_prepare-8071131bd1ab4596adba3c2fbfbda16e.json",
+      "size": 530,
+      "sha256": "a5a5612f46e656d431e58b449e80a5763451e0c1dbe215f6748bb1f9fca1a807"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-desktop_prepare-b6de36379af9410c9d8c4a12161461df.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-display_scale-0f58fcfc62b34bf5978f3d79641f12a4.json",
+      "size": 492,
+      "sha256": "3cc9a5e5918c48b6a16cb99f9d8613cdab6cfc9632c309d78aaf64af416ea314"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-display_scale-2809cb5dfe12458b9354c9f2c2f54a33.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-display_scale-39712db960d04052853c9e2adc4fa04e.json",
+      "size": 492,
+      "sha256": "86c77f66565b4aff63edc4b2fdc21f496f9a52f09db7951c7a449852712dc139"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-display_scale-42969eb0b74d449d87127fbb07d16e7e.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-editor-4c1326baeb5f4def81d30951a8d83959.json",
+      "size": 991,
+      "sha256": "8ea0717d5c1d82a6c025adde36f1480595cea7d5a4798ea78b62ad82b31407fd"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-keyboard-e22dc2808b10483baf3e01462b6796ad.json",
+      "size": 1154,
+      "sha256": "61b2cf990c6c29c02113db2af0a40b29fd5e6fab689bbed22d3fea63d6ae1285"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-picker-b8edb33edafc45b897e8cd9d006b5aed.json",
+      "size": 746,
+      "sha256": "6bd6331bb58559c10797b32545e896bb987b12e7ece6a875c7dd30ac03daf4bf"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/access-picker-e4f266d70a524cfd974d89e3201fde74.json",
+      "size": 748,
+      "sha256": "210833755c127078c9b1629072fc9591da3e67681471a3bec3966309753c7042"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "5b6ff1557a7959e953c8261a8bc5953ac639e6f4797c8641d412f7a3d7dd6cbc"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "df312305464ca7142147b1a0a017b734733bfba670345b7ce812667fd203d912"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 592,
+      "sha256": "afcf389ee3147d31ec1d40ebf4a9061e286ec58334e80bfac836e0eba4ce1cfd"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-2.json",
+      "size": 434,
+      "sha256": "303c03406b4227cada9add21a8c1944c29490c4ec0284bdcdf4f35fa48897949"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-3.json",
+      "size": 434,
+      "sha256": "303c03406b4227cada9add21a8c1944c29490c4ec0284bdcdf4f35fa48897949"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-4.json",
+      "size": 434,
+      "sha256": "303c03406b4227cada9add21a8c1944c29490c4ec0284bdcdf4f35fa48897949"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-5.json",
+      "size": 434,
+      "sha256": "303c03406b4227cada9add21a8c1944c29490c4ec0284bdcdf4f35fa48897949"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.desktop-preparation-6.json",
+      "size": 434,
+      "sha256": "303c03406b4227cada9add21a8c1944c29490c4ec0284bdcdf4f35fa48897949"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "2db46a4d5b196d4edfc9fcff87c2639f107d5c681523f64882fadff85de3e409"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/file-workload.json",
+      "size": 172,
+      "sha256": "495168270c60c4e0db1cb10e4a3b79fb69528a753a7c2fdc2e31e42f709b6a2a"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/gui-workflow.json",
+      "size": 164,
+      "sha256": "fcec5759413a1870007b859c41eb653fa8494f355520c2611eb8fb4a35342c2f"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/initial-desktop-preparation.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "3b1c0e95bdb0fd54124657f57f1cb300f9da029ee224db58bb905481dfaae569"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/last-native-refusal.json",
+      "size": 170,
+      "sha256": "8f2b8c0cc7fd89ab8ba5a592615bd16cb6ae20d613a386e4a43cc1f1ec9d13ce"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/launch-performance.json",
+      "size": 269,
+      "sha256": "b4ebb97aecda0257b658296ebbef5dc32e2f35986d8a796d4c324a4fa7d1609d"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "23ed3196e1e3716da7d9bb9ccbc4c3a14359ef36670a2ee7991f82e770a71b5a"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "078e1062f1ad48b41f239bb261140022137619865bea4c47b737e79f804d6c4a"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "76c5a66e1dd13a867d37c1b190afa2a0f7c8fdfc7a6d555d98e765fb741efd06"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-0643423703d444e3a6ba56c1459e75ef.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-067857a2c5894e75a7afc044d4b35b78.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-0c03cf46ced5429d9b739fe48c833db2.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-18aaf1785fde42908e93ffd986c23d81.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-263107ffe10246b5a6887530bfab8c6f.json",
+      "size": 1481,
+      "sha256": "c9bbef92e916d1b4db6dadbf33b027c83c9bd4794bdd9223c90ab239dfb385e7"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-2d9a51359a0b4502969513cbe834252f.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-3d95f74c9b8a4fd8ac7d499674b267c1.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-3fd363c414d94190947d81f776591f49.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-4f70d78ed190424a9f787060c6961e05.json",
+      "size": 1481,
+      "sha256": "bb283399e4d6e3fde504ce75950aa9d68f262e265cd4cfa6bd4209a68b84cdd0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-5107e9b9372046eeb64b7f68352ee4e0.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-5a873471e1c4476f82e9c1e8353147ea.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-6b7a0876462243968eb32aa2e6623e9a.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-6fb529eec59b451598f34496804f5ec3.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-7527246302c547b19cc97581ec75673b.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-78becc8ded5b4e87988cc53837aa9a27.json",
+      "size": 1481,
+      "sha256": "1cce34cedbe6d4df94c75c409662e9c9edec33c725c58bc62536282e940e5b7e"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-7fd1fb130ef84b5699d19b4a917dbe54.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-8374607acdf94b3b9df915b35dc7cc81.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-8761aaf511204599b0998a369cf4d7db.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-97e0cc5545574c9e88c56b746197339b.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-9d2a4dc4949f4b87ace1cdd665c96b0e.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-a4dfb6aa9bf94200881c3d1439644f31.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-a5d1860005ae4703892b74371d4c14ba.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-a7a44b15ac044608a4144ae7e3467f1f.json",
+      "size": 1481,
+      "sha256": "1cce34cedbe6d4df94c75c409662e9c9edec33c725c58bc62536282e940e5b7e"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-a863bbb6d35b4fe380a157989f5f3323.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-aa03538b68134bb0bd8b6f6eb1329cef.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-ae2e47d09576423085be73dba8daa382.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-c05038c50d354b6eb3ebc8ef06b1ffdf.json",
+      "size": 1518,
+      "sha256": "f8176a7e2d38003fc5cf0308e23ae7c8bf600524758d4ee3c7d5346661fa7541"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-c6260572403743a39f0cd85dde2df5fc.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-cefb84c5376042b2b0e8cd3312285da0.json",
+      "size": 1481,
+      "sha256": "c9bbef92e916d1b4db6dadbf33b027c83c9bd4794bdd9223c90ab239dfb385e7"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-d95b417ad3c7454d9ee12c1ab04589a2.json",
+      "size": 1518,
+      "sha256": "a551e997c784560f13aee1fa4fd36edf723d66a88619d1c10c0815b167d19996"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-e0b7d213fb8645438665ff56f343b2bc.json",
+      "size": 1481,
+      "sha256": "bb283399e4d6e3fde504ce75950aa9d68f262e265cd4cfa6bd4209a68b84cdd0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-f5a0b0faf4454dfeb8342f9a3997ee63.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-evidence-feb9f3b4b46d4e71a428f0b660c00fe3.json",
+      "size": 1518,
+      "sha256": "7a6d0beba537b089464d1cb7de9145248d11d1e3397d4a1b531a575adf6233a3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-0643423703d444e3a6ba56c1459e75ef.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-067857a2c5894e75a7afc044d4b35b78.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-0c03cf46ced5429d9b739fe48c833db2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-18aaf1785fde42908e93ffd986c23d81.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-263107ffe10246b5a6887530bfab8c6f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-2d9a51359a0b4502969513cbe834252f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-3d95f74c9b8a4fd8ac7d499674b267c1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-3fd363c414d94190947d81f776591f49.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-4f70d78ed190424a9f787060c6961e05.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-5107e9b9372046eeb64b7f68352ee4e0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-5a873471e1c4476f82e9c1e8353147ea.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-6b7a0876462243968eb32aa2e6623e9a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-6fb529eec59b451598f34496804f5ec3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-7527246302c547b19cc97581ec75673b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-78becc8ded5b4e87988cc53837aa9a27.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-7fd1fb130ef84b5699d19b4a917dbe54.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-8374607acdf94b3b9df915b35dc7cc81.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-8761aaf511204599b0998a369cf4d7db.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-97e0cc5545574c9e88c56b746197339b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-9d2a4dc4949f4b87ace1cdd665c96b0e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-a4dfb6aa9bf94200881c3d1439644f31.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-a5d1860005ae4703892b74371d4c14ba.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-a7a44b15ac044608a4144ae7e3467f1f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-a863bbb6d35b4fe380a157989f5f3323.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-aa03538b68134bb0bd8b6f6eb1329cef.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-ae2e47d09576423085be73dba8daa382.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-c05038c50d354b6eb3ebc8ef06b1ffdf.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-c6260572403743a39f0cd85dde2df5fc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-cefb84c5376042b2b0e8cd3312285da0.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-d95b417ad3c7454d9ee12c1ab04589a2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-e0b7d213fb8645438665ff56f343b2bc.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-f5a0b0faf4454dfeb8342f9a3997ee63.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/probe-result-feb9f3b4b46d4e71a428f0b660c00fe3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/process-update.json",
+      "size": 124,
+      "sha256": "5b94e90689f98451009f9f8086265616b12b8e61cbc6200a4da812c1fb0c181d"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/product-cases.json",
+      "size": 7505,
+      "sha256": "a64ad41fa155ad2b40bd46e50aa8a16ade3bb1f3a3574f001a449353913db8b8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/run-summary.json",
+      "size": 668,
+      "sha256": "2592af98c492fcf0ef721a6696468de3d7495a5b350a201514ac840951aed102"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "05e7af2753ab6b66935c52b8d1ad73150810c5830aa9df06d3ec6ca108c739d7"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/standard-product.json",
+      "size": 403,
+      "sha256": "863f75459542f06d14c44ef10eda27c43dc1cbbd26f94421133df14471239290"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/startup-accessibility.json",
+      "size": 810,
+      "sha256": "871d4ef4833d1e34c4d59088f243d0efae49b192e6e0cd96669f6ef5bcdd2f72"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-11-arm/ui-cases.json",
+      "size": 8942,
+      "sha256": "3d461b2b032d61a4758c87bb5d9c2ef6a21a1d239636b06ede26e68f9a254ccf"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-browser_child-6fed9edae42d4b6ba440d5188a72a75b.json",
+      "size": 978,
+      "sha256": "50b0afdf4e58faedb087be1d90f0daef60fc96a80e59cc97c50f744454b4e7f4"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-browser_protocol-b6e4551359934ca1a7466cc2a22515c2.json",
+      "size": 977,
+      "sha256": "ec185e3f10e1b2135164a9f286b237542547f2ad9d33c18daa95ade2d1742904"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-browser_sandbox-6644d8580edd47f5819b8a95d53c44df.json",
+      "size": 971,
+      "sha256": "f0364bb30b81aad1f1b08a0421b0b72be44b3b98a315933b8a8f21246795a2f9"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-desktop_prepare-121d476f871d4ed7a7b2542edd0ef7b2.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-desktop_prepare-3c7bbaa3be2242d4a2e98dcc1ca1e471.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-desktop_prepare-ad85c2d741ef44d585fe3552eed0c932.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-display_scale-12066b7e300742a69ab24f265e7f2ac4.json",
+      "size": 492,
+      "sha256": "86c77f66565b4aff63edc4b2fdc21f496f9a52f09db7951c7a449852712dc139"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-display_scale-3c296fedf48041038d617d3693d7ee45.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-display_scale-c1304db28e77494db876f417f090022a.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-display_scale-f09d84d0204f400aae0fcbd452d0c8dd.json",
+      "size": 492,
+      "sha256": "3cc9a5e5918c48b6a16cb99f9d8613cdab6cfc9632c309d78aaf64af416ea314"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-editor-95fb9a90aa304910b0e08dd9e8834f4d.json",
+      "size": 969,
+      "sha256": "bd93ff83e002068a0248714c4485f93ed80ecf0067d866a51a3c63cfd5b82008"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-keyboard-d9b4d7c1edcc418fbb7dd9cccdfcbe9a.json",
+      "size": 1239,
+      "sha256": "49873e4b6f54f711956c274ad746bcebc7986ed14054f9bb2d720ca71660ddc1"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-picker-96ad6da51bdd47188a4a231d24397c9a.json",
+      "size": 746,
+      "sha256": "6bd6331bb58559c10797b32545e896bb987b12e7ece6a875c7dd30ac03daf4bf"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/access-picker-e70817a318714f3da9c4a70004731b00.json",
+      "size": 748,
+      "sha256": "210833755c127078c9b1629072fc9591da3e67681471a3bec3966309753c7042"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "22cd92edb6eb9a91665be88f9b0e34df6cce87fad5029e128706d3ae6a4d8b44"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "f6ddcace6b951b971c4fdc83f2e734cd4b2371f59e56588823c651201679b394"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "ba78fac355b712bc6d4e2234bc1f5702e94dcd8a9d7caddf95c906b484d801dc"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/editor-save-observation.json",
+      "size": 122,
+      "sha256": "dbe6649aa96db00313ee261ce5512e42fff36d01d6febff0a4081aa22d77e93e"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/file-workload.json",
+      "size": 172,
+      "sha256": "7ef12b4773c50d6aab30b6970919c96127cf9844966b0b6a7195c57b064c6a43"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/gui-workflow.json",
+      "size": 164,
+      "sha256": "02cd3e1cdf3557ac2bad597c12d6bb2c6f9554099be71af513c4f0efe7527fcb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/initial-desktop-preparation.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "d75799d1ed361e7a2c692707ed4bcbded6a2dd3a7b922b7e8e507b936ad9ba47"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/last-native-refusal.json",
+      "size": 170,
+      "sha256": "57093093ea71d68722fdf906f8586ea9cf5f8fa35614af3c3c138ccc73f78b74"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/launch-performance.json",
+      "size": 269,
+      "sha256": "875b811dbca42b8ec8d3566a2d4aa0cfc1dd09ef75893e710a8fbf2d0dba171e"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "4b92853e9c1099e46b6df685774006ad80f96e7fb95d634b0aa6bea22e66fa6a"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "6d0000f3179691edc9735124f6db80764fa93273dc8c5c23f2e5ff298e0902d2"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "adc0735687958db88582aa6ccd1235cc5e32df4ed239fac86397dac745fbaa5b"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/performance-diagnostic.json",
+      "size": 985,
+      "sha256": "74c507423f8d9f534776c71b4c4ad649229184ead54829eba290e62ccdf5bad6"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-0d0f7ed04b1647b8a07e5bc21b147210.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-15f00d73121f4ef2941ec6336d189ce8.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-24201bb6001d4aa9956e7f8fddca84ab.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-33488f132b4c4048ae94173aef48f70f.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-365116c8813b4906a92e881ed90a6410.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-46ef9a5b9be74cbdbbdeff542fc9f4d9.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-4707be4a1d5a43c3aed88d2f7cc4c936.json",
+      "size": 1481,
+      "sha256": "3b908728f368b33c153b4de57c7569e5cb5b0c489576bca491fa5e8db7f74222"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-51368ce33d58440c9e8a80521881be09.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-6e85c65866b74998ad8b0ab1e23338e2.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-7d8c0c714c3a4ca2917eb9ef98b7dd0f.json",
+      "size": 1481,
+      "sha256": "bbac53dd41e36e6842100e21ac459148c4c6479ef51bf76f2978266c4affd986"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-81a131b842a1451fba39678e6c50b15d.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-8f43d8befce343d5b554996875b0c8ef.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-9317a3421fc049dd8b01c861ca6f835a.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-9fb8e2cd7e6b4bdaa260044c11204615.json",
+      "size": 1481,
+      "sha256": "3b908728f368b33c153b4de57c7569e5cb5b0c489576bca491fa5e8db7f74222"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-9fe84dd969a848f38480dc63005fa0b7.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-bd087fffc241451a99a4ead9c8336c7c.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-d86a45b3abc548abbcabe6a6e0ed26b7.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-d9696b0605ae44fc8c0a4313a5484c48.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-e107df043dbd4724a70463a0d7e2e6eb.json",
+      "size": 1481,
+      "sha256": "bbac53dd41e36e6842100e21ac459148c4c6479ef51bf76f2978266c4affd986"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-eb7c39adaeb34aefb8a592e68c7f8589.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-f1631e8a12fb4527ae9eb0b729bd46b4.json",
+      "size": 1518,
+      "sha256": "bf36aede7201630daaf64983ca18c4bc8d4cc3ba0f4cc485525577bbe683eca8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-evidence-fc65b5f9a6c344b9805437c44dd7e2f9.json",
+      "size": 1518,
+      "sha256": "8da13f81615fe2d1a41ff52f80d35f315be90848215fda12c1b3b2ec77f58c83"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-0d0f7ed04b1647b8a07e5bc21b147210.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-15f00d73121f4ef2941ec6336d189ce8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-24201bb6001d4aa9956e7f8fddca84ab.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-33488f132b4c4048ae94173aef48f70f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-365116c8813b4906a92e881ed90a6410.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-46ef9a5b9be74cbdbbdeff542fc9f4d9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-4707be4a1d5a43c3aed88d2f7cc4c936.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-51368ce33d58440c9e8a80521881be09.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-6e85c65866b74998ad8b0ab1e23338e2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-7d8c0c714c3a4ca2917eb9ef98b7dd0f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-81a131b842a1451fba39678e6c50b15d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-8f43d8befce343d5b554996875b0c8ef.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-9317a3421fc049dd8b01c861ca6f835a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-9fb8e2cd7e6b4bdaa260044c11204615.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-9fe84dd969a848f38480dc63005fa0b7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-bd087fffc241451a99a4ead9c8336c7c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-d86a45b3abc548abbcabe6a6e0ed26b7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-d9696b0605ae44fc8c0a4313a5484c48.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-e107df043dbd4724a70463a0d7e2e6eb.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-eb7c39adaeb34aefb8a592e68c7f8589.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-f1631e8a12fb4527ae9eb0b729bd46b4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/probe-result-fc65b5f9a6c344b9805437c44dd7e2f9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/process-update.json",
+      "size": 124,
+      "sha256": "3ef288702a7608bb5fd337c052c7b4028579929a0741149c75a5a68c13232cc8"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/product-cases.json",
+      "size": 8123,
+      "sha256": "bb1560a10cc8e765ab7f5de494ae749043cbc1305ef8f51aed085416a3a5d037"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/run-summary.json",
+      "size": 668,
+      "sha256": "1b335375eb68bf0c9c925db45df0ae8dab416dec7db8543326556cabd40e8aa6"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "6bce004fb3e2fe819800cc928d0f06bc8893364074ab82296fddd87dc4349fc5"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/standard-product.json",
+      "size": 403,
+      "sha256": "7eb425c322b006ad323db47b64ac45e6ea96b5d8f37f3fd7acdd92b6f42a11f7"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/startup-accessibility.json",
+      "size": 615,
+      "sha256": "2e69b53ae863b5ae7fd48d7256880eccf0dabc494f1f9ac6d573ec4f5bb338c9"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/startup-diagnostic.json",
+      "size": 553,
+      "sha256": "dd7188365ac4fadcb8ac675c42c52d5f75a756477c06771101828bf3eb7a44e3"
+    },
+    {
+      "path": "investigation-b04a766-focused/windows-2025/ui-cases.json",
+      "size": 8942,
+      "sha256": "3d461b2b032d61a4758c87bb5d9c2ef6a21a1d239636b06ede26e68f9a254ccf"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/access-desktop_prepare-29601cbeb9e348debe01a5ad5a2a1465.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "f1a1d49d1f4931bbc1b5007bcf43c18f2e2b9c8f489304a4a89a799fc6e7e216"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "a3cfc1feaf223566505a047b3b0cc523a772e307c3ae2a7ecbe3405018c99f59"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "0ca7125f40546d43cf542c6e6bd427260de86e9048071917b25a5b9d84d1c4bd"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/image-status-f248018e2a7044c7a49a4938e12304c4.json",
+      "size": 182,
+      "sha256": "582acd0579f28941f3787493573d2b2d3287cd8138e0c38c8b6df48ce6ea8881"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/initial-desktop-preparation.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "d83361878b5d298ffc0d40371741ee4de3ff7aaf48b6c23432a916ea673b4145"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "c4ec34007e33f5e5f0f49a9118c79b50ec629fbd1653e65bf8f9cc423441318d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "384f6e07da5bb3077713bcbd1e8ef7666c7484c928abdf4c080dc1b296244821"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "ba65abd0724e8a053036a33e9b746ba9ecbd6fa64e02708bd0b94552d0a93e8b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/owned-policy-observations.json",
+      "size": 66,
+      "sha256": "e4aad3b68f5ec40431515b58efb7901eedb8b7e596e2b79a1778668f07a69d7b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-011cbb2268c3434d9271d20a42c63154.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-016784dafa1a4128b41d3993bdf81341.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-01bb1a67bc4a4704b9a499eb038151c1.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-0391eb3363024c6ab9df739fd1249f2b.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-08a358288fa4461380c45da1dd6f4078.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-09b43c38c9284912b3735f981302c793.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-0c01b69015104251b5d29f4c07bb72b2.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-0c364b4ea9b1455b9de3b1462cd0b38c.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-0c8e7c425900460c8375c519bfdc3971.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-1113e5ee4d4b4653a142788f7d658494.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-145cbf7f610a4ff7b3c85178fbea339d.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-15ff75390b634689a88ec420c85cbe99.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-16aa9aa5a3de43a283d10a1c709a4900.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-176222c6d80c45f8b022ecee216f581d.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-1bc210f355f34e3f8748b58db4e1464e.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-1f40e0a642bf492b8672130be21c8cb8.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-225845046dda467a973d9e301cf5807b.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-2269a0d10e09411caf669d788e744b14.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-22d1cfce07744638b15ec114921d04c0.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-22e38bd321dc4b52ae1f760fd11ade53.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-25187170704242a4b9f94d476269c3b2.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-2a4f98d1d86041018f2d472067f8b0ba.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-2c0a6f7cae0a4c96be6b543964409ac0.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-2c5f975306604497aeece17cd96e7412.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-31618c89a4504e62956b8f76bfeef883.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-31f72aaf728441dc97e86974919a8c56.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-32fc04cfa041445fabe5af31a53cc0e5.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-3345a238daa54b6ab7715d5ee21b9a33.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-36f0d1c5be5248a8b1739d61d9d6cd07.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-36f9745cb7474a6ebdb10553894a3b96.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-3771c90c21754c7494dc26970bb2b097.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-37a84f3a945b432d850bd6437cf186d5.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-40c5ab073f1747c4a4f0836ee9ccd7b4.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-45d2e34db4964b8a93db7144541a9192.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-47838f352de94eea88dcd5ee1ed0b173.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-47d191e759274374a7da22f73510dac6.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-4a8b02f608a64953b82fcf41dea766e6.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-4b9ec07aa8964605ad3296c5bc7e2dfb.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-562521a36a024588be642e8037cebf8f.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-57a8f0a113e9430abf49fa706280166a.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-583a0961238749b9af8c241d442fde18.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-5a5216d608104855862f5024f7ccf571.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-5beab612b3394123ab951f602d9523f1.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-60daa246b7f243838aaeac81e919df57.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-60ef91832b524c1f8b780c2e0523f499.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-67dcd144a3a24d35ae3bce1fec63254e.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-6c0560ab98724dcd9243c81474138c58.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-6c9d57f760a44ad2952dfa9a9b81602d.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-6d631d47b7044a309f332c490b198c1c.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-701f857b409a4da4a0176f2427e3d261.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-7058688e7d2c4e948457783273dc1952.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-751158ae9b814664b85b145b540341b8.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-75ed043d2064401ebbd50393396e8232.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-788a29926a194ab79993511174163d53.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-7b350ef1edbf4e9991adf8e969e15b1a.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-7bf36061999a483194acfdcc9c10f148.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-8136adaa9fe6414c9b6c53f841d7e215.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-81797c535a664f4a9a7d1f62520e2c5e.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-82e753aec4ee4ed49863ffe9705d882b.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-82ebc91a39f349bd9eac375512567bfe.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-830c91ca17df4eea8b1189f1ee11d83b.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-84e3e9e45dba4231baa2768463d317d4.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-850ff099d29042608ce8bd26ea3a6283.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-85ea4257e4b3445eb9730de5615931fe.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-8832fc78fa324f81a18ed07b52519a62.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-8d29305fef59499b86cad808945b7b22.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-8da6a3197b434fbe82b27fb7b8384405.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-8ff936c8540c4368a402bcb6bf552223.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9353832eb673472b925c7f9183f3c76d.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-935fd15f40b54261970bba9d389cb090.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-93914cf1d6af476aa07b3ec7063611e1.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-96b8aeb3eefb4315bccc3d3830cbbb48.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9809486661044d3eb9cf92e5d26e583d.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9949ca85b90e4a13a1456d7ae9b8ca2b.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-99aefb7521864656a057384114e5bb88.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9b59a1ab130046a09fd5200b895f4f92.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9bb631e9bff7475c8cefd3e79a0ae736.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-9f00e1c8069b455aa4e33a0983e1a1df.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a0685656f2354621b19c70b9835c188f.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a66a5ad144d94b6986cdab7a17b2776d.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a7487a9aa1024330bb357038c16eb736.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a80e766607da46a1a87cf28b60a5aecc.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a82a9ee7e97746ba95f93b115dc311c8.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-a94f5d135d9144cea0f5e9bc9675cff8.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-aa348c34aa5a4f4a8c813fc713166f6a.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-aa799775952848879557044a02577b07.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-acda8513882b4098bce1cc1247e9c8a2.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-acefb3cfea174809baa9efdff0b67f17.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-adeeb7b45f694cab8c4b5d1bf5e7053d.json",
+      "size": 1481,
+      "sha256": "65f3cb8c6c210ed94005f625aa8abfc02fd7dc6917cfdb6d5fab96420a2786c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-b013a286cee84ac7a9173505d361e602.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-b0ca4e80e7724b5ebac5657df0d6c1d6.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-b0eac2ac538645c9b913ad49320092e2.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-b33bca0e2cd444a9b164b799d7ce776d.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-b946dad06c8b474b92c93341ee1b7db5.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-bc7b938feaf141c580c952c17e2848c4.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c1a13c46d0274a36aec7760446d185fc.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c1c99f5207e146d29b8c6c23b0ee400b.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c21c73d3d8734511980cae6a092594cd.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c3e912d560314ca7ba1ccf89df6105f9.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c452f7315cc7404ca424925fe098cf19.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c54e934e09074c95a54580bd06f9a49c.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c5b94be2dceb4d47a5a23bdeec835425.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c6e720705a7f4b3698e9f53f3b5c6a10.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-c84b892a373b424c8c9629c542e9544e.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ca7202f51e844c64b16e81bf58a07ae0.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ce115d058eaf4ba39428011f6611f28d.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d10d6687849d4063929fdbdea2a16bfa.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d28c56dea81b46eba208c65313d7c32b.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d43f8943e95347d79830d2d09202c91e.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d456682f5419493faad738b853bbcaef.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d73008fb3b2a40ad816fb0674707c0a1.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-d78ee2c145d8435281bf72d0ad13e800.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-db1b61996720444dbe46cece5e2ddb78.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-dddcec9e088345d1a8a3aa5ef7fed7ed.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-de46a61ba6c64d95aa981d8ed908becd.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e0f142d3408e4bcca707ffdcfd6b2df3.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e149294d9ee544fcb0610125ef98b3b3.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e1e039b67f0d4449b20c3905016e9b29.json",
+      "size": 1481,
+      "sha256": "d250490d373393c235fd3187090b90d92da34381b2d529ae718bfdd0229e0a2d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e26ee4896a9546ac91724d8ded03fb02.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e287d42228ab491c85fc70a2840af989.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e4d9aa2942b440dea112f9c14b78d288.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e4f818b7e6814e7bb083484cc803f4b5.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e55343bea5d3454a9ec80027350c8603.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-e84406281b404e4e9c29dd533421a772.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-eb159b4123b84483bf273ed0401a237e.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ebe5f935b4734138ac1a56d35d64647f.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ed8129da057e4518a0aea06f9280877c.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ee00710db59d4c619e05d7fd0748946c.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f3549d84767a4a8ebcf772b18d9cbd62.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f48b98703d02442c8c5907e1a5afacc9.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f5c4668e55fa4a548aa429154f4a14aa.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f6f17dfed86446f4b2cfab2b871fd7fa.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f70da4d005c64705abbbc6ec76db5ed4.json",
+      "size": 1518,
+      "sha256": "6760b3ddd0b8b938e7f72c0042b1d5579653d3df70f2146338d206f6c887c4c1"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-f92fd7e680c642b38b5f405747546477.json",
+      "size": 1518,
+      "sha256": "7dda76880200b4290552c7b6b9095fcea2118970155cf1425979fc4cd17531ac"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-feff3bd576de40bcac4b87e6d2de10ab.json",
+      "size": 1518,
+      "sha256": "a6887dced3f86773289704fb2864986990838576ed8bb46d815818fdd4cf540e"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-evidence-ff9c40807b864c9fa26b3d2438307918.json",
+      "size": 1481,
+      "sha256": "160ca5e6e38b214c4540e5f8c09a3b9ffff4c96dd3e70d4ac98f65b0ddb9ed43"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-011cbb2268c3434d9271d20a42c63154.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-016784dafa1a4128b41d3993bdf81341.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-01bb1a67bc4a4704b9a499eb038151c1.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-0391eb3363024c6ab9df739fd1249f2b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-08a358288fa4461380c45da1dd6f4078.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-09b43c38c9284912b3735f981302c793.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-0c01b69015104251b5d29f4c07bb72b2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-0c364b4ea9b1455b9de3b1462cd0b38c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-0c8e7c425900460c8375c519bfdc3971.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-1113e5ee4d4b4653a142788f7d658494.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-145cbf7f610a4ff7b3c85178fbea339d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-15ff75390b634689a88ec420c85cbe99.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-16aa9aa5a3de43a283d10a1c709a4900.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-176222c6d80c45f8b022ecee216f581d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-1bc210f355f34e3f8748b58db4e1464e.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-1f40e0a642bf492b8672130be21c8cb8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-225845046dda467a973d9e301cf5807b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-2269a0d10e09411caf669d788e744b14.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-22d1cfce07744638b15ec114921d04c0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-22e38bd321dc4b52ae1f760fd11ade53.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-25187170704242a4b9f94d476269c3b2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-2a4f98d1d86041018f2d472067f8b0ba.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-2c0a6f7cae0a4c96be6b543964409ac0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-2c5f975306604497aeece17cd96e7412.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-31618c89a4504e62956b8f76bfeef883.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-31f72aaf728441dc97e86974919a8c56.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-32fc04cfa041445fabe5af31a53cc0e5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-3345a238daa54b6ab7715d5ee21b9a33.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-36f0d1c5be5248a8b1739d61d9d6cd07.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-36f9745cb7474a6ebdb10553894a3b96.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-3771c90c21754c7494dc26970bb2b097.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-37a84f3a945b432d850bd6437cf186d5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-40c5ab073f1747c4a4f0836ee9ccd7b4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-45d2e34db4964b8a93db7144541a9192.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-47838f352de94eea88dcd5ee1ed0b173.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-47d191e759274374a7da22f73510dac6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-4a8b02f608a64953b82fcf41dea766e6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-4b9ec07aa8964605ad3296c5bc7e2dfb.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-562521a36a024588be642e8037cebf8f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-57a8f0a113e9430abf49fa706280166a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-583a0961238749b9af8c241d442fde18.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-5a5216d608104855862f5024f7ccf571.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-5beab612b3394123ab951f602d9523f1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-60daa246b7f243838aaeac81e919df57.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-60ef91832b524c1f8b780c2e0523f499.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-67dcd144a3a24d35ae3bce1fec63254e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-6c0560ab98724dcd9243c81474138c58.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-6c9d57f760a44ad2952dfa9a9b81602d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-6d631d47b7044a309f332c490b198c1c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-701f857b409a4da4a0176f2427e3d261.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-7058688e7d2c4e948457783273dc1952.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-751158ae9b814664b85b145b540341b8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-75ed043d2064401ebbd50393396e8232.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-788a29926a194ab79993511174163d53.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-7b350ef1edbf4e9991adf8e969e15b1a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-7bf36061999a483194acfdcc9c10f148.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-8136adaa9fe6414c9b6c53f841d7e215.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-81797c535a664f4a9a7d1f62520e2c5e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-82e753aec4ee4ed49863ffe9705d882b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-82ebc91a39f349bd9eac375512567bfe.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-830c91ca17df4eea8b1189f1ee11d83b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-84e3e9e45dba4231baa2768463d317d4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-850ff099d29042608ce8bd26ea3a6283.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-85ea4257e4b3445eb9730de5615931fe.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-8832fc78fa324f81a18ed07b52519a62.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-8d29305fef59499b86cad808945b7b22.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-8da6a3197b434fbe82b27fb7b8384405.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-8ff936c8540c4368a402bcb6bf552223.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9353832eb673472b925c7f9183f3c76d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-935fd15f40b54261970bba9d389cb090.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-93914cf1d6af476aa07b3ec7063611e1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-96b8aeb3eefb4315bccc3d3830cbbb48.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9809486661044d3eb9cf92e5d26e583d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9949ca85b90e4a13a1456d7ae9b8ca2b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-99aefb7521864656a057384114e5bb88.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9b59a1ab130046a09fd5200b895f4f92.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9bb631e9bff7475c8cefd3e79a0ae736.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-9f00e1c8069b455aa4e33a0983e1a1df.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a0685656f2354621b19c70b9835c188f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a66a5ad144d94b6986cdab7a17b2776d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a7487a9aa1024330bb357038c16eb736.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a80e766607da46a1a87cf28b60a5aecc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a82a9ee7e97746ba95f93b115dc311c8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-a94f5d135d9144cea0f5e9bc9675cff8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-aa348c34aa5a4f4a8c813fc713166f6a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-aa799775952848879557044a02577b07.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-acda8513882b4098bce1cc1247e9c8a2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-acefb3cfea174809baa9efdff0b67f17.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-adeeb7b45f694cab8c4b5d1bf5e7053d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-b013a286cee84ac7a9173505d361e602.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-b0ca4e80e7724b5ebac5657df0d6c1d6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-b0eac2ac538645c9b913ad49320092e2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-b33bca0e2cd444a9b164b799d7ce776d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-b946dad06c8b474b92c93341ee1b7db5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-bc7b938feaf141c580c952c17e2848c4.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c1a13c46d0274a36aec7760446d185fc.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c1c99f5207e146d29b8c6c23b0ee400b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c21c73d3d8734511980cae6a092594cd.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c3e912d560314ca7ba1ccf89df6105f9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c452f7315cc7404ca424925fe098cf19.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c54e934e09074c95a54580bd06f9a49c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c5b94be2dceb4d47a5a23bdeec835425.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c6e720705a7f4b3698e9f53f3b5c6a10.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-c84b892a373b424c8c9629c542e9544e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ca7202f51e844c64b16e81bf58a07ae0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ce115d058eaf4ba39428011f6611f28d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d10d6687849d4063929fdbdea2a16bfa.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d28c56dea81b46eba208c65313d7c32b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d43f8943e95347d79830d2d09202c91e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d456682f5419493faad738b853bbcaef.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d73008fb3b2a40ad816fb0674707c0a1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-d78ee2c145d8435281bf72d0ad13e800.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-db1b61996720444dbe46cece5e2ddb78.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-dddcec9e088345d1a8a3aa5ef7fed7ed.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-de46a61ba6c64d95aa981d8ed908becd.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e0f142d3408e4bcca707ffdcfd6b2df3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e149294d9ee544fcb0610125ef98b3b3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e1e039b67f0d4449b20c3905016e9b29.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e26ee4896a9546ac91724d8ded03fb02.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e287d42228ab491c85fc70a2840af989.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e4d9aa2942b440dea112f9c14b78d288.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e4f818b7e6814e7bb083484cc803f4b5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e55343bea5d3454a9ec80027350c8603.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-e84406281b404e4e9c29dd533421a772.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-eb159b4123b84483bf273ed0401a237e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ebe5f935b4734138ac1a56d35d64647f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ed8129da057e4518a0aea06f9280877c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ee00710db59d4c619e05d7fd0748946c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f3549d84767a4a8ebcf772b18d9cbd62.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f48b98703d02442c8c5907e1a5afacc9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f5c4668e55fa4a548aa429154f4a14aa.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f6f17dfed86446f4b2cfab2b871fd7fa.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f70da4d005c64705abbbc6ec76db5ed4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-f92fd7e680c642b38b5f405747546477.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-feff3bd576de40bcac4b87e6d2de10ab.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/probe-result-ff9c40807b864c9fa26b3d2438307918.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/run-summary.json",
+      "size": 659,
+      "sha256": "9ffac26d9fa9daaf310b61a8b915f49180a2f4f3d2501c21bcd703399f4f3849"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "05e7af2753ab6b66935c52b8d1ad73150810c5830aa9df06d3ec6ca108c739d7"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "3213342a65703bf9fca36c4034faabcbc48d360e074840cca1a1187be8f9c4ba"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-browser_child-8be634feb0564448999cc26c464230be.json",
+      "size": 978,
+      "sha256": "50b0afdf4e58faedb087be1d90f0daef60fc96a80e59cc97c50f744454b4e7f4"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-browser_protocol-2a70a76ae4a248cfb128f44132f1cbd2.json",
+      "size": 977,
+      "sha256": "ec185e3f10e1b2135164a9f286b237542547f2ad9d33c18daa95ade2d1742904"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-browser_sandbox-0d704a13b257473f8cb9e0f658beb392.json",
+      "size": 971,
+      "sha256": "f0364bb30b81aad1f1b08a0421b0b72be44b3b98a315933b8a8f21246795a2f9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-desktop_prepare-3faa510d49f2437193e140ebfcfe0d3a.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-desktop_prepare-d17ea7ffe5434a5e952a1570c5be3e21.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-desktop_prepare-fac20825da17480c8a117ced2bec5687.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-display_scale-5484e51ee85a46c18cdbd0e11f943fd6.json",
+      "size": 492,
+      "sha256": "3cc9a5e5918c48b6a16cb99f9d8613cdab6cfc9632c309d78aaf64af416ea314"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-display_scale-9fff6df8f9834afa82f7d1a7b25780fc.json",
+      "size": 492,
+      "sha256": "86c77f66565b4aff63edc4b2fdc21f496f9a52f09db7951c7a449852712dc139"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-display_scale-afa5d5dd0943460784f64caea248fb04.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-display_scale-ce9c45dc77d046dea2e326be9fb143da.json",
+      "size": 491,
+      "sha256": "aaf90bd0456003788b2bb1b244e28fbc612704e737db37f13d8290cc192119f0"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-editor-6d58a55c5f564f8ab1f0a3192667f30b.json",
+      "size": 969,
+      "sha256": "bd93ff83e002068a0248714c4485f93ed80ecf0067d866a51a3c63cfd5b82008"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-keyboard-41054dbcc7f142349893a17552600a02.json",
+      "size": 1229,
+      "sha256": "c96d35bc2013dd381718a3ee35e574fb34e5958adb7749def8c3791a82ad40c2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-picker-1f987717602242bd8795f6c650bbdfb5.json",
+      "size": 746,
+      "sha256": "6bd6331bb58559c10797b32545e896bb987b12e7ece6a875c7dd30ac03daf4bf"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/access-picker-9e51e21a13014a8d80ef7361a49d2af0.json",
+      "size": 748,
+      "sha256": "210833755c127078c9b1629072fc9591da3e67681471a3bec3966309753c7042"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "10a89201a8a47109ca1979cea519e2064556e5eb0c4833021094446bfa9d3115"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/component-faults.json",
+      "size": 178,
+      "sha256": "64c8c521240914535423d47d308b9ac2bf0731d7758242aae64f2d937b9db3c6"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "e2d9d5ad331af1697dac0ab31a4269955414651a23cc6873854ea75a1471ffbf"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/editor-save-observation.json",
+      "size": 122,
+      "sha256": "f706b14e1d56d875d2d1a88c51c476039d5ec3732e848d8cb244a27c3d440844"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/file-workload.json",
+      "size": 173,
+      "sha256": "6ac544cfb5cad0f3b2b4962b9117d9de6b40391526982d1d4129e6780e3ad765"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/gui-workflow.json",
+      "size": 164,
+      "sha256": "21da00d4e84e974caff44c50d0eacb5cc20d0fcd1677a83ecaf5582d7b37857b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/initial-desktop-preparation.json",
+      "size": 387,
+      "sha256": "a18e03080370d56240598921fa095e6db2159a7141fc428968eea8224e63daf2"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "f312b51dc3ae6a80f7f55f17a105cf2de7ee1db5f501c1f6f5751ae0fa253c87"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/last-native-refusal.json",
+      "size": 170,
+      "sha256": "76c4abf9d51eba978b698a19e0b4e493be6f5018617ef96ea00b30cc39b21ee6"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/launch-performance.json",
+      "size": 269,
+      "sha256": "0f034a8f550323a2c2516badfdbadc7a6b94c60e8fcc3750da751640d6cfc814"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "117f41008b7aa6b9ebc8c6f4cf4989260e7da21571edbf69d75e727f2f73a36d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "b99b9294237c6904563ea2eeaa2fe884b89c703e22efc90fb3c109206ad834bd"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/owned-policy-observations.json",
+      "size": 1534,
+      "sha256": "4ab6804e6d3534974ce894fb79418c507a5c4115b085722e143d70c85f3fa6c9"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/performance-budget-assessment.json",
+      "size": 1366,
+      "sha256": "65c53cbce76a1301c6f18d7183d7da8c42e923b4000f53321c4d4ddd3b7581e7"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/performance.json",
+      "size": 1267,
+      "sha256": "980f256cafccab1c3255ac1ff99a24262a842e0e06c4acb360071a553e6f4f70"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-007239fcdf5e404b86b6f82b27361308.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-0665b7eb20374bf0843f787357d2c5ff.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-0848c403483148158a4567e89703e71d.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-0a18410e0cb8484c84d189e70f4e0eb1.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-110e114876c243488355958e7742227e.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-114d64871a664511a9367709ee9df88d.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-1152dba351994310ab723a4d94e07e34.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-13489453e6934c0e8c191eddd3624c30.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-155b33383c764c92922de3d419c97282.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-178b320719314228889b0ce8b0bfb1bb.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-17f94e5229704745af2808ca16f95fce.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-1869f484caa24c70995e0a03201cd91a.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-18f0b4dae7d5462fa4cf8c85b62f7c1b.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-1954879b435b459b932aa6703bc8408f.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-19f2e05d97db4a02a383308f423b90e0.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-210892dcf48c42c9abe7925d9e4aa673.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-213f3e7700a3429eb88faec8328b85aa.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-239d1a0835884c1dafd8cfe77bd15a6f.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-2732eb839f8c49adbf69ffdab7ebfc29.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-2741a284b9b94027b84c7e3a768cfb1b.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-2ca763916bee4ca08f2fff5f1c13bff1.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-313118fc3de64d9a999a8f95063f8e85.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-33e194fb784e4f50a5bd60f12656931e.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-35a5597338fd44ddb166736303b680c2.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-35ccde9d2d8c452bb704b3987607dae2.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-3af759e589cb4ebd83f6e15c5b7c9629.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-3ce5efdc17d54b7da37f5c127973fec6.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-3e53b8a25005416cbfa2164a2e48f1cc.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-3faf4469e55e41ac9fafac739342ad2f.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4327adc78f1e4d2aa0bc14eede9b9c1f.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-43c32a7bd0dd496e96b87cb67c21f69d.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-48a9cd4479064b78b932718627e3b5e9.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4934e84e0e504586885b29c4533aa8af.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4c06a2c36b2444a0bba1422155598f71.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4c5120b81551425eb8e4e77a4845d715.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4e4809754777418cbad8f7722e98e67c.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-4ef209c1e30d4f4b97c68af27608a32c.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-58e962d2a44845228136f777d9745dc0.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-5ca1bba34f91423f90128ba4b6bffccc.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-5e4453d0214a4c1baa4afd7c9c3ae98b.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-5ebacea01c9349ee938831b4c12ac518.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-5ee49066f9fd4100872b4bff30e65ce5.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-61119089b6ed4cca88a811577cf3f997.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-614ad2f217774d3f9eaa487a73e0979a.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-630945e9641049f4bc60c76331ea6007.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-642449c024054fc4b0798723b8e796eb.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-6425d591af2b4f41a3b5bdb117c8c4b9.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-65785b8ad2e1435b85e9eb729c7a3556.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-6ae59fb7d3a24062b48f728b5938c958.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-6ee6384d89024d4f923990c5716d97c8.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-6fa52120fbbc42c394ab2d1e057b548c.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-70c7b565404a4d60a6c243fc5555bf34.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-71abf57d80a246fb8a7601d53824b552.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-7293ccfc6c634df9be6471dc883ac98f.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-74905316e3b443879bd79f9eec5ca5e4.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-74a84586ab9a469ab91057567689a467.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-8064cebfeea3460a935ac4fe3781fd20.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-824340c877764d93be246b0a5b84583a.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-866aa8b24b9a4cd7906c412576e37339.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-8817782b7a4b403fb33a78f8788e80ca.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-88b8bc8abecb4bce92d65e40d05cca72.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-896708f3c2f54c3c83147b4e36fb43ba.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-8c85d98a7548458eace4f196bb29a0d9.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-90b5c86a57c14ccf9910943532d9deb6.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-9182b5260830491993fc2c70f2eba5cd.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-91f9fbc2d3794804a782f247ae417e42.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-973b75c2b5c44d938af1008f00d2ecbe.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-97e0a46d6aaa43edadc0c502d8e1d4df.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-9af5a42583984af2bd9ed645d903880c.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-9d2b04eedd624077ac60d94843de08f5.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-9e58d66ea32347a9a89a7e11a28d1785.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-9f6562056d9745f0aa031bad3f7c506a.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a5c30ecdc8b146bd8941893d55d7decc.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a5daaa1408e640ac94cc5c40157a356c.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a67976101fce4348a02c79f897da12f0.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a89babf5551145deb4c55dacee571106.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a907766061d64a73b233dc6408d9b5fc.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-a9f3dbc4fcbf47e09047acedb3a4d160.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-aa1fd2e823f1473f9ef98ac86447cb55.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-aa248acfcaa3471aab56d3812b8fa24d.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ac3f98d273464c3c929d93b2f9bb30a7.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ac70fe55cf9c49e6925e752f234ae888.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ae177a943d484b8aac1a9949de0edcb4.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b0c13ba909a0417194cc4b96abcb4326.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b12e514de7044c8eb5b120c1b50c67c9.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b30946b3d6ef4290b5a9e2118eb8f699.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b6537e1c605d4878aff7ccddcb822db6.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b7ee70e3fc744d019fae1f6919f92b55.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b8033240e87f456b87e3237688e88ee9.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b94542be53f04df9a898146ce299501c.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-b984ffa2768f4afa807715570afe10ed.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-c2d7f482cb7d45d3a91fbcb69ea1f162.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-c6c9553395a54683ad70c5d85f272974.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-cc829cdb9ee04982bb483a999499ff0b.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ccd9c5e934f84e20bdda555284ca863f.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ce7be014fc424982b71a44a81089415c.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-cfd83c18c3054866bf4161d22b309dfa.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-d14bc008a4d6486781b12488231650cd.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-d2d59b305a974469bb811e5999d59535.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-d9c73b2a260c4b0591ef8df11cee7a1c.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-daeaca7812784c5e8543fc4b1cf7fc4f.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-dcf5465d37714a05a519f519758519b9.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-dd5e5be4bf30446bbdcc27978f5e756b.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-e08e6fe4da8f4de09f207dfd231cae7d.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-e2acb61e9c4a45efa15f41a0db35c9ba.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-e2bcc8c9ccfd4389b6c24e1970a85e9e.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-e9099fadb9ca4a2e8979266fe67d80d0.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-eae514a3371948d19afca8769991ab8c.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-edad4698cb00456db27ce0ffca3aae44.json",
+      "size": 1481,
+      "sha256": "5479a05098fe6c1e38e55497ded3da530d9d6dc3ee61550fccb40f0415a8522b"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-eeb74acbdaec472d91e97934ce958756.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-f4cc689dbca7441689f9bba277c54a2e.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-f98a48c7b7a749268b4ffeeddf4ada6e.json",
+      "size": 1518,
+      "sha256": "98ee779649ac0616b5f9b4fb0ee982eaf074a37447a7fa98986af969f8a1c335"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ffbae7fe4b814d6aa75b6c1b08ebc5b0.json",
+      "size": 1518,
+      "sha256": "96a13e64dc7af8030f87f36764a269d76e7e65e7a804e84ffc198f868156cf5d"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-evidence-ffca329bc3e64e3bafd70dbe4a10e7cc.json",
+      "size": 1481,
+      "sha256": "ca5c3fccb7ef5840197763ec23f013b0ed99fe1a925c1758313124138fc1907f"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-007239fcdf5e404b86b6f82b27361308.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-0665b7eb20374bf0843f787357d2c5ff.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-0848c403483148158a4567e89703e71d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-0a18410e0cb8484c84d189e70f4e0eb1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-110e114876c243488355958e7742227e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-114d64871a664511a9367709ee9df88d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-1152dba351994310ab723a4d94e07e34.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-13489453e6934c0e8c191eddd3624c30.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-155b33383c764c92922de3d419c97282.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-178b320719314228889b0ce8b0bfb1bb.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-17f94e5229704745af2808ca16f95fce.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-1869f484caa24c70995e0a03201cd91a.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-18f0b4dae7d5462fa4cf8c85b62f7c1b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-1954879b435b459b932aa6703bc8408f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-19f2e05d97db4a02a383308f423b90e0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-210892dcf48c42c9abe7925d9e4aa673.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-213f3e7700a3429eb88faec8328b85aa.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-239d1a0835884c1dafd8cfe77bd15a6f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-2732eb839f8c49adbf69ffdab7ebfc29.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-2741a284b9b94027b84c7e3a768cfb1b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-2ca763916bee4ca08f2fff5f1c13bff1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-313118fc3de64d9a999a8f95063f8e85.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-33e194fb784e4f50a5bd60f12656931e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-35a5597338fd44ddb166736303b680c2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-35ccde9d2d8c452bb704b3987607dae2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-3af759e589cb4ebd83f6e15c5b7c9629.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-3ce5efdc17d54b7da37f5c127973fec6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-3e53b8a25005416cbfa2164a2e48f1cc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-3faf4469e55e41ac9fafac739342ad2f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4327adc78f1e4d2aa0bc14eede9b9c1f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-43c32a7bd0dd496e96b87cb67c21f69d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-48a9cd4479064b78b932718627e3b5e9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4934e84e0e504586885b29c4533aa8af.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4c06a2c36b2444a0bba1422155598f71.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4c5120b81551425eb8e4e77a4845d715.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4e4809754777418cbad8f7722e98e67c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-4ef209c1e30d4f4b97c68af27608a32c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-58e962d2a44845228136f777d9745dc0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-5ca1bba34f91423f90128ba4b6bffccc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-5e4453d0214a4c1baa4afd7c9c3ae98b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-5ebacea01c9349ee938831b4c12ac518.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-5ee49066f9fd4100872b4bff30e65ce5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-61119089b6ed4cca88a811577cf3f997.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-614ad2f217774d3f9eaa487a73e0979a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-630945e9641049f4bc60c76331ea6007.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-642449c024054fc4b0798723b8e796eb.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-6425d591af2b4f41a3b5bdb117c8c4b9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-65785b8ad2e1435b85e9eb729c7a3556.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-6ae59fb7d3a24062b48f728b5938c958.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-6ee6384d89024d4f923990c5716d97c8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-6fa52120fbbc42c394ab2d1e057b548c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-70c7b565404a4d60a6c243fc5555bf34.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-71abf57d80a246fb8a7601d53824b552.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-7293ccfc6c634df9be6471dc883ac98f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-74905316e3b443879bd79f9eec5ca5e4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-74a84586ab9a469ab91057567689a467.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-8064cebfeea3460a935ac4fe3781fd20.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-824340c877764d93be246b0a5b84583a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-866aa8b24b9a4cd7906c412576e37339.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-8817782b7a4b403fb33a78f8788e80ca.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-88b8bc8abecb4bce92d65e40d05cca72.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-896708f3c2f54c3c83147b4e36fb43ba.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-8c85d98a7548458eace4f196bb29a0d9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-90b5c86a57c14ccf9910943532d9deb6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-9182b5260830491993fc2c70f2eba5cd.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-91f9fbc2d3794804a782f247ae417e42.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-973b75c2b5c44d938af1008f00d2ecbe.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-97e0a46d6aaa43edadc0c502d8e1d4df.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-9af5a42583984af2bd9ed645d903880c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-9d2b04eedd624077ac60d94843de08f5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-9e58d66ea32347a9a89a7e11a28d1785.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-9f6562056d9745f0aa031bad3f7c506a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a5c30ecdc8b146bd8941893d55d7decc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a5daaa1408e640ac94cc5c40157a356c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a67976101fce4348a02c79f897da12f0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a89babf5551145deb4c55dacee571106.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a907766061d64a73b233dc6408d9b5fc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-a9f3dbc4fcbf47e09047acedb3a4d160.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-aa1fd2e823f1473f9ef98ac86447cb55.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-aa248acfcaa3471aab56d3812b8fa24d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ac3f98d273464c3c929d93b2f9bb30a7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ac70fe55cf9c49e6925e752f234ae888.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ae177a943d484b8aac1a9949de0edcb4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b0c13ba909a0417194cc4b96abcb4326.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b12e514de7044c8eb5b120c1b50c67c9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b30946b3d6ef4290b5a9e2118eb8f699.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b6537e1c605d4878aff7ccddcb822db6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b7ee70e3fc744d019fae1f6919f92b55.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b8033240e87f456b87e3237688e88ee9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b94542be53f04df9a898146ce299501c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-b984ffa2768f4afa807715570afe10ed.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-c2d7f482cb7d45d3a91fbcb69ea1f162.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-c6c9553395a54683ad70c5d85f272974.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-cc829cdb9ee04982bb483a999499ff0b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ccd9c5e934f84e20bdda555284ca863f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ce7be014fc424982b71a44a81089415c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-cfd83c18c3054866bf4161d22b309dfa.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-d14bc008a4d6486781b12488231650cd.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-d2d59b305a974469bb811e5999d59535.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-d9c73b2a260c4b0591ef8df11cee7a1c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-daeaca7812784c5e8543fc4b1cf7fc4f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-dcf5465d37714a05a519f519758519b9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-dd5e5be4bf30446bbdcc27978f5e756b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-e08e6fe4da8f4de09f207dfd231cae7d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-e2acb61e9c4a45efa15f41a0db35c9ba.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-e2bcc8c9ccfd4389b6c24e1970a85e9e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-e9099fadb9ca4a2e8979266fe67d80d0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-eae514a3371948d19afca8769991ab8c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-edad4698cb00456db27ce0ffca3aae44.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-eeb74acbdaec472d91e97934ce958756.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-f4cc689dbca7441689f9bba277c54a2e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-f98a48c7b7a749268b4ffeeddf4ada6e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ffbae7fe4b814d6aa75b6c1b08ebc5b0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/probe-result-ffca329bc3e64e3bafd70dbe4a10e7cc.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/process-update.json",
+      "size": 124,
+      "sha256": "ffce703e587846e9599e7f538b3e622d8ed03ad125977eae7cdb85761cecd9b4"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/product-cases.json",
+      "size": 9201,
+      "sha256": "1e564f1ffa9f330253aecce9a0872aeb974ea9f27debd790142084e11f222040"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/run-summary.json",
+      "size": 663,
+      "sha256": "cbb294aea03099553addf7ee7614d84e0dfc71eff1015ec35c17071a58f6579c"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "96e787781ad76e4b3426bdc90fe5d0dce690eb3935df734affbc57b3fa751fda"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/standard-product.json",
+      "size": 392,
+      "sha256": "52a905bf8ba90fc81d2f6e8c40fe7de2030921277f48663e4e8bbefa63f880be"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/startup-accessibility.json",
+      "size": 607,
+      "sha256": "a4bdf3fc2c985d3cfa16aab095918f717f5bc13dbdcb2120b8203a12b9dd88bc"
+    },
+    {
+      "path": "investigation-b04a766-full/windows-2025/ui-cases.json",
+      "size": 8942,
+      "sha256": "3d461b2b032d61a4758c87bb5d9c2ef6a21a1d239636b06ede26e68f9a254ccf"
     }
   ],
   "note": "P09 remains incomplete. Current candidate b04a766 has passed both standalone display fixtures; full application and reference workload proof plus matching P03-P08 retention remain pending. Historical passing native builds or failed/cancelled investigations cannot close the gate.",
@@ -42025,6 +45845,20 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38851311019",
       "result": "PASSED",
       "note": "Both fixed-channel display diagnostics passed initial preparation acknowledgement and actual 100/150/200/100 DPI requests. Fixture-only proof."
+    },
+    {
+      "tested_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+      "run_id": 38851312530,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38851312530",
+      "result": "FAILED",
+      "note": "Both targets proved all 10000 files on 79 pages and all 88 UI assertions. Native input, secret selection and editor/browser application proof remained incomplete."
+    },
+    {
+      "tested_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+      "run_id": 38851310774,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38851310774",
+      "result": "FAILED",
+      "note": "Server completed the full reference workload but retained mandatory GUI/app failures and measured budget deviations. ARM stopped at CREATE 10 with an unreviewed system image and an unassociated WerFault; no full ARM resource sample."
     }
   ]
 }

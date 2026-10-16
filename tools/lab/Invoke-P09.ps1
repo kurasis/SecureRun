@@ -1,6 +1,7 @@
 ﻿[CmdletBinding()]
-param([switch]$Focused,[switch]$LayoutOnly)
-if($LayoutOnly){$Focused=$true}
+param([switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly)
+if($LayoutOnly -and $AppsOnly){throw 'P09_DIAGNOSTIC_MODE_CONFLICT'}
+if($LayoutOnly -or $AppsOnly){$Focused=$true}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path;$out=Join-Path $repo 'artifacts/p09';$null=New-Item -ItemType Directory -Path $out -Force;$commit=(& git -C $repo rev-parse HEAD).Trim();$labStarted=[DateTime]::UtcNow
@@ -71,6 +72,7 @@ try {
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p09_standard.ps1'),'-Manager',$app,'-Fixture',$owned,'-EngineHome',$engine,'-Commit',$commit)){$start.ArgumentList.Add($arg)}
  if($Focused){$start.ArgumentList.Add('-Focused')}
  if($LayoutOnly){$start.ArgumentList.Add('-LayoutOnly')}
+ if($AppsOnly){$start.ArgumentList.Add('-AppsOnly')}
  $display=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$display.UseShellExecute=$false;$display.CreateNoWindow=$true;$display.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$displayPrefix,'-ResultFile',(Join-Path $out 'display-controller'))){$display.ArgumentList.Add($arg)}
  $display.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP','ProgramFiles','ProgramW6432')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$display.Environment[$key]=$value}};$display.Environment['GITHUB_ACTIONS']='true'
@@ -102,7 +104,7 @@ try {
   $budgetStatus=(Get-Content (Join-Path $out 'performance-budget-assessment.json') -Raw|ConvertFrom-Json).status
  }
  if(-not $Focused -and $result.status -eq 'PASSED' -and $budgetStatus -eq 'NOT_MEASURED'){throw 'P09_PERFORMANCE_PROOF_MISSING'}
- $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;engineering_budget_status=$budgetStatus;standard_user=$true;real_normal_webview=$true;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
+ $summary=@{phase='P09';result=$(if($actor.ExitCode -eq 0 -and $result.status -eq 'PASSED'){'PASSED'}else{'FAILED'});manager_commit=$commit;manager_binary_sha256=$managerHash;build='release';pe_machine=$(if($env:PROCESSOR_ARCHITECTURE -eq 'ARM64'){'aa64'}else{'8664'});os_build=[Environment]::OSVersion.Version.Build;engineering_budget_status=$budgetStatus;standard_user=$true;real_normal_webview=(-not [bool]$AppsOnly);apps_only=[bool]$AppsOnly;synthetic_profiles_only=$true;browser_sandbox_disabled=$false;os_security_settings_modified=$false;elevated_product_helper=$false}
  foreach($field in @('native_cases_passed','failed','ui_cases_passed','ui_failed')){$summary[$field]=if($result.PSObject.Properties[$field]){$result.$field}else{-1}}
  $summary|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
  $summary.workload_mode=if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'}

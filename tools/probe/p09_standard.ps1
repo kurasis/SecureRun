@@ -1,4 +1,4 @@
-﻿param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly)
+﻿param([string]$Manager,[string]$EngineHome,[string]$Fixture,[string]$Commit,[switch]$Focused,[switch]$LayoutOnly,[switch]$AppsOnly)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $cases=[Collections.Generic.List[object]]::new();$script:uiCases=[Collections.Generic.List[object]]::new();$script:lastUi=$null;$script:stage='INITIALIZING';$script:capturesClean=$true;$script:failureCode=$null;$script:browserGuiPid=0;$script:browserReceipt=$null
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
@@ -118,6 +118,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  }
  # Prewarm the UIA provider before timing the normal manager, without an inspector.
  $null=Access 'DESKTOP_PREPARE' 0
+ if(-not $AppsOnly){
  $startupCase=if($Focused){'normal_manager_startup_diagnostic_only'}else{'normal_manager_startup_and_complete_process_group_idle_measurement'}
  function Startup-Trace {
   $trace=[IO.FileStream]::new((Join-Path $Fixture 'normal-manager.log'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
@@ -267,6 +268,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   foreach($path in $paths){$bytes=[IO.File]::ReadAllBytes($path);Require (Clean ([Text.Encoding]::UTF8.GetString($bytes))) 'P09_SECRET_IN_LOCAL_HISTORY';Require (Clean ([Text.Encoding]::Unicode.GetString($bytes))) 'P09_SECRET_IN_LOCAL_UTF16_CAPTURE'}
   Require $script:capturesClean 'P09_SECRET_IN_NATIVE_CAPTURE';@{persistent_history_present=$true;local_history_and_wal_scanned=$true;normal_manager_stderr_scanned=$true;inspected_manager_stderr_scanned=$true;native_worker_error_capture_scanned=$true;utf8_and_utf16_scanned=$true;argv_environment_error_canaries_absent=$true;untrusted_text_cannot_add_event_fields=$true}
  }
+ }
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash
   $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps $editor
@@ -334,7 +336,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   $measurement|ConvertTo-Json|Set-Content (Join-Path $results 'launch-performance.json') -Encoding utf8;$measurement
  }
  $failed=@($cases|Where-Object status -ne 'PASSED').Count;$uiFailed=@($script:uiCases|Where-Object {-not $_.passed}).Count
- @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
+ @{status=$(if($failed -eq 0 -and $uiFailed -eq 0){$(if($Focused){'DIAGNOSTIC_ONLY'}else{'PASSED'})}else{'FAILED'});workload_mode=$(if($Focused){'DIAGNOSTIC_ONLY'}else{'FULL'});apps_only=[bool]$AppsOnly;normal_gui_manager_exercised=(-not [bool]$AppsOnly);standard_user=$true;manager_commit=$Commit;native_cases_passed=@($cases|Where-Object status -eq 'PASSED').Count;failed=$failed;ui_cases_passed=@($script:uiCases|Where-Object passed).Count;ui_failed=$uiFailed;normal_production_binary=$true;os_security_settings_modified=$false;browser_sandbox_disabled=$false;synthetic_profiles_only=$true}|ConvertTo-Json -Depth 6|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8
  Save;if($failed -ne 0 -or $uiFailed -ne 0){exit 1}
 }catch{
  @{status='FAILED';standard_user=$true;stage=$script:stage;code=$(if($script:failureCode){$script:failureCode}else{'P09_ACTOR_FAILED'});exception_type=$_.Exception.GetBaseException().GetType().FullName;line=$_.InvocationInfo.ScriptLineNumber;manager_commit=$Commit}|ConvertTo-Json|Set-Content (Join-Path $results 'standard-product.json') -Encoding utf8;Save;exit 1

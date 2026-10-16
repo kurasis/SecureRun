@@ -1,0 +1,15 @@
+{
+  "phase": "P04",
+  "production_mutations": 0,
+  "os_build": "10.0.26100.0",
+  "manager_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+  "result": "FAILED",
+  "os_security_settings_modified": false,
+  "native_cases_passed": 18,
+  "production_target_launches": 0,
+  "manager_binary_sha256": "5510807f861e6dad66200d59b8f773c2a1930ff6faa5c1e237423d55c287ad36",
+  "target": "x86_64-pc-windows-msvc",
+  "adapter_tests_passed": 61,
+  "teardown": "DISCARD_ACTIONS_VM",
+  "pe_machine": "8664"
+}

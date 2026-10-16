@@ -510,3 +510,28 @@ notification immediately and uses a single freshness-expiry timer instead of
 periodic full UI clock rendering. Readonly control refresh is 14 seconds within
 its unchanged 15-second validity. Native activity, worker framing, mutation guards
 and full reference budgets are unchanged; no passing performance claim is made.
+
+Focused `ba8b1cf` preserved both native manager keyboard/role checks on Server,
+all 78 applicable UI assertions, real persistent-history presence/secret scanning,
+archive round trip, main browser isolation and the actual launch-overhead bound.
+Picker filename and editor/browser automation still failed; their cases remain
+mandatory. Pinned upstream `guiclass.c` confirms `Sandbox:<box>:` window-class
+names. The editor now recognizes only that exact independently selected box's
+Scintilla class, in addition to the original unprefixed class. The native picker
+may use only its fixed filename IDs/ancestry and owned enabled IDOK button, with
+exact text readback; the production picker lease/capability checks stay intact.
+
+Browser canary documents are explicitly loaded and their native titles observed.
+When a provider is unavailable, physical Tab/Enter activates their single link;
+child traffic must increase after the action and still pass live socket/driver
+attribution. The protocol case uses a real boxed HTTP page/hyperlink, retains
+Firefox's warning, and may send one explicit Enter confirmation only in that
+owned synthetic browser. The actual handler must execute boxed with no host
+marker. about:support is read through its clipboard JSON button or actual rendered
+text; only the positive effective content-sandbox level and source kind survive.
+Raw support content is never retained and the clipboard is cleared. These lab
+paths neither dispatch the helper directly nor disable a browser security option.
+The fixture uses WindowFromPhysicalPoint for UIA's documented physical screen
+coordinates on both architectures. Native owner/provider agreement remains
+mandatory; the change does not accept a foreign window or translate an unknown
+hit into success. Only a boolean native-bounds comparison is added to failures.

@@ -93,7 +93,7 @@ def check_target(folder, commit, machine):
         'local_history_and_debug_error_capture_remain_minimized': ('persistent_history_present', 'local_history_and_wal_scanned', 'normal_manager_stderr_scanned', 'inspected_manager_stderr_scanned', 'native_worker_error_capture_scanned', 'utf8_and_utf16_scanned', 'argv_environment_error_canaries_absent'),
         'official_editor_saves_boxed_document_without_host_write': ('real_gui_editor', 'actual_keyboard_edit_and_save', 'original_driver_member_observed', 'boxed_saved_bytes_verified', 'host_input_unchanged', 'host_output_absent'),
         'official_archive_gui_and_create_extract_round_trip': ('official_gui_observed_boxed', 'actual_archive_created', 'actual_archive_extracted', 'round_trip_sha256_matches', 'host_input_unchanged', 'host_zip_and_extraction_absent'),
-        'browser_reachable_protocol_handler_does_not_escape': ('real_browser_address_action', 'host_protocol_positive_control', 'original_registered_handler_fixture', 'reachable_handler_executed_boxed', 'host_marker_absent'),
+        'browser_reachable_protocol_handler_does_not_escape': ('real_browser_address_action', 'actual_boxed_protocol_link_page', 'host_protocol_positive_control', 'original_registered_handler_fixture', 'reachable_handler_executed_boxed', 'host_marker_absent'),
     }
     for name, fields in keys.items():
         if not all(by_name[name][field] is True for field in fields):

@@ -22,9 +22,10 @@ public sealed class P09Browser : IDisposable {
  [DllImport("iphlpapi.dll")] static extern uint GetExtendedTcpTable(IntPtr table,ref int length,bool sorted,int family,int tableClass,uint reserved);
  [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate int Query(IntPtr pid,uint imageChars,StringBuilder box,StringBuilder image,StringBuilder sid,out uint session,out long born);
  readonly IntPtr module;readonly Query query;readonly TcpListener listener;readonly Thread thread;readonly string box,sid,nonce;
- readonly List<Dictionary<string,object>> records=new List<Dictionary<string,object>>();volatile bool stopping;
+ string protocolNonce="";readonly List<Dictionary<string,object>> records=new List<Dictionary<string,object>>();volatile bool stopping;
  public int Port {get{return ((IPEndPoint)listener.LocalEndpoint).Port;}}
  public string MainUri {get{return "http://127.0.0.1:"+Port+"/main/"+nonce;}}
+ public string ProtocolPage(string token){if(!Guid.TryParse(token,out _))throw new InvalidOperationException("P09_PROTOCOL_NONCE_INVALID");lock(records)protocolNonce=token;return "http://127.0.0.1:"+Port+"/protocol/"+token;}
  public P09Browser(string home,string expectedBox,string token) {
   if(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true"||!System.Text.RegularExpressions.Regex.IsMatch(expectedBox,@"\ASR_[0-9a-f]{32}\z")||!Guid.TryParse(token,out _))throw new InvalidOperationException("P09_BROWSER_LAB_SCOPE_REQUIRED");
   box=expectedBox;nonce=token;sid=WindowsIdentity.GetCurrent().User.Value;module=LoadLibraryEx(Path.Combine(home,"SbieDll.dll"),IntPtr.Zero,0x900);if(module==IntPtr.Zero)throw new InvalidOperationException("P09_ORIGINAL_SDK_MISSING");
@@ -51,10 +52,10 @@ public sealed class P09Browser : IDisposable {
   while(!stopping){try{using(TcpClient client=listener.AcceptTcpClient()){
    client.ReceiveTimeout=5000;client.SendTimeout=5000;var remote=(IPEndPoint)client.Client.RemoteEndPoint;using(NetworkStream stream=client.GetStream()){
     byte[] buffer=new byte[8192];int size=0;while(size<buffer.Length){int n=stream.Read(buffer,size,buffer.Length-size);if(n==0)break;size+=n;if(Encoding.ASCII.GetString(buffer,0,size).Contains("\r\n\r\n"))break;}
-    string request=Encoding.ASCII.GetString(buffer,0,size),path=request.Split(' ').Length>1?request.Split(' ')[1]:"";bool host=path=="/host/"+nonce,main=path=="/main/"+nonce,child=path=="/child/"+nonce;var record=(host||main||child)?Attribution(Owner(remote.Port,Port),!host):new Dictionary<string,object>();
-    record["request_kind"]=host?"HOST_POSITIVE_CONTROL":main?"BOXED_MAIN":child?"BOXED_CHILD":"AUXILIARY";record["host_profile_cookie_present"]=request.Contains("P09_HOST_COOKIE=");
-    if(host||main||child)lock(records)records.Add(record);
-    string page="<!doctype html><meta charset=utf-8><title>P09 browser canary</title><h1>P09 browser canary</h1><a target=_blank href=/child/"+nonce+">Open boxed child</a>";
+    string request=Encoding.ASCII.GetString(buffer,0,size),path=request.Split(' ').Length>1?request.Split(' ')[1]:"";string challenge;lock(records)challenge=protocolNonce;bool host=path=="/host/"+nonce,main=path=="/main/"+nonce,child=path=="/child/"+nonce,protocol=challenge!=""&&path=="/protocol/"+challenge;var record=(host||main||child||protocol)?Attribution(Owner(remote.Port,Port),!host):new Dictionary<string,object>();
+    record["request_kind"]=host?"HOST_POSITIVE_CONTROL":main?"BOXED_MAIN":child?"BOXED_CHILD":protocol?"BOXED_PROTOCOL_PAGE":"AUXILIARY";record["host_profile_cookie_present"]=request.Contains("P09_HOST_COOKIE=");
+    if(host||main||child||protocol)lock(records)records.Add(record);
+    string page=protocol?"<!doctype html><meta charset=utf-8><title>P09 protocol canary</title><h1>P09 protocol canary</h1><a href=securerun-p09:"+challenge+">Open synthetic handler</a>":"<!doctype html><meta charset=utf-8><title>P09 browser canary</title><h1>P09 browser canary</h1><a target=_blank href=/child/"+nonce+">Open boxed child</a>";
     string header="HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nCache-Control: no-store\r\nConnection: close\r\n"+(host?"Set-Cookie: P09_HOST_COOKIE=CANARY; Path=/; SameSite=Lax\r\n":"")+"Content-Length: "+Encoding.UTF8.GetByteCount(page)+"\r\n\r\n";
     byte[] response=Encoding.UTF8.GetBytes(header+page);stream.Write(response,0,response.Length);
    }

@@ -33,3 +33,10 @@ unsigned; Notepad++ and Firefox executable signatures must validate.
 
 The authoritative result is the [P09 manifest](evidence/p09/manifest.json), which
 must reference successful immutable evidence on both targets and matching source.
+
+The window-class convention used by the editor fixture is verified against
+[pinned upstream guiclass.c](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/core/dll/guiclass.c#L124).
+Only the expected native member's exact box prefix is accepted. The browser
+protocol fixture activates a real HTTP canary link, and its own sandbox level is
+read from actual about:support JSON or rendered text. Raw support content is not
+retained. These automation corrections still require actual successful results.

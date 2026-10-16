@@ -35,10 +35,11 @@ function Wait-Launched($Receipt){
  # A process already completed/reused before a handle could be held has an
  # unknown exit code. Actual boxed output and unchanged-host checks still follow.
 }
-function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0){
+function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',[switch]$Async,[int]$Scale=0,[string]$Box=''){
  $result=Join-Path $results ('access-'+$Mode.ToLowerInvariant()+'-'+[Guid]::NewGuid().ToString('N')+'.json');$ps=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$ps.UseShellExecute=$false;$ps.CreateNoWindow=$true;$ps.WorkingDirectory=$EngineHome
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $PSScriptRoot 'p09_accessibility.ps1'),'-Mode',$Mode,'-ManagerPid',[string]$ProcessId,'-ResultFile',$result)){$ps.ArgumentList.Add($arg)}
  if($Path){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-EnvironmentId'}else{'-SelectedPath'}));$ps.ArgumentList.Add($Path)};if($Uri){$ps.ArgumentList.Add($(if($Mode -eq 'CONFIRM'){'-Intent'}else{'-ProtocolUri'}));$ps.ArgumentList.Add($Uri)}
+ if($Box){$ps.ArgumentList.Add('-ExpectedBox');$ps.ArgumentList.Add($Box)}
  if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
  try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
@@ -235,7 +236,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash
   $application=Register-App $apps 'P09 official editor' $editor @('-multiInst','-nosession','-noPlugin',$inputFile);$receipt=Launch-App $apps $application;$pidValue=Wait-GuiPid $apps $editor
-  $access=Access 'EDITOR' $pidValue $outputFile;Start-Sleep -Milliseconds 500;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
+  $access=Access 'EDITOR' $pidValue $outputFile -Box ('SR_'+$apps.id.Replace('-',''));Start-Sleep -Milliseconds 500;Stop-Box $apps;$null=Native @{action='RECONCILE';operation_id=$receipt.operation_id} 'control'
   $saved=Find-BoxFile $apps 'editor-output.txt';Require (([IO.File]::ReadAllText($saved.FullName)).Trim() -ceq 'P09_EDITOR_CANARY') 'P09_EDITOR_BYTES_DIFFER';Require (-not(Test-Path -LiteralPath $outputFile) -and (Get-FileHash -LiteralPath $inputFile).Hash -eq $before) 'P09_EDITOR_CHANGED_HOST'
   @{official_executable=$true;real_gui_editor=$true;actual_keyboard_edit_and_save=$access.real_keyboard_edit;original_driver_member_observed=$true;boxed_saved_bytes_verified=$true;host_input_unchanged=$true;host_output_absent=$true;clean_portable_profile=$true;plugins_and_host_update_integrations_outside_validated_workflow=$true}
  }
@@ -263,8 +264,8 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   @{preexisting_host_browser_verified=$true;separate_clean_profiles=$true;explicit_profile_and_no_remote=$true;actual_http_requests=$main;socket_owner_and_held_birth_verified=$true;host_profile_cookie_absent_in_boxed_request=$true;host_profile_read_blocked_by_reviewed_rule=$true;unboxed_handoff=$false;browser_sandbox_disabled=$false}
  }
  Case 'T41' 'browser_own_child_request_stays_boxed' {
-  Require ($null -ne $browserProof -and $script:browserGuiPid -gt 0) 'P09_BROWSER_PREREQUISITE_MISSING';$access=Access 'BROWSER_CHILD' $script:browserGuiPid '' $browserProof.MainUri
-  $clock=[Diagnostics.Stopwatch]::StartNew();do{$records=@($browserProof.Snapshot());$child=@($records|Where-Object {$_.request_kind -eq 'BOXED_CHILD'});if($child.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)
+  Require ($null -ne $browserProof -and $script:browserGuiPid -gt 0) 'P09_BROWSER_PREREQUISITE_MISSING';$before=@($browserProof.Snapshot()|Where-Object request_kind -eq 'BOXED_CHILD').Count;$access=Access 'BROWSER_CHILD' $script:browserGuiPid '' $browserProof.MainUri
+  $clock=[Diagnostics.Stopwatch]::StartNew();do{$records=@($browserProof.Snapshot());$child=@($records|Where-Object {$_.request_kind -eq 'BOXED_CHILD'}|Select-Object -Skip $before);if($child.Count -gt 0){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)
   Require ($child.Count -gt 0 -and @($child|Where-Object {-not $_.source_scope_verified -or -not $_.source_boxed}).Count -eq 0) 'P09_BROWSER_CHILD_NOT_BOXED'
   @{actual_browser_child_action=$access.actual_browser_child_action;actual_http_requests=$child;process_tree_alone_used_as_proof=$false;host_url_handoff=$false}
  }
@@ -273,12 +274,13 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
   $null=New-Item -Path $registry;$script:registryCreated=$true;Set-Item -LiteralPath $registry -Value 'URL:SecureRun P09 synthetic protocol';$null=New-ItemProperty -LiteralPath $registry -Name 'URL Protocol' -Value '' -PropertyType String;$null=New-Item -Path ($registry+'\shell\open\command') -Force;Set-Item -LiteralPath ($registry+'\shell\open\command') -Value ('"'+(Join-Path $productHome 'p09-protocol-probe.exe')+'" "%1"')
   $positive=[Guid]::NewGuid().ToString();$ps=[Diagnostics.ProcessStartInfo]::new(('securerun-p09:'+$positive));$ps.UseShellExecute=$true;$control=[Diagnostics.Process]::Start($ps);if($null -ne $control){$null=$control.WaitForExit(10000);$control.Dispose()}
   $clock=[Diagnostics.Stopwatch]::StartNew();$positivePath=Join-Path $protocolBase ($positive+'.json');while(-not(Test-Path -LiteralPath $positivePath) -and $clock.ElapsedMilliseconds -lt 15000){Start-Sleep -Milliseconds 100};Require (Test-Path -LiteralPath $positivePath) 'P09_HOST_PROTOCOL_POSITIVE_CONTROL_MISSING';$positiveProof=Get-Content -LiteralPath $positivePath -Raw|ConvertFrom-Json;Require ($positiveProof.invoked -and -not $positiveProof.boxed) 'P09_HOST_PROTOCOL_SCOPE_INVALID'
-  $nonce=[Guid]::NewGuid().ToString();$null=Access 'BROWSER_PROTOCOL' $script:browserGuiPid '' ('securerun-p09:'+$nonce)
+  $nonce=[Guid]::NewGuid().ToString();$protocolPage=$browserProof.ProtocolPage($nonce);$null=Access 'BROWSER_PROTOCOL' $script:browserGuiPid '' $protocolPage
+  $pageRequests=@($browserProof.Snapshot()|Where-Object request_kind -eq 'BOXED_PROTOCOL_PAGE');Require ($pageRequests.Count -gt 0 -and @($pageRequests|Where-Object {-not $_.source_scope_verified -or -not $_.source_boxed}).Count -eq 0) 'P09_PROTOCOL_PAGE_NOT_BOXED'
   $clock=[Diagnostics.Stopwatch]::StartNew();$root=$web.compiled.section.FileRootPath[0];$matches=@()
   do{$matches=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter ($nonce+'.json'));if($matches.Count -gt 0){break};Start-Sleep -Milliseconds 200}while($clock.ElapsedMilliseconds -lt 15000)
   Require (-not(Test-Path -LiteralPath (Join-Path $protocolBase ($nonce+'.json')))) 'P09_PROTOCOL_ESCAPED_TO_HOST'
   Require ($matches.Count -eq 1) 'P09_PROTOCOL_RESULT_NOT_OBSERVED';$proof=Get-Content -LiteralPath $matches[0].FullName -Raw|ConvertFrom-Json;Require ($proof.invoked -and $proof.boxed) 'P09_PROTOCOL_HELPER_NOT_BOXED'
-  @{real_browser_address_action=$true;host_protocol_positive_control=$true;original_registered_handler_fixture=$true;reachable_handler_executed_boxed=$true;host_marker_absent=$true;browser_sandbox_disable_flag=$false;generic_external_protocol_support_claimed=$false}
+  @{real_browser_address_action=$true;actual_boxed_protocol_link_page=$true;host_protocol_positive_control=$true;original_registered_handler_fixture=$true;reachable_handler_executed_boxed=$true;host_marker_absent=$true;browser_sandbox_disable_flag=$false;generic_external_protocol_support_claimed=$false}
  }
  Case 'T30' 'browser_own_content_sandbox_remains_enabled' {
   $r=Access 'BROWSER_SANDBOX' $script:browserGuiPid;Require ($r.browser_own_sandbox_enabled -and $r.effective_content_sandbox_level -gt 0) 'P09_BROWSER_SANDBOX_DISABLED'

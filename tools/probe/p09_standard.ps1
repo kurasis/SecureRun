@@ -52,7 +52,7 @@ function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',
  if($Box){$ps.ArgumentList.Add('-ExpectedBox');$ps.ArgumentList.Add($Box)}
  if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
- try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($p.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
+ try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;$expectedStatus=if($Mode -eq 'DESKTOP_PREPARE'){'OBSERVED'}else{'PASSED'};Require ($p.ExitCode -eq 0 -and $r.status -eq $expectedStatus) 'P09_ACCESSIBILITY_FAILED';return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
 function Complete-Access($Pending){try{Require ($Pending.process.WaitForExit(90000)) 'P09_PICKER_TIMEOUT';$r=Get-Content -LiteralPath $Pending.result -Raw|ConvertFrom-Json;Require ($Pending.process.ExitCode -eq 0 -and $r.status -eq 'PASSED') 'P09_NATIVE_PICKER_FAILED';return $r}finally{if(-not $Pending.process.HasExited){$Pending.process.Kill($true)};$Pending.process.Dispose()}}
 function Find-BoxFile($Environment,[string]$Name){$root=$Environment.compiled.section.FileRootPath[0];$found=@(Get-ChildItem -LiteralPath $root -Recurse -File -Filter $Name);Require ($found.Count -eq 1 -and $found[0].FullName.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) 'P09_BOXED_FILE_NOT_UNIQUE';return $found[0]}
@@ -68,6 +68,7 @@ try{
  foreach($name in @('p05_lab.cs','p09_desktop.cs','p09_browser.cs')){Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot $name)))}
  . (Join-Path $PSScriptRoot 'p09_cdp.ps1')
  $productHome=Split-Path $Manager;$lab=[P05Lab]::new($EngineHome,$Fixture,$productHome)
+ $null=Access 'DESKTOP_PREPARE' 0
  $editor=Join-Path $productHome 'applications/editor/notepad++.exe';$archive=Join-Path $productHome 'applications/archive/7z.exe';$browser=Join-Path $productHome 'applications/browser/core/firefox.exe'
  $hostProfile=Join-Path $Fixture 'host-browser-profile';$boxedProfile=Join-Path $Fixture 'boxed-browser-profile';$protocolBase=Join-Path $env:LOCALAPPDATA 'SecureRunP09Protocol';foreach($path in @($hostProfile,$boxedProfile,$protocolBase)){$null=New-Item -ItemType Directory -Path $path}
  $prefs=@'

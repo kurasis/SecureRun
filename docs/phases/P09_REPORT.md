@@ -741,3 +741,9 @@ P03–P08 all passed both targets at `ec2a16b` (runs `38842214153`,
 `38842216379`, `38842218236`, `38842220204`, `38842222263`, `38842224221`).
 Their reviewed original JSON remains retained. The next P09 fixture changes
 require matching final-source confirmation; no native runtime code changed.
+
+The desktop preparation helper returns OBSERVED for its setup observation; its
+caller now expects that exact setup status instead of a product-case PASSED. All
+other accessibility helpers still require PASSED. Preparation also runs before
+seeding to expose setup errors promptly, then repeats before the first GUI to
+catch delayed initial Windows prompts. Both invocations precede product targets.

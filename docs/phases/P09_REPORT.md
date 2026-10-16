@@ -4,6 +4,30 @@ Status: IN_PROGRESS. Requested scope: full P09 only.
 Dependency: P08 passed on both owner-selected Windows targets; its exact-source
 proof remains historical while P09 changes are validated.
 
+## Current gate result (2026-10-16)
+
+P09 is not complete. GitHub access is restored and all accumulated source fixes
+are published. Native build `38832871717` passed on both owner-selected targets
+at `a20086262818f7d6bf2336b9ac13bdfa8a0df10f`.
+Full run `38832871411` measured Server CPU 0.933806%, average aggregate working
+set 227853246 bytes and startup 7276.6343 ms across ten actual idle environments
+and 10,000 files. CPU and memory passed; startup exceeded the 3000 ms limit.
+ARM refused CREATE 3 after an online incoming IPv4 TCP control failed; all other
+incoming channels and outbound controls succeeded. The refusal remains intact.
+
+Focused run `38832870730` measured added launch latency 415 ms on Server and
+658 ms on ARM, both below 1000 ms. Four-environment resource samples are
+investigations only. Archive GUI round trips, primary browser host-instance
+isolation, persistent history and actual bilingual layout checks have passed.
+Remaining blockers include actual native input ownership on ARM, editor Save As,
+child/protocol/about:support browser actions, subsequent transfer/lifecycle UX,
+startup, a complete ARM reference run, and matching P03–P08 final-source proof.
+
+Runs `38836905004` (focused, `9b3acd8`) and `38837115647` (focused, `d009cbe`)
+exercise the next fixture fixes; the full workflow also runs on both targets.
+Reviewed original JSON from six additional investigations is retained with exact
+byte hashes. None counts as a passed phase gate. P10 remains NOT_STARTED.
+
 ## Implementation underway
 
 The product groups real owned environments into Applications, Processes, Files,

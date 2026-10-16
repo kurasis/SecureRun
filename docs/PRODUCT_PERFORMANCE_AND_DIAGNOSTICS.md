@@ -4,7 +4,7 @@ The full workload has not passed its budgets. Normal release runs measured:
 
 | Full reference run | Runner | Startup ms | Complete-job CPU % | Average working set bytes | Result |
 |---|---|---:|---:|---:|---|
-| `38826421020`, `c2f9b5a` | Server | 3964.3166 | 1.619035775 | 232745677 | Memory passed; startup and CPU failed |
+| `38832871411`, `a200862` | Server | 7276.6343 | 0.933806135 | 227853246 | CPU and memory passed; startup failed |
 | `38817227183`, `989d3e5` | ARM | 2950.5122 | 1.674621032 | 247723349 | Startup and memory passed; CPU failed |
 
 Each full sample uses ten actual idle environments, 10,000 files and at least

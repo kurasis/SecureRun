@@ -1,0 +1,230 @@
+[
+  {
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "id": "T32",
+    "evidence": {
+      "no_recursive_data_deletion": true,
+      "retention_limit": 256,
+      "retained_diagnostics": 20,
+      "completed_definition_count": 0,
+      "synthetic_reports_unchanged": true,
+      "root_data_retained": true,
+      "all_successful_definitions_retired": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "code": "NAMESPACE_OPERATION_BUSY",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "normal_manager_startup_diagnostic_only",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T32"
+  },
+  {
+    "name": "actual_normal_webview_environment_navigation",
+    "id": "T32",
+    "evidence": {
+      "mock_state": false,
+      "ten_owned_environments": false,
+      "real_backend": true,
+      "normal_production_binary": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "id": "T32",
+    "evidence": {
+      "metadata_only": true,
+      "policy_and_generation_unchanged": true,
+      "permanent_replay_tombstone": true,
+      "actual_product_ui": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "id": "T32",
+    "evidence": {
+      "accessible_labels_and_roles": true,
+      "native_window_dpi": 96,
+      "tab_order_actual": true,
+      "native_invoke_changed_page": true,
+      "real_windows_uia": true,
+      "f6_navigation_actual": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "id": "T32",
+    "evidence": {
+      "labeled_comboboxes": 3,
+      "actual_native_webview_zoom": true,
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "os_display_setting_modified": false,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "real_chromium_accessibility_tree": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "id": "T32",
+    "evidence": {
+      "content_scale_percent": 100,
+      "native_dpi_observations": [
+        {
+          "percent": 100,
+          "native_window_dpi": 96
+        },
+        {
+          "percent": 150,
+          "native_window_dpi": 144
+        },
+        {
+          "percent": 200,
+          "native_window_dpi": 192
+        }
+      ],
+      "actual_windows_display_changes": true,
+      "os_security_settings_modified": false,
+      "production_manager_window_measured": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "real_process_activity_update_latency",
+    "id": "T32",
+    "evidence": {
+      "update_upper_bound_ms": 533.1999999999534,
+      "real_external_boxed_member": true,
+      "refresh_interval_ms": 1000
+    },
+    "status": "PASSED"
+  },
+  {
+    "code": "NAMESPACE_OPERATION_BUSY",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "running_policy_diff_queue_requires_explicit_stopped_apply",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T32"
+  },
+  {
+    "name": "local_history_and_debug_error_capture_remain_minimized",
+    "id": "T66",
+    "evidence": {
+      "argv_environment_error_canaries_absent": true,
+      "normal_manager_stderr_scanned": true,
+      "utf8_and_utf16_scanned": true,
+      "inspected_manager_stderr_scanned": true,
+      "untrusted_text_cannot_add_event_fields": true,
+      "native_worker_error_capture_scanned": true,
+      "local_history_and_wal_scanned": true,
+      "persistent_history_present": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "official_editor_saves_boxed_document_without_host_write",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T30"
+  },
+  {
+    "name": "official_archive_gui_and_create_extract_round_trip",
+    "id": "T30",
+    "evidence": {
+      "engine_hooks_or_security_exceptions_added": false,
+      "gui_operation_executable_sha256": "363fb45bb3ea1cab98ae5ab4a564c859277ee668e58c08ffd2ecb6fe9afcd534",
+      "round_trip_sha256_matches": true,
+      "host_input_unchanged": true,
+      "actual_archive_created": true,
+      "official_gui_observed_boxed": true,
+      "actual_archive_extracted": true,
+      "host_zip_and_extraction_absent": true,
+      "actual_gui_create_and_extract": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "id": "T41",
+    "evidence": {
+      "explicit_profile_and_no_remote": true,
+      "preexisting_host_browser_verified": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "separate_clean_profiles": true,
+      "unboxed_handoff": false,
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "browser_sandbox_disabled": false,
+      "socket_owner_and_held_birth_verified": true,
+      "host_profile_cookie_absent_in_boxed_request": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_child_request_stays_boxed",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T41"
+  },
+  {
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T41"
+  },
+  {
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "status": "FAILED",
+    "line": 14,
+    "id": "T30"
+  },
+  {
+    "name": "launch_overhead_observed_against_same_fixed_original_dispatch",
+    "id": "T32",
+    "evidence": {
+      "no_required_check_removed": true,
+      "target_met": true,
+      "target_startup_included_in_both": true,
+      "same_fixed_benign_probe": true,
+      "manager_added_upper_bound_ms": 754,
+      "original_dispatch_ms": 19.839,
+      "production_manager_dispatch_ms": 773.758
+    },
+    "status": "PASSED"
+  }
+]

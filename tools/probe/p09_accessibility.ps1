@@ -269,7 +269,12 @@ function Prepare-InitialDesktopPass{
     catch{$cause=$_.Exception.GetBaseException();if($cause -isnot [NotImplementedException] -and $cause -isnot [NotSupportedException]){throw};$result.uia_close_not_implemented=$true}
    }
    if(-not $closeDispatched){Need ([P09Access]::SameUser($window) -and [P09Access]::HitBirthKey($window) -ceq $birthKey);Need ([P09Access]::CancelInitialWindow($window));$result.close_mechanism='SCOPED_WM_CLOSE'}
-   $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;$result.cancelled_window_count++
+   $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50}
+   if([P09Access]::IsWindowVisible($window)){
+    Need ([P09Access]::SameUser($window) -and [P09Access]::HitBirthKey($window) -ceq $birthKey);Need ([P09Access]::CancelInitialWindow($window));$result.uia_close_returned_without_closing=$true;$result.close_mechanism='SCOPED_WM_CLOSE_AFTER_UIA_NOOP';$clock.Restart()
+    while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50}
+   }
+   Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;$result.cancelled_window_count++
   }
   foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
   $result.status='OBSERVED'

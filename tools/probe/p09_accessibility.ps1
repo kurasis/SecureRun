@@ -102,6 +102,18 @@ public static class P09Access {
   }
   complete=all;var windows=new IntPtr[found.Count];found.CopyTo(windows);return windows;
  }
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern IntPtr FindWindowEx(IntPtr parent,IntPtr after,string kind,string title);
+ public static IntPtr[] ImmersiveWindows(out bool complete){
+  var found=new System.Collections.Generic.HashSet<IntPtr>();bool all=true;
+  foreach(string kind in new[]{"Windows.UI.Core.CoreWindow","ApplicationFrameWindow","Xaml_WindowedPopupClass"}){
+   IntPtr window=IntPtr.Zero;var seen=new System.Collections.Generic.HashSet<IntPtr>();int scanned=0;
+   while((window=FindWindowEx(IntPtr.Zero,window,kind,null))!=IntPtr.Zero){if(scanned++>=64||!seen.Add(window)){all=false;break;}found.Add(window);}
+  }
+  complete=all;var windows=new IntPtr[found.Count];found.CopyTo(windows);return windows;
+ }
+ [DllImport("kernel32.dll")]static extern IntPtr GetCurrentProcess();
+ [DllImport("kernel32.dll")]static extern bool IsWow64Process2(IntPtr process,out ushort processMachine,out ushort nativeMachine);
+ public static string MachineKinds(){ushort process,native;return IsWow64Process2(GetCurrentProcess(),out process,out native)?process.ToString("x4")+":"+native.ToString("x4"):"UNAVAILABLE";}
  public static bool CancelInitialWindow(IntPtr window){return PostMessage(window,16,IntPtr.Zero,IntPtr.Zero);}
 
  public static string HitImage(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr held=OpenProcess(0x1000,false,pid);if(held==IntPtr.Zero)return null;try{uint size=32768;var image=new System.Text.StringBuilder((int)size);return QueryFullProcessImageName(held,0,image,ref size)?image.ToString():null;}finally{CloseHandle(held);}}
@@ -190,7 +202,7 @@ function Native-HitKind([IntPtr]$window){
   }
  }finally{$process.Dispose()}}catch{return 'UNAVAILABLE'}
 }
-$result.powershell_major=$PSVersionTable.PSVersion.Major;try{$null=[ushort]1;$result.ushort_alias_available=$true}catch{$result.ushort_alias_available=$false}
+$result.native_machine_kinds=[P09Access]::MachineKinds();$result.powershell_major=$PSVersionTable.PSVersion.Major;try{$null=[ushort]1;$result.ushort_alias_available=$true}catch{$result.ushort_alias_available=$false}
 $result.helper_interactive_station=[P09Access]::InteractiveStation();$result.helper_thread_desktop_default=[P09Access]::ThreadDesktopDefault();$result.helper_session_zero=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq 0);$result.helper_active_console_session=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq [P09Access]::WTSGetActiveConsoleSessionId())
 $script:enrolledInitialPickers=[Collections.Generic.HashSet[string]]::new()
 function Prepare-InitialDesktopPass{
@@ -199,7 +211,7 @@ function Prepare-InitialDesktopPass{
  try{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
   $noProductProcesses=(@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0);$result.product_process_present=(-not $noProductProcesses)
-  $script:initialPickers=[Collections.Generic.List[IntPtr]]::new();$script:initialPickerIds=[Collections.Generic.HashSet[int]]::new()
+  $script:initialPickers=[Collections.Generic.List[IntPtr]]::new();$script:initialPickerIds=[Collections.Generic.HashSet[int]]::new();$result.fixed_candidate_process_counts=@{};foreach($fixed in @('PickerHost','WWAHost','StartMenuExperienceHost','SearchHost')){$result.fixed_candidate_process_counts[$fixed]=@(Get-Process -Name $fixed -ErrorAction SilentlyContinue).Count}
   foreach($candidate in @(Get-Process -Name PickerHost,WWAHost,StartMenuExperienceHost,SearchHost -ErrorAction SilentlyContinue)){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
   $null=[P09Access]::EnumWindows({param($window,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($window,[ref]$owner);if($script:initialPickerIds.Contains($owner) -and [P09Access]::IsWindowVisible($window)){$script:initialPickers.Add($window)};return $true},[IntPtr]::Zero)
   $script:pickerChildren=0;$script:visiblePickerChildren=0;$script:pickerTopLevels=0;$script:scannedChildren=0
@@ -212,6 +224,11 @@ function Prepare-InitialDesktopPass{
   # unchanged user, image, signature and creation-time checks before any action.
   $threadComplete=$false;$threadWindows=@([P09Access]::ThreadProcessWindows($script:initialPickerIds,[ref]$threadComplete));$result.initial_thread_window_query_complete=$threadComplete;$result.initial_thread_windows=$threadWindows.Count
   foreach($candidateWindow in $threadWindows){if(($noProductProcesses -or [P09Access]::IsWindowVisible($candidateWindow)) -and -not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
+  $immersiveComplete=$false;$immersiveWindows=@([P09Access]::ImmersiveWindows([ref]$immersiveComplete));$result.initial_immersive_query_complete=$immersiveComplete;$result.initial_immersive_windows=$immersiveWindows.Count;Need $immersiveComplete
+  foreach($candidateWindow in $immersiveWindows){
+   $candidateImage=[P09Access]::HitImage($candidateWindow)
+   if($candidateImage -and [IO.Path]::GetFileName($candidateImage) -iin @('PickerHost.exe','WWAHost.exe','StartMenuExperienceHost.exe','SearchHost.exe') -and ($noProductProcesses -or [P09Access]::IsWindowVisible($candidateWindow)) -and -not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}
+  }
   $result.picker_z_order_visible_windows=@($zWindows|Where-Object {[P09Access]::IsWindowVisible($_)}).Count;$result.initial_component_windows=$script:initialPickers.Count;Need ($script:initialPickers.Count -le 32)
   $result.initial_picker_window_count=$script:initialPickers.Count
   $result.cancelled_window_count=0

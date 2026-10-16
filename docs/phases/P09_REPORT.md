@@ -474,3 +474,8 @@ unboxed status now permits that worker attempt for the exact known SCM-only
 limitation; no service identity or storage authority is synthesized. Presentation
 changes no longer query history. The native product lab now requires a real
 history database before claiming its local-history secret scan passed.
+The retained Settings controller now minimizes its own window between fixed DPI
+requests and restores it only for the next actual Settings operation. This keeps
+the elevated lab Settings window from covering the standard-user manager during
+physical keyboard checks; actual Windows/manager DPI verification and the final
+100% restoration/close still run unchanged.

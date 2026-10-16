@@ -120,6 +120,7 @@ function Set-ActualDisplayScale([int]$Scale){
 
  $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($script:displayWindow);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
  $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close();$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero}
+ elseif($settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window) -and $window.Current.CanMinimize){$window.SetWindowVisualState([Windows.Automation.WindowVisualState]::Minimized)}
 }
 if($Mode -eq 'DISPLAY_SERVER'){
  Need ($DisplayEvents -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$' -and [IO.Path]::IsPathRooted($ResultFile))

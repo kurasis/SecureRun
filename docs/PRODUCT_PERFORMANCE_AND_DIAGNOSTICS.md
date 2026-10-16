@@ -1,16 +1,21 @@
 # P09 performance and minimized diagnostics
 
-The full workload has not passed its budgets. Run `38811627938` at `eaab83c`
-measured 4567.2086 ms startup, 1.594772336% complete-job idle CPU and
-238777613 bytes average working set on Server. Memory passed the strict decimal
-250 MB target; CPU and startup failed. The low-memory API was observed active.
-This is improvement evidence, not a completed gate.
+The full workload has not passed its budgets. Normal release runs measured:
 
-Earlier run `38804430207` measured
-4973.6882 ms startup, 4.790866449% complete-job idle CPU and 380194586 bytes
-average working set on Server. These are failed measurements, not release proof.
-Compilation and the separate zero-environment measurement fixture cannot satisfy
-the performance gate.
+| Full reference run | Runner | Startup ms | Complete-job CPU % | Average working set bytes | Result |
+|---|---|---:|---:|---:|---|
+| `38826421020`, `c2f9b5a` | Server | 3964.3166 | 1.619035775 | 232745677 | Memory passed; startup and CPU failed |
+| `38817227183`, `989d3e5` | ARM | 2950.5122 | 1.674621032 | 247723349 | Startup and memory passed; CPU failed |
+
+Each full sample uses ten actual idle environments, 10,000 files and at least
+60 seconds of complete kernel-job accounting. A later ARM run at `496272b`
+refused CREATE 10 during an online incoming TCP diagnostic and has no resource
+sample. It cannot replace the completed reference workload.
+
+Focused run `38826425388` at `c2f9b5a` measured 1.18415% CPU / 226910825 bytes on
+Server and 1.29373% / 229258465 bytes on ARM. These four-environment measurements
+are diagnostic-only and their CPU also exceeds the target. Compilation and the
+separate zero-environment measurement fixture cannot satisfy the performance gate.
 
 The next revision uses a bounded read-only observation worker: authenticated
 component file objects remain held against writes/deletion for at most 60 seconds.

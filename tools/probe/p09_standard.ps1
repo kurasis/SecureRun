@@ -228,9 +228,9 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  }
 
  Case 'T66' 'local_history_and_debug_error_capture_remain_minimized' {
-  $paths=@((Join-Path $Fixture 'normal-manager.log'),(Join-Path $Fixture 'inspected-manager.log'));$metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';foreach($name in @('history.sqlite','history.sqlite-wal','history.sqlite-shm')){if(Test-Path -LiteralPath (Join-Path $metadata $name)){$paths+=Join-Path $metadata $name}}
+  $paths=@((Join-Path $Fixture 'normal-manager.log'),(Join-Path $Fixture 'inspected-manager.log'));$metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';Require (Test-Path -LiteralPath (Join-Path $metadata 'history.sqlite') -PathType Leaf) 'P09_PERSISTENT_HISTORY_MISSING';foreach($name in @('history.sqlite','history.sqlite-wal','history.sqlite-shm')){if(Test-Path -LiteralPath (Join-Path $metadata $name)){$paths+=Join-Path $metadata $name}}
   foreach($path in $paths){$bytes=[IO.File]::ReadAllBytes($path);Require (Clean ([Text.Encoding]::UTF8.GetString($bytes))) 'P09_SECRET_IN_LOCAL_HISTORY';Require (Clean ([Text.Encoding]::Unicode.GetString($bytes))) 'P09_SECRET_IN_LOCAL_UTF16_CAPTURE'}
-  Require $script:capturesClean 'P09_SECRET_IN_NATIVE_CAPTURE';@{local_history_and_wal_scanned=$true;normal_manager_stderr_scanned=$true;inspected_manager_stderr_scanned=$true;native_worker_error_capture_scanned=$true;utf8_and_utf16_scanned=$true;argv_environment_error_canaries_absent=$true;untrusted_text_cannot_add_event_fields=$true}
+  Require $script:capturesClean 'P09_SECRET_IN_NATIVE_CAPTURE';@{persistent_history_present=$true;local_history_and_wal_scanned=$true;normal_manager_stderr_scanned=$true;inspected_manager_stderr_scanned=$true;native_worker_error_capture_scanned=$true;utf8_and_utf16_scanned=$true;argv_environment_error_canaries_absent=$true;untrusted_text_cannot_add_event_fields=$true}
  }
  Case 'T30' 'official_editor_saves_boxed_document_without_host_write' {
   $inputFile=Join-Path $Fixture 'editor-input.txt';$outputFile=Join-Path $Fixture 'editor-output.txt';[IO.File]::WriteAllText($inputFile,'P09_EDITOR_INPUT');$before=(Get-FileHash -LiteralPath $inputFile).Hash

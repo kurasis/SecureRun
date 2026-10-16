@@ -9,6 +9,26 @@ pub const HISTORY_LIMIT: usize = 512;
 pub const SHARED_LIMIT: usize = 64;
 pub const RETENTION_DAYS: u64 = 30;
 
+/// Admission to an independently authenticated history worker, not storage authority.
+/// Standard users may observe protected SCM status without its process identity.
+/// The worker still authenticates components, contexts and metadata on every use.
+pub fn may_attempt_native_history(health: &crate::HealthView) -> bool {
+    let o = &health.observation;
+    let service_route = health.control_plane_safe
+        || (!o.service_identity_complete
+            && o.service_identity_reason == "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN");
+    health.fresh
+        && o.protocol == crate::PROTOCOL
+        && o.trust == "VERIFIED"
+        && o.reason == "OBSERVED"
+        && o.manager_context == crate::Context::Unboxed
+        && o.bridge_context == crate::Context::Unboxed
+        && o.service_running
+        && o.driver_running
+        && !o.restart_required
+        && service_route
+}
+
 pub fn now() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -243,6 +263,42 @@ impl Journal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn standard_history_admission_preserves_unknown_service_identity_and_refuses_unsafe_context() {
+        let mut observation = crate::Observation::failure("OBSERVED");
+        observation.trust = "VERIFIED".into();
+        observation.manager_context = crate::Context::Unboxed;
+        observation.bridge_context = crate::Context::Unboxed;
+        observation.service_running = true;
+        observation.driver_running = true;
+        observation.service_identity_reason = "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN".into();
+        let mut health = crate::HealthView {
+            generation: 1,
+            sequence: 1,
+            fresh: true,
+            control_plane_safe: false,
+            observation,
+        };
+        assert!(may_attempt_native_history(&health));
+        assert!(!health.control_plane_safe);
+        assert!(!health.observation.service_identity_complete);
+        health.fresh = false;
+        assert!(!may_attempt_native_history(&health));
+        health.fresh = true;
+        for context in [crate::Context::Boxed, crate::Context::Unknown] {
+            health.observation.manager_context = context;
+            assert!(!may_attempt_native_history(&health));
+        }
+        health.observation.manager_context = crate::Context::Unboxed;
+        health.observation.bridge_context = crate::Context::Boxed;
+        assert!(!may_attempt_native_history(&health));
+        health.observation.bridge_context = crate::Context::Unboxed;
+        health.observation.driver_running = false;
+        assert!(!may_attempt_native_history(&health));
+        health.observation.driver_running = true;
+        health.observation.service_identity_reason = "SERVICE_IDENTITY_INCONSISTENT".into();
+        assert!(!may_attempt_native_history(&health));
+    }
     #[test]
     fn history_is_bounded_redacted_and_survives_reopen() {
         let dir = tempfile::tempdir().unwrap();

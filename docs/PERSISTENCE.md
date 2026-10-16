@@ -102,3 +102,11 @@ They are never recovered, replayed or auto-applied after restart. Appearance,
 language and whitelisted content scale are presentation preferences only.
 Metadata renames use the existing policy operation tombstones, with current label,
 revision and generation comparison; applied policy revisions remain unchanged.
+
+Standard-user product history may attempt its native worker when a fresh trusted
+unboxed observation has protected SCM status but an unavailable service process
+identity. This does not mark that identity known or authorize persistence: every
+history operation still independently authenticates the original components,
+manager/worker context, owner and metadata ancestry in the native worker. A failure
+keeps explicit session-only history. Theme/zoom and fixed official Help operations
+do not open history merely to change presentation or follow their fixed link.

@@ -34,10 +34,9 @@ fn authorize(window: &WebviewWindow) -> Result<()> {
     Ok(())
 }
 fn persistent(backend: &AppState) -> bool {
-    backend
-        .0
-        .lock()
-        .is_ok_and(|b| !b.fixture && b.health.view(Instant::now()).control_plane_safe)
+    backend.0.lock().is_ok_and(|b| {
+        !b.fixture && contract::may_attempt_native_history(&b.health.view(Instant::now()))
+    })
 }
 async fn record_unlocked(
     state: &ProductState,
@@ -189,7 +188,12 @@ pub async fn product_request(
     let _slot = slot(&state)?;
     let _gate = state.gate.lock().await;
     let mut result = Reply {
-        history: history(&state, &backend).await?,
+        history: if matches!(&request, Request::Help { .. } | Request::Scale { .. }) {
+            // Presentation and the fixed official help link do not read history.
+            contract::Reply::failure("HISTORY_NOT_REQUESTED")
+        } else {
+            history(&state, &backend).await?
+        },
         preview_id: None,
         bundle: None,
         saved: false,

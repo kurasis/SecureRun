@@ -466,3 +466,11 @@ connect may retry only before any connection exists, for at most four seconds;
 offline still makes one attempt and every required positive/negative channel
 must match. No engine rule, user dispatch, firewall or security setting changes.
 Fresh matching P03–P09 native regressions remain required.
+
+Review found that history persistence still used the older P04 service-PID gate,
+so the standard-user lab always used the honestly labeled session fallback even
+when its native history worker could authenticate independently. Fresh verified
+unboxed status now permits that worker attempt for the exact known SCM-only
+limitation; no service identity or storage authority is synthesized. Presentation
+changes no longer query history. The native product lab now requires a real
+history database before claiming its local-history secret scan passed.

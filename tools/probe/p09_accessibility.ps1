@@ -1,5 +1,5 @@
 ﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
+param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents,[switch]$PrepareInput)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
 trap {
@@ -152,7 +152,7 @@ function Native-HitKind([IntPtr]$window){
    'systemsettings'{return 'DISPLAY_SETTINGS'};'applicationframehost'{return 'APPLICATION_FRAME_HOST'};'textinputhost'{return 'TEXT_INPUT_HOST'}
    'explorer'{return 'DESKTOP_SHELL'};'shellexperiencehost'{return 'DESKTOP_SHELL'};'dwm'{return 'DESKTOP_COMPOSITOR'}
    'powershell'{return 'POWERSHELL_HOST'};'pwsh'{return 'POWERSHELL_HOST'};'conhost'{return 'CONSOLE_HOST'};'windowsterminal'{return 'TERMINAL_HOST'}
-   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};'pickerhost'{return 'WINDOWS_PICKER_HOST'};default{
+   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};'pickerhost'{return 'WINDOWS_PICKER_HOST'};'wwahost'{return 'WINDOWS_WEB_APP_HOST'};default{
     $nativeName=$process.ProcessName.ToLowerInvariant();$hash=[Security.Cryptography.SHA256]::Create();try{$result.native_hit_name_sha256=([BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes($nativeName)))).Replace('-','').ToLowerInvariant()}finally{$hash.Dispose()}
     $image=[P09Access]::HitImage($window);$windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
     if($image -and ($image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SysWOW64\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase))){
@@ -174,7 +174,7 @@ function Prepare-InitialDesktop{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
   $noProductProcesses=(@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0);$result.product_process_present=(-not $noProductProcesses)
   $script:initialPickers=[Collections.Generic.List[IntPtr]]::new();$script:initialPickerIds=[Collections.Generic.HashSet[int]]::new()
-  foreach($candidate in [Diagnostics.Process]::GetProcessesByName('PickerHost')){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
+  foreach($candidate in @(Get-Process -Name PickerHost,WWAHost -ErrorAction SilentlyContinue)){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
   $null=[P09Access]::EnumWindows({param($window,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($window,[ref]$owner);if($script:initialPickerIds.Contains($owner) -and [P09Access]::IsWindowVisible($window)){$script:initialPickers.Add($window)};return $true},[IntPtr]::Zero)
   $script:pickerChildren=0;$script:visiblePickerChildren=0;$script:pickerTopLevels=0;$script:scannedChildren=0
   $null=[P09Access]::EnumWindows({param($top,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($top,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerTopLevels++};$null=[P09Access]::EnumChildWindows($top,{param($child,$data);$script:scannedChildren++;if($script:scannedChildren -gt 8192){return $false};$owner=0;$null=[P09Access]::GetWindowThreadProcessId($child,[ref]$owner);if($script:initialPickerIds.Contains($owner)){$script:pickerChildren++;if([P09Access]::IsWindowVisible($child)){$script:visiblePickerChildren++}};return $true},[IntPtr]::Zero);return ($script:scannedChildren -le 8192)},[IntPtr]::Zero)
@@ -190,7 +190,7 @@ function Prepare-InitialDesktop{
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
    Need ($noProductProcesses -or $enrolled)
-   $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -ieq 'PickerHost.exe')
+   $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -iin @('PickerHost.exe','WWAHost.exe'))
    $windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows);$programs=[Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
    $protected=$image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($programs+'\WindowsApps\',[StringComparison]::OrdinalIgnoreCase)
    Need $protected;$trusted=$false;$signature=Get-AuthenticodeSignature -LiteralPath $image
@@ -215,6 +215,7 @@ if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo
 if($Mode -eq 'DESKTOP_INPUT'){
  $form=$null
  try{
+  if($PrepareInput){$preparation=Prepare-InitialDesktop;$preparation|ConvertTo-Json -Depth 5|Set-Content -LiteralPath ($ResultFile+'.preparation.json') -Encoding UTF8;Need ($preparation.status -eq 'OBSERVED');$result.initial_preparation_observed=$true}
   $form=[Windows.Forms.Form]::new();$form.Text='SecureRun synthetic native input probe';$form.StartPosition='CenterScreen';$form.Width=640;$form.Height=480;$form.TopMost=$true
   $field=[Windows.Forms.TextBox]::new();$field.Left=40;$field.Top=60;$field.Width=400;$form.Controls.Add($field);$form.Show();[Windows.Forms.Application]::DoEvents();Start-Sleep -Milliseconds 300
   $root=$form.Handle;$null=[P09Access]::SetForegroundWindow($root);$field.Focus()|Out-Null;[Windows.Forms.Application]::DoEvents()
@@ -248,6 +249,16 @@ function Request-EnrolledPickerCancellation{
  try{$rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify;$request=[Threading.EventWaitHandle]::OpenExisting($prefix+'-prepare',$rights);$done=[Threading.EventWaitHandle]::OpenExisting($prefix+'-done',$rights);$failed=[Threading.EventWaitHandle]::OpenExisting($prefix+'-failed',$rights);$null=$request.Set();Need ([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]@($done,$failed),15000) -eq 0);$result.enrolled_initial_picker_cancellation_acknowledged=$true}
  finally{foreach($event in @($request,$done,$failed)){if($null -ne $event){$event.Dispose()}}}
 }
+function Owned-Point($point,[IntPtr]$target,[int]$id){
+ $hit=[P09Access]::WindowFromPoint($point)
+ if(-not ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target) -and (Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST')){
+  Request-EnrolledPickerCancellation;$null=[P09Access]::SetForegroundWindow($target);$clock=[Diagnostics.Stopwatch]::StartNew()
+  do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
+ }
+ Observe-NativePoint $hit $target;$result.native_hit_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.native_packed_point_agrees=($hit -eq [P09Access]::PackedPoint($point))
+ Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $target)
+ return $hit
+}
 function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  Need ([P09Access]::OwnedWindow($hwnd,$id))
  # Only this exact owned fixture window is raised. Keep it above unrelated
@@ -257,7 +268,7 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
   $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
-  if((Native-HitKind $hit) -eq 'WINDOWS_PICKER_HOST'){
+  if((Native-HitKind $hit) -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST')){
    # Only the controller's independently enrolled, same-user initial process
    # may be cancelled. No target/product dialog is enrolled after GUI startup.
    Request-EnrolledPickerCancellation
@@ -278,7 +289,7 @@ function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
  do{$editor=[P09Access]::Editor($hwnd,$id,$ExpectedBox);if($editor -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
  Need ($editor -ne [IntPtr]::Zero -and [P09Access]::IsChild($hwnd,$editor));$result.native_editor_class_verified=$true
  $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($editor,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=[int](($bounds.Top+$bounds.Bottom)/2)
- $script:stage='VERIFYING_NATIVE_EDITOR_CLICK_POINT';$hit=[P09Access]::WindowFromPoint($point);Need ($hit -eq $editor -or [P09Access]::IsChild($editor,$hit));Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+ $script:stage='VERIFYING_NATIVE_EDITOR_CLICK_POINT';$hit=Owned-Point $point $hwnd $id;Need ($hit -eq $editor -or [P09Access]::IsChild($editor,$hit));Need ([P09Access]::SetCursorPos($point.X,$point.Y))
  try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  $clock.Restart();do{if([P09Access]::FocusWithin($editor)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::FocusWithin($editor));$result.exact_editor_focus_verified=$true
@@ -286,9 +297,8 @@ function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
 function Browser-Key([int]$id,[int]$key,[int]$modifier=0){
  $rootWindow=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
  Need ([P09Access]::OwnedWindow($rootWindow,$id))
- $prefix=switch($modifier){0{''};17{'^'};default{throw 'P09_BROWSER_KEY_UNSUPPORTED'}}
- $value=switch($key){9{'{TAB}'};13{'{ENTER}'};65{'a'};67{'c'};76{'l'};86{'v'};default{throw 'P09_BROWSER_KEY_UNSUPPORTED'}}
- [Windows.Forms.SendKeys]::SendWait($prefix+$value)
+ Need ($modifier -in @(0,17) -and $key -in @(9,13,65,67,76,86))
+ Need ([P09Access]::Chord($rootWindow,$id,[uint16]$key,[uint16]$modifier))
 }
 function Focus-BrowserDocument($root,[IntPtr]$hwnd,[int]$id){
  Focus-OwnedWindow $hwnd $id
@@ -298,7 +308,7 @@ function Focus-BrowserDocument($root,[IntPtr]$hwnd,[int]$id){
   # point is inside the owned document, away from chrome and the canary link.
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));Need ($bounds.Right-$bounds.Left -ge 480 -and $bounds.Bottom-$bounds.Top -ge 360)
   $point=[P09Point]::new();$point.X=$bounds.Left+[int](($bounds.Right-$bounds.Left)*2/3);$point.Y=$bounds.Top+[int](($bounds.Bottom-$bounds.Top)*3/4)
-  $hit=[P09Access]::WindowFromPoint($point);Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+  $hit=Owned-Point $point $hwnd $id;Need ([P09Access]::SetCursorPos($point.X,$point.Y))
   try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)};$result.browser_owned_document_click_verified=$true
  }
  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::FocusWithin($hwnd)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000);Need ([P09Access]::FocusWithin($hwnd))
@@ -311,7 +321,7 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  $value=$null;$result.address_bar_uia_available=($null -ne $bar)
  if($null -ne $bar -and $bar.Current.IsEnabled -and (In-Provider $bar $root) -and $bar.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$value) -and -not $value.Current.IsReadOnly){
   $bar.SetFocus();$value.SetValue($address);Need ($value.Current.Value -ceq $address);$result.address_bar_value_verified=$true;$result.navigation_input='OWNED_WINDOWS_UIA_ADDRESS_BAR'
- }else{Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Send-LiteralKeys $address;$result.navigation_input='OWNED_WINDOW_SENDKEYS_LITERAL_SYNTHETIC_URI'}
+ }else{Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));$result.navigation_input='OWNED_WINDOW_NATIVE_SCANCODE_AND_UNICODE_SYNTHETIC_URI'}
  Start-Sleep -Milliseconds 200;Browser-Key $id 13;$result.native_keyboard_delivery_checked=$true
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
@@ -534,7 +544,7 @@ try{
     $pointClock=[Diagnostics.Stopwatch]::StartNew()
     do {
      $clickable=$navigation.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
-    $hit=[P09Access]::WindowFromPoint($point);$hitOwner=[P09Access]::RootOwnerPid($hit);$result.keyboard_point_hits_window=($hit -ne [IntPtr]::Zero);$result.keyboard_native_root_owner_matches_manager=($hitOwner -eq $ManagerPid);$result.keyboard_native_window_owned=[P09Access]::OwnedWindow($hit,$ManagerPid);$result.keyboard_exact_navigation_provider_verified=(In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $navigation);$result.keyboard_click_hit_owned_window=($result.keyboard_native_window_owned -and $result.keyboard_exact_navigation_provider_verified)
+    $hit=Owned-Point $point $hwnd $ManagerPid;$hitOwner=[P09Access]::RootOwnerPid($hit);$result.keyboard_point_hits_window=($hit -ne [IntPtr]::Zero);$result.keyboard_native_root_owner_matches_manager=($hitOwner -eq $ManagerPid);$result.keyboard_native_window_owned=[P09Access]::OwnedWindow($hit,$ManagerPid);$result.keyboard_exact_navigation_provider_verified=(In-Provider ([Windows.Automation.AutomationElement]::FromPoint($clickable)) $navigation);$result.keyboard_click_hit_owned_window=($result.keyboard_native_window_owned -and $result.keyboard_exact_navigation_provider_verified)
      if($result.keyboard_click_hit_owned_window){break};Start-Sleep -Milliseconds 100
     }while($pointClock.ElapsedMilliseconds -lt 5000)
     $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$result.keyboard_point_inside_native_window=($point.X -ge $bounds.Left -and $point.X -lt $bounds.Right -and $point.Y -ge $bounds.Top -and $point.Y -lt $bounds.Bottom)

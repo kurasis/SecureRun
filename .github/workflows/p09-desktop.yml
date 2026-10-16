@@ -10,7 +10,7 @@ on:
         type: boolean
         default: false
       prepare:
-        description: 'Cancel one authenticated same-user initial Windows picker before test applications start'
+        description: 'Cancel authenticated same-user initial picker/web-host windows before test applications start'
         type: boolean
         default: false
 permissions:
@@ -31,7 +31,7 @@ jobs:
           $ErrorActionPreference='Stop'
           New-Item -ItemType Directory -Path artifacts/p09-desktop -Force | Out-Null
           $mode=if('${{ inputs.input_probe }}' -eq 'true'){'DESKTOP_INPUT'}elseif('${{ inputs.prepare }}' -eq 'true'){'DESKTOP_PREPARE'}else{'DESKTOP_DIAGNOSTIC'}
-          ./tools/probe/p09_accessibility.ps1 -Mode $mode -ResultFile artifacts/p09-desktop/input-desktop.json
+          ./tools/probe/p09_accessibility.ps1 -Mode $mode -ResultFile artifacts/p09-desktop/input-desktop.json -PrepareInput:$${{ inputs.prepare && 'true' || 'false' }}
       - name: Retain minimized desktop observation
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4

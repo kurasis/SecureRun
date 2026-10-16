@@ -117,5 +117,25 @@ try {
   }
  }catch{$faultLogAvailable=$false}
  @{schema=1;read_only_fault_log_available=$faultLogAvailable;fixed_component_events=@($faults.ToArray());raw_event_messages_retained=$false;os_error_reporting_modified=$false}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $out 'component-faults.json') -Encoding utf8
+ # Optional readonly classification while a reporter is still alive. Event
+ # 1000/1001 may not exist until reporting completes. CIM association is only
+ # diagnostic: never authority to terminate, trust, or pass a boxed result.
+ $liveFaults=[Collections.Generic.List[object]]::new();$liveFaultAvailable=$true
+ try{
+  $components=@('securerun-policy-probe.exe','securerun-policy-probe-x86.exe','securerun-policy-probe-x64.exe','securerun-launch-probe.exe','securerun-launch-probe-x86.exe','securerun-launch-probe-x64.exe','SandboxieRpcSs.exe','SandboxieDcomLaunch.exe','SandboxieCrypto.exe','SandboxieBITS.exe','SbieSvc.exe','dllhost.exe','taskhostw.exe','rundll32.exe','svchost.exe')
+  $processes=@(Get-CimInstance -ClassName Win32_Process -OperationTimeoutSec 10 -ErrorAction Stop)
+  foreach($reporter in @($processes|Where-Object Name -IEQ 'WerFault.exe'|Select-Object -First 16)){
+   $kind='WITHHELD';$observed=$false
+   if($reporter.CommandLine -match '(?i)(?:^|\s)-p\s+([0-9]{1,10})(?:\s|$)'){
+    $targetId=[uint32]0
+    if([uint32]::TryParse($Matches[1],[ref]$targetId)){
+     $targetProcess=@($processes|Where-Object ProcessId -EQ $targetId)
+     if($targetProcess.Count -eq 1){$observed=$true;if($targetProcess[0].Name -in $components){$kind=$components|Where-Object {$_ -ieq $targetProcess[0].Name}|Select-Object -First 1}}
+    }
+   }
+   $liveFaults.Add(@{reporter_kind='WerFault.exe';associated_component_kind=$kind;cim_target_present=$observed;association_authorizes_no_action=$true})
+  }
+ }catch{$liveFaultAvailable=$false}
+ @{schema=1;readonly_cim_available=$liveFaultAvailable;records=@($liveFaults.ToArray());raw_arguments_paths_and_ids_retained=$false;termination_dispatched=$false;os_error_reporting_modified=$false}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $out 'live-fault-reporters.json') -Encoding utf8
  if($null -ne $password){$password.Dispose()};if($name){Disable-LocalUser -Name $name -ErrorAction SilentlyContinue};if($shareCreated){Remove-SmbShare -Name 'SecureRunP05Synthetic' -Force -Confirm:$false};Pop-Location
 }

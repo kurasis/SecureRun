@@ -125,7 +125,7 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  # Read back the selected native address before Enter. Clipboard text is only
  # the fixed synthetic destination and is always cleared, never retained.
  try{
-  [Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.Clipboard]::SetText($address);[Windows.Forms.SendKeys]::SendWait('^v');[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.Clipboard]::Clear();[Windows.Forms.SendKeys]::SendWait('^c')
+  [Windows.Forms.SendKeys]::SendWait('^l');Start-Sleep -Milliseconds 200;[Windows.Forms.Clipboard]::SetText($address);[Windows.Forms.SendKeys]::SendWait('^v');Start-Sleep -Milliseconds 500;[Windows.Forms.SendKeys]::SendWait('^a');Start-Sleep -Milliseconds 200;[Windows.Forms.Clipboard]::Clear();[Windows.Forms.SendKeys]::SendWait('^c')
   $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 3000)
   Need ([Windows.Forms.Clipboard]::GetText() -ceq $address);$result.native_browser_address_readback_verified=$true
   [Windows.Forms.SendKeys]::SendWait('{ENTER}')
@@ -266,7 +266,7 @@ try{
    $elements=$dialog.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);$content=($elements|ForEach-Object {$_.Current.Name}) -join "`n";Need ($content.Contains($EnvironmentId) -and $content.Contains($expected));Click (Find $dialog ([Windows.Automation.ControlType]::Button) 'OK');$result.exact_environment_and_retention_verified=$true;$result.native_confirmation_accepted=$true
   }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
-  'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Focus-NativeEditor $hwnd $ManagerPid;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^+s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
+  'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Focus-NativeEditor $hwnd $ManagerPid;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^%s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
   'BROWSER_PROTOCOL' {
    $stage='REQUESTING_SYNTHETIC_PROTOCOL_LINK';Need ($ProtocolUri -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/protocol/[0-9a-f-]{36}$');Need (([Uri]$ProtocolUri).Port -ge 1024 -and ([Uri]$ProtocolUri).Port -le 65535)
    Browser-Document $root $hwnd $ManagerPid $ProtocolUri 'P09 protocol canary';$result.protocol_link_action=Activate-CanaryLink $root $hwnd $ManagerPid 'Open synthetic handler';$result.actual_browser_address_action=$true

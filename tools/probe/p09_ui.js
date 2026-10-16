@@ -11,6 +11,7 @@ window.__p09_run=async function(stage,config={}) {
  const check=(id,name,condition)=>{cases.push({id,name,passed:!!condition});if(!condition)throw Error('P09_UI_ASSERTION_FAILED');};
  const nav=async()=>{await click('Environments',document.querySelector('nav'));await wait(()=>button('Environments',document.querySelector('nav'))?.getAttribute('aria-current')==='page');const back=button('All environments');if(back)back.click();await wait(()=>document.querySelector('.cards'));};
  const open=async()=>{await nav();await click(config.environment_name,document.querySelector('.cards'));await wait(()=>document.querySelector('[role=tablist]'));};
+ const directoryButton=name=>{const matches=Array.from(document.querySelectorAll('tbody button')).filter(e=>e.querySelector('bdi')?.textContent?.toLowerCase()===name.toLowerCase());return matches.length===1?matches[0]:null;};
  const tab=async name=>{await click(name,document.querySelector('[role=tablist]'));await pause(100);};
  const readyPolicy=()=>native({action:'LIST'},'policy_request');
  try {
@@ -72,12 +73,12 @@ window.__p09_run=async function(stage,config={}) {
    }
    case 'FILE_LIST':{
     state.fileStep='FILE_TAB';await tab('Files');await wait(()=>button('Storage root'));const start=performance.now();state.fileStep='FILE_ROOT';await click('Storage root');await wait(()=>document.querySelector('tbody tr'));
-    for(const [index,name] of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')].entries()){state.fileStep=['FILE_DRIVE','FILE_SYSTEM_VOLUME','FILE_WORKSPACE','FILE_ENVIRONMENT'][index];const e=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>e.textContent.includes(name)));e.click();await pause(80);await wait(()=>!Array.from(document.querySelectorAll('p[role=status]')).some(e=>e.textContent.includes('Operation in progress')));}
+    for(const [index,name] of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')].entries()){state.fileStep=['FILE_DRIVE','FILE_SYSTEM_VOLUME','FILE_WORKSPACE','FILE_ENVIRONMENT'][index];const e=await wait(()=>directoryButton(name));e.click();await pause(80);await wait(()=>!Array.from(document.querySelectorAll('p[role=status]')).some(e=>e.textContent.includes('Operation in progress')));}
     state.fileStep='FILE_ROWS';await wait(()=>document.querySelectorAll('tbody tr').length===128);state.listFirstMs=performance.now()-start;check('T63','populated_box_ui_page_is_bounded',document.querySelectorAll('tbody tr').length===128&&!!Array.from(document.querySelectorAll('button')).find(e=>e.textContent.startsWith('Next page')));
     const deceptive=Array.from(document.querySelectorAll('tbody button')).find(e=>e.textContent.includes('fdp.exe'));check('T63','full_deceptive_filename_rendered_inertly',deceptive&&/\\u\{?202e\}?|U\+202E/i.test(deceptive.textContent)&&deceptive.textContent.endsWith('fdp.exe'));
     const before=await native({action:'LIST'},'control_request');deceptive.click();await pause(100);const after=await native({action:'LIST'},'control_request');check('T63','filename_selection_never_dispatches_or_registers',before.applications.length===after.applications.length&&before.receipts.length===after.receipts.length);
     const r=await readyPolicy();const e=r.environments.find(e=>e.id===config.environment_id);let node=null;let current;
-    for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){current=await native({action:'LIST',environment_id:e.id,expected_revision:e.revision,node_id:node,offset:0},'files_request');const entry=current.entries.find(v=>v.name===name);if(!entry)throw Error('P09_DIRECTORY_NODE_MISSING');node=entry.id;}
+    for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){current=await native({action:'LIST',environment_id:e.id,expected_revision:e.revision,node_id:node,offset:0},'files_request');const matches=current.entries.filter(v=>v.name.toLowerCase()===name.toLowerCase());if(matches.length!==1)throw Error('P09_DIRECTORY_NODE_MISSING');node=matches[0].id;}
     let offset=0,total=0,pages=0,maximum=0;const seen=new Set();const walk=performance.now();
     do{const page=await native({action:'LIST',environment_id:e.id,expected_revision:e.revision,node_id:node,offset},'files_request');if(page.reason!=='OBSERVED')throw Error('P09_FULL_PAGE_WALK_FAILED');total+=page.entries.length;maximum=Math.max(maximum,page.entries.length);pages++;for(const item of page.entries){seen.add(item.id);if(item.name.includes('fdp.exe'))state.deceptiveName=item.name;}offset=page.next_offset;}while(offset!==null&&pages<130);
     check('T63','all_ten_thousand_entries_reachable_without_unbounded_dom',total===10000&&seen.size===10000&&maximum<=128&&pages===79&&offset===null&&document.querySelectorAll('tbody tr').length<=128);
@@ -87,7 +88,7 @@ window.__p09_run=async function(stage,config={}) {
    case 'TRANSFER_IMPORT_PICK':{await open();await tab('Files');await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Import file');break;}
    case 'TRANSFER_EXPORT_PICK':{
     await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Storage root');
-    for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){const e=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>text(e).endsWith(name)));e.click();await pause(100);}
+    for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){const e=await wait(()=>directoryButton(name));e.click();await pause(100);}
     const item=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>text(e).endsWith('workflow-source.txt')));item.click();await pause(50);check('T32','actual_ui_import_is_visible_without_opening',!!document.querySelector('fieldset legend')?.textContent.includes('workflow-source.txt'));await click('Export to selected folder');break;
    }
    case 'TRANSFER_COLLISION_PICK':{await pause(150);await click('Export to selected folder');break;}

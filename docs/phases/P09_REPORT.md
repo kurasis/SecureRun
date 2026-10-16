@@ -659,3 +659,18 @@ desktop is Default (1), another desktop (0), or unavailable (-1), plus only a
 fixed foreground-process category. It changes no logon, lock, desktop, RDP or
 Windows security setting. The same field accompanies actual actor observations
 so an inaccessible input desktop can be distinguished from a covered window.
+
+The pinned [Notepad++ shortcut source](https://github.com/notepad-plus-plus/notepad-plus-plus/blob/v8.9.8.1/PowerEditor/src/Parameters.cpp)
+assigns Save As to Ctrl+Alt+S; the former fixture incorrectly sent Ctrl+Shift+S
+(Save All). The real Save As path now uses the correct original shortcut.
+Clipboard navigation gives the external application time to process focus/paste
+before clearing and reading back its selected address; exact readback remains
+mandatory. Fixed workspace traversal matches unique enumerated Windows directory
+names without assuming the casing of the system-volume directory.
+
+Readonly desktop run `38839051225` found the Default input desktop on both hosted
+targets. No locked-desktop exemption is claimed. Repeated ARM full runs also
+retained a live unreviewed WerFault in a generated scope. Optional parent-fixture
+CIM diagnosis now classifies only fixed known component names associated with a
+live reporter; no command lines, paths or process IDs are retained. This weak
+association is never authority for termination, trust or a passing result.

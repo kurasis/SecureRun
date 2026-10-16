@@ -91,6 +91,17 @@ public static class P09Access {
   while(window!=IntPtr.Zero&&scanned++<4096&&seen.Add(window)){uint pid;GetWindowThreadProcessId(window,out pid);if(!visibleOnly||IsWindowVisible(window)){bool owned=pids.Contains((int)pid);if(!owned)foreach(int expected in pids)if(RootOwnerPid(window)==(uint)expected){owned=true;break;}if(owned)found.Add(window);}window=GetWindow(window,2);}
   complete=window==IntPtr.Zero;IntPtr foreground=GetAncestor(GetForegroundWindow(),2);uint owner;GetWindowThreadProcessId(foreground,out owner);if(pids.Contains((int)owner)&&(!visibleOnly||IsWindowVisible(foreground))&&!found.Contains(foreground))found.Add(foreground);return found.ToArray();
  }
+ [DllImport("user32.dll")]static extern bool EnumThreadWindows(uint thread,Visit visit,IntPtr data);
+ public static IntPtr[] ThreadProcessWindows(System.Collections.Generic.HashSet<int> pids,out bool complete){
+  var found=new System.Collections.Generic.HashSet<IntPtr>();bool all=true;
+  foreach(int expected in pids){
+   try{using(var process=System.Diagnostics.Process.GetProcessById(expected)){
+    var threads=process.Threads;if(threads.Count>256){all=false;continue;}
+    foreach(System.Diagnostics.ProcessThread thread in threads){try{EnumThreadWindows((uint)thread.Id,delegate(IntPtr window,IntPtr data){uint pid;GetWindowThreadProcessId(window,out pid);if(pid==(uint)expected)found.Add(window);return true;},IntPtr.Zero);}finally{thread.Dispose();}}
+   }}catch(System.ComponentModel.Win32Exception){all=false;}catch(InvalidOperationException){all=false;}catch(ArgumentException){all=false;}
+  }
+  complete=all;var windows=new IntPtr[found.Count];found.CopyTo(windows);return windows;
+ }
  public static bool CancelInitialWindow(IntPtr window){return PostMessage(window,16,IntPtr.Zero,IntPtr.Zero);}
 
  public static string HitImage(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr held=OpenProcess(0x1000,false,pid);if(held==IntPtr.Zero)return null;try{uint size=32768;var image=new System.Text.StringBuilder((int)size);return QueryFullProcessImageName(held,0,image,ref size)?image.ToString():null;}finally{CloseHandle(held);}}
@@ -196,6 +207,11 @@ function Prepare-InitialDesktopPass{
   $result.picker_all_top_level_windows=$script:pickerTopLevels;$result.picker_child_windows=$script:pickerChildren;$result.picker_visible_child_windows=$script:visiblePickerChildren;$result.picker_child_enumeration_complete=($script:scannedChildren -le 8192);$result.controller_foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow())
   $zComplete=$false;$zWindows=@([P09Access]::ProcessWindows($script:initialPickerIds,(-not $noProductProcesses),[ref]$zComplete));$result.picker_z_order_enumeration_complete=$zComplete;Need $zComplete
   foreach($candidateWindow in $zWindows){$candidateOwner=0;$null=[P09Access]::GetWindowThreadProcessId($candidateWindow,[ref]$candidateOwner);if($script:initialPickerIds.Contains($candidateOwner) -and -not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
+  # EnumWindows on Windows 8+ omits some immersive app surfaces. Query only
+  # threads belonging to the fixed candidate process names, then apply the
+  # unchanged user, image, signature and creation-time checks before any action.
+  $threadComplete=$false;$threadWindows=@([P09Access]::ThreadProcessWindows($script:initialPickerIds,[ref]$threadComplete));$result.initial_thread_window_query_complete=$threadComplete;$result.initial_thread_windows=$threadWindows.Count
+  foreach($candidateWindow in $threadWindows){if(($noProductProcesses -or [P09Access]::IsWindowVisible($candidateWindow)) -and -not $script:initialPickers.Contains($candidateWindow)){$script:initialPickers.Add($candidateWindow)}}
   $result.picker_z_order_visible_windows=@($zWindows|Where-Object {[P09Access]::IsWindowVisible($_)}).Count;$result.initial_component_windows=$script:initialPickers.Count;Need ($script:initialPickers.Count -le 32)
   $result.initial_picker_window_count=$script:initialPickers.Count
   $result.cancelled_window_count=0

@@ -58487,6 +58487,316 @@
       "path": "investigation-7e62fd9-focused/windows-2025/wer-metadata.json",
       "size": 280,
       "sha256": "f9d464611d913f914abd251360acd22f0d24b8aec6c0a646cf755bf975caba1f"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-browser_child-56f69088ce684716ac47effb049c8c86.json",
+      "size": 1730,
+      "sha256": "b01a9cbb7ebbeb8a497c24b188372ba857a680ddfe9bea9549ecbbec1b6791b9"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-browser_diagnostic-77252c77d10145fd9a43efb40cc30305.json",
+      "size": 1628,
+      "sha256": "5666b2972c5c84864e4d109268864ebc567af67e8e2a66fab70385cbaa03b3d0"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-browser_protocol-938f04ac5b9140deac371a6674184559.json",
+      "size": 1994,
+      "sha256": "2ca0c404938a3e096a31db856052ef37f7f92d6c97e8b5b1735be42091ec850c"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-browser_sandbox-832ab65093d84bb1b798c5784d8dee43.json",
+      "size": 1662,
+      "sha256": "b2b1b44d675ea062b0b6fe6f5562dc202434fef5ffd9e3e115e56f564b41f728"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-desktop_prepare-064b680ed6eb42cf8f0998d59945ffa7.json",
+      "size": 4170,
+      "sha256": "83314275c065be6dbb306d60bb048ef5b4282e7c547d24bd4369efb2b44186d6"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-desktop_prepare-5bfaf2c722f449a2b4b5b8997b49bf41.json",
+      "size": 4644,
+      "sha256": "557bbb8f29c7dedf6f489c8c186d34ab7a74b005520985044a0ee254d946115d"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/access-desktop_prepare-81cd5ce1d408485a83666ba9fa406c37.json",
+      "size": 4170,
+      "sha256": "7bf455386bb0943a41458ae3c124a58324916a32e8e511c393adf293edf83671"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "5b6ff1557a7959e953c8261a8bc5953ac639e6f4797c8641d412f7a3d7dd6cbc"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "572b7a92e04b39a0acf496674d15c106e75fd2e7e3764828e4eadd81ea8e932a"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 4535,
+      "sha256": "84935ba3780eb3a5bfc90415690ab0f518fda7e66749b9d26b6388b461ce9710"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/display-controller.desktop-preparation-2.json",
+      "size": 7499,
+      "sha256": "b45161be0b014cea41c5d267b026e04920432797e15ff5dc833b5ebba8a10a7f"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "a135264f37c234f22fe4d4a7b47d505cf8e33d394c2eade8a3436fb5a8e03a8e"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/initial-desktop-preparation.json",
+      "size": 7090,
+      "sha256": "ce0dcae594a3d2c3de5ba9c5b8f196d993100513595bdf2b6112ece42d2c55fc"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "60c74f3e4b69b7056f37fa876165e282458da01d70d51f347afb29bb8df7fae0"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "79bffd54fe71cd5ff0a4d73816b8e6f4f4c64d29416d70f26436c4d456606af8"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "9a33b3585ace1de2bc222643e78d5cd8f629632eac4498b71e0e5a5cc7e44c34"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/owned-policy-observations.json",
+      "size": 210,
+      "sha256": "dad3a6982da2b625bb71abac956e32c3e40564ed6127101afe03c00fdfd04ec3"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-evidence-01b9e552d42a46cbab851ce207f42fea.json",
+      "size": 1481,
+      "sha256": "3421d32e673ce3fba300ecef48469f0c6a6fa35ca6e323cca94259378d544476"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-evidence-37714e7918414864b8ac8dcab8459322.json",
+      "size": 1481,
+      "sha256": "6363beb6b502a8baf036b05b9090fa64fec9c2fed7cd473faeb6b08af5cb7368"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-evidence-893a184a594d42e8b8308c77566e077a.json",
+      "size": 1481,
+      "sha256": "7c09b402c06efdb2052c544772a451ba996261eeba7bcfad5101e8a18acb7b78"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-result-01b9e552d42a46cbab851ce207f42fea.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-result-37714e7918414864b8ac8dcab8459322.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/probe-result-893a184a594d42e8b8308c77566e077a.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/product-cases.json",
+      "size": 1753,
+      "sha256": "6f2be57c9825e0a6ee83a2deeb72d66f283b650cc709b8975506f1a3a3447e08"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/run-summary.json",
+      "size": 714,
+      "sha256": "59eafff1e4d5977f9a0dbcdf408f9b3b45d6f5b571847a60f88271e054e9a13b"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "6e9f89cc32a5e6e31ac64aa48dd6946957f5747bf8dd9316829a60e85f138e5e"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/standard-product.json",
+      "size": 490,
+      "sha256": "cd1c32b28cecae2f64e52dd8b2cbe5d0fe95d77aad150eeaca046ab322a07cf3"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "3cfed5cfab8d531bf855be1f6d0ed70e78936fc027a82dfbd7cf738c7a139faf"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-browser_child-c74b1d5c65ab430e9dcf5cba5bbebe1b.json",
+      "size": 1994,
+      "sha256": "15bae94b614dcb87474896f563c427cf6aaebd395bf3be9052ebaedc2e956ec1"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-browser_diagnostic-3cf5004c818f4a8cbcccf3250a9a304e.json",
+      "size": 1133,
+      "sha256": "5f4ae6942574e98294fd11e4a323d7f04396cc36e6c15b04f5dc82c347179fb8"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-browser_protocol-35eb9674176e4a40a392243c0e8713d3.json",
+      "size": 1994,
+      "sha256": "333e6d8494d536f9ab95946117ae6289952480108fb43b27e2eb5505e77cb97a"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-browser_sandbox-4f8c9f1cb1134c5598ceae1059e6cded.json",
+      "size": 1988,
+      "sha256": "4f2c7fe1668bdf2aca4e1f769ba2c2486ef1ee8e5720d36bdfccfdd68a64ac40"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-desktop_prepare-0e7942bdbfe74f2caf9afa677719e8fb.json",
+      "size": 4174,
+      "sha256": "f5a10a07c5dde1d632c3960efe8f903e39c234fc6673fd706da7e9b2ac89f35b"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/access-desktop_prepare-6ad7825ac7274dc6a58e2bbd74e3af6e.json",
+      "size": 4174,
+      "sha256": "f5a10a07c5dde1d632c3960efe8f903e39c234fc6673fd706da7e9b2ac89f35b"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "1458403b13f30f20fab743a13f4ac18e63cbc976085167fdbd8d4794f27ec238"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "eec7d039cedc271c7deaab7c100c984440fb7308b39900d47f9bc2b8d0090efc"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/display-controller.desktop-preparation-1.json",
+      "size": 4539,
+      "sha256": "e7a399019aaff24b1d37bb2b723c9157482428f598402bd57b71f857e01cb22b"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "eefb3e00000c804cc47d5ce434ee9c9924ba700b0b8cb1c1329da51452733348"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/initial-desktop-preparation.json",
+      "size": 7090,
+      "sha256": "94c3f41d2e0752563beece2eb4b5aa9b5e5a1aef5db0d1b6948c75aeb06330b0"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "963745f2c320c0ce61820d82cd895ea7110040c52e323c276ed8e88d5621e2fb"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "210d25968da3912aa897d7005f707cbe08b29eb40032170353320c8fe2561f3a"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "fabed22368b43fbe9746a313ef644f4a5dd109877f79566d29852eff30eb63c4"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/owned-policy-observations.json",
+      "size": 210,
+      "sha256": "83188c269cbb45fb013e3bed745109160e2a119918bbf7f0a9eeae65ed677637"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/probe-evidence-514ab89554ed4565a6716eea9b5a4dd3.json",
+      "size": 1481,
+      "sha256": "9587ff369626469fad867899bb0efca3cf19bab987c1cd1995b28d232fd6cbdc"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/probe-evidence-fb8bb267d10a44d2a65334b9c874bf15.json",
+      "size": 1481,
+      "sha256": "8267d7be4db819a7754abde2da232ebc82d5176f85a776df3fbe4e64d29c1e66"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/probe-result-514ab89554ed4565a6716eea9b5a4dd3.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/probe-result-fb8bb267d10a44d2a65334b9c874bf15.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/product-cases.json",
+      "size": 1755,
+      "sha256": "f015d037347e41bfa74cb2e888fa87be64bf2c765004e4d9259348190845f2e4"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/run-summary.json",
+      "size": 714,
+      "sha256": "d9c9676acfc68a5a6e214cc66fc4dbafde67895ace97ac5d4c88c6ca01b9e4c1"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "678b45bfb5421d88ab3e63757af5e5473ed8cdae0da41fa168637c3a1a2e4078"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/standard-product.json",
+      "size": 490,
+      "sha256": "08856df30fac55e01ccdf48467c2d0982459473d1bfd2cbefd69c67cb0971286"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/wer-metadata.json",
+      "size": 280,
+      "sha256": "1deeef413a431c18c1f83b073486d8b7bef610a08f2798204514c03edb765e80"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-2025/official-first-run-welcome.png",
+      "size": 36125,
+      "sha256": "1441a2f6a54cc18ffd3c00c9a22df04f07160132ced724501501995cc0c1ea06"
+    },
+    {
+      "path": "investigation-7ccda2b-browser/windows-11-arm/official-first-run-welcome.png",
+      "size": 36125,
+      "sha256": "2988b335a479eb7a2d1d01bba373794f49bab6f6405d03527f2a755c93f220e3"
     }
   ],
   "note": "P09 remains incomplete. Current candidate b04a766 has passed both standalone display fixtures; full application and reference workload proof plus matching P03-P08 retention remain pending. Historical passing native builds or failed/cancelled investigations cannot close the gate.",
@@ -59133,6 +59443,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38869199205",
       "result": "FAILED",
       "note": "Both targets completed 93 UI assertions, 10000 files over 79 pages and the correct synthetic target launch with secret isolation. Native diagnostic save failed on both, blocking the dependent transfer/lifecycle sequence; three browser continuations failed. ARM also failed physical keyboard and editor interaction. This diagnostic run is not a full exit gate."
+    },
+    {
+      "tested_commit": "7ccda2b199464daa9055ccd3ad398bb7986339d6",
+      "run_id": 38870280326,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38870280326",
+      "result": "FAILED",
+      "note": "Both main isolation proofs passed; browser continuation failed. Actual visible synthetic screenshots on both targets reveal the official first-run welcome modal, unlike the misleading branding-only PrintWindow surface. This diagnostic does not close the product gate."
     }
   ]
 }

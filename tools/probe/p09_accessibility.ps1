@@ -116,7 +116,7 @@ public static class P09Access {
  [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern IntPtr FindWindowEx(IntPtr parent,IntPtr after,string kind,string title);
  public static IntPtr[] ImmersiveWindows(out bool complete){
   var found=new System.Collections.Generic.HashSet<IntPtr>();bool all=true;
-  foreach(string kind in new[]{"Windows.UI.Core.CoreWindow","ApplicationFrameWindow","Xaml_WindowedPopupClass"}){
+  foreach(string kind in new[]{"Windows.UI.Core.CoreWindow","ApplicationFrameWindow","Xaml_WindowedPopupClass","WinUIDesktopWin32WindowClass","Microsoft.UI.Content.DesktopChildSiteBridge","Windows.UI.Composition.DesktopWindowContentBridge"}){
    IntPtr window=IntPtr.Zero;var seen=new System.Collections.Generic.HashSet<IntPtr>();int scanned=0;
    while((window=FindWindowEx(IntPtr.Zero,window,kind,null))!=IntPtr.Zero){if(scanned++>=64||!seen.Add(window)){all=false;break;}found.Add(window);}
   }
@@ -341,6 +341,7 @@ function Observe-NativePoint([IntPtr]$hit,[IntPtr]$target){
  $class=[Text.StringBuilder]::new(128);$null=[P09Access]::GetClassName($hit,$class,128)
  $known=@('ApplicationFrameWindow','Windows.UI.Core.CoreWindow','Progman','WorkerW','Xaml_WindowedPopupClass','#32770','Chrome_WidgetWin_0','Chrome_WidgetWin_1','Chrome_RenderWidgetHostHWND')
  $result.native_hit_class=if($class.ToString() -cin $known){$class.ToString()}else{'WITHHELD'}
+ $rootClass=[Text.StringBuilder]::new(129);$null=[P09Access]::GetClassName($top,$rootClass,129);$fixedShell=($result.native_hit_root_kind -in @('WINDOWS_PICKER_HOST','WINDOWS_WEB_APP_HOST','WINDOWS_START_MENU','WINDOWS_SEARCH'));$result.native_hit_root_class=if($fixedShell -and $rootClass.ToString() -cmatch '^[A-Za-z0-9_.#:-]{1,128}$'){$rootClass.ToString()}else{'WITHHELD'};$result.native_hit_root_same_user=[P09Access]::SameUser($top)
 }
 function Send-LiteralKeys([string]$value){
  Need ($value.Length -le 1024 -and $value.IndexOfAny([char[]]@([char]0,[char]10,[char]13)) -lt 0)

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "T41",
+    "evidence": {
+      "browser_sandbox_disabled": false,
+      "socket_owner_and_held_birth_verified": true,
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "separate_clean_profiles": true,
+      "unboxed_handoff": false,
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "explicit_profile_and_no_remote": true,
+      "preexisting_host_browser_verified": true
+    },
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "status": "PASSED"
+  },
+  {
+    "line": 15,
+    "id": "T41",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_child_request_stays_boxed",
+    "elapsed_ms": 6308,
+    "status": "FAILED"
+  },
+  {
+    "line": 15,
+    "id": "T41",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "elapsed_ms": 22911,
+    "status": "FAILED"
+  },
+  {
+    "line": 15,
+    "id": "T30",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "elapsed_ms": 5833,
+    "status": "FAILED"
+  }
+]

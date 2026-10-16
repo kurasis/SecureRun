@@ -5,6 +5,10 @@ on:
     paths: ['.github/workflows/p09-desktop.yml']
   workflow_dispatch:
     inputs:
+      input_probe:
+        description: 'Observe native point ABI and UIA ownership in an owned synthetic window'
+        type: boolean
+        default: false
       prepare:
         description: 'Cancel one authenticated same-user initial Windows picker before test applications start'
         type: boolean
@@ -26,7 +30,7 @@ jobs:
         run: |
           $ErrorActionPreference='Stop'
           New-Item -ItemType Directory -Path artifacts/p09-desktop -Force | Out-Null
-          $mode=if('${{ inputs.prepare }}' -eq 'true'){'DESKTOP_PREPARE'}else{'DESKTOP_DIAGNOSTIC'}
+          $mode=if('${{ inputs.input_probe }}' -eq 'true'){'DESKTOP_INPUT'}elseif('${{ inputs.prepare }}' -eq 'true'){'DESKTOP_PREPARE'}else{'DESKTOP_DIAGNOSTIC'}
           ./tools/probe/p09_accessibility.ps1 -Mode $mode -ResultFile artifacts/p09-desktop/input-desktop.json
       - name: Retain minimized desktop observation
         if: always()

@@ -1,5 +1,5 @@
 ﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
+param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
 trap {
@@ -69,6 +69,10 @@ public static class P09Access {
  public static bool OwnedWindow(IntPtr window,uint expected){uint pid=0;GetWindowThreadProcessId(window,out pid);if(pid==expected)return true;IntPtr root=GetAncestor(window,2);if(root!=IntPtr.Zero){GetWindowThreadProcessId(root,out pid);if(pid==expected)return true;}return RootOwnerPid(window)==expected;}
  [DllImport("user32.dll")]public static extern IntPtr WindowFromPhysicalPoint(P09Point point);
  [DllImport("user32.dll")]public static extern IntPtr WindowFromPoint(P09Point point);
+ [DllImport("user32.dll",EntryPoint="WindowFromPoint")]public static extern IntPtr WindowFromPackedPoint(long point);
+ public static IntPtr PackedPoint(P09Point point){return WindowFromPackedPoint(unchecked((long)(((ulong)(uint)point.Y<<32)|(uint)point.X)));}
+ [DllImport("dwmapi.dll")]static extern int DwmGetWindowAttribute(IntPtr window,uint attribute,out uint value,uint size);
+ public static int Cloaked(IntPtr window){uint value;return DwmGetWindowAttribute(window,14,out value,4)==0?(int)value:-1;}
  [DllImport("kernel32.dll",SetLastError=true)]static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode)]static extern bool QueryFullProcessImageName(IntPtr process,uint flags,System.Text.StringBuilder image,ref uint size);
  [DllImport("kernel32.dll")]static extern bool CloseHandle(IntPtr handle);
@@ -208,6 +212,21 @@ function Prepare-InitialDesktop{
  return $result
 }
 if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0}
+if($Mode -eq 'DESKTOP_INPUT'){
+ $form=$null
+ try{
+  $form=[Windows.Forms.Form]::new();$form.Text='SecureRun synthetic native input probe';$form.StartPosition='CenterScreen';$form.Width=640;$form.Height=480;$form.TopMost=$true
+  $field=[Windows.Forms.TextBox]::new();$field.Left=40;$field.Top=60;$field.Width=400;$form.Controls.Add($field);$form.Show();[Windows.Forms.Application]::DoEvents();Start-Sleep -Milliseconds 300
+  $root=$form.Handle;$null=[P09Access]::SetForegroundWindow($root);$field.Focus()|Out-Null;[Windows.Forms.Application]::DoEvents()
+  $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($field.Handle,[ref]$rect));$point=[P09Point]::new();$point.X=[int](($rect.Left+$rect.Right)/2);$point.Y=[int](($rect.Top+$rect.Bottom)/2)
+  $hit=[P09Access]::WindowFromPoint($point);$packed=[P09Access]::PackedPoint($point);$expected=[Diagnostics.Process]::GetCurrentProcess().Id
+  $result.struct_point_owned=[P09Access]::OwnedWindow($hit,$expected);$result.packed_point_owned=[P09Access]::OwnedWindow($packed,$expected);$result.point_apis_agree=($hit -eq $packed);$result.struct_point_kind=Native-HitKind $hit;$result.packed_point_kind=Native-HitKind $packed;$result.struct_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.packed_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($packed,2));$result.foreground_owned=[P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$expected)
+  $provider=[Windows.Automation.AutomationElement]::FromPoint([Windows.Point]::new($point.X,$point.Y));$result.uia_point_owned=($provider.Current.ProcessId -eq $expected)
+  $result.status='OBSERVED';$result.product_acceptance_claimed=$false;$result.input_dispatched=$false;$result.os_security_settings_modified=$false
+ }catch{$result.status='FAILED';$result.exception_type=$_.Exception.GetBaseException().GetType().FullName}
+ finally{if($null -ne $form){$form.Close();$form.Dispose()}}
+ $result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0
+}
 if($Mode -eq 'DESKTOP_DIAGNOSTIC'){$result.status='OBSERVED';$result.foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow());$result.os_security_settings_modified=$false;$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8;exit 0}
 function Observe-NativePoint([IntPtr]$hit,[IntPtr]$target){
  $top=[P09Access]::GetAncestor($hit,2);$foreground=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)

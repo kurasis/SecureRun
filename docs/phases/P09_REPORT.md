@@ -567,3 +567,14 @@ owned foreground dialog, then accepts only its enabled known editable ComboBox/
 Edit provider or fixed-ID native field with exact readback. Focus helpers require
 the exact native root window, in addition to PID ownership. No arbitrary edit
 field, foreign window, native picker result or selection lease is substituted.
+
+Public Actions artifact reads remain available while authenticated publication is
+blocked. ARM focused `5012abe` passed the actual picker, queued diff, explicit
+whole-box Stop and independently verified stopped Apply (83 UI assertions). Its
+case failed only because a redundant cleanup Stop raced the subsequent UI refresh.
+Successful verified stopped Apply no longer dispatches that second Stop. Only
+readonly LIST may wait up to four seconds for an explicit pre-work namespace-lock
+refusal; mutations and uncertain outcomes are never retried. Exact refusal action
+and whitelisted native hit-owner categories improve diagnosis without retaining
+PIDs, paths or arbitrary process names. Physical input still requires the same
+native ownership/provider checks.

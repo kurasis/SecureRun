@@ -8,7 +8,7 @@ compilation alone do not establish compatibility.
 
 | Application | Exact package version | Architectures | Required actual workflow | Current result |
 |---|---|---|---|---|
-| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Blocked: Scintilla UIA provider absent on both; verified native control/keyboard recheck pending |
+| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Incomplete: native edit/Save As interaction passed on Server at `cf6edad`; actual boxed saved bytes were not observed. Current output-wait and ARM input checks are pending. |
 | 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
 | Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: main request/profile isolation passed on both in 38826425388; child action failed, protocol/content-sandbox proof pending |
 

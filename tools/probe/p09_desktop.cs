@@ -30,7 +30,7 @@ public sealed class P09Desktop : IDisposable {
  [DllImport("user32.dll")] static extern bool EnumWindows(Visit visit,IntPtr parameter);
  [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hwnd,out uint pid);
  delegate bool Visit(IntPtr hwnd,IntPtr parameter);
- readonly IntPtr job,process;readonly bool hostFixture;public readonly int ProcessId;public readonly long StartedTicks;
+ int disposed;readonly IntPtr job,process;readonly bool hostFixture;public readonly int ProcessId;public readonly long StartedTicks;
  public P09Desktop(string executable,string cwd,string trace,int port):this(executable,cwd,trace,port,null) {}
  static string Quote(string value){if(value.IndexOfAny(new[]{'"','\0','\r','\n'})>=0||value.EndsWith("\\",StringComparison.Ordinal))throw new InvalidOperationException("P09_LAB_ARGUMENT_INVALID");return "\""+value+"\"";}
  public P09Desktop(string executable,string cwd,string trace,int port,string[] arguments) {
@@ -94,9 +94,22 @@ public sealed class P09Desktop : IDisposable {
   while(clock.Elapsed.TotalSeconds<60){var s=Sample();long memory=(long)s["working_set_bytes"];total+=memory;peak=Math.Max(peak,memory);webviews=Math.Max(webviews,(int)s["webview_processes"]);processes=Math.Max(processes,(int)s["process_count"]);samples++;Thread.Sleep(250);}
   long cpu=Cpu()-begin;double elapsed=clock.Elapsed.TotalSeconds;long duration=clock.ElapsedMilliseconds;long managerCpu=ManagerCpu()-managerBegin,webviewCpu=(long)Sample()["live_webview_cpu_ticks"]-webviewBegin;return new Dictionary<string,object>{{"manager_cpu_seconds",managerCpu/10000000.0},{"children_cpu_seconds",(cpu-managerCpu)/10000000.0},{"live_webview_cpu_delta_seconds",webviewCpu/10000000.0},{"webview_cpu_attribution_complete",false},{"duration_ms",duration},{"cpu_percent",100.0*cpu/10000000.0/elapsed/Environment.ProcessorCount},{"cpu_denominator_logical_processors",Environment.ProcessorCount},{"average_working_set_bytes",total/samples},{"peak_working_set_bytes",peak},{"samples",samples},{"webview_processes",webviews},{"peak_process_count",processes},{"includes_exited_child_cpu",true},{"job_group_complete",true},{"target_and_engine_processes_excluded",true}};
  }
+ void DrainOwnedJob() {
+  // This handle owns only the fixture GUI created suspended and its descendants.
+  // Do not enumerate or terminate an unrelated PID/window or engine scope.
+  if(!TerminateJobObject(job,99))throw new InvalidOperationException("P09_OWNED_GUI_JOB_STOP_FAILED");
+  var began=Stopwatch.StartNew();uint size=(uint)Marshal.SizeOf<Accounting>();IntPtr data=Marshal.AllocHGlobal((int)size);
+  try{while(began.ElapsedMilliseconds<10000){uint returned;if(!QueryInformationJobObject(job,1,data,size,out returned))throw new InvalidOperationException("P09_OWNED_GUI_JOB_QUERY_FAILED");if(Marshal.PtrToStructure<Accounting>(data).active==0)return;Thread.Sleep(25);}throw new InvalidOperationException("P09_OWNED_GUI_JOB_DRAIN_TIMEOUT");}
+  finally{Marshal.FreeHGlobal(data);}
+ }
  public void Dispose(){
-  if(hostFixture){TerminateJobObject(job,99);WaitForSingleObject(process,10000);CloseHandle(process);CloseHandle(job);return;}
-  EnumWindows((window,p)=>{uint pid;GetWindowThreadProcessId(window,out pid);if(pid==(uint)ProcessId)PostMessage(window,0x10,IntPtr.Zero,IntPtr.Zero);return true;},IntPtr.Zero);
-  if(WaitForSingleObject(process,20000)!=0){TerminateProcess(process,90);WaitForSingleObject(process,10000);}CloseHandle(process);CloseHandle(job);
+  if(Interlocked.Exchange(ref disposed,1)!=0)return;
+  try{
+   if(!hostFixture){
+    EnumWindows((window,p)=>{uint pid;GetWindowThreadProcessId(window,out pid);if(pid==(uint)ProcessId)PostMessage(window,0x10,IntPtr.Zero,IntPtr.Zero);return true;},IntPtr.Zero);
+    if(WaitForSingleObject(process,20000)!=0){TerminateProcess(process,90);WaitForSingleObject(process,10000);}
+   }
+   DrainOwnedJob();
+  }finally{CloseHandle(process);CloseHandle(job);}
  }
 }

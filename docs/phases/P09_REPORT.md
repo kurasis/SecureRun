@@ -578,3 +578,9 @@ refusal; mutations and uncertain outcomes are never retried. Exact refusal actio
 and whitelisted native hit-owner categories improve diagnosis without retaining
 PIDs, paths or arbitrary process names. Physical input still requires the same
 native ownership/provider checks.
+The GUI fixture now drains its exact held kernel job after normal manager exit,
+using the same owned-job termination already used for the synthetic host browser.
+It waits for the existing accounting API to report zero active members before
+starting another GUI. No unrelated PID, sandbox or system reporter is selected.
+This prevents an earlier fixture's WebView children from remaining on the test
+desktop; it changes neither product termination behavior nor resource samples.

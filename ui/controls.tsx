@@ -33,6 +33,11 @@ export function Controls({ language, environmentId }: { language: Language;envir
     busyRef.current = true; setBusy(true); const operation = crypto.randomUUID(); setLastOperation(operation);
     try { await request({ ...value, operation_id: operation }); } catch { setError('OUTCOME_UNKNOWN'); setFresh(false); } finally { busyRef.current = false; setBusy(false); }
   }
+  async function launch(applicationId: string, environmentId: string) {
+    const current = envs.find(value => value.id === environmentId);
+    if (!current) { setFresh(false); return; }
+    await action({ action: 'LAUNCH', application_id: applicationId, environment_id: environmentId, expected_revision: current.revision });
+  }
   async function reconcile(operation: string) {
     busyRef.current = true; setBusy(true);
     try { await request({ action: 'RECONCILE', operation_id: operation }); }
@@ -67,7 +72,7 @@ export function Controls({ language, environmentId }: { language: Language;envir
     {error && <ErrorView language={language} code={error} diagnosticId={reply?.diagnostic_id??lastOperation??undefined} action={ru?'Приложения':'Applications'}/>}{!fresh && <p role="status">{ru ? 'Активность неизвестна: обновите состояние.' : 'Activity unknown: refresh state.'}</p>}
     {reply?.environments.filter(e=>!environmentId||e.environment_id===environmentId).map(e => <article key={e.environment_id}><h3>{escaped(envs.find(v => v.id === e.environment_id)?.display_name ?? e.environment_id)}</h3><p>{product.status}: {statusName(fresh&&e.complete?e.activity:'UNKNOWN',language)} · {product.eligibility}: {fresh&&e.launch_eligible?product.allowed:product.blocked}</p>
       {fresh&&!e.launch_eligible&&<ErrorView language={language} code={e.launch_reason} diagnosticId={reply.diagnostic_id} action={product.applications}/>}
-      {reply.applications.filter(a => a.environment_id === e.environment_id).map(a => <p key={a.id}>{escaped(a.display_name)} <small>({a.boxed ? (ru ? 'импортированный boxed EXE' : 'imported boxed EXE') : (ru ? 'установленный на хосте EXE' : 'host-installed EXE')})</small> <button disabled={busy || !fresh || !e.launch_eligible || !a.available} onClick={() => void action({ action: 'LAUNCH', application_id: a.id, environment_id: e.environment_id, expected_revision: a.revision })}>{ru ? 'Запустить' : 'Run'}</button>{!a.available && <span role="status"> {ru ? 'Недоступно: импортируйте EXE заново после сброса.' : 'Unavailable: reimport the EXE after reset.'}</span>}</p>)}
+      {reply.applications.filter(a => a.environment_id === e.environment_id).map(a => <p key={a.id}>{escaped(a.display_name)} <small>({a.boxed ? (ru ? 'импортированный boxed EXE' : 'imported boxed EXE') : (ru ? 'установленный на хосте EXE' : 'host-installed EXE')})</small> <button disabled={busy || !fresh || !e.launch_eligible || !a.available || !envs.some(value => value.id === e.environment_id)} onClick={() => void launch(a.id, e.environment_id)}>{ru ? 'Запустить' : 'Run'}</button>{!a.available && <span role="status"> {ru ? 'Недоступно: импортируйте EXE заново после сброса.' : 'Unavailable: reimport the EXE after reset.'}</span>}</p>)}
       <button disabled={busy} onClick={() => void action({ action: 'STOP', environment_id: e.environment_id })}>{ru ? 'Остановить окружение' : 'Stop environment'}</button>
       <ul>{e.processes.map(p => <li key={`${p.pid}:${p.creation_time}`}>PID {p.pid} · {ru ? 'сеанс' : 'session'} {p.session}</li>)}</ul></article>)}
     {lastOperation && <button disabled={busy} onClick={() => void reconcile(lastOperation)}>{ru ? 'Проверить последнюю операцию без повторного запуска' : 'Reconcile last operation without replay'}</button>}

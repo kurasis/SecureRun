@@ -68,8 +68,11 @@ window.__p09_run=async function(stage,config={}) {
    }
    case 'SECRET_REGISTER':{
     const form=await wait(()=>document.querySelector('form'));await wait(()=>button('Register application',form)&&!button('Register application',form).disabled);form.requestSubmit();await wait(()=>Array.from(document.querySelectorAll('article')).some(e=>e.textContent.includes('P09 synthetic diagnostic target')));
-    const article=Array.from(document.querySelectorAll('article')).find(e=>e.textContent.includes('P09 synthetic diagnostic target'));await click('Run',article);await pause(7000);
-    const r=await native({action:'LIST'},'control_request');check('T66','real_secret_argument_target_registered',r.applications.some(a=>a.display_name==='P09 synthetic diagnostic target')&&r.receipts.some(receipt=>receipt.process!==null));state.secretTargetChecked=true;break;
+    const before=await native({action:'LIST'},'control_request');if(before.reason!=='OBSERVED')throw Error('P09_SECRET_DISPATCH_BASELINE_UNAVAILABLE');const oldOperations=new Set(before.receipts.map(r=>r.operation_id));
+    const article=Array.from(document.querySelectorAll('article')).find(e=>e.textContent.includes('P09 synthetic diagnostic target'));await click('Run',article);
+    const deadline=performance.now()+90000;let receipt=null;let r;
+    do{r=await native({action:'LIST'},'control_request');const fresh=r.receipts.filter(v=>!oldOperations.has(v.operation_id));if(fresh.some(v=>v.state==='REFUSED'))throw Error('P09_SECRET_DISPATCH_REFUSED');if(r.reason==='OBSERVED'&&fresh.length===1&&fresh[0].process!==null){receipt=fresh[0];break;}await pause(100);}while(performance.now()<deadline);
+    check('T66','real_secret_argument_target_registered',r.applications.some(a=>a.display_name==='P09 synthetic diagnostic target')&&receipt!==null);state.secretTargetChecked=true;return {status:'PASSED',cases,secret_receipt:receipt};
    }
    case 'FILE_LIST':{
     state.fileStep='FILE_TAB';await tab('Files');await wait(()=>button('Storage root'));const start=performance.now();state.fileStep='FILE_ROOT';await click('Storage root');await wait(()=>document.querySelector('tbody tr'));

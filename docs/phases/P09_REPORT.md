@@ -59,6 +59,7 @@ Documentation-only descendants do not replace the required tested source.
 | P07 historical `b04a766` | [38852280456](https://github.com/kurasis/SecureRun/actions/runs/38852280456), passed both; final matching source pending |
 | P08 historical `b04a766` | [38852282413](https://github.com/kurasis/SecureRun/actions/runs/38852282413), passed both; final matching source pending |
 | P09 full workload | [38858563360](https://github.com/kurasis/SecureRun/actions/runs/38858563360), pending |
+| P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM pending |
 | P09 focused diagnostic | [38858567312](https://github.com/kurasis/SecureRun/actions/runs/38858567312), pending; cannot close the full gate |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
@@ -98,7 +99,7 @@ verifies both selection popups before minimizing Settings.
 
 Notepad++ editing and Save As passed on Server at `f9b719d`: the actual boxed
 output was observed, exact bytes matched, and host input/output stayed unchanged.
-The ARM workflow remains pending. Both targets proved all 10,000 files on 79
+Server repeated that exact save successfully in apps-only run [38858126567](https://github.com/kurasis/SecureRun/actions/runs/38858126567). That run also proved the controller cancelled two enrolled initial picker windows on ARM using scoped WM_CLOSE, but the subsequent editor/document point checks still failed. The ARM workflow remains pending. Both targets proved all 10,000 files on 79
 pages with at most 128 entries and 127 DOM rows; all 88 UI assertions passed.
 Firefox main-request/profile isolation and 7-Zip GUI round trips passed
 historically on both targets. Final matching editor save, browser child/protocol/own

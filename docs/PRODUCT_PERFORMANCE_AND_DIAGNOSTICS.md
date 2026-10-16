@@ -34,22 +34,20 @@ Server and 1.29373% / 229258465 bytes on ARM. These four-environment measurement
 are diagnostic-only and their CPU also exceeds the target. Compilation and the
 separate zero-environment measurement fixture cannot satisfy the performance gate.
 
-The next revision uses a bounded read-only observation worker: authenticated
-component file objects remain held against writes/deletion for at most 60 seconds.
-Each 1.7-second snapshot still checks SCM configuration/status, protected object
-ownership/DACL/link identity, current driver ABI, manager/worker context, boxes,
-processes, roots and configuration. A stale, changed or failed observation clears
-availability. Every mutation independently repeats its full native checks; the
-observer supplies no mutation authority. WebView2's public low-memory target
-reduces caches without changing its sandbox or excluding any child from the
-measurement. Fresh Windows measurements are required before claiming further improvement.
-Numeric startup tracing at `9daaf46` found 83 ms initial engine observation,
-90 ms to WebView construction and 4167 ms through window construction. A software-composition experiment did not improve the isolated CPU measurement
-and produced a 40.9-second cold-start outlier. The next build restores the normal
-WebView rendering defaults rather than accepting an unproven rendering change.
-The standard-user actor derives its profile environment from its loaded Windows
-profile and uses an owner-private writable fixture TEMP. This is measured setup,
-not a change to any engine, sandbox or Windows security setting.
+The current bounded read-only observer holds authenticated component objects for
+at most 60 seconds. Each 1.7-second frame independently checks current service,
+protected object identity, driver ABI, manager context, boxes, processes, roots
+and configuration. Every mutation repeats its independent native guards. One
+conditional status waiter has a three-second deadline. The frontend consumes
+completed frames immediately, backs off unchanged/error replies and uses a
+single claim-expiry timer. Control eligibility refreshes within its original
+15-second validity. Unknown or failed observations clear availability.
+
+WebView2 uses its public low-memory target and normal rendering defaults. A
+software-composition experiment was reverted after failing to improve CPU and
+producing a 40.9-second startup outlier. The actor uses its loaded Windows profile
+and owner-private writable fixture TEMP; no security setting is changed.
+Historical samples cannot establish performance at the final source revision.
 
 | Workload | Required reference budget | Measurement |
 |---|---|---|
@@ -98,34 +96,10 @@ redacted example is retained only after its native save succeeds.
 Current result: pending [P09 manifest](evidence/p09/manifest.json).
 
 
-The next observer revision combines a complete snapshot every 1.7 seconds with
-one bounded conditional status request, returning immediately on publication.
-It reduces full-snapshot work while removing the extra client polling delay;
-configuration checks are not cached or omitted. Native scope/context checks for
-every operation remain independent. One reserved waiter and a three-second
-deadline bound this read-only wait; resource and update budgets still require
-actual matching Windows measurements.
-
-The next UI consumes its existing bounded conditional health read immediately
-after each completed snapshot, instead of adding a one-second polling phase. An
-unchanged/error reply has a one-second backoff, and unmount releases its wait. A
-single deadline timer expires claims without a periodic full UI clock render.
-Readonly control eligibility refreshes every 14 seconds, within its unchanged
-15-second validity; process activity still uses complete 1.7-second native
-observations. Slow/failed refreshes become Unknown. Every action repeats full
-current native guards. These changes require fresh full-workload measurements.
-
-Native operation setup retains its once-authenticated immutable component objects
-through full context observation and execution, avoiding two immediate hash/
-signature passes over the same protected bytes in one operation. Every new
-operation still authenticates independently. Box snapshot byte accounting is
-incremental with the exact same compact-JSON bound; no native checks or fields
-are skipped. Fresh reference measurements are required.
-
 Current observed deviations mean that the first interactive window can arrive
 later than three seconds and that idle processor use can exceed the one-percent
 target, potentially increasing power use. Average working set has met the
 250,000,000-byte target in the completed reference samples cited above. These
 observations are specific to the documented hosted runners and do not establish
-Windows 11 x64 release performance. Both targets now have a complete reference resource sample; application, file,
-accessibility and final-source phase proof remain incomplete.
+Windows 11 x64 release performance. Both targets have historical complete reference samples; final-source measurement,
+application, accessibility and phase proof remain incomplete.

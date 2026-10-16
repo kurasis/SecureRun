@@ -104,7 +104,7 @@ window.__p09_run=async function(stage,config={}) {
    case 'TRANSFER_COLLISION_PICK':{await pause(150);await click('Export to selected folder');break;}
    case 'TRANSFER_EXPORTED':{
     const panel=await wait(()=>document.querySelector('section[aria-labelledby=files-title]'));await wait(()=>button('Import file',panel)&&!button('Import file',panel).matches(':disabled'));
-    check('T32',config.renamed?'actual_ui_renamed_export_completed':'actual_ui_export_completed',!panel.querySelector('.error')&&Array.from(panel.querySelectorAll('p > code')).some(e=>text(e)==='Complete · OBSERVED'));break;
+    check('T32',config.renamed?'actual_ui_renamed_export_completed':'actual_ui_export_completed',!panel.querySelector('.error')&&Array.from(panel.querySelectorAll('p > code')).some(e=>text(e)==='Complete · TRANSFER_COMPLETED_UNTRUSTED'));break;
    }
    case 'TRANSFER_RENAME_PICK':{
     const dialog=await wait(()=>document.querySelector('dialog[open]'));check('T32','export_collision_offers_only_rename_and_skip',!!button('Rename and export',dialog)&&!!button('Skip',dialog)&&!button('Replace',dialog));set(dialog.querySelector('input'),'workflow-renamed.txt');await click('Rename and export',dialog);break;

@@ -66,6 +66,8 @@ public static class P09Access {
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode)]static extern bool QueryFullProcessImageName(IntPtr process,uint flags,System.Text.StringBuilder image,ref uint size);
  [DllImport("kernel32.dll")]static extern bool CloseHandle(IntPtr handle);
  [DllImport("advapi32.dll")]static extern bool OpenProcessToken(IntPtr process,uint access,out IntPtr token);
+ [DllImport("kernel32.dll")]static extern bool GetProcessTimes(IntPtr process,out long created,out long exited,out long kernel,out long user);
+ public static string HitBirthKey(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr held=OpenProcess(0x1000,false,pid);if(held==IntPtr.Zero)return null;try{long created,exited,kernel,user;return GetProcessTimes(held,out created,out exited,out kernel,out user)&&created>0?pid.ToString(System.Globalization.CultureInfo.InvariantCulture)+":"+created.ToString(System.Globalization.CultureInfo.InvariantCulture):null;}finally{CloseHandle(held);}}
  public static bool SameUser(IntPtr window){uint pid;GetWindowThreadProcessId(window,out pid);IntPtr process=OpenProcess(0x1000,false,pid);if(process==IntPtr.Zero)return false;try{IntPtr token;if(!OpenProcessToken(process,8,out token))return false;try{using(var identity=new System.Security.Principal.WindowsIdentity(token))using(var current=System.Security.Principal.WindowsIdentity.GetCurrent())return identity.User!=null&&current.User!=null&&identity.User.Value==current.User.Value;}finally{CloseHandle(token);}}finally{CloseHandle(process);}}
  public static IntPtr FocusedFilename(IntPtr root,uint expected,string box){uint pid;uint thread=GetWindowThreadProcessId(root,out pid);var info=new P09GuiInfo{Size=(uint)Marshal.SizeOf(typeof(P09GuiInfo))};return pid==expected&&GetGUIThreadInfo(thread,ref info)&&IsChild(root,info.Focus)&&OwnedWindow(info.Focus,expected)&&FilenameEdit(info.Focus,box)&&IsWindowVisible(info.Focus)&&IsWindowEnabled(info.Focus)?info.Focus:IntPtr.Zero;}
  public static int InputSize(){return Marshal.SizeOf(typeof(Input));}
@@ -134,12 +136,13 @@ function Native-HitKind([IntPtr]$window){
  }finally{$process.Dispose()}}catch{return 'UNAVAILABLE'}
 }
 $result.powershell_major=$PSVersionTable.PSVersion.Major;try{$null=[ushort]1;$result.ushort_alias_available=$true}catch{$result.ushort_alias_available=$false}
+$script:enrolledInitialPickers=[Collections.Generic.HashSet[string]]::new()
 function Prepare-InitialDesktop{
  $result=@{mode='DESKTOP_PREPARE';real_windows_uia=$true;synthetic_fixture_only=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()}
  $script:stage='PREPARING_INITIAL_CI_DESKTOP';$result.process_termination_dispatched=$false;$result.os_security_settings_modified=$false;$result.initial_picker_cancelled=$false
  try{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
-  Need (@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0)
+  $noProductProcesses=(@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0);$result.product_process_present=(-not $noProductProcesses)
   $script:initialPickers=[Collections.Generic.List[IntPtr]]::new();$script:initialPickerIds=[Collections.Generic.HashSet[int]]::new()
   foreach($candidate in [Diagnostics.Process]::GetProcessesByName('PickerHost')){try{$null=$script:initialPickerIds.Add($candidate.Id)}finally{$candidate.Dispose()}}
   $null=[P09Access]::EnumWindows({param($window,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($window,[ref]$owner);if($script:initialPickerIds.Contains($owner) -and [P09Access]::IsWindowVisible($window)){$script:initialPickers.Add($window)};return $true},[IntPtr]::Zero)
@@ -147,14 +150,18 @@ function Prepare-InitialDesktop{
   if($script:initialPickers.Count -gt 0){
    $foreground=[P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2)
    if($script:initialPickers.Contains($foreground)){$window=$foreground}else{Need ($script:initialPickers.Count -eq 1);$window=$script:initialPickers[0]}
-$result.same_user=[P09Access]::SameUser($window);Need $result.same_user
+   $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
+   $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
+   Need ($noProductProcesses -or $enrolled)
+   $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
    $image=[P09Access]::HitImage($window);Need ($image -and [IO.Path]::GetFileName($image) -ieq 'PickerHost.exe')
    $windows=[Environment]::GetFolderPath([Environment+SpecialFolder]::Windows);$programs=[Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
    $protected=$image.StartsWith($windows+'\SystemApps\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($windows+'\System32\',[StringComparison]::OrdinalIgnoreCase) -or $image.StartsWith($programs+'\WindowsApps\',[StringComparison]::OrdinalIgnoreCase)
    Need $protected;$trusted=$false;$signature=Get-AuthenticodeSignature -LiteralPath $image
    if($signature.Status -eq 'Valid' -and $null -ne $signature.SignerCertificate -and $signature.SignerCertificate.Subject -match '(?:^|,\s*)O=Microsoft Corporation(?:,|$)'){$trusted=$true}
    if(-not $trusted){foreach($package in @(Get-AppxPackage -ErrorAction Stop)){if($package.InstallLocation -and $image.StartsWith($package.InstallLocation+'\',[StringComparison]::OrdinalIgnoreCase) -and $package.SignatureKind -eq 'System' -and $package.Status -eq 'Ok' -and $package.Publisher -match '(?:^|,\s*)O=Microsoft Corporation(?:,|$)'){$trusted=$true;break}}}
-   $result.authenticated_windows_component=$trusted;Need $trusted
+   $result.authenticated_windows_component=$trusted;Need $trusted;Need ([P09Access]::HitBirthKey($window) -ceq $birthKey)
+   if($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER'){$null=$script:enrolledInitialPickers.Add($birthKey)}
    $element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;if($element.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.Close();$result.close_mechanism='UIA_WINDOW_CLOSE'}else{Need ([P09Access]::CancelInitialWindow($window));$result.close_mechanism='SCOPED_WM_CLOSE'}
    $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
   }
@@ -164,6 +171,12 @@ $result.same_user=[P09Access]::SameUser($window);Need $result.same_user
 }
 if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0}
 if($Mode -eq 'DESKTOP_DIAGNOSTIC'){$result.status='OBSERVED';$result.foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow());$result.os_security_settings_modified=$false;$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8;exit 0}
+function Request-EnrolledPickerCancellation{
+ $prefix=$env:SECURERUN_P09_DISPLAY_EVENTS;Need ($prefix -cmatch '^Local\\SecureRunP09Display-[0-9a-f]{32}$')
+ $request=$null;$done=$null;$failed=$null
+ try{$rights=[Security.AccessControl.EventWaitHandleRights]::Synchronize -bor [Security.AccessControl.EventWaitHandleRights]::Modify;$request=[Threading.EventWaitHandle]::OpenExisting($prefix+'-prepare',$rights);$done=[Threading.EventWaitHandle]::OpenExisting($prefix+'-done',$rights);$failed=[Threading.EventWaitHandle]::OpenExisting($prefix+'-failed',$rights);$null=$request.Set();Need ([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]@($done,$failed),15000) -eq 0);$result.enrolled_initial_picker_cancellation_acknowledged=$true}
+ finally{foreach($event in @($request,$done,$failed)){if($null -ne $event){$event.Dispose()}}}
+}
 function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  Need ([P09Access]::OwnedWindow($hwnd,$id))
  # Only this exact owned fixture window is raised. Keep it above unrelated
@@ -173,6 +186,13 @@ function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
   $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
+  if((Native-HitKind $hit) -eq 'WINDOWS_PICKER_HOST'){
+   # Only the controller's independently enrolled, same-user initial process
+   # may be cancelled. No target/product dialog is enrolled after GUI startup.
+   Request-EnrolledPickerCancellation
+   $null=[P09Access]::SetForegroundWindow($hwnd);$visible.Restart()
+   do{$hit=[P09Access]::WindowFromPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
+  }
   $result.focus_native_hit_kind=Native-HitKind $hit
   $result.native_point_api_agree=($hit -eq [P09Access]::WindowFromPhysicalPoint($point))
   Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
@@ -303,7 +323,7 @@ if($Mode -eq 'DISPLAY_SERVER'){
    if($index -ge 4){continue}
    if($index -eq 3){
     $desktopRequests++
-    if($desktopRequests -gt 4){$null=$events[5].Set();break}
+    if($desktopRequests -gt 8){$null=$events[5].Set();break}
     $record=Prepare-InitialDesktop
     $record.controller_same_user_preparation=$true
     $record|ConvertTo-Json -Depth 5|Set-Content -LiteralPath ($ResultFile+'.desktop-preparation-'+$desktopRequests+'.json') -Encoding UTF8

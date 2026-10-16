@@ -794,3 +794,21 @@ identity checks are unchanged. Output names and engine paths still reject the
 controls. A real Windows filesystem regression checks the held identity, escaped
 full suffix, strict engine-path refusal and output-name refusal. Windows Clippy
 cross-check passed; native execution and matching P03–P08 proof are pending.
+
+### Recurring initial Windows picker remains constrained to its enrolled process
+
+The `ffae987` ARM artifact proves that the controller cancelled a same-user,
+authenticated Windows PickerHost with UIA Window.Close. The actor re-observed zero
+visible picker windows, but the same component obstructed later physical input.
+The controller now enrolls a picker process only before any manager/editor/browser
+process exists. Later cancellation is permitted only for that exact PID and
+creation time, with fresh same-user, protected image and signature/package checks.
+The channel accepts no PID, window, path or command from the actor. There are at
+most eight preparation requests. A helper may request this fixed action once
+when a native hit test identifies PickerHost, then must positively re-establish
+ownership of the intended input window/point. An unknown or replacement process
+is refused while products run. The desktop is also re-observed after the measured
+manager closes and before the inspected GUI starts. No process is terminated,
+application/default selected, product dialog dismissed or target action retried.
+PowerShell/C# compilation, native input layout, the repository validator and all
+18 tooling tests passed; the recurring-window path needs actual Windows proof.

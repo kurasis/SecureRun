@@ -52,7 +52,7 @@ function Access([string]$Mode,[int]$ProcessId,[string]$Path='', [string]$Uri='',
  if($Box){$ps.ArgumentList.Add('-ExpectedBox');$ps.ArgumentList.Add($Box)}
  if($Scale){$ps.ArgumentList.Add('-Scale');$ps.ArgumentList.Add([string]$Scale)}
  $p=[Diagnostics.Process]::Start($ps);if($Async){return @{process=$p;result=$result}}
- try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;$expectedStatus=if($Mode -eq 'DESKTOP_PREPARE'){'OBSERVED'}else{'PASSED'};if($Mode -eq 'DESKTOP_PREPARE' -and -not $ParentPrepared -and $r.status -eq 'BLOCKED' -and $r.same_user -eq $false -and $r.initial_picker_window_count -ge 1){
+ try{Require ($p.WaitForExit($(if($Mode -eq 'DISPLAY_SCALE'){150000}else{90000}))) 'P09_ACCESSIBILITY_TIMEOUT';$r=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;$expectedStatus=if($Mode -eq 'DESKTOP_PREPARE'){'OBSERVED'}else{'PASSED'};if($Mode -eq 'DESKTOP_PREPARE' -and -not $ParentPrepared -and $r.status -eq 'BLOCKED' -and $null -ne $r.PSObject.Properties['same_user'] -and $r.same_user -eq $false -and $r.initial_picker_window_count -ge 1){
   # Only a fixed lab action crosses the existing owner-restricted event channel.
   # The controller independently re-authenticates the Windows component as its owner.
   $request=$null;$done=$null;$failed=$null
@@ -149,6 +149,8 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
    $metrics
   }finally{if($null -ne $gui){$gui.Dispose();$gui=$null};if(-not $watcher.HasExited){$watcher.Kill($true)};$watcher.Dispose()}
  }
+ # Re-observe after the measured manager has closed, before the inspected GUI.
+ $null=Access 'DESKTOP_PREPARE' 0
  # Normal product, real backend and real WebView. Inspector access exists only in this lab launch environment.
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()
  $gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'inspected-manager.log'),$port);Connect-P09Cdp $port;Wait-P09Document;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))

@@ -50,7 +50,7 @@ try {
  $executables=& (Join-Path $PSScriptRoot 'Initialize-P09-Applications.ps1') -ProductHome $productHome -Out $out
  }
  $engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus';$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p09-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
- foreach($file in @('p09_standard.ps1','p09_accessibility.ps1','p09_desktop.cs','p09_browser.cs','p09_cdp.ps1','p09_ui.js','p05_lab.cs','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") $productHome}
+ foreach($file in @('p09_standard.ps1','p09_accessibility.ps1','p09_ocr.ps1','p09_desktop.cs','p09_browser.cs','p09_cdp.ps1','p09_ui.js','p05_lab.cs','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$file") $productHome}
  $setup=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$setup.UseShellExecute=$false;$setup.WorkingDirectory=$engine
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $productHome 'p08_initialize.ps1'),'-EngineHome',$engine,'-Fixture',$fixture)){$setup.ArgumentList.Add($arg)}
  $setup.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$setup.Environment[$key]=$value}};$setup.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$setup.Environment['GITHUB_ACTIONS']='true'

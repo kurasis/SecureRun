@@ -598,7 +598,7 @@ try{
     if($continue[0].TryGetCurrentPattern([Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke()}else{$continue[0].SetFocus();Browser-Key $ManagerPid 13};$result.official_welcome_continue_invoked=$true
     $clock=[Diagnostics.Stopwatch]::StartNew();do{$remaining=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::NameProperty,'Welcome to Firefox'));if($null -eq $remaining){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
     $result.known_welcome_dismissed=($null -eq $remaining);Need $result.known_welcome_dismissed
-   }
+   }else{. (Join-Path $PSScriptRoot 'p09_ocr.ps1');Continue-VisualFirefoxWelcome $hwnd $ManagerPid}
   }
   'BROWSER_DIAGNOSTIC' {
    $stage='OBSERVING_SYNTHETIC_BROWSER_CHROME';Need (([P09Access]::Caption($hwnd)).Contains('P09 browser canary'))

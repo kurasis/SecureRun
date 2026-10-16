@@ -1,5 +1,5 @@
 ﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_DIAGNOSTIC','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents,[switch]$PrepareInput)
+param([ValidateSet('DESKTOP_DIAGNOSTIC','DESKTOP_INPUT','DESKTOP_PREPARE','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_WELCOME','BROWSER_DIAGNOSTIC','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents,[switch]$PrepareInput)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
 trap {
@@ -570,6 +570,25 @@ try{
   }
   'PICKER' {$stage='SELECTING_KNOWN_FIXTURE';$result.picker=Picker $ManagerPid $SelectedPath}
   'EDITOR' {$stage='EDITING_SYNTHETIC_DOCUMENT';Focus-NativeEditor $hwnd $ManagerPid;[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.SendKeys]::SendWait('P09_EDITOR_CANARY');[Windows.Forms.SendKeys]::SendWait('^%s');$result.picker=Picker $ManagerPid $SelectedPath;$result.real_keyboard_edit=$true}
+  'BROWSER_WELCOME' {
+   $stage='OBSERVING_OFFICIAL_FIREFOX_WELCOME';Need (([P09Access]::Caption($hwnd)).Contains('P09 browser canary'));Focus-OwnedWindow $hwnd $ManagerPid
+   $root=[Windows.Automation.AutomationElement]::FromHandle($hwnd);$result.uia_browser_provider_queried=$true;$result.real_windows_uia=$true
+   $elements=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition);Need ($elements.Count -le 10000)
+   $heading=@($elements|Where-Object {$_.Current.Name -ceq 'Welcome to Firefox'});$continue=@($elements|Where-Object {$_.Current.ControlType -eq [Windows.Automation.ControlType]::Button -and $_.Current.Name -ceq 'Continue'})
+   $terms=@($elements|Where-Object {$_.Current.Name.Contains('Terms of Use')}).Count -gt 0;$privacy=@($elements|Where-Object {$_.Current.Name.Contains('Privacy Notice')}).Count -gt 0
+   $result.official_welcome_heading_observed=($heading.Count -gt 0);$result.terms_notice_observed=$terms;$result.privacy_notice_observed=$privacy;$result.exact_continue_buttons=$continue.Count;$result.official_welcome_continue_invoked=$false
+   if($heading.Count -gt 0){
+    Need ($terms -and $privacy -and $continue.Count -eq 1 -and $continue[0].Current.IsEnabled -and (In-Provider $continue[0] $root))
+    $manage=@($elements|Where-Object {$_.Current.Name -ceq 'Manage diagnostic and interaction data'})
+    if($manage.Count -eq 1){$pattern=$null;if($manage[0].TryGetCurrentPattern([Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){$pattern.Expand()}elseif($manage[0].TryGetCurrentPattern([Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke()};Start-Sleep -Milliseconds 200}
+    $checks=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::CheckBox));Need ($checks.Count -le 32);$disabled=0
+    foreach($check in $checks){if($check.Current.Name -match '(?i)diagnostic|interaction|technical'){$toggle=$null;Need ($check.TryGetCurrentPattern([Windows.Automation.TogglePattern]::Pattern,[ref]$toggle));if($toggle.Current.ToggleState -eq [Windows.Automation.ToggleState]::On){$toggle.Toggle()};Need ($toggle.Current.ToggleState -eq [Windows.Automation.ToggleState]::Off);$disabled++}}
+    $result.diagnostic_data_choices_observed_off=$disabled;$stage='CONTINUING_RECOGNIZED_FIREFOX_WELCOME';$pattern=$null
+    if($continue[0].TryGetCurrentPattern([Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke()}else{$continue[0].SetFocus();Browser-Key $ManagerPid 13};$result.official_welcome_continue_invoked=$true
+    $clock=[Diagnostics.Stopwatch]::StartNew();do{$remaining=Find $root ([Windows.Automation.ControlType]::Text) 'Welcome to Firefox';if($null -eq $remaining){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
+    $result.known_welcome_dismissed=($null -eq $remaining);Need $result.known_welcome_dismissed
+   }
+  }
   'BROWSER_DIAGNOSTIC' {
    $stage='OBSERVING_SYNTHETIC_BROWSER_CHROME';Need (([P09Access]::Caption($hwnd)).Contains('P09 browser canary'))
    $result.native_window_response_error=[P09Access]::Responsive($hwnd);$result.native_browser_has_caption=(([P09Access]::GetWindowLong($hwnd,-16) -band 0x00c00000) -eq 0x00c00000)

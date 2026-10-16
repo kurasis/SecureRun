@@ -1,6 +1,6 @@
 ﻿# Lab-only in-memory OCR of an owned synthetic browser surface. No OCR text is persisted.
-function Read-OwnedBrowserWords([IntPtr]$window,[int]$owner){
- Need (([P09Access]::Caption($window)).Contains('P09 browser canary'))
+function Read-OwnedBrowserWords([IntPtr]$window,[int]$owner,[switch]$Support){
+ $requiredTitle=if($Support){'Troubleshooting Information'}else{'P09 browser canary'};Need (([P09Access]::Caption($window)).Contains($requiredTitle))
  Need ([P09Access]::OwnedWindow($window,$owner));Focus-OwnedWindow $window $owner
  $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($window,[ref]$rect));$width=$rect.Right-$rect.Left;$height=$rect.Bottom-$rect.Top
  Need ($width -ge 480 -and $height -ge 360 -and $width -le 4096 -and $height -le 4096)
@@ -35,4 +35,25 @@ function Continue-VisualFirefoxWelcome([IntPtr]$window,[int]$owner){
  Start-Sleep -Milliseconds 300;$clock=[Diagnostics.Stopwatch]::StartNew()
  do{$after=Read-OwnedBrowserWords $window $owner;$remaining=@($after.lines|Where-Object {$_.Text.Trim() -ceq 'Welcome to Firefox'});if($remaining.Count -eq 0){break};Start-Sleep -Milliseconds 200}while($clock.ElapsedMilliseconds -lt 15000)
  $result.known_welcome_dismissed=($remaining.Count -eq 0);Need $result.known_welcome_dismissed
+}
+
+function Copy-ActualAboutSupportData([IntPtr]$window,[int]$owner){
+ # This reads the official diagnostic page transiently. Never save its pixels/text.
+ $script:stage='LOCATING_NATIVE_ABOUT_SUPPORT_RAW_COPY';$view=Read-OwnedBrowserWords $window $owner -Support
+ $heading=@($view.lines|Where-Object {$_.Text.Contains('Troubleshooting Information')});Need ($heading.Count -ge 1)
+ $matches=[Collections.Generic.List[object]]::new()
+ foreach($line in $view.lines){
+  $words=@($line.Words);Need ($words.Count -le 128)
+  for($index=0;$index -le $words.Count-5;$index++){
+   $phrase=($words[$index..($index+4)]|ForEach-Object {$_.Text}) -join ' '
+   if($phrase -ieq 'Copy raw data to clipboard'){$matches.Add(@($words[$index..($index+4)]))}
+  }
+ }
+ $result.exact_about_support_raw_copy_buttons=$matches.Count;Need ($matches.Count -eq 1)
+ $rectangles=@($matches[0]|ForEach-Object {$_.BoundingRect});$left=($rectangles|ForEach-Object {$_.X}|Measure-Object -Minimum).Minimum;$right=($rectangles|ForEach-Object {$_.X+$_.Width}|Measure-Object -Maximum).Maximum
+ $top=($rectangles|ForEach-Object {$_.Y}|Measure-Object -Minimum).Minimum;$bottom=($rectangles|ForEach-Object {$_.Y+$_.Height}|Measure-Object -Maximum).Maximum
+ $point=[P09Point]::new();$point.X=$view.left+[int](($left+$right)/2);$point.Y=$view.top+[int](($top+$bottom)/2)
+ $null=Owned-Point $point $window $owner;Need ([P09Access]::SetCursorPos($point.X,$point.Y));[Windows.Forms.Clipboard]::Clear()
+ try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
+ $result.native_about_support_raw_copy_invoked=$true;$result.sandbox_source='ABOUT_SUPPORT_NATIVE_OCR_RAW_COPY'
 }

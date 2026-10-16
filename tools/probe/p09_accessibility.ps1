@@ -642,6 +642,18 @@ try{
      elseif($text -match '(?im)^\s*Effective Content (?:Process )?Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];break}
      Start-Sleep -Milliseconds 100
     }while($clock.ElapsedMilliseconds -lt 10000)
+    $result.support_selection_text_nonempty=($text.Length -gt 0);$result.support_selection_has_heading=$text.Contains('Troubleshooting Information');$result.support_selection_has_effective_label=($text -match 'Effective Content (?:Process )?Sandbox Level')
+    if($level -le 0){
+     . (Join-Path $PSScriptRoot 'p09_ocr.ps1');Copy-ActualAboutSupportData $hwnd $ManagerPid;$clock.Restart()
+     do{
+      $text=[Windows.Forms.Clipboard]::GetText();Need ($text.Length -le 2097152)
+      if($text.TrimStart().StartsWith('{')){
+       $data=$text|ConvertFrom-Json;$result.support_raw_sandbox_section_present=($null -ne $data.PSObject.Properties['sandbox']);Need $result.support_raw_sandbox_section_present
+       $result.support_raw_effective_level_present=($null -ne $data.sandbox.PSObject.Properties['effectiveContentSandboxLevel']);Need $result.support_raw_effective_level_present
+       $level=[int]$data.sandbox.effectiveContentSandboxLevel;break
+      };Start-Sleep -Milliseconds 100
+     }while($clock.ElapsedMilliseconds -lt 15000)
+    }
     Need ($level -gt 0);$result.effective_content_sandbox_level=$level;$result.browser_own_sandbox_enabled=$true;$result.real_about_support=$true
    }finally{[Windows.Forms.Clipboard]::Clear()}
   }

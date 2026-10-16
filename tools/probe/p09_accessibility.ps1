@@ -1,5 +1,5 @@
 ﻿# Windows PowerShell 5.1 uses the installed Windows UI Automation provider.
-param([ValidateSet('READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
+param([ValidateSet('DESKTOP_DIAGNOSTIC','READY','KEYBOARD','DISPLAY_SCALE','DISPLAY_CONTROLLER','DISPLAY_SERVER','PICKER','EDITOR','BROWSER_PROTOCOL','BROWSER_CHILD','BROWSER_SANDBOX','CONFIRM')][string]$Mode,[int]$ManagerPid,[string]$Coordination,[string]$ResultFile,[string]$SelectedPath,[string]$ProtocolUri,[switch]$AllowOverwrite,[string]$EnvironmentId,[string]$Intent,[string]$ExpectedBox,[ValidateSet(100,150,200)][int]$Scale=100,[switch]$CloseSettings,[string]$DisplayEvents)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $script:stage='LOADING_NATIVE_PROVIDER'
 trap {
@@ -41,6 +41,11 @@ public static class P09Access {
  public static bool OwnedWindow(IntPtr window,uint expected){uint pid=0;GetWindowThreadProcessId(window,out pid);if(pid==expected)return true;IntPtr root=GetAncestor(window,2);if(root!=IntPtr.Zero){GetWindowThreadProcessId(root,out pid);if(pid==expected)return true;}return RootOwnerPid(window)==expected;}
  [DllImport("user32.dll")]public static extern IntPtr WindowFromPhysicalPoint(P09Point point);
  [DllImport("user32.dll")]public static extern IntPtr GetAncestor(IntPtr window,uint flags);
+ [DllImport("user32.dll",SetLastError=true)]static extern IntPtr OpenInputDesktop(uint flags,bool inherit,uint access);
+ [DllImport("user32.dll")]static extern bool CloseDesktop(IntPtr desktop);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern bool GetUserObjectInformation(IntPtr desktop,int index,System.Text.StringBuilder value,uint size,out uint needed);
+ public static int DefaultInputDesktop(){IntPtr desktop=OpenInputDesktop(0,false,1);if(desktop==IntPtr.Zero)return -1;try{uint needed;var name=new System.Text.StringBuilder(256);return GetUserObjectInformation(desktop,2,name,512,out needed)?(String.Equals(name.ToString(),"Default",StringComparison.OrdinalIgnoreCase)?1:0):-1;}finally{CloseDesktop(desktop);}}
+ [DllImport("user32.dll",EntryPoint="GetWindowLongW")]public static extern int GetWindowLong(IntPtr window,int index);
  [DllImport("user32.dll")]public static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
  public static uint RootOwnerPid(IntPtr window){uint pid=0;IntPtr root=GetAncestor(window,3);if(root!=IntPtr.Zero)GetWindowThreadProcessId(root,out pid);return pid;}
  [DllImport("user32.dll")]public static extern bool SetCursorPos(int x,int y);
@@ -54,8 +59,8 @@ public static class P09Access {
 }
 '@
 if([P09Access]::SetThreadDpiAwarenessContext([IntPtr]::new(-4)) -eq [IntPtr]::Zero){throw 'P09_HELPER_DPI_CONTEXT_FAILED'}
-$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero
-$result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true};$stage='INITIALIZED'
+$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero;$script:raisedWindows=[Collections.Generic.List[IntPtr]]::new()
+$result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()};$stage='INITIALIZED'
 function Need([bool]$ok){if(-not $ok){throw 'P09_NATIVE_ACCESSIBILITY_FAILED'}}
 function Window([int]$id,[bool]$dialog=$false){
  $script:found=[IntPtr]::Zero;$script:foundArea=0
@@ -84,16 +89,22 @@ function Native-HitKind([IntPtr]$window){
    'systemsettings'{return 'DISPLAY_SETTINGS'};'applicationframehost'{return 'APPLICATION_FRAME_HOST'};'textinputhost'{return 'TEXT_INPUT_HOST'}
    'explorer'{return 'DESKTOP_SHELL'};'shellexperiencehost'{return 'DESKTOP_SHELL'};'dwm'{return 'DESKTOP_COMPOSITOR'}
    'powershell'{return 'POWERSHELL_HOST'};'pwsh'{return 'POWERSHELL_HOST'};'conhost'{return 'CONSOLE_HOST'};'windowsterminal'{return 'TERMINAL_HOST'}
-   'werfault'{return 'ERROR_REPORTER'};default{return 'OTHER_WITHHELD'}
+   'werfault'{return 'ERROR_REPORTER'};'logonui'{return 'WINDOWS_LOGON_UI'};'lockapp'{return 'WINDOWS_LOCK_UI'};'sandman'{return 'ORIGINAL_ENGINE_UI'};'sbiectrl'{return 'ORIGINAL_ENGINE_UI'};'runner.worker'{return 'ACTIONS_RUNNER'};'runner.listener'{return 'ACTIONS_RUNNER'};'openconsole'{return 'CONSOLE_HOST'};'cmd'{return 'COMMAND_HOST'};'runtimebroker'{return 'WINDOWS_APP_BROKER'};default{return 'OTHER_WITHHELD'}
   }
  }finally{$process.Dispose()}}catch{return 'UNAVAILABLE'}
 }
+if($Mode -eq 'DESKTOP_DIAGNOSTIC'){$result.status='OBSERVED';$result.foreground_kind=Native-HitKind ([P09Access]::GetForegroundWindow());$result.os_security_settings_modified=$false;$result|ConvertTo-Json|Set-Content -LiteralPath $ResultFile -Encoding UTF8;exit 0}
 function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
- $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd)
+ Need ([P09Access]::OwnedWindow($hwnd,$id))
+ # Only this exact owned fixture window is raised. Keep it above unrelated
+ # desktop overlays during the action, then restore its original z-order band.
+ if(([P09Access]::GetWindowLong($hwnd,-20) -band 8) -eq 0){Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$script:raisedWindows.Add($hwnd);$result.owned_window_temporarily_raised=$true}
+ $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::new(-1),0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd)
  if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
-  $result.focus_native_hit_kind=Native-HitKind ([P09Access]::WindowFromPhysicalPoint($point))
-  Need ([P09Access]::OwnedWindow([P09Access]::WindowFromPhysicalPoint($point),$id) -and [P09Access]::GetAncestor([P09Access]::WindowFromPhysicalPoint($point),2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+  $visible=[Diagnostics.Stopwatch]::StartNew();do{$hit=[P09Access]::WindowFromPhysicalPoint($point);if([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd){break};Start-Sleep -Milliseconds 50}while($visible.ElapsedMilliseconds -lt 5000)
+  $result.focus_native_hit_kind=Native-HitKind $hit
+  Need ([P09Access]::OwnedWindow($hit,$id) -and [P09Access]::GetAncestor($hit,2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
   try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  }
  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd){return};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
@@ -194,7 +205,7 @@ function Set-ActualDisplayScale([int]$Scale){
    Need ($null -ne $choice);$choice.GetCurrentPattern([Windows.Automation.SelectionItemPattern]::Pattern).Select()
 
  $clock.Restart();do{$dpi=[P09Access]::GetDpiForWindow($script:displayWindow);if($dpi -eq 96*$Scale/100){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000);Need ($dpi -eq 96*$Scale/100)
- $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close();$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero}
+ $window=$null;if($CloseSettings -and $settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window)){$window.Close();$script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero;$script:raisedWindows=[Collections.Generic.List[IntPtr]]::new()}
  elseif($settingsRoot.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$window) -and $window.Current.CanMinimize){$window.SetWindowVisualState([Windows.Automation.WindowVisualState]::Minimized)}
 }
 if($Mode -eq 'DISPLAY_SERVER'){
@@ -302,7 +313,7 @@ try{
    Need ($null -ne $language -and $language.Current.IsEnabled);$result.accessible_label_and_role=$true;$result.native_invoke_changed_real_page=$true
    if($Mode -eq 'READY'){$result.startup_interactive_upper_bound_ms=([Diagnostics.Stopwatch]::GetTimestamp()-[long]$start.ticks)*1000.0/[Diagnostics.Stopwatch]::Frequency}
    if($Mode -eq 'KEYBOARD'){
-    $stage='FOCUSING_OWNED_MANAGER';$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd);$navigation.SetFocus();Start-Sleep -Milliseconds 100
+    $stage='FOCUSING_OWNED_MANAGER';$root.GetCurrentPattern([Windows.Automation.WindowPattern]::Pattern).SetWindowVisualState([Windows.Automation.WindowVisualState]::Normal);Focus-OwnedWindow $hwnd $ManagerPid;$navigation.SetFocus();Start-Sleep -Milliseconds 100
     $pointClock=[Diagnostics.Stopwatch]::StartNew()
     do {
      $clickable=$navigation.GetClickablePoint();$point=[P09Point]::new();$point.X=[int]$clickable.X;$point.Y=[int]$clickable.Y
@@ -328,5 +339,6 @@ try{
  }
  $result.status='PASSED'
 }catch{$result.status='FAILED';$result.code='P09_NATIVE_ACCESSIBILITY_FAILED';$result.stage=$stage;$result.exception_type=$_.Exception.GetBaseException().GetType().FullName;$result.source_lines=@([regex]::Matches($_.ScriptStackTrace,'line ([0-9]+)')|Select-Object -First 12|ForEach-Object {[int]$_.Groups[1].Value})}
+foreach($raised in $script:raisedWindows){$raisedOwner=0;$null=[P09Access]::GetWindowThreadProcessId($raised,[ref]$raisedOwner);if($raisedOwner -eq $ManagerPid){$null=[P09Access]::SetWindowPos($raised,[IntPtr]::new(-2),0,0,0,0,0x13)}}
 if($ResultFile){$result|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $ResultFile -Encoding UTF8}else{Write-Host ('P09_NATIVE_ACCESSIBILITY_FAILED '+$script:stage)}
 if($result.status -ne 'PASSED'){exit 1}

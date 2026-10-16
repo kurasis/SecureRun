@@ -1,0 +1,29 @@
+name: P09 readonly input desktop diagnosis
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Observe input desktop without changing Windows settings
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          New-Item -ItemType Directory -Path artifacts/p09-desktop -Force | Out-Null
+          ./tools/probe/p09_accessibility.ps1 -Mode DESKTOP_DIAGNOSTIC -ResultFile artifacts/p09-desktop/input-desktop.json
+      - name: Retain minimized desktop observation
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: p09-desktop-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p09-desktop/*.json
+          if-no-files-found: error
+          retention-days: 14

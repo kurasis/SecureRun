@@ -644,3 +644,18 @@ normal product and profile for the complete real picker/diff/queue/Stop/Apply
 sequence. No mutation is retried and namespace locking is unchanged. The added
 GUI capture joins all prior captures in the secret scan, preserving error-log
 coverage across the explicit fixture restart. Actual Windows proof is pending.
+
+ARM focused `9b3acd8` passed the real queued-policy workflow and reached the
+populated-file case, which timed out. Fixed stage codes, row counts and the
+existing rendered error code now locate that failure without retaining names
+or paths. Native input still encountered a foreign desktop overlay. The helper
+may temporarily raise only its exact verified owned window into the topmost
+band, checks native point/root ownership before any input, and restores the
+prior band afterwards. Originally topmost windows are left as found. No foreign
+window is activated, terminated or accepted, and foreground restrictions remain.
+
+A separate readonly desktop workflow observes whether the hosted runner input
+desktop is Default (1), another desktop (0), or unavailable (-1), plus only a
+fixed foreground-process category. It changes no logon, lock, desktop, RDP or
+Windows security setting. The same field accompanies actual actor observations
+so an inaccessible input desktop can be distinguished from a covered window.

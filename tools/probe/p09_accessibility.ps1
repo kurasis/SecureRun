@@ -33,7 +33,7 @@ public static class P09Access {
  [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern IntPtr SendMessage(IntPtr window,uint message,IntPtr parameter,string value);
  [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageW")]static extern IntPtr ReadMessage(IntPtr window,uint message,IntPtr size,System.Text.StringBuilder value);
  [DllImport("user32.dll")]static extern bool PostMessage(IntPtr window,uint message,IntPtr parameter,IntPtr value);
- static bool ClassIs(IntPtr window,string expected,string box){var name=new System.Text.StringBuilder(128);GetClassName(window,name,128);return String.Equals(name.ToString(),expected,StringComparison.OrdinalIgnoreCase)||(!String.IsNullOrEmpty(box)&&String.Equals(name.ToString(),"Sandbox:"+box+":"+expected,StringComparison.OrdinalIgnoreCase));}
+ public static bool ClassIs(IntPtr window,string expected,string box){var name=new System.Text.StringBuilder(128);GetClassName(window,name,128);return String.Equals(name.ToString(),expected,StringComparison.OrdinalIgnoreCase)||(!String.IsNullOrEmpty(box)&&String.Equals(name.ToString(),"Sandbox:"+box+":"+expected,StringComparison.OrdinalIgnoreCase));}
  public static IntPtr Filename(IntPtr root,uint expected,string box){IntPtr found=IntPtr.Zero;EnumChildWindows(root,delegate(IntPtr window,IntPtr data){uint pid;GetWindowThreadProcessId(window,out pid);if(pid!=expected||!IsWindowVisible(window)||!IsWindowEnabled(window)||!ClassIs(window,"Edit",box))return true;int id=GetDlgCtrlID(window);bool known=id==1152;IntPtr parent=GetParent(window);for(int depth=0;!known&&depth<16&&parent!=IntPtr.Zero&&parent!=root;depth++,parent=GetParent(parent))known=GetDlgCtrlID(parent)==1148;if(known){found=window;return false;}return true;},IntPtr.Zero);return found;}
  public static bool SetFilename(IntPtr field,string value){if(value.Length>32767||value.IndexOfAny(new[]{'\0','\r','\n'})>=0)return false;if(SendMessage(field,12,IntPtr.Zero,value)==IntPtr.Zero)return false;var read=new System.Text.StringBuilder(32768);ReadMessage(field,13,(IntPtr)read.Capacity,read);return read.ToString()==value;}
  public static bool AcceptPicker(IntPtr root,uint expected,string box){IntPtr button=GetDlgItem(root,1);if(button==IntPtr.Zero)EnumChildWindows(root,delegate(IntPtr window,IntPtr data){uint owner;GetWindowThreadProcessId(window,out owner);if(owner==expected&&GetDlgCtrlID(window)==1&&IsWindowVisible(window)&&IsWindowEnabled(window)&&ClassIs(window,"Button",box)){button=window;return false;}return true;},IntPtr.Zero);uint pid;GetWindowThreadProcessId(button,out pid);return button!=IntPtr.Zero&&pid==expected&&IsChild(root,button)&&IsWindowEnabled(button)&&ClassIs(button,"Button",box)&&PostMessage(button,245,IntPtr.Zero,IntPtr.Zero);}
@@ -61,7 +61,7 @@ function Window([int]$id,[bool]$dialog=$false){
  $script:found=[IntPtr]::Zero;$script:foundArea=0
  $null=[P09Access]::EnumWindows({param($hwnd,$data);$owner=0;$null=[P09Access]::GetWindowThreadProcessId($hwnd,[ref]$owner);if($owner -eq $id -and [P09Access]::IsWindowVisible($hwnd)){
   $e=[Windows.Automation.AutomationElement]::FromHandle($hwnd)
-  if($dialog -and $e.Current.ClassName -eq '#32770'){$script:found=$hwnd;return $false};if(-not $dialog -and $e.Current.ClassName -ne '#32770'){$rectangle=$e.Current.BoundingRectangle;$area=$rectangle.Width*$rectangle.Height;if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
+  if($dialog -and [P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox)){$script:found=$hwnd;return $false};if(-not $dialog -and -not [P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox)){$rectangle=$e.Current.BoundingRectangle;$area=$rectangle.Width*$rectangle.Height;if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
  };return $true},[IntPtr]::Zero)
  return $script:found
 }
@@ -110,7 +110,15 @@ function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
  Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::FocusWithin($editor));$result.exact_editor_focus_verified=$true
 }
 function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
- Focus-OwnedWindow $hwnd $id;[Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.SendKeys]::SendWait($address);[Windows.Forms.SendKeys]::SendWait('{ENTER}')
+ Focus-OwnedWindow $hwnd $id
+ # Read back the selected native address before Enter. Clipboard text is only
+ # the fixed synthetic destination and is always cleared, never retained.
+ try{
+  [Windows.Forms.SendKeys]::SendWait('^l');[Windows.Forms.Clipboard]::SetText($address);[Windows.Forms.SendKeys]::SendWait('^v');[Windows.Forms.SendKeys]::SendWait('^a');[Windows.Forms.Clipboard]::Clear();[Windows.Forms.SendKeys]::SendWait('^c')
+  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 3000)
+  Need ([Windows.Forms.Clipboard]::GetText() -ceq $address);$result.native_browser_address_readback_verified=$true
+  [Windows.Forms.SendKeys]::SendWait('{ENTER}')
+ }finally{[Windows.Forms.Clipboard]::Clear()}
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
  Browser-Address $root $hwnd $id 'about:blank';$clock=[Diagnostics.Stopwatch]::StartNew()

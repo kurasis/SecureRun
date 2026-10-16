@@ -586,3 +586,11 @@ It waits for the existing accounting API to report zero active members before
 starting another GUI. No unrelated PID, sandbox or system reporter is selected.
 This prevents an earlier fixture's WebView children from remaining on the test
 desktop; it changes neither product termination behavior nor resource samples.
+
+At `a200862`, native Scintilla discovery and exact editor focus passed on Server,
+but Save As was not found. The native dialog enumerator now recognizes only the
+original class or the pinned engine class prefix for the exact expected box,
+just like the already-scoped editor/filename enumerators. Browser navigation
+pastes only its fixed synthetic address, verifies selected-address readback,
+and clears the clipboard. Actual native title, socket attribution, boxed
+outputs and unchanged host data remain mandatory. Windows proof is pending.

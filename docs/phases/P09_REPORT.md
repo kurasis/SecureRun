@@ -635,3 +635,12 @@ The accepted socket now explicitly switches to blocking mode before applying
 the same bounded handshake timeouts. Offline probes still make one attempt and
 all positive/negative endpoint observations remain mandatory. Windows revalidation
 is required; the Linux result was never treated as containment evidence.
+
+Focused Server `9b3acd8` identified a second-client fixture race before the policy
+case: independent CLI preparation attempted Stop while the still-open activity
+GUI ran its periodic readonly worker. Preparation now closes/drains that GUI,
+performs the existing exact cleanup/repair/register/launch, then reopens the same
+normal product and profile for the complete real picker/diff/queue/Stop/Apply
+sequence. No mutation is retried and namespace locking is unchanged. The added
+GUI capture joins all prior captures in the secret scan, preserving error-log
+coverage across the explicit fixture restart. Actual Windows proof is pending.

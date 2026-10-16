@@ -176,6 +176,10 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  }
 
  Case 'T32' 'running_policy_diff_queue_requires_explicit_stopped_apply' {
+  # End the activity GUI before independent CLI preparation. Its periodic
+  # readonly worker legitimately holds the same namespace lock; a concurrent
+  # second client is not an ordinary UI action.
+  Close-P09Cdp;$gui.Dispose();$script:gui=$null
   # The external SDK activity fixture can be observed while Enabled=y. LIST
   # durably records that conflict; returning the flag never silently heals it.
   if($null -ne $held){[P05Lab]::Stop($held);$script:held=$null};Stop-Box $first
@@ -194,6 +198,10 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
    return @($scopes.processes|Where-Object {$_.pid -eq $receipt.process.pid -and [string]$_.creation_time -eq [string]$receipt.process.creation_time}).Count -eq 1
   }
   Require (& $memberAlive) 'P09_MANAGED_QUEUE_MEMBER_NOT_RUNNING'
+  # Reopen the same actual product/profile after independent preparation.
+  # Required picker/diff/queue/Stop/Apply actions still use its real UI/backend.
+  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$listener.Start();$port=([Net.IPEndPoint]$listener.LocalEndpoint).Port;$listener.Stop()
+  $script:gui=[P09Desktop]::new($Manager,$EngineHome,(Join-Path $Fixture 'policy-manager.log'),$port);Connect-P09Cdp $port;Wait-P09Document;$null=Evaluate-P09 ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p09_ui.js')))
   $queueFlowVerified=$false;$pending=Access 'PICKER' $gui.ProcessId (Join-Path $Fixture 'policy-resource.txt') -Async
   try{$null=Invoke-P09Stage 'PERMISSION_PICK' @{environment_name=$first.display_name;environment_id=$first.id};$picker=Complete-Access $pending;$pending=$null;$null=Invoke-P09Stage 'PERMISSION_QUEUE' @{environment_id=$first.id};Require (& $memberAlive) 'P09_QUEUE_STOPPED_PROCESS';$null=Invoke-P09Stage 'STOP_AND_APPLY' @{environment_id=$first.id;environment_name=$first.display_name};$queueFlowVerified=$true;@{real_native_picker=$picker.picker.real_native_picker;queued_in_backend=$true;applied_while_running=$false;explicit_whole_box_stop=$true;independent_policy_readback=$true;managed_launch_receipt_verified=$true;external_fixture_conflict_explicitly_repaired=$repaired}}
   finally{if($null -ne $pending){$null=Complete-Access $pending};if(-not $queueFlowVerified){Stop-Box $first}}
@@ -240,6 +248,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
 
  Case 'T66' 'local_history_and_debug_error_capture_remain_minimized' {
   $paths=@((Join-Path $Fixture 'normal-manager.log'),(Join-Path $Fixture 'inspected-manager.log'));$metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';Require (Test-Path -LiteralPath (Join-Path $metadata 'history.sqlite') -PathType Leaf) 'P09_PERSISTENT_HISTORY_MISSING';foreach($name in @('history.sqlite','history.sqlite-wal','history.sqlite-shm')){if(Test-Path -LiteralPath (Join-Path $metadata $name)){$paths+=Join-Path $metadata $name}}
+  $policyCapture=Join-Path $Fixture 'policy-manager.log';if(Test-Path -LiteralPath $policyCapture -PathType Leaf){$paths+=,$policyCapture}
   foreach($path in $paths){$bytes=[IO.File]::ReadAllBytes($path);Require (Clean ([Text.Encoding]::UTF8.GetString($bytes))) 'P09_SECRET_IN_LOCAL_HISTORY';Require (Clean ([Text.Encoding]::Unicode.GetString($bytes))) 'P09_SECRET_IN_LOCAL_UTF16_CAPTURE'}
   Require $script:capturesClean 'P09_SECRET_IN_NATIVE_CAPTURE';@{persistent_history_present=$true;local_history_and_wal_scanned=$true;normal_manager_stderr_scanned=$true;inspected_manager_stderr_scanned=$true;native_worker_error_capture_scanned=$true;utf8_and_utf16_scanned=$true;argv_environment_error_canaries_absent=$true;untrusted_text_cannot_add_event_fields=$true}
  }

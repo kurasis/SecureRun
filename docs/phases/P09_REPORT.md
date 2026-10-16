@@ -626,3 +626,12 @@ five-second handshake window; offline negative-control timing is unchanged.
 The native receiver test deliberately delays a connected peer for 1100 ms and
 still requires exact IPv6 and both UDP responses while IPv4 stays unanswered.
 No failed observation is converted to success and no policy rule is changed.
+
+The delayed-byte regression passed Linux but failed on both actual Windows
+targets (`38837492326`), exposing the platform-specific cause: Winsock accepted
+sockets inherit the nonblocking listener mode. Setting a read timeout does not
+clear that mode, so a first read before the byte arrived returned immediately.
+The accepted socket now explicitly switches to blocking mode before applying
+the same bounded handshake timeouts. Offline probes still make one attempt and
+all positive/negative endpoint observations remain mandatory. Windows revalidation
+is required; the Linux result was never treated as containment evidence.

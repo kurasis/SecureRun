@@ -104,6 +104,13 @@ pub(super) fn incoming_probe(output: &str, offline: bool) -> R<[bool; 4]> {
                         if !peer.ip().is_loopback() {
                             return false;
                         }
+                        // Winsock accept inherits the listener's nonblocking
+                        // mode. A read timeout does not make that socket blocking.
+                        // Wait for the bounded handshake instead of mistaking
+                        // WSAEWOULDBLOCK before the first byte for a policy block.
+                        if socket.set_nonblocking(false).is_err() {
+                            return false;
+                        }
                         // A connected online peer may still be descheduled on an
                         // emulated target. Keep its positive handshake window as
                         // long as the host read; offline observations stay short.

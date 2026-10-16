@@ -502,3 +502,11 @@ while the production GUI remains ordinary. The keyboard fixture waits for fresh
 UIA and native hit-testing agreement after window restoration, retaining the
 same ownership/provider/focus requirements. This removes helper-window and async
 layout interference without broad foreground permissions or an input bypass.
+
+Diagnostic `c2f9b5a` measured 1.18415% CPU / 226910825-byte average working set on
+Server and 1.29373% / 229258465 bytes on ARM, with four environments. CPU still
+fails the reference target. The next UI consumes each bounded native health
+notification immediately and uses a single freshness-expiry timer instead of
+periodic full UI clock rendering. Readonly control refresh is 14 seconds within
+its unchanged 15-second validity. Native activity, worker framing, mutation guards
+and full reference budgets are unchanged; no passing performance claim is made.

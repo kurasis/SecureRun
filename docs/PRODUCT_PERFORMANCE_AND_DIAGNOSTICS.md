@@ -83,3 +83,12 @@ configuration checks are not cached or omitted. Native scope/context checks for
 every operation remain independent. One reserved waiter and a three-second
 deadline bound this read-only wait; resource and update budgets still require
 actual matching Windows measurements.
+
+The next UI consumes its existing bounded conditional health read immediately
+after each completed snapshot, instead of adding a one-second polling phase. An
+unchanged/error reply has a one-second backoff, and unmount releases its wait. A
+single deadline timer expires claims without a periodic full UI clock render.
+Readonly control eligibility refreshes every 14 seconds, within its unchanged
+15-second validity; process activity still uses complete 1.7-second native
+observations. Slow/failed refreshes become Unknown. Every action repeats full
+current native guards. These changes require fresh full-workload measurements.

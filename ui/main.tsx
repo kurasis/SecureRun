@@ -61,11 +61,23 @@ function App() {
  }
  async function observe() {
   if(observer.current)return;observer.current=true;
-  try {const value=await invoke<EngineHealth>('get_engine_health',healthSequence.current===undefined?undefined:{afterSequence:healthSequence.current});healthSequence.current=value.sequence;setHealth(old=>old&&(old.generation>value.generation||(old.generation===value.generation&&old.sequence>value.sequence))?old:value);}
-  catch{healthSequence.current=undefined;setHealth(null);}finally{observer.current=false;}
+  try {const value=await invoke<EngineHealth>('get_engine_health',healthSequence.current===undefined?undefined:{afterSequence:healthSequence.current});healthSequence.current=value.sequence;setClock(Date.now());setHealth(old=>old&&(old.generation>value.generation||(old.generation===value.generation&&old.sequence>value.sequence))?old:value);}
+  catch{healthSequence.current=undefined;setClock(Date.now());setHealth(null);}finally{observer.current=false;}
  }
- useEffect(()=>{void invoke<Snapshot>('get_snapshot').then(setSnapshot).catch(()=>setError('BACKEND_UNAVAILABLE'));void observe();const timer=setInterval(()=>{setClock(Date.now());void observe();},1000);const resume=()=>{setRouteAt(0);setHealth(null);metadataAt.current=0;void observe();};window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);return()=>{serial.current++;clearInterval(timer);window.removeEventListener('focus',resume);document.removeEventListener('visibilitychange',resume);};},[]);
- useEffect(()=>{if(canBrowse&&metadataAt.current===0)void refreshMetadata();if(!canBrowse)return;const timer=setInterval(()=>void pollControls(),10000);return()=>clearInterval(timer);},[canBrowse]);
+ useEffect(()=>{
+  let disposed=false;let retry:ReturnType<typeof setTimeout>|undefined;let releaseRetry:(()=>void)|undefined;
+  void invoke<Snapshot>('get_snapshot').then(setSnapshot).catch(()=>setError('BACKEND_UNAVAILABLE'));
+  const watch=async()=>{while(!disposed){const before=healthSequence.current;await observe();if(disposed)return;if(healthSequence.current===before)await new Promise<void>(resolve=>{releaseRetry=resolve;retry=setTimeout(resolve,1000);});}};
+  void watch();const resume=()=>{setRouteAt(0);setHealth(null);metadataAt.current=0;void observe();};window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);
+  return()=>{disposed=true;serial.current++;clearTimeout(retry);releaseRetry?.();window.removeEventListener('focus',resume);document.removeEventListener('visibilitychange',resume);};
+ },[]);
+ useEffect(()=>{
+  // One expiry wake-up between actual snapshots; never keep a claim alive by
+  // advancing its timestamp. Mutations continue to authenticate independently.
+  const now=Date.now();const due=[health?.observation.observed_unix_ms,routeAt,controlAt,metadataAt.current].filter((at):at is number=>typeof at==='number'&&at>0).map(at=>at+15000).filter(at=>at>now);
+  if(!due.length)return;const timer=setTimeout(()=>setClock(Date.now()),Math.max(1,Math.min(...due)-now));return()=>clearTimeout(timer);
+ },[health,routeAt,controlAt,environments,clock]);
+ useEffect(()=>{if(canBrowse&&metadataAt.current===0)void refreshMetadata();if(!canBrowse)return;const timer=setInterval(()=>void pollControls(),14000);return()=>clearInterval(timer);},[canBrowse]);
  useEffect(()=>{const changed=()=>{reloadPending.current=true;if(!loading.current){reloadPending.current=false;void refreshMetadata();}};window.addEventListener('securerun:managed-state',changed);return()=>window.removeEventListener('securerun:managed-state',changed);},[]);
  useEffect(()=>{document.documentElement.lang=language;document.documentElement.dataset.theme=theme;savePreference('language',language);savePreference('theme',theme);},[language,theme]);
  useEffect(()=>{savePreference('scale',scale);void invoke('product_request',{request:{action:'SCALE',percent:Number(scale)}}).catch(()=>setError('CAPABILITY_UNAVAILABLE'));},[scale]);

@@ -53,7 +53,7 @@ function Copy-ActualAboutSupportData([IntPtr]$window,[int]$owner){
  $rectangles=@($matches[0]|ForEach-Object {$_.BoundingRect});$left=($rectangles|ForEach-Object {$_.X}|Measure-Object -Minimum).Minimum;$right=($rectangles|ForEach-Object {$_.X+$_.Width}|Measure-Object -Maximum).Maximum
  $top=($rectangles|ForEach-Object {$_.Y}|Measure-Object -Minimum).Minimum;$bottom=($rectangles|ForEach-Object {$_.Y+$_.Height}|Measure-Object -Maximum).Maximum
  $point=[P09Point]::new();$point.X=$view.left+[int](($left+$right)/2);$point.Y=$view.top+[int](($top+$bottom)/2)
- $null=Owned-Point $point $window $owner;Need ([P09Access]::SetCursorPos($point.X,$point.Y));[Windows.Forms.Clipboard]::Clear()
+ $null=Owned-Point $point $window $owner;Need ([P09Access]::SetCursorPos($point.X,$point.Y));Clear-TransientClipboard
  try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  $result.native_about_support_raw_copy_invoked=$true;$result.sandbox_source='ABOUT_SUPPORT_NATIVE_OCR_RAW_COPY'
 }

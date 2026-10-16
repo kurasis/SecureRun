@@ -165,8 +165,24 @@ public static class P09Access {
 '@
 if([P09Access]::SetThreadDpiAwarenessContext([IntPtr]::new(-4)) -eq [IntPtr]::Zero){throw 'P09_HELPER_DPI_CONTEXT_FAILED'}
 $script:displayRoot=$null;$script:displayWindow=[IntPtr]::Zero;$script:raisedWindows=[Collections.Generic.List[IntPtr]]::new()
-$result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()};$stage='INITIALIZED'
+$result=@{status='IN_PROGRESS';mode=$Mode;real_windows_uia=$true;synthetic_fixture_only=$true;helper_per_monitor_dpi_aware=$true;default_input_desktop=[P09Access]::DefaultInputDesktop()};$stage='INITIALIZED';$result.clipboard_busy_retries=0
 function Need([bool]$ok){if(-not $ok){throw 'P09_NATIVE_ACCESSIBILITY_FAILED'}}
+# The browser may hold the clipboard briefly while completing its copy request.
+# Retry only that local clipboard operation; never replay browser/protocol actions.
+function Clear-TransientClipboard{
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do{try{[Windows.Forms.Clipboard]::Clear();return}catch{
+  $cause=$_.Exception.GetBaseException();if($cause -isnot [Runtime.InteropServices.ExternalException] -or $cause.HResult -ne -2147221040){throw}
+  if($clock.ElapsedMilliseconds -ge 2000){throw 'P09_CLIPBOARD_BUSY'};$result.clipboard_busy_retries=1+[int]$result.clipboard_busy_retries;Start-Sleep -Milliseconds 50
+ }}while($true)
+}
+function Read-TransientClipboardText{
+ $clock=[Diagnostics.Stopwatch]::StartNew()
+ do{try{return [Windows.Forms.Clipboard]::GetText()}catch{
+  $cause=$_.Exception.GetBaseException();if($cause -isnot [Runtime.InteropServices.ExternalException] -or $cause.HResult -ne -2147221040){throw}
+  if($clock.ElapsedMilliseconds -ge 2000){throw 'P09_CLIPBOARD_BUSY'};$result.clipboard_busy_retries=1+[int]$result.clipboard_busy_retries;Start-Sleep -Milliseconds 50
+ }}while($true)
+}
 function Known-PickerTitle([string]$title){
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
  return ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File','Выбор ресурса SecureRun','Сохранить просмотренную диагностику'))
@@ -419,10 +435,10 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  Need ($address -in @('about:blank','about:support') -or $address -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/(?:main|protocol)/[0-9a-f-]{36}$')
  Focus-BrowserDocument $root $hwnd $id
  try{
-  [Windows.Forms.Clipboard]::Clear();Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
-  $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
-  $result.address_text_verified=([Windows.Forms.Clipboard]::GetText() -ceq $address);if(-not $result.address_text_verified){Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeAscii($hwnd,$id,$address));$result.ascii_scancode_uri_used=$true;Start-Sleep -Milliseconds 200};Browser-Key $id 13
- }finally{[Windows.Forms.Clipboard]::Clear()}
+  Clear-TransientClipboard;Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
+  $clock=[Diagnostics.Stopwatch]::StartNew();do{if((Read-TransientClipboardText) -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
+  $result.address_text_verified=((Read-TransientClipboardText) -ceq $address);if(-not $result.address_text_verified){Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeAscii($hwnd,$id,$address));$result.ascii_scancode_uri_used=$true;Start-Sleep -Milliseconds 200};Browser-Key $id 13
+ }finally{Clear-TransientClipboard}
  $result.native_keyboard_delivery_checked=$true;$result.navigation_input='NATIVE_KEYBOARD_WITH_EXACT_SYNTHETIC_ADDRESS_READBACK'
 }
 function Browser-Document($root,[IntPtr]$hwnd,[int]$id,[string]$address,[string]$title){
@@ -635,13 +651,13 @@ try{
    Browser-Document $root $hwnd $ManagerPid $ProtocolUri 'P09 browser canary';$stage='BROWSER_OWN_CHILD_ACTION';$result.canary_link_action=Activate-CanaryLink $root $hwnd $ManagerPid 'Open boxed child';$result.actual_browser_child_action=$true
   }
   'BROWSER_SANDBOX' {
-   $stage='READING_BROWSER_SANDBOX_STATE';[Windows.Forms.Clipboard]::Clear()
+   $stage='READING_BROWSER_SANDBOX_STATE';Clear-TransientClipboard
    try{
     Browser-Document $root $hwnd $ManagerPid 'about:support' 'Troubleshooting Information'
     Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$ManagerPid));Browser-Key $ManagerPid 65 17;Start-Sleep -Milliseconds 100;Browser-Key $ManagerPid 67 17;$result.sandbox_source='ABOUT_SUPPORT_RENDERED_TEXT'
     $clock=[Diagnostics.Stopwatch]::StartNew();$level=0
     do{
-     $text=[Windows.Forms.Clipboard]::GetText();Need ($text.Length -le 2097152)
+     $text=(Read-TransientClipboardText);Need ($text.Length -le 2097152)
      if($text.StartsWith('{')){$data=$text|ConvertFrom-Json;Need ($null -ne $data.sandbox -and $null -ne $data.sandbox.PSObject.Properties['effectiveContentSandboxLevel']);$level=[int]$data.sandbox.effectiveContentSandboxLevel;break}
      elseif($text -match '(?im)^\s*Effective Content (?:Process )?Sandbox Level[ \t]*(?:\r?\n)?[ \t]*([0-9]{1,3})[ \t]*$'){$level=[int]$Matches[1];break}
      Start-Sleep -Milliseconds 100
@@ -650,7 +666,7 @@ try{
     if($level -le 0){
      . (Join-Path $PSScriptRoot 'p09_ocr.ps1');Copy-ActualAboutSupportData $hwnd $ManagerPid;$clock.Restart()
      do{
-      $text=[Windows.Forms.Clipboard]::GetText();Need ($text.Length -le 2097152)
+      $text=(Read-TransientClipboardText);Need ($text.Length -le 2097152)
       if($text.TrimStart().StartsWith('{')){
        $data=$text|ConvertFrom-Json;$result.support_raw_sandbox_section_present=($null -ne $data.PSObject.Properties['sandbox']);Need $result.support_raw_sandbox_section_present
        $result.support_raw_effective_level_present=($null -ne $data.sandbox.PSObject.Properties['effectiveContentSandboxLevel']);Need $result.support_raw_effective_level_present
@@ -659,7 +675,7 @@ try{
      }while($clock.ElapsedMilliseconds -lt 15000)
     }
     Need ($level -gt 0);$result.effective_content_sandbox_level=$level;$result.browser_own_sandbox_enabled=$true;$result.real_about_support=$true
-   }finally{[Windows.Forms.Clipboard]::Clear()}
+   }finally{Clear-TransientClipboard}
   }
   default {
    $stage='WAITING_FOR_ACCESSIBLE_NAVIGATION';$clock=[Diagnostics.Stopwatch]::StartNew();$navigation=$null;$settings=$null

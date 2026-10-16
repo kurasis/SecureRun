@@ -478,6 +478,66 @@
       "path": "investigation-cf6edad/windows-2025/standard-sessions.json",
       "size": 93,
       "sha256": "a950ca869157ea7e355728e09594599bce7df4937f2ca048c8f95f07a386dcac"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/lifecycle-cases.json",
+      "size": 18957,
+      "sha256": "48038ab849f0120a45c8d54450b8f8508b1d6ecce0b4b6762ea2f71ae4fd7da3"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "cbca8b1ee8b5ec88f0d70329db0287cb9a286809266d4a58e9c6f809b99efc50"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "97aace3ba39ce0a9777994d55e5593f2e6219d43e918d9ce736f814bb609104c"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "0bae80c213f3894ef57ac8ad27d95541feb83506c727383413725630bd2f3564"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/standard-normal.json",
+      "size": 91,
+      "sha256": "f2fb91655859f69db0c1cae828b898b7da4d7adab3aa7b725a6a1d1ca46a3767"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/standard-sessions.json",
+      "size": 93,
+      "sha256": "def007d3b88535ff5f6c98e569b294f777a76c41ec8444373c92c8446218ab40"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/lifecycle-cases.json",
+      "size": 18957,
+      "sha256": "1b3dd5dd96ebed967fb671b770fa78cb8520da2ae6487561ee88cd7528c0c51e"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/run-summary.json",
+      "size": 653,
+      "sha256": "4949689c1ee28d38772d6cf9b79765e2dccbdd9646872f23e0c2048af022043d"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "41daba71ce504dfc432232fee490eb670968167ab3d244ac6254db96c6418ecf"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/standard-fault.json",
+      "size": 90,
+      "sha256": "205e11339a5d23db1becc35bbbdab71a240cc2417ba86a2850e25550cf902aeb"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/standard-normal.json",
+      "size": 91,
+      "sha256": "a2a67ce783f322093dc6d5a53d78ad2bb5c11e886565f776356e255a8af7ca8b"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/standard-sessions.json",
+      "size": 93,
+      "sha256": "a950ca869157ea7e355728e09594599bce7df4937f2ca048c8f95f07a386dcac"
     }
   ],
   "tested_sources": [
@@ -995,6 +1055,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38846706448",
       "result": "PASSED",
       "note": "Actual regression passed on both Windows targets; P09 lab fixtures subsequently changed. Final matching-source retention remains pending."
+    },
+    {
+      "tested_commit": "4956792ddbcbd8da5e0d77791b0e2c8852bde5a2",
+      "run_id": 38850073332,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38850073332",
+      "result": "PASSED",
+      "note": "Actual regression passed on both Windows targets, including the inert Unicode path correction. Subsequent P09 lab fixture changes require final matching-source retention."
     }
   ]
 }

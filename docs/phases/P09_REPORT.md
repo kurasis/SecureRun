@@ -42,24 +42,24 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `4956792ddbcbd8da5e0d77791b0e2c8852bde5a2`.
+Current runtime/lab candidate: `b04a7668803fc27bc55a9dfb82eed457c014b60a`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
 |---|---|
-| Repository/specification/evidence validator | Passed locally and in P01 run [38850034613](https://github.com/kurasis/SecureRun/actions/runs/38850034613) |
+| Repository/specification/evidence validator | Passed locally and in P01 run [38851310872](https://github.com/kurasis/SecureRun/actions/runs/38851310872) |
 | Python tooling | 18 tests passed |
 | TypeScript/frontend | Type check, 3 state/localization tests and 4 product tests passed |
 | Windows-target Clippy and formatting | Passed after the inert path correction |
 | Native product build at `4b2a913` | [38848892796](https://github.com/kurasis/SecureRun/actions/runs/38848892796): both targets passed, including 61 adapter tests and the actual kernel-job measurement fixture |
-| P03 matching source | [38850062567](https://github.com/kurasis/SecureRun/actions/runs/38850062567), pending |
-| P04 matching source | [38850064355](https://github.com/kurasis/SecureRun/actions/runs/38850064355), pending |
-| P05 matching source | [38850066324](https://github.com/kurasis/SecureRun/actions/runs/38850066324), pending |
-| P06 matching source | [38850068349](https://github.com/kurasis/SecureRun/actions/runs/38850068349), pending |
-| P07 matching source | [38850070794](https://github.com/kurasis/SecureRun/actions/runs/38850070794), pending |
-| P08 matching source | [38850073332](https://github.com/kurasis/SecureRun/actions/runs/38850073332), pending |
-| P09 full workload | [38850034592](https://github.com/kurasis/SecureRun/actions/runs/38850034592), pending |
-| P09 focused diagnostic | [38850037627](https://github.com/kurasis/SecureRun/actions/runs/38850037627), pending; cannot close the full gate |
+| P03 matching source | [38852271708](https://github.com/kurasis/SecureRun/actions/runs/38852271708), pending |
+| P04 matching source | [38852273760](https://github.com/kurasis/SecureRun/actions/runs/38852273760), pending |
+| P05 matching source | [38852275909](https://github.com/kurasis/SecureRun/actions/runs/38852275909), pending |
+| P06 matching source | [38852277993](https://github.com/kurasis/SecureRun/actions/runs/38852277993), pending |
+| P07 matching source | [38852280456](https://github.com/kurasis/SecureRun/actions/runs/38852280456), pending |
+| P08 matching source | [38852282413](https://github.com/kurasis/SecureRun/actions/runs/38852282413), pending |
+| P09 full workload | [38851310774](https://github.com/kurasis/SecureRun/actions/runs/38851310774), pending |
+| P09 focused diagnostic | [38851312530](https://github.com/kurasis/SecureRun/actions/runs/38851312530), pending; cannot close the full gate |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
@@ -67,7 +67,7 @@ installed Windows 11 x64 acceptance or certification of other engine/app version
 
 ## Findings and remaining exit gate
 
-All six P03–P08 regressions passed on both targets at `ec2a16b` and `cf6edad`.
+All six P03–P08 regressions passed on both targets at `ec2a16b`, `cf6edad` and `4956792`.
 Reviewed immutable JSON and hashes retain those results as historical evidence;
 they cannot replace final matching-source checks after subsequent changes.
 
@@ -80,7 +80,9 @@ passed on both architectures, including strict engine/output-name refusal.
 
 On ARM, Windows PickerHost obstructed physical input. The controller successfully
 proved same-user protected Microsoft ownership and cancelled it with UIA; the
-component later reappeared. The current fixture permits bounded cancellation only
+component later reappeared. The current fixture checks same-user identity before any foreign process-birth
+query so the standard user can delegate an inaccessible Windows picker. It
+permits bounded cancellation only
 of a PID/creation time enrolled before product GUIs exist, with fresh trust and
 owner checks. It accepts no actor-supplied path, PID or command and must then
 positively re-establish the intended window/point ownership. Product dialogs,

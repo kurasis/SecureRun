@@ -8,7 +8,7 @@ $report=@{schema=1;status='FAILED';fixture_only=$true;product_dpi_gate_claimed=$
 try{
  $acl=[Security.AccessControl.EventWaitHandleSecurity]::new();$acl.AddAccessRule([Security.AccessControl.EventWaitHandleAccessRule]::new([Security.Principal.WindowsIdentity]::GetCurrent().User,[Security.AccessControl.EventWaitHandleRights]::FullControl,[Security.AccessControl.AccessControlType]::Allow))
  foreach($suffix in @('100','150','200','done','failed')){$created=$false;$events+=,[Threading.EventWaitHandleAcl]::Create($false,[Threading.EventResetMode]::AutoReset,$prefix+'-'+$suffix,[ref]$created,$acl);if(-not $created){throw 'P09_PREEXISTING_DISPLAY_EVENT'}}
- $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$start.UseShellExecute=$false;$start.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
+ $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$start.UseShellExecute=$false;$start.CreateNoWindow=$true;$start.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $repo 'tools/probe/p09_accessibility.ps1'),'-Mode','DISPLAY_SERVER','-DisplayEvents',$prefix,'-ResultFile',(Join-Path $out 'controller'))){$start.ArgumentList.Add($arg)}
  $start.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$start.Environment[$key]=$value}};$start.Environment['GITHUB_ACTIONS']='true'
  $controller=[Diagnostics.Process]::Start($start)

@@ -485,3 +485,20 @@ The native eligibility calculation preserves its exact refusal code while proces
 activity stays independently observed. Both product views use the launch cause;
 P06's real WFP-unavailable/running/Stop case now requires a distinct launch refusal
 while process observation remains OBSERVED. No dispatch or Stop guard changes.
+
+Focused `38826425388` on Server passed actual keyboard navigation, all bilingual
+zoom/DPI layouts, archive GUI create/extract with boxed byte verification, and
+existing-host-browser isolation. Picker diagnostics identify the missing filename
+provider immediately after dialog creation; the fixture now waits for its enabled
+fixed-name/ID control. Notepad++ exposed no Scintilla UIA provider, so its document
+input uses the exact visible owned Scintilla HWND, verifies its native hit and
+focused thread control, then performs actual keyboard edit/Save As. This does not
+replace the manager's separate mandatory UIA/keyboard checks. The browser canary
+is explicitly activated in its verified window before invoking its link. Each
+browser subcase may now fail independently so the protocol/content-sandbox
+results are still collected; all remain mandatory at the final gate.
+Lab console processes now stay hidden (actor) or use CREATE_NO_WINDOW (helper),
+while the production GUI remains ordinary. The keyboard fixture waits for fresh
+UIA and native hit-testing agreement after window restoration, retaining the
+same ownership/provider/focus requirements. This removes helper-window and async
+layout interference without broad foreground permissions or an input bypass.

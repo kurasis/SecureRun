@@ -24,6 +24,7 @@ public sealed class P09Browser : IDisposable {
  readonly IntPtr module;readonly Query query;readonly TcpListener listener;readonly Thread thread;readonly string box,sid,nonce;
  readonly List<Dictionary<string,object>> records=new List<Dictionary<string,object>>();volatile bool stopping;
  public int Port {get{return ((IPEndPoint)listener.LocalEndpoint).Port;}}
+ public string MainUri {get{return "http://127.0.0.1:"+Port+"/main/"+nonce;}}
  public P09Browser(string home,string expectedBox,string token) {
   if(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")!="true"||!System.Text.RegularExpressions.Regex.IsMatch(expectedBox,@"\ASR_[0-9a-f]{32}\z")||!Guid.TryParse(token,out _))throw new InvalidOperationException("P09_BROWSER_LAB_SCOPE_REQUIRED");
   box=expectedBox;nonce=token;sid=WindowsIdentity.GetCurrent().User.Value;module=LoadLibraryEx(Path.Combine(home,"SbieDll.dll"),IntPtr.Zero,0x900);if(module==IntPtr.Zero)throw new InvalidOperationException("P09_ORIGINAL_SDK_MISSING");

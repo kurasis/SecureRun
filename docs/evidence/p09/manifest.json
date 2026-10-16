@@ -47712,6 +47712,3486 @@
       "path": "investigation-83d0e6c-layout/windows-11-arm/ui-cases.json",
       "size": 4,
       "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-desktop_prepare-631a512c1eff4d68a4361ae45d1cc52b.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-desktop_prepare-6dabf7f4fe084beb8740e8cd8f065798.json",
+      "size": 906,
+      "sha256": "2ee4ae84d0ac20003e57931517a6ee0718935f056c47b98fc131966cb1693f64"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-desktop_prepare-816bf6025c5341ab84e01045395e6137.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-display_scale-70a3916da3e64644a1191ff97601d73c.json",
+      "size": 660,
+      "sha256": "62b124dc72b3f39d14bde2a52c673d71b17b205ddfd4c695b0fca46443eca25c"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-display_scale-7f74f58df73c4d28b478fd89c3a4c01c.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-display_scale-9bf680f8a16c405584ea564120961f64.json",
+      "size": 660,
+      "sha256": "271beaf53bf590caf7bad3648e9a46cc7323c2e98e8822b572831cb125066bcc"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-display_scale-bcacffd003474a0bb403b7ac0876555f.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/access-keyboard-680e4a63db7147e7a80cd17da7a32505.json",
+      "size": 1429,
+      "sha256": "ade413ccb01b39a69fe9105c40bf936f6ab0d4c9420e21e8b5234f45e73c93c2"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "d3df687b5c79c9907d482db76af0a6b34d05d8c9117b4335615aa2f6477efba1"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "2db30da1e4c56d334caf2f2a47ba5a373d9d1d9f0f942a1fca157aebe24390b1"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "eefb3e00000c804cc47d5ce434ee9c9924ba700b0b8cb1c1329da51452733348"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "d71230fccb2ef65bc95bd9e495d13d8d1b82cbf4b63e6b52e17b67268b9ebbe4"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "3d0fc0c113a565565e0fe3ba370395905286009cdf403a92d2caa13ee7e91ed4"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/owned-policy-observations.json",
+      "size": 210,
+      "sha256": "cfe00f4c2fc7654ec9a21ca24f613987400f80244228375f8f19c7fcd460df8b"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/probe-evidence-7f143e2344534905b2c17a95e63d3f0e.json",
+      "size": 1518,
+      "sha256": "df2db36e1c6fbdb5c00ed32fe861d263630e103489955174311cd525b89dabd6"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/probe-evidence-d46c1123c89d40c1b9f9352f5563c693.json",
+      "size": 1518,
+      "sha256": "ba9706e213d41f535e9c785401e728bdd0ba54e8c5661dd00899073946ef1b31"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/probe-result-7f143e2344534905b2c17a95e63d3f0e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/probe-result-d46c1123c89d40c1b9f9352f5563c693.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/product-cases.json",
+      "size": 3286,
+      "sha256": "47cb02fa10becef63e6f6f0a089c5518a977ac5c957089ad57f92c7b8a4465ab"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/run-summary.json",
+      "size": 699,
+      "sha256": "e286b5cc048e47756356ccd51298672ee97fbfc416238a56e7b0b1066a93af4c"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/stage.json",
+      "size": 113,
+      "sha256": "4623925ccded1b49b46fd861ecfc7631cdca02385ea0d91ec42d1487679cfca0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/standard-product.json",
+      "size": 467,
+      "sha256": "f46b9aeb47ad070579c6df609f83deaccdfaef24b91fa9ab86457cc1cfa820e0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/startup-accessibility.json",
+      "size": 773,
+      "sha256": "9b2a1dac022aa70c8600eef7180eeea1539a7c67318562481bd5979b56eca143"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/startup-diagnostic.json",
+      "size": 545,
+      "sha256": "de9c15f8bf3f51098dd1072e33f7d5ed9a5b91efb15a4d8616fe1a057e00020c"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/startup-native-trace.json",
+      "size": 309,
+      "sha256": "313db4e2f9542bf6f8cdf30eb0d94d48ec6eb7f64278293e532ccf09967bad79"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-2025/ui-cases.json",
+      "size": 7682,
+      "sha256": "24452bbc99c2952243e97932095e832e54ea9e4c794b68d15a53ed86c180c847"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-desktop_prepare-350508dea8474edba967cf472c356cff.json",
+      "size": 1002,
+      "sha256": "4f0cc5f9af94a3c4ca76929e1df9f281ba2d3dd358fbb533ddf8beb3eaa06207"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-desktop_prepare-500bce78d8c94afd822d5592483078a0.json",
+      "size": 910,
+      "sha256": "3e1bcf455f95defd5000de350604429bc7d9fbca52f870635b3406a37655e08c"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-desktop_prepare-bf35ba94950c432090bff1d84eb0511d.json",
+      "size": 1050,
+      "sha256": "d92933e4aada0b4ee8e655f12ccff78fcf03245c505279a54c0d32ca31ba6c49"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-desktop_prepare-ea8ae53c791e420e8f6a89628c1b00ca.json",
+      "size": 999,
+      "sha256": "4b8cdcea8ef9cfde15d4b735acb73c6c939f48bb0345aa498ed539f697c3200f"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-display_scale-2420bce679a046359025a0b5aa12689b.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-display_scale-74a4b630d65b4aafb9792b812bab5ef4.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-display_scale-97cd17c48b8a432dbb978a1cfe107bd7.json",
+      "size": 660,
+      "sha256": "62b124dc72b3f39d14bde2a52c673d71b17b205ddfd4c695b0fca46443eca25c"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-display_scale-f08c5df699ac4ac6982767f1afa3c55c.json",
+      "size": 660,
+      "sha256": "271beaf53bf590caf7bad3648e9a46cc7323c2e98e8822b572831cb125066bcc"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/access-keyboard-ad8680e7b5ae4732a3e610e87807e529.json",
+      "size": 1822,
+      "sha256": "a6a5e0b9b810c8440554fe455bf16464fd1c7721ddf3e00d4dedba32f8878140"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "5ebe5c4a8b7649e2267e3067bd0705ba2eaea7b4ea8d40f81b9bb023421e7d4f"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "3e626cfafc6b1f62a50bdd4282205c9b7c1b6b9c6848fb4ea6db47965988ced2"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 1151,
+      "sha256": "66def2fcd5f5b0e2af376daaebe0896b36923cb36f85eb6247826027f58b7968"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "71ac41c0fa8c176600e56c166f0b95d7283849b4d37067820987cd30b6822911"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1083,
+      "sha256": "cc740ee6fb8d3ce5a6990766149168e3c5f419b0c9a4a9fe5a4037df321d7141"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "8e59ef3d6dd585573d0e435f4c6dc0e30818442f85dda50735e3d149b09590de"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "4e6a6214073d1a7407b707f13d0065fe9623ff0bab46f5530298dccf8e575924"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/owned-policy-observations.json",
+      "size": 210,
+      "sha256": "1dd211762c347fe3c39b532852a285bc0d862847879c7627b05031cf4dd6e9b1"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-evidence-308c302ca5fd4238a9ca86198b2efb81.json",
+      "size": 1518,
+      "sha256": "bfb4241140cae4eec926b8d2f8a04059b724397d9bbc8f56321c3e2c2c4cd183"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-evidence-388137554caa48cfac0e416b4c18e37a.json",
+      "size": 1518,
+      "sha256": "4e7a67e514f33430c301e07a64fe2b10e34b39dfa55e5a02713ecc812f3d7207"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-evidence-67e14429836b4a71b235e2d4afea85ee.json",
+      "size": 1518,
+      "sha256": "de83d11696201c747e795148c61fb602955d19af4ccd16daa49eaa95dabb2847"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-result-308c302ca5fd4238a9ca86198b2efb81.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-result-388137554caa48cfac0e416b4c18e37a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/probe-result-67e14429836b4a71b235e2d4afea85ee.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/product-cases.json",
+      "size": 3169,
+      "sha256": "0c5f16c3a9a024cbc03f7bee8fdd73eb7b4a2dc903509b7aefb171709d3aada3"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/run-summary.json",
+      "size": 690,
+      "sha256": "e53a66c411d326f185a182c3589e6289ea437dbc8135b0270f06257c74599c57"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "e5723aa1ecf269cbf2d0afc1d1eb6c7db6399a5cd751005be75a42002686dec6"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/standard-product.json",
+      "size": 458,
+      "sha256": "ee251815fae1b8964de09dfd5689afdd50aee1e5d0774bbbb1bf07829b4a0256"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/startup-accessibility.json",
+      "size": 782,
+      "sha256": "2c3cf0e1e2fc226343850426264d836011b6bff4f4cfd640583065c5acef3029"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/startup-diagnostic.json",
+      "size": 546,
+      "sha256": "f1af6e15a4fda0cef2c001c03bf1ef73a4f2857ce2668f606a68ddf35439ebcd"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/startup-native-trace.json",
+      "size": 308,
+      "sha256": "9fc790e013460a502c35915968c94cdd6106756bfd4e8e40e1431f9b043b413d"
+    },
+    {
+      "path": "investigation-284db70-layout/windows-11-arm/ui-cases.json",
+      "size": 7682,
+      "sha256": "24452bbc99c2952243e97932095e832e54ea9e4c794b68d15a53ed86c180c847"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-browser_child-2f8838c1556d4636a074029ea08ed06b.json",
+      "size": 1410,
+      "sha256": "83fde27115863909d29d342c5db7d4d10c71e136d728009b647e61dc36d7efdb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-browser_protocol-827a384632174300b8802e1ca95df9a3.json",
+      "size": 1409,
+      "sha256": "6b014d689fb312914e64e1400639567e5ca4766ed1e3725a02d88516e51c002d"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-browser_sandbox-7db8c0664c5a46ae9b32b6b987d8cbaf.json",
+      "size": 1403,
+      "sha256": "ba532448e2947e873534dcb857b4ed11ba61994c8125c06aff2b7f7b476c28ff"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-desktop_prepare-5745eaf97d5e4e3ca4bae8d3ec7223fc.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-desktop_prepare-9c28f7bfcd0b4303a09c7cf951010e9c.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/access-editor-9462090e4f024c8b8fd5e93d327655ff.json",
+      "size": 1368,
+      "sha256": "3064a7d49272603b86dd7cd7c63c9c37fab32baaeb31c84718c447ef5eee77ee"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "907f27b270f891fd179a6db45a480589db6f00a39c8163bfae484e0d50992b7a"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "1ecca51e09e96f5cdc9c84928e0d997d427252faac65d2c225a45bb373237eb9"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "c8c328134f3986a8388c6ee52b7eca32d4cdc39574e96ffdcd1d35888f5337f9"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/editor-save-observation.json",
+      "size": 118,
+      "sha256": "e2d2ae53d860f6f44651ba6ace1e4e7615afbc5de490042069c3df7b5c043038"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "02c73e44567b0c6ac1ffdf5fbf8ec46facec5312de5b74978abf317a573f6fa7"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/launch-performance.json",
+      "size": 268,
+      "sha256": "8c635e929f0f3f02412cafc24d0f2ffd82e042d34bb69d1d2bdd5bdbf6fa862a"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "117f41008b7aa6b9ebc8c6f4cf4989260e7da21571edbf69d75e727f2f73a36d"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "006e7198f59c3b33dfcebca16bd0e5a031e42e30486371c0a3f3848503979707"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "cf336f5ef77a2a39937aa006b98229d02e6f53e7c2e5ef60965f835861594fa2"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-0930c00f540a4049a56026d0e9f790a9.json",
+      "size": 1481,
+      "sha256": "685a9a604d281ae763ced45e3b8124f3ec47f4fc838df5d4d1d43be7836052d0"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-09b4c60241d148b0bb67753181dddbed.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-0aaee4e9aeba41dd888efbfff227cab2.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-123249558b184e38b503c0b36dd44953.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-1fdb1b99c1414fbdb52a2d99be7d06bf.json",
+      "size": 1481,
+      "sha256": "685a9a604d281ae763ced45e3b8124f3ec47f4fc838df5d4d1d43be7836052d0"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-2215bd237de246bbad6b717f6066d0ea.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-22dccecd9eda4c2e87094112d10099ff.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-27730dd9d86e4fb68731c9d79c2ef92a.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-2e95917f7b0c422ea84b522db5e8171c.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-3a629bbe797b41a599fab8f672def999.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-68c950f4ab6d40289d6afe9924bbb3e4.json",
+      "size": 1481,
+      "sha256": "78b6126255ab3a9ad322fd28841ae6a15d3f675b33e491b2e37638fccf593b71"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-87328d3fa93140a9b3db853dcade9c53.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-8a503177c1374871873600de81583e46.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-8eca9498d09d4fdb9a9f4e996d9fc03c.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-b21e156abc28448888ed0427cd02a6d6.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-b3af228a2d10453e88941cbce8563948.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-caa41e930fd0497282574107508e9212.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-cda26c075d474b77b7818239dd3d1e88.json",
+      "size": 1518,
+      "sha256": "8197c1e6db5f56a00580b900dda2f05d11fcb71c9ffa02de7c954dad8cafa289"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-d2aab72601554907bd3e099c9f4d7bf5.json",
+      "size": 1481,
+      "sha256": "78b6126255ab3a9ad322fd28841ae6a15d3f675b33e491b2e37638fccf593b71"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-evidence-e96619575b604bdfa99e078d72925689.json",
+      "size": 1518,
+      "sha256": "4aa4e6389b68186b6a4d3d3bbc1976de8857b8d8f1fb991ab37be1bd2c4ece43"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-0930c00f540a4049a56026d0e9f790a9.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-09b4c60241d148b0bb67753181dddbed.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-0aaee4e9aeba41dd888efbfff227cab2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-123249558b184e38b503c0b36dd44953.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-1fdb1b99c1414fbdb52a2d99be7d06bf.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-2215bd237de246bbad6b717f6066d0ea.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-22dccecd9eda4c2e87094112d10099ff.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-27730dd9d86e4fb68731c9d79c2ef92a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-2e95917f7b0c422ea84b522db5e8171c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-3a629bbe797b41a599fab8f672def999.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-68c950f4ab6d40289d6afe9924bbb3e4.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-87328d3fa93140a9b3db853dcade9c53.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-8a503177c1374871873600de81583e46.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-8eca9498d09d4fdb9a9f4e996d9fc03c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-b21e156abc28448888ed0427cd02a6d6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-b3af228a2d10453e88941cbce8563948.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-caa41e930fd0497282574107508e9212.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-cda26c075d474b77b7818239dd3d1e88.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-d2aab72601554907bd3e099c9f4d7bf5.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/probe-result-e96619575b604bdfa99e078d72925689.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/product-cases.json",
+      "size": 3732,
+      "sha256": "5a8ff797e7e3324eccd601e6147db79507bb9f70a631d660a0b995df8a46d20e"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/run-summary.json",
+      "size": 689,
+      "sha256": "198e24736b857661e795d9c4e61da01fe76720f9ce26c3d3c8ba52964fe6c130"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "e37e2f1395cca1927eed52289a07e7fd3b16f29addf0048e5bcf880b60dec2b3"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/standard-product.json",
+      "size": 465,
+      "sha256": "95fdb7d3d1559e911f792ed62dcbe955003b3c8a47b2ec2074f8cb7229fdeb1f"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-2025/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-browser_child-00d1fd39890c4133a2c8a13e7704baec.json",
+      "size": 1211,
+      "sha256": "258d4c0619249cb4b607e1262d74024575f893607af6a5c2b1bd7d7c08cb1084"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-browser_protocol-b8efb28affcf4b75ab42f9110b942469.json",
+      "size": 1211,
+      "sha256": "d6c67c41954326855c13a224aeb71246ee207d2763843d162e4af18b35dd6501"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-browser_sandbox-e42661dc0c234d0481396f5be7c95760.json",
+      "size": 1205,
+      "sha256": "32b8261d9ab4ba077cb77e51b6c0111fae8581e31d19eed7c36fa3296a3dfc55"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-desktop_prepare-b906133550bf40c4be39a6f87f7faf6f.json",
+      "size": 999,
+      "sha256": "4b8cdcea8ef9cfde15d4b735acb73c6c939f48bb0345aa498ed539f697c3200f"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-desktop_prepare-c8fd7f322fbe4831b79308efa615c749.json",
+      "size": 1050,
+      "sha256": "d92933e4aada0b4ee8e655f12ccff78fcf03245c505279a54c0d32ca31ba6c49"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-desktop_prepare-fe64aa5cd93a4ddbae2320b401ac66ec.json",
+      "size": 910,
+      "sha256": "3e1bcf455f95defd5000de350604429bc7d9fbca52f870635b3406a37655e08c"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/access-editor-580ac77183394eabb22679e8cb824cb5.json",
+      "size": 1133,
+      "sha256": "697b2d42bef97febd71c3ea2cf62a8218c8beb94905a04fc95ed112c68a13b3c"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "8201133053285d8328e8aebe0b4bcdac31b5ab95977381a567a175000cbad0cc"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "33544ca6580638a7e242e22157ab06aef191ea9815fead058a15ba6c6c26a7c6"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 1151,
+      "sha256": "66def2fcd5f5b0e2af376daaebe0896b36923cb36f85eb6247826027f58b7968"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "260c1074dce6de31db5072d364086e5b33f5161943396eab05a1b93cca84364a"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1083,
+      "sha256": "cc740ee6fb8d3ce5a6990766149168e3c5f419b0c9a4a9fe5a4037df321d7141"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "98e35e9d6f3b314fbfbd60fde3733589d7745cb3aebca77cbdea6c639defb00c"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/launch-performance.json",
+      "size": 269,
+      "sha256": "ff8161a45b84b33af19cb3d3129392c3093797145e1f9f40c4595e6fb025028a"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "d2b32db4abe0cf16acbc9e681e6d4abf3bc1f8ec4638655bbbf2831124b01229"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "0d99e81f9aa54d1dbc4162e3dcfbc87ee62ca8f428c89e0c14d1e521e09100fc"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "8e5772e35679b9769645ea8890ac2e31dfe9c899125541b8a540e5f29e2ff2b6"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-030bcf91fbd54c7f86f980a9bbbf9041.json",
+      "size": 1481,
+      "sha256": "ba6721cd712c570fffe4284cf0e9b944988c886f0aab43fc2f4eb80b3914e98c"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-093878863aa744ea8cfd362324b0b43b.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-0af02967d15c46b89c8fd685efa37d27.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-23d3579b12004ded99a5a3ad8e86d801.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-2435c8b0914340578cedec05e3da727d.json",
+      "size": 1481,
+      "sha256": "f17323aaf38cec641d725023fc697559f8640eeb0ff279daecf75f4d3b2498e9"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-3a137e8316f04290bb0476a3c0862364.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-3d17fb03eadf417887a6c061032de170.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-4968141baaaf43a285ee9f0dfcedec7f.json",
+      "size": 1481,
+      "sha256": "ba6721cd712c570fffe4284cf0e9b944988c886f0aab43fc2f4eb80b3914e98c"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-4a5d67bd077a4e7ba8a7d2744b0cd666.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-5867786a1a9b457ba1ccdcf6428e0316.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-5957d98a7a544e79878115ed7f4ef657.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-5c6074d259f64d97b07646450c92e306.json",
+      "size": 1481,
+      "sha256": "9797b7240ca070fe08606b5a8a06b82d6683f04d33622937d280a5355e7b3958"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-5c6c25619ccc4517a3221f690e7fdea9.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-6091ee1327334aee962927948569bbf1.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-6587d81e7e0e48af94e84a1c7b92d053.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-65eba98cfd804f998c9cf1fa96ca6a46.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-679484c18a2248e9b03c9ec6c0abc214.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-701e454fb6004c25bcf076b186dbb579.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-711affc753db4c34b6fc5349a3354647.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-737c3958ddbb40a8881111f3458f6bbf.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-8ddec5ad360d4f97911fb683753d279d.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-a7fe1ea0b1d5432b9b7bc23a885d861c.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-ab3d5d0c6ecb4cf29af0e7d0376000f4.json",
+      "size": 1518,
+      "sha256": "4afec26e4dd224c33a0938cc360885e95cb4371e96dbd5455c91ec83e67d9753"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-ad0e7202c1904760acd79041220e5d00.json",
+      "size": 1481,
+      "sha256": "f17323aaf38cec641d725023fc697559f8640eeb0ff279daecf75f4d3b2498e9"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-bbeffaf62bfa44a6808e7c52f67cdc1b.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-bc4e872e07794d8ab885215d46157908.json",
+      "size": 1518,
+      "sha256": "d9a9f757f82bfdbe8ab0efd6ddb8afa4243541f4a3c11afbdd51a81dee2f9018"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-c72472384b6e45319139432df338f198.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-d472e9019f68438e860ae850b0a03725.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-daff26d5419147d1b38ea1f102650789.json",
+      "size": 1481,
+      "sha256": "9797b7240ca070fe08606b5a8a06b82d6683f04d33622937d280a5355e7b3958"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-evidence-e9e3bcaa26ed49519504044b3dd86a6a.json",
+      "size": 1518,
+      "sha256": "a99595a3373d19d9ca4ba0777002ad941a25e6a549956b23aa208e0f1126e994"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-030bcf91fbd54c7f86f980a9bbbf9041.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-093878863aa744ea8cfd362324b0b43b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-0af02967d15c46b89c8fd685efa37d27.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-23d3579b12004ded99a5a3ad8e86d801.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-2435c8b0914340578cedec05e3da727d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-3a137e8316f04290bb0476a3c0862364.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-3d17fb03eadf417887a6c061032de170.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-4968141baaaf43a285ee9f0dfcedec7f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-4a5d67bd077a4e7ba8a7d2744b0cd666.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-5867786a1a9b457ba1ccdcf6428e0316.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-5957d98a7a544e79878115ed7f4ef657.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-5c6074d259f64d97b07646450c92e306.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-5c6c25619ccc4517a3221f690e7fdea9.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-6091ee1327334aee962927948569bbf1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-6587d81e7e0e48af94e84a1c7b92d053.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-65eba98cfd804f998c9cf1fa96ca6a46.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-679484c18a2248e9b03c9ec6c0abc214.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-701e454fb6004c25bcf076b186dbb579.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-711affc753db4c34b6fc5349a3354647.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-737c3958ddbb40a8881111f3458f6bbf.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-8ddec5ad360d4f97911fb683753d279d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-a7fe1ea0b1d5432b9b7bc23a885d861c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-ab3d5d0c6ecb4cf29af0e7d0376000f4.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-ad0e7202c1904760acd79041220e5d00.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-bbeffaf62bfa44a6808e7c52f67cdc1b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-bc4e872e07794d8ab885215d46157908.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-c72472384b6e45319139432df338f198.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-d472e9019f68438e860ae850b0a03725.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-daff26d5419147d1b38ea1f102650789.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/probe-result-e9e3bcaa26ed49519504044b3dd86a6a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/product-cases.json",
+      "size": 3441,
+      "sha256": "4843640c3a649c0e246fbb3b88972cea991bd09a3ee6042558517734246b6a3e"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/run-summary.json",
+      "size": 689,
+      "sha256": "56e0225bd914906a8d1b64564dd20f20efb7fccf48685180c1daf7c2241e7fd7"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "6c37cb739a2e73fc043f265b4acb48695d3ffd36860dcca4d2e57107d0989711"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/standard-product.json",
+      "size": 465,
+      "sha256": "b510abb9ae1eb45705c8fbd20c0ce20401141a130533903f25cbd85110a99869"
+    },
+    {
+      "path": "investigation-284db70-apps/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-browser_child-6e31b73aee2c4ce7a063cd934f6642fc.json",
+      "size": 1410,
+      "sha256": "83fde27115863909d29d342c5db7d4d10c71e136d728009b647e61dc36d7efdb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-browser_protocol-4b8b8635a5144cf6a546dca092331479.json",
+      "size": 1409,
+      "sha256": "6b014d689fb312914e64e1400639567e5ca4766ed1e3725a02d88516e51c002d"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-browser_sandbox-52ed7acc084640d99daa532a90c191b9.json",
+      "size": 1403,
+      "sha256": "ba532448e2947e873534dcb857b4ed11ba61994c8125c06aff2b7f7b476c28ff"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-desktop_prepare-8e17768bf26e412bb49bb0c00cdd02d1.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-desktop_prepare-b24a91a3a66e40c593fb57425260efbb.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-desktop_prepare-ce550c82d813475aacf03c72b1d5c97e.json",
+      "size": 895,
+      "sha256": "0b5e7f0b0d9572f8a9a09bb0bd88ced7cd42e9c4d74f1c0607901e2dd0645eb1"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-display_scale-63fb1f60c3f34632a63fa93d5fbbd92c.json",
+      "size": 660,
+      "sha256": "271beaf53bf590caf7bad3648e9a46cc7323c2e98e8822b572831cb125066bcc"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-display_scale-bc3d46a04059439185a0c3a944b29c43.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-display_scale-df9681617efe40cb9eedc7831499b061.json",
+      "size": 660,
+      "sha256": "62b124dc72b3f39d14bde2a52c673d71b17b205ddfd4c695b0fca46443eca25c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-display_scale-fd2116d94dc04ebeac5a54184640d70b.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-editor-a787c137ff0a4f4aaf886733d91b980b.json",
+      "size": 1368,
+      "sha256": "3064a7d49272603b86dd7cd7c63c9c37fab32baaeb31c84718c447ef5eee77ee"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-keyboard-bfe26cc553f9424eaf5362c48eda36aa.json",
+      "size": 1396,
+      "sha256": "9a9ae0a32c30b68151bc25b654f7a9a6d26f1623cd1d04be4b83bd35483d2828"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-picker-2f199bb9c65c46b6863322e5bfc58f23.json",
+      "size": 1098,
+      "sha256": "8bde0e131ebce7b874dadb418083cfb74d2eadaab7ad947559238c49f703e335"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/access-picker-8837f94c74304bea8db17c74e1aeaf04.json",
+      "size": 1098,
+      "sha256": "8bde0e131ebce7b874dadb418083cfb74d2eadaab7ad947559238c49f703e335"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "b486a0110b7505aad17f71c9800a6f0d43254dca9064b5dd8781a71853907098"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/application-exit.json",
+      "size": 191,
+      "sha256": "a3762eb7421b5033f36f5208ec3d63fadadeffb95803309022f93e4b6036fd53"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "021e23f0649e8be7925c6f99f65f104d5c8c7403660b0cecf2e51305d8b6eeed"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "602e1c691e4cee86bfb088892cd8a7e262fa31a676b0f70ae54c9818655baaa3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/editor-save-observation.json",
+      "size": 119,
+      "sha256": "1402e5485f84b52c41aaf860e0adc3cf4fbe98518a029721930d8e51026cd166"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/file-workload.json",
+      "size": 182,
+      "sha256": "f14638499c1c58708272dfc5365daf9291b0bdaf60a87b9487b0ee3c9ae76e42"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/gui-workflow.json",
+      "size": 165,
+      "sha256": "9cf7e1394f49fff454dbcb15dadc1e8cdfdd5bf9fbd1e09f4ab95eb7ffee12c2"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "4ea66d1dc0d9aaf78e4c1f7330ffb2476cc7a1f6f7711fa8a4de57142c439f21"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/last-native-refusal.json",
+      "size": 170,
+      "sha256": "419f9e047975341fe3933482e774200c859ba18a3e596314a6e6cd2355bd365c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/launch-performance.json",
+      "size": 268,
+      "sha256": "224a6ddf15c5fef052370f5c047f8f797d3af632e7bc2ac774bd818a913179fc"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "de640242bc5a0b299dfd7948fb1df6869dbe42014f0105e0302839992d1c113f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "a877d6d46e52c7b64a53c0680fa9877b3eba4a16ef0cea016e94624794bc5fa2"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "6e813e22d1f860eca1a9e9af84cabc3dcfe2a3bb1d39479aeee57f14f4e8a30a"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/performance-diagnostic.json",
+      "size": 980,
+      "sha256": "43a9db606df2a9096abdbe01232e80deb6919a47af5bf1e336a438c794fd9718"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/picker-command-observation.json",
+      "size": 190,
+      "sha256": "fb208ea14cca0a24fe45bcc6705257cdf478868da65e2cad6226965d833b3c21"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-08d0fb2a20e14b12b004567c3eac36e5.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-35d5c4c0456e4ed9be272a0a48e6e838.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-485af81879d94508bd51b06c148336ac.json",
+      "size": 1481,
+      "sha256": "05e755704017443244523e5e9e1ac75daab5af87a5a191c589fd2e6896047f80"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-56e22d9de80d48f1a9cbbcd99da038c1.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-5bbf19dcb0d94ae8ba1d40f9144c8887.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-6beecb68b9e946dfa9745f4f616069af.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-751a4f354ddb4584a62cf6cccd6eef52.json",
+      "size": 1481,
+      "sha256": "ed98640f821c2cfe452ae8fe5b2a4b5550750cbf84c481b20ff052d4b5cca845"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-79bcf580965048bdaca20a70c374b5d6.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-7a356aa8e4a346b497525a2c79846b93.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-843834e5a8144bf08a4ce1feea3ced07.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-8a651ada39ea4806b37ef8194044e222.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-8b7aae62d6884f6e8c9a89bc2304a87e.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-9a8cef9d5c5a4f08992d5c84b70a7a85.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-a4aa3c05c593476c95a1ac5b89566ff1.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-a77b83ed02a842b4a0eaad09ad74054e.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-b756e6a154f84e0681a652989a585405.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-cb5a21f108d2499889154b4c226d2469.json",
+      "size": 1481,
+      "sha256": "05e755704017443244523e5e9e1ac75daab5af87a5a191c589fd2e6896047f80"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-cffa4fa535504f329812c25bd6c84d82.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-d2cd07e772234aa7bb60b1f1cf211a16.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-d3d9f00756ce4ae3800d307dfa5ccf2c.json",
+      "size": 1481,
+      "sha256": "ed98640f821c2cfe452ae8fe5b2a4b5550750cbf84c481b20ff052d4b5cca845"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-defa154d31344629b55b2cc2dde30e03.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-e0d7bc7e5c3a4412aa2cdb1e2ddc3e39.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-e72fa992f55447909074770f76114f01.json",
+      "size": 1518,
+      "sha256": "a870beb5814fcbeba40e551b0fb5b2b4a804b754729ef993a14c1e5b52222a73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-evidence-f7cafc481fa740c29c41fd89714603d1.json",
+      "size": 1518,
+      "sha256": "d9a111e42765f5c25264c996787e5deca9dd277a9599d77b78288ea74ca9cea3"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-08d0fb2a20e14b12b004567c3eac36e5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-35d5c4c0456e4ed9be272a0a48e6e838.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-485af81879d94508bd51b06c148336ac.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-56e22d9de80d48f1a9cbbcd99da038c1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-5bbf19dcb0d94ae8ba1d40f9144c8887.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-6beecb68b9e946dfa9745f4f616069af.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-751a4f354ddb4584a62cf6cccd6eef52.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-79bcf580965048bdaca20a70c374b5d6.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-7a356aa8e4a346b497525a2c79846b93.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-843834e5a8144bf08a4ce1feea3ced07.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-8a651ada39ea4806b37ef8194044e222.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-8b7aae62d6884f6e8c9a89bc2304a87e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-9a8cef9d5c5a4f08992d5c84b70a7a85.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-a4aa3c05c593476c95a1ac5b89566ff1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-a77b83ed02a842b4a0eaad09ad74054e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-b756e6a154f84e0681a652989a585405.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-cb5a21f108d2499889154b4c226d2469.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-cffa4fa535504f329812c25bd6c84d82.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-d2cd07e772234aa7bb60b1f1cf211a16.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-d3d9f00756ce4ae3800d307dfa5ccf2c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-defa154d31344629b55b2cc2dde30e03.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-e0d7bc7e5c3a4412aa2cdb1e2ddc3e39.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-e72fa992f55447909074770f76114f01.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/probe-result-f7cafc481fa740c29c41fd89714603d1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/process-update.json",
+      "size": 124,
+      "sha256": "599e4fa52d9e2ef0b2990880844580dece1fbbff141738e34e3abc8a35ad3825"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/product-cases.json",
+      "size": 8433,
+      "sha256": "c236701fb4bab3415747bc34ff315bbf9ceebf42103c4658ee2ec19bd7e5d932"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/run-summary.json",
+      "size": 691,
+      "sha256": "5578daa80dbddc02587e7c9ff1e303ccbfc467b2463104d208ce262c4bd43e29"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "fe717ce233c1f01f929f5a5df7a5ef0efbf35d23a05b1d5c760f2c6ef1a43223"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/standard-product.json",
+      "size": 467,
+      "sha256": "eaa2f3134aac4f4e4da7acf0824338f1380a2a7be4f26df260b2928fd5fb16d8"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/startup-accessibility.json",
+      "size": 796,
+      "sha256": "c847f51a7fa77467eddc275dc30fae11c38f19e88acb9a3db0d193c43793b80f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/startup-diagnostic.json",
+      "size": 553,
+      "sha256": "a2507aaea11a6c9d409946e1762cca6fa1d01b2fd94a7ae3ad038873d7b59992"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/startup-native-trace.json",
+      "size": 315,
+      "sha256": "719cf5ad48f9b1a293413a414fb49dba9b46bd99d553b230f9136724b870da27"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-2025/ui-cases.json",
+      "size": 9159,
+      "sha256": "c83ab4ff7dc105da7a3b449bc0ad0af023ecb639d3a01be96810342ae59cb101"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-browser_child-8cefb8a9343043a1ab4dc3b594077703.json",
+      "size": 1211,
+      "sha256": "258d4c0619249cb4b607e1262d74024575f893607af6a5c2b1bd7d7c08cb1084"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-browser_protocol-9f13e953d3294127b1a048d21f3c73ed.json",
+      "size": 1211,
+      "sha256": "d6c67c41954326855c13a224aeb71246ee207d2763843d162e4af18b35dd6501"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-browser_sandbox-473eb4025a284c6cb894f850aca926ea.json",
+      "size": 1205,
+      "sha256": "32b8261d9ab4ba077cb77e51b6c0111fae8581e31d19eed7c36fa3296a3dfc55"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-desktop_prepare-4d88ee16bc114c2583e8d0fa580a6994.json",
+      "size": 999,
+      "sha256": "c3e6bd8cf275dbcb1aece2e477a8ff176166ede02463902edb6668d5e3d1a09e"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-desktop_prepare-5c6ec7ad41414b2198868bc1213a00ce.json",
+      "size": 1050,
+      "sha256": "d92933e4aada0b4ee8e655f12ccff78fcf03245c505279a54c0d32ca31ba6c49"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-desktop_prepare-74a2701b396a46c0bb005ec2d6dc2b8b.json",
+      "size": 910,
+      "sha256": "3e1bcf455f95defd5000de350604429bc7d9fbca52f870635b3406a37655e08c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-desktop_prepare-9e4fab10268c462d982a8b7462aeb0c3.json",
+      "size": 999,
+      "sha256": "4b8cdcea8ef9cfde15d4b735acb73c6c939f48bb0345aa498ed539f697c3200f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-display_scale-0176292e78e8480698a429aa6e2032d1.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-display_scale-5b06dc0f3089400e89845e2fb71acc3a.json",
+      "size": 660,
+      "sha256": "62b124dc72b3f39d14bde2a52c673d71b17b205ddfd4c695b0fca46443eca25c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-display_scale-8df817a2c90c4aaf849fd18184314e56.json",
+      "size": 660,
+      "sha256": "271beaf53bf590caf7bad3648e9a46cc7323c2e98e8822b572831cb125066bcc"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-display_scale-a720bda02a8f4cd39ed3865bb2fff0e0.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-editor-9038f349d67b430891d2963b46682e4c.json",
+      "size": 1133,
+      "sha256": "697b2d42bef97febd71c3ea2cf62a8218c8beb94905a04fc95ed112c68a13b3c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-keyboard-abe8649f9c33400f98d336087e101871.json",
+      "size": 1799,
+      "sha256": "8ad27fda1c724d4c71850d0784d977ed612b2f0531513e5e0501d6d63fb0c21f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/access-picker-24c181663dfe4dada86539ccdfd13b40.json",
+      "size": 1098,
+      "sha256": "8bde0e131ebce7b874dadb418083cfb74d2eadaab7ad947559238c49f703e335"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "ea7afbd206ae600f35dc2c537122a001fa7785ac7a5cb2ba4d614f3271bb5dcd"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "8d7d3785c63db33c2c9ef33d47a1090fc5d11ba04e9e44f0d56a80ece82b3617"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 1151,
+      "sha256": "66def2fcd5f5b0e2af376daaebe0896b36923cb36f85eb6247826027f58b7968"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "71ac41c0fa8c176600e56c166f0b95d7283849b4d37067820987cd30b6822911"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/gui-workflow.json",
+      "size": 163,
+      "sha256": "3d34eca7e8da00cedc93f7ed022420852aa3b606d3bd288cf73201058af751fb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/image-status-5335795846cc4facb25ae018b2859551.json",
+      "size": 182,
+      "sha256": "582acd0579f28941f3787493573d2b2d3287cd8138e0c38c8b6df48ce6ea8881"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1083,
+      "sha256": "cc740ee6fb8d3ce5a6990766149168e3c5f419b0c9a4a9fe5a4037df321d7141"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "963745f2c320c0ce61820d82cd895ea7110040c52e323c276ed8e88d5621e2fb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/last-native-refusal.json",
+      "size": 170,
+      "sha256": "23b1892f61b0c4048a104ecc3153a87986c5e04712e57320ea0d5aa423ead48b"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/launch-performance.json",
+      "size": 269,
+      "sha256": "20d51a9530c779d4f961995e6360770213051b81ec162b3ae4bd17e085d6c4cf"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "ddc05878fd05925ba9da337bfe9a6418bf8164e2dbb22521286e8e58dcac7217"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "079bb3514cae69139d8033c40b9736b51ea6415fbb7e42d38454ef93eb7b613f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "b1faad3fa1dbb780ab0b53c2464cd362d24f54edd7c7947998ce2ca826ac5d2c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/performance-diagnostic.json",
+      "size": 980,
+      "sha256": "1f206d7fee828793a1a6faf8485c19e83365c494b01ccfb49f2483150346ff7b"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/picker-command-observation.json",
+      "size": 239,
+      "sha256": "b422ef55ec0ab4975f58cf1a8f68770bbbb13d260c476e32453fc018e7b2497e"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-02fc8b2720b54c7c8aef44068a44369c.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-04764880e68a4c568973d823c84abaeb.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-0884e71c94604bfeaafed7cc70449563.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-091624167b3e4f45a98a0fb4ffca8cc1.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-211ab41631074b25a658537c5a4170f3.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-23f23f878d604283b4ab43fec3fc282b.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-2a0d89b8253b43798d0c424c9f2beebe.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-2a79a79de8ed4daa9258a4042ed38a33.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-487b30f396174fde90cb9eb85d70f07c.json",
+      "size": 1481,
+      "sha256": "7abc6165a3eec651ba6157c7085e71c03bc492330fd15fb64219c01fcb6edc81"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-6ca273e30c194cd3819009e9c51508cc.json",
+      "size": 1481,
+      "sha256": "7abc6165a3eec651ba6157c7085e71c03bc492330fd15fb64219c01fcb6edc81"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-6e7b604c177a40e989c8f6e02fa982de.json",
+      "size": 1481,
+      "sha256": "014fc3030f82bd5e7f38a7bcb200dfb200ce9cfaa814578d1ffe66c76ddcc6da"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-6f683e554e58448f9c78f5984b3d74f7.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-71880f72306a498b92f44230fefec28f.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-837fcc548c8d43d196c31046f2f368a2.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-870d66494bd742f791c5592bc039201c.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-92f7385a9d4c432bb0a248b4f3101bda.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-99297e92a412421f889ee33c5a084cfe.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-9edaad58770042d482248aa980d1980b.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-9f17676195294651b7a5afd106800c7a.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-a75d916f83534128aaaddd5f7404b093.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-b1f250532e954b0887926bb8b0b88966.json",
+      "size": 1481,
+      "sha256": "014fc3030f82bd5e7f38a7bcb200dfb200ce9cfaa814578d1ffe66c76ddcc6da"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-b21c3aa9bcce4fc78bc8d785089f5f9e.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-b7a26defc8c34784afef4d69a38da3eb.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-cabd9dc99502416f9fc56c18668f9a20.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-de7449e69723452282243ca9ca1a2552.json",
+      "size": 1481,
+      "sha256": "b18ff26ecc8524f88a494d417774fb3ef3ba97658a29fe1f2cc4ab14a2aa4c30"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-e8843e1e41794d8db71acdba751ad58f.json",
+      "size": 1481,
+      "sha256": "b18ff26ecc8524f88a494d417774fb3ef3ba97658a29fe1f2cc4ab14a2aa4c30"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-ee6c76814d644b60a0bcdd8cbc892f0b.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-f2e011928aba47b1942b5561304203c1.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-f921ce6c35e94b38b0baa7f3e381f374.json",
+      "size": 1518,
+      "sha256": "44a5ec5b12c634d5c8453c5d83b8e66c0ccb409637659482ff39e657e2fe3614"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-fa9bf866d7714ac7a1d64ec7fc4a0157.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-faeb01961f0940838d5ff54aaf6210f3.json",
+      "size": 1518,
+      "sha256": "d2636b587c4926742dedeffb35821e95fec557e70f5594b466757932581412a4"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-evidence-fb101ede531b4d079842bc6d29b9fc4a.json",
+      "size": 1518,
+      "sha256": "a30aefa0d02468d013b50ed9b24ef91cb2cbae24684fd7a08c5aedbb0920fe93"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-02fc8b2720b54c7c8aef44068a44369c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-04764880e68a4c568973d823c84abaeb.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-0884e71c94604bfeaafed7cc70449563.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-091624167b3e4f45a98a0fb4ffca8cc1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-211ab41631074b25a658537c5a4170f3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-23f23f878d604283b4ab43fec3fc282b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-2a0d89b8253b43798d0c424c9f2beebe.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-2a79a79de8ed4daa9258a4042ed38a33.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-487b30f396174fde90cb9eb85d70f07c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-6ca273e30c194cd3819009e9c51508cc.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-6e7b604c177a40e989c8f6e02fa982de.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-6f683e554e58448f9c78f5984b3d74f7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-71880f72306a498b92f44230fefec28f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-837fcc548c8d43d196c31046f2f368a2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-870d66494bd742f791c5592bc039201c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-92f7385a9d4c432bb0a248b4f3101bda.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-99297e92a412421f889ee33c5a084cfe.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-9edaad58770042d482248aa980d1980b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-9f17676195294651b7a5afd106800c7a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-a75d916f83534128aaaddd5f7404b093.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-b1f250532e954b0887926bb8b0b88966.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-b21c3aa9bcce4fc78bc8d785089f5f9e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-b7a26defc8c34784afef4d69a38da3eb.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-cabd9dc99502416f9fc56c18668f9a20.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-de7449e69723452282243ca9ca1a2552.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-e8843e1e41794d8db71acdba751ad58f.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-ee6c76814d644b60a0bcdd8cbc892f0b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-f2e011928aba47b1942b5561304203c1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-f921ce6c35e94b38b0baa7f3e381f374.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-fa9bf866d7714ac7a1d64ec7fc4a0157.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-faeb01961f0940838d5ff54aaf6210f3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/probe-result-fb101ede531b4d079842bc6d29b9fc4a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/process-update.json",
+      "size": 123,
+      "sha256": "d49837487758f376c2cfc8b2ca5955ce486f5a98b704856f47bedfd5c0289a67"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/product-cases.json",
+      "size": 7250,
+      "sha256": "6d9dfa60ac8896483ae5afe2bd9aee7be5c2d6e47345cca3a250677d2becdbf8"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/run-summary.json",
+      "size": 691,
+      "sha256": "58687f7e17460c04742274df2557ae8b77c1fffb12296e7e203779afd65a453c"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "3384ebf5c0688a5a1f33b54d311635d82feb727aed66ac10ed4936b2937df33f"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/standard-product.json",
+      "size": 467,
+      "sha256": "3b063faf702ffa212d31e5a62fea3d117a8a504548739b743c28cfeabc3975ec"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/startup-accessibility.json",
+      "size": 786,
+      "sha256": "d8db22cdf0fd9b2defd80d6371a39358f79d3e930f62652c1d88c2d6b3a63dbd"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/startup-diagnostic.json",
+      "size": 551,
+      "sha256": "a0f8dff7c97d6b8fa5d69f82bd3fd493a6c5aeccab592689a413f2795aa6b231"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/startup-native-trace.json",
+      "size": 313,
+      "sha256": "d54e898c75db051d1f631d99a2f6a18504d0c76a8403efff15de2117cb6d7969"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/ui-cases.json",
+      "size": 8390,
+      "sha256": "2881337b6283b14344b4252ac87068d1e961c5498ae03dae915df78eb0316178"
+    },
+    {
+      "path": "investigation-99abd22-focused/windows-11-arm/ui-failure.json",
+      "size": 1307,
+      "sha256": "50afcb5427b8185db16513021903fb61dd506b836cd4fb1153c57f8003a8be13"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/access-desktop_prepare-6c91d774dc4343edadbe9677cf56833b.json",
+      "size": 999,
+      "sha256": "4b8cdcea8ef9cfde15d4b735acb73c6c939f48bb0345aa498ed539f697c3200f"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "d3df687b5c79c9907d482db76af0a6b34d05d8c9117b4335615aa2f6477efba1"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "daecacd9d572703d3393d7c50cb33d1e8c86a18a12b7c9116b2128c0275a0e68"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "0156843ad52b26f45ad353460b8006fefad3a642655815e11cbbf2d4a9aab7b3"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/image-status-684d8d4fcb5f4ac68ceab5a65b81bdca.json",
+      "size": 182,
+      "sha256": "582acd0579f28941f3787493573d2b2d3287cd8138e0c38c8b6df48ce6ea8881"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1083,
+      "sha256": "cc740ee6fb8d3ce5a6990766149168e3c5f419b0c9a4a9fe5a4037df321d7141"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "1f9c2cb466a5d2775011d7752c9495437f6db7015f03cdb35db2f4103a04e5bf"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "bc33a5dd1a94bbbc51f93fe81cc882989b5687df63092597338f3645ad3bd7d6"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/live-fault-reporters.json",
+      "size": 400,
+      "sha256": "a102b77ed26aefdc054899b170da6790fe87ac9670629919a06b6167481b17a7"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "577805c381a31d071a12ab8a441565654241b31c7d9c1766cb371047303dc155"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/owned-policy-observations.json",
+      "size": 66,
+      "sha256": "69a3152d63a1c7c24dd16f05962875c16af1f781ae9ece6ee97a95ba5ede46d7"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-evidence-1106cab604d341518f5831f6dff4856b.json",
+      "size": 1518,
+      "sha256": "d54007f731da3cd3efbdff87e2003fabf73db82d35b05fc42ed240b99092ddac"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-evidence-5216f673ed684e3d8053b674adaef652.json",
+      "size": 1518,
+      "sha256": "019cbcdceefc7d5b27d0b61508e1436845283676f0266371960598b60a1a2818"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-evidence-882d631b90c045bc88011ab6ddc60df5.json",
+      "size": 1518,
+      "sha256": "d54007f731da3cd3efbdff87e2003fabf73db82d35b05fc42ed240b99092ddac"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-evidence-9ceeae38e99b4708b8b916c12c73905f.json",
+      "size": 1518,
+      "sha256": "019cbcdceefc7d5b27d0b61508e1436845283676f0266371960598b60a1a2818"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-evidence-c5034e7dac804912a62ec5af4882d02c.json",
+      "size": 1518,
+      "sha256": "a1f141ae55bf247f1d87b8437e0a05b957220a984cfb55f3c76e02e9c8982660"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-result-1106cab604d341518f5831f6dff4856b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-result-5216f673ed684e3d8053b674adaef652.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-result-882d631b90c045bc88011ab6ddc60df5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-result-9ceeae38e99b4708b8b916c12c73905f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/probe-result-c5034e7dac804912a62ec5af4882d02c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/run-summary.json",
+      "size": 682,
+      "sha256": "ee112ccb5e0d83405e2efa481df221efbf282f592609ed70702339ba3920d279"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "e37e2f1395cca1927eed52289a07e7fd3b16f29addf0048e5bcf880b60dec2b3"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "dc841304e456748ea1a6679073130c75494f3a91509643528814418561af72bf"
+    },
+    {
+      "path": "investigation-284db70-full/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/access-desktop_prepare-91fe1ee877c04a26a7844f381b5e20c4.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "8201133053285d8328e8aebe0b4bcdac31b5ab95977381a567a175000cbad0cc"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "9abd5e1b6c044aec0f0597f1edb0d8ee4d0d2517014071cadbb582aed86a3aa0"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "0ca7125f40546d43cf542c6e6bd427260de86e9048071917b25a5b9d84d1c4bd"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "8f296a1dd4960f2cbdf792bc1fec81191a4b6f058a4093be9f4cca6f30259bcc"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "5124995e4a738ebf081f5cf247f6df0f0b1501cd2d3b5c2aaa9ac1b47874c8c0"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "9e63a7b972b8ed9284f7431f94170d09fbabf3d898884d4a58a5927a098119de"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/owned-policy-observations.json",
+      "size": 1098,
+      "sha256": "1bbc92ccefd0377592f998dc03ae010f1dce1b81a5a85e7b208cdafa8c0e6aef"
+    },
+    {
+      "path": "investigation-284db70-full/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "0a52aa295f9dad1b39f4b8e909c1fb3f8ad2b64d3e85b113c038560d622620b1"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/access-desktop_prepare-676288498af145fd8d663cf395a0fbfc.json",
+      "size": 999,
+      "sha256": "4b8cdcea8ef9cfde15d4b735acb73c6c939f48bb0345aa498ed539f697c3200f"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/access-desktop_prepare-7c66d4efd86248038d5b377c61d8c2cc.json",
+      "size": 1050,
+      "sha256": "d92933e4aada0b4ee8e655f12ccff78fcf03245c505279a54c0d32ca31ba6c49"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/access-desktop_prepare-88f7dff435ac4cd4be595da3b380493a.json",
+      "size": 910,
+      "sha256": "3e1bcf455f95defd5000de350604429bc7d9fbca52f870635b3406a37655e08c"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "8201133053285d8328e8aebe0b4bcdac31b5ab95977381a567a175000cbad0cc"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "dda41ca71aaf0011191439d88bf7b801e2a57bfcda279563593e4a8812cc700a"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 1151,
+      "sha256": "66def2fcd5f5b0e2af376daaebe0896b36923cb36f85eb6247826027f58b7968"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "eefb3e00000c804cc47d5ce434ee9c9924ba700b0b8cb1c1329da51452733348"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1083,
+      "sha256": "cc740ee6fb8d3ce5a6990766149168e3c5f419b0c9a4a9fe5a4037df321d7141"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "aae98d6668c1094c792febe8707badef939697e3ceadfc4e4d5fdbb9bd25fb07"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "117f41008b7aa6b9ebc8c6f4cf4989260e7da21571edbf69d75e727f2f73a36d"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "85e9cd17ecc0d64ea30c4ebe4a56948c8b7874b9840fe1b079800229c8a4ec0a"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "872ba9dc12f9cc21d9d469d2006ee83b80b5f0b2dfdb6026ccb27c31a02d030a"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/product-cases.json",
+      "size": 567,
+      "sha256": "0252c20556ca4f299cb76f321474ab1bce79b96a599229d14e8b3fec10c01f2e"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "e5723aa1ecf269cbf2d0afc1d1eb6c7db6399a5cd751005be75a42002686dec6"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/startup-accessibility.json",
+      "size": 772,
+      "sha256": "7e701218ab868a61a81b70115c9d8d9c291fd0d0d34ac29caef2795b9a2f5bc5"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-desktop_prepare-79667f62b78945d9a9d9594f40f09dde.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-desktop_prepare-cd772e0f6d114bed86949da59328ef83.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-desktop_prepare-fce3a3e98bc7486097ba9358980f8da7.json",
+      "size": 895,
+      "sha256": "0b5e7f0b0d9572f8a9a09bb0bd88ced7cd42e9c4d74f1c0607901e2dd0645eb1"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-display_scale-24f0c221d2a0468286cfe9c86b197e6e.json",
+      "size": 660,
+      "sha256": "271beaf53bf590caf7bad3648e9a46cc7323c2e98e8822b572831cb125066bcc"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-display_scale-6e906f9b6cd6497c9424aca93a9a8049.json",
+      "size": 660,
+      "sha256": "62b124dc72b3f39d14bde2a52c673d71b17b205ddfd4c695b0fca46443eca25c"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-display_scale-ca9833eb346341f69f6f4518a2e8b048.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-display_scale-d395a45808cb4f59a045836d3b39b0e9.json",
+      "size": 659,
+      "sha256": "b01b2dc0968b5b589f39bdc9b5b1a7e14bcde8c81a4d7f259eadf7d75412cc19"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-keyboard-24f039d628d947d9a2dc1d3a9433ebe4.json",
+      "size": 1396,
+      "sha256": "9a93649aa50d0f7d8e9e5755e06abf0c728461d70b33ecdcf6650b35074cddc8"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/access-picker-6323336d84dd4e43a258e02a8756480e.json",
+      "size": 1098,
+      "sha256": "8bde0e131ebce7b874dadb418083cfb74d2eadaab7ad947559238c49f703e335"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "d9af6688925d9fe13e1b3f7fb8babbbc3d85c11ff3c089afee8985aeaa3856d7"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/component-faults.json",
+      "size": 179,
+      "sha256": "c59fd7f4df4d0bb203d60fed8278c929947e8600d6271d90aa9c28e498047bfc"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.1.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.2.json",
+      "size": 224,
+      "sha256": "1de0750d85a9c68667c62a85d22b4c1614dd6833c8c288e3fe334b3ab1286285"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.3.json",
+      "size": 224,
+      "sha256": "8a0b46319ff75a49d671384c85ebc50327de9ecb7435b8159d650ab98817df73"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.4.json",
+      "size": 224,
+      "sha256": "a229a46af651ab1620e54df3ea509f561f70bdfd3d759ca8deeaa92a6425a8a0"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "c8c328134f3986a8388c6ee52b7eca32d4cdc39574e96ffdcd1d35888f5337f9"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "7405f10df730b9c9a05b9e03b0778b6389dd4f5053b86d2a5a7c5b2447e4670e"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/last-native-refusal.json",
+      "size": 170,
+      "sha256": "419f9e047975341fe3933482e774200c859ba18a3e596314a6e6cd2355bd365c"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "97119b475530891cd9840c94bd53b2e049f00191eb7d905963980e701a14e45e"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "88552191d5945cf827965d52b4a8039d8cf6dbc38ccfca78c9bfe1b9a94a757d"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "3ca4505b91d8dadafcab3c392560e92a44b6f9507afa92ab437af8d07c54c703"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/performance-diagnostic.json",
+      "size": 982,
+      "sha256": "37b7e58d0927fca0fdc2be17fb8b1c3628444b337a019aee60f3ed0080def217"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/process-update.json",
+      "size": 111,
+      "sha256": "c3035a807beed1a0f4b1c29d45d7baf7661e0045184950836a311f9db5e3408e"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/product-cases.json",
+      "size": 4129,
+      "sha256": "e9daddfc799ad838dc45d9f3a1e3c05a9b8340c6248cd069075fc9a85fe8f3cf"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "e37e2f1395cca1927eed52289a07e7fd3b16f29addf0048e5bcf880b60dec2b3"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/startup-accessibility.json",
+      "size": 775,
+      "sha256": "c1c4418269f469bd16b612e32425698dd679aeca7d58badd73891a61641ab4eb"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/startup-diagnostic.json",
+      "size": 553,
+      "sha256": "d05bab2fa5e674fccdfa17ed3889d5af1b354105f08404ae8bbbcd301d598b84"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/startup-native-trace.json",
+      "size": 315,
+      "sha256": "31cd68c79c8a30a59ee19f0e8457da7b5fbb20dbed9ea4ac891a1b50a8e6a093"
+    },
+    {
+      "path": "investigation-284db70-focused/windows-2025/ui-cases.json",
+      "size": 8389,
+      "sha256": "31192e6737fa0789b464301191d9ac5609ec17efa352a7691ce4254f227f81ff"
+    },
+    {
+      "path": "investigation-99abd22-build/windows-11-arm/measurement-fixture.json",
+      "size": 762,
+      "sha256": "d590010a63500f4c572a9cf4fe68fb6b2b852e52674740d8421b9e03c63f9a9b"
+    },
+    {
+      "path": "investigation-99abd22-build/windows-2025/measurement-fixture.json",
+      "size": 763,
+      "sha256": "1951ad48ec6890666d042bd2201f8a3c423ebd700150d5ae934f4550aa506668"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-browser_child-21159bbb1b9c487b8dfe33972eda7dd5.json",
+      "size": 1816,
+      "sha256": "539ec1711c3af55a815e5b65ba6e7eea17aa144b4cf8379e3d3455d538bc5a54"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-browser_protocol-52f68de5695d49a0b6cb381cc66c4b82.json",
+      "size": 1816,
+      "sha256": "a75b672017988218696fe3c11d414a06cadab71bd0024cfef7c50fb78ee674e8"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-browser_sandbox-b08d330cea7543d9b92bd2a73d00149f.json",
+      "size": 1810,
+      "sha256": "ad83928885af15cf0ca8e3ff9416fee37a7c4c6e132bdb9aeb718907bf2b1624"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-desktop_prepare-23aba54c4b8940b5aef9b2c9bffc594e.json",
+      "size": 1044,
+      "sha256": "076283ebe6fabe906c45de005045f99226a2ac91651a48bc9861a1a697e3e30f"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-desktop_prepare-60f94ddba5b041a994f27c96884daa04.json",
+      "size": 901,
+      "sha256": "1c81902234148e89f461d4fdf60e83c68b19bde4709d611314e826d701652b47"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-desktop_prepare-efc6c1dc28484db5a43c824b7a94de35.json",
+      "size": 999,
+      "sha256": "9e263a5238393bc0eeb9c53a227e69112d6248c3513e087c360a7e5735125e41"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/access-editor-99dc11fc093f4737827edfcfeb79057e.json",
+      "size": 1737,
+      "sha256": "d5e04ce02d3ddf269c4e0d197e02fca710c19327ea312d94e71b4794adc5485e"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/actor-profile.json",
+      "size": 169,
+      "sha256": "1458403b13f30f20fab743a13f4ac18e63cbc976085167fdbd8d4794f27ec238"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/application-exit.json",
+      "size": 191,
+      "sha256": "a3762eb7421b5033f36f5208ec3d63fadadeffb95803309022f93e4b6036fd53"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "c4f1dd18e0bbbb31b3d25360fd83ead96804dde94747513ca8a1085de310cd51"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.desktop-preparation-1.json",
+      "size": 1106,
+      "sha256": "16b6431583d5bf673d161d020d2de6f97d42c47f85c841b780669c7458549c0f"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.desktop-preparation-2.json",
+      "size": 941,
+      "sha256": "90c1e146621cbb67d6482d0ca0d6cef76b6bc26c496e92aeb15f80dfa3a0866c"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.desktop-preparation-3.json",
+      "size": 942,
+      "sha256": "3b255007cc6ce4ddc00e89daed90f7100334015e92fdbd02f3dbd1ea460555ef"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.desktop-preparation-4.json",
+      "size": 942,
+      "sha256": "3b255007cc6ce4ddc00e89daed90f7100334015e92fdbd02f3dbd1ea460555ef"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.desktop-preparation-5.json",
+      "size": 942,
+      "sha256": "3b255007cc6ce4ddc00e89daed90f7100334015e92fdbd02f3dbd1ea460555ef"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "6ce2db70952922ba6696991c74093cbcedc9be7074a014e518ca5df26aaf0c63"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/initial-desktop-preparation.json",
+      "size": 1064,
+      "sha256": "86a91da57bb4a2d45da4923c6cfe682b3c0e405463b3bc9a928f0e4ea6c1d118"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/lab-display-channel.json",
+      "size": 173,
+      "sha256": "cece5c542d3d7f5e4553beee1d50bfe4099a6677623dbbba81b4bae5c1f15fc2"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/launch-performance.json",
+      "size": 268,
+      "sha256": "119fa793d45be650309546b3dae2911ba7e2d7f50ad20abcf90b755ad80ca3d3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "92859ac3db6917220829e5313d76ce396187cb602eca83c6af83ac233e2b49f8"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "a90188de588c9d370da2857ef7abcfa776e8b44990487fb49105f6224f3f75a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "53d8cb95d5b34161bfe2f829df20d56a7080b2ea5259ebb05245405c8ed75482"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-17bf7762c3d74f75834733459e2b6bd8.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-1a858581e11241ee96582159e554385d.json",
+      "size": 1481,
+      "sha256": "bae11c6a714f02e46de31cda70062d526190d5d5e3e9b86a8ec0fecff40bf734"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-1f99f02bf8db40fa9f182441bce7aea3.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-2796f369fe9847e6b6e9842bc86ce959.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-2abed01843474b3e9147ea1d056de08e.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-362f11494f334206af033b628235eb35.json",
+      "size": 1481,
+      "sha256": "078c4c70d2995a4c515cbd49dda28de071d35bd7ac068dacf6307e2557f67607"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-42fe63109a9344e48e7724baf2c7883d.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-46ef1de9303e4045b1a171b7f00f60c7.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-486aca27a47a485d870863df3ebea108.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-4f1c514cd7ee496296a7f7c87031d897.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-50b18c8e35584f8ea8933f60db44bf72.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-6761f81cd4384e7888f9e6694e3c9a7e.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-6b9d53c1199d4ef79a05ae699a24b48e.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-77ef51a2c4f349b38f44019d0d4d766d.json",
+      "size": 1481,
+      "sha256": "e4ed3025467d2372d9c331117ea43253fc98c38e555f4434a71650cd549ccaf6"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-7f24d3cf6b9545d1a785dbd5ab8bad03.json",
+      "size": 1481,
+      "sha256": "078c4c70d2995a4c515cbd49dda28de071d35bd7ac068dacf6307e2557f67607"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-80e6af303fc949c3aacc440dc0f9b8b5.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-8845a2401e8f465d8f81a2e6c338d8a2.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-8945352a71b64b318f0e99cc90c080ac.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-8a87b7ae85234118a84cd86867d2c102.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-8c57c46976f845b8b7049755f80622de.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-ad237aa00ac94ce7b7ae477d230b056c.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-c263579029ea492eadbdf9e999653302.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-cad88499dc5842299ff3e6e119c52f7d.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-d29888b5e9e64e48a8dbdf6026d92622.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-d54e342de60a4e19bb90395c3aff8cb0.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-e313edbdcd554528b76b15d3dd05407d.json",
+      "size": 1481,
+      "sha256": "e4ed3025467d2372d9c331117ea43253fc98c38e555f4434a71650cd549ccaf6"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-e4ae01f2d60e460aaf4fa63489bab9f1.json",
+      "size": 1518,
+      "sha256": "22f3d5f42b4d3448ec900ea75bd43fb29f18eec7cf0999ec1ff2fd1fa27ba018"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-ef869d84c1e4480da8c782686ec2f039.json",
+      "size": 1518,
+      "sha256": "d9deed581859ef77631d9b35523ff4b13d0680d12bd8728a2d122d7ee51bc5a7"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-f2d7ae70c702459b8daa00e8f59efa45.json",
+      "size": 1481,
+      "sha256": "bae11c6a714f02e46de31cda70062d526190d5d5e3e9b86a8ec0fecff40bf734"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-evidence-f6bde06bb5bc4e1fb2980c91862ae284.json",
+      "size": 1518,
+      "sha256": "970de26df4752b6fbb18d92bea579a316398e5bdd4f9e85138c13f94ee10cd24"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-17bf7762c3d74f75834733459e2b6bd8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-1a858581e11241ee96582159e554385d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-1f99f02bf8db40fa9f182441bce7aea3.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-2796f369fe9847e6b6e9842bc86ce959.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-2abed01843474b3e9147ea1d056de08e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-362f11494f334206af033b628235eb35.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-42fe63109a9344e48e7724baf2c7883d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-46ef1de9303e4045b1a171b7f00f60c7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-486aca27a47a485d870863df3ebea108.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-4f1c514cd7ee496296a7f7c87031d897.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-50b18c8e35584f8ea8933f60db44bf72.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-6761f81cd4384e7888f9e6694e3c9a7e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-6b9d53c1199d4ef79a05ae699a24b48e.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-77ef51a2c4f349b38f44019d0d4d766d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-7f24d3cf6b9545d1a785dbd5ab8bad03.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-80e6af303fc949c3aacc440dc0f9b8b5.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-8845a2401e8f465d8f81a2e6c338d8a2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-8945352a71b64b318f0e99cc90c080ac.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-8a87b7ae85234118a84cd86867d2c102.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-8c57c46976f845b8b7049755f80622de.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-ad237aa00ac94ce7b7ae477d230b056c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-c263579029ea492eadbdf9e999653302.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-cad88499dc5842299ff3e6e119c52f7d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-d29888b5e9e64e48a8dbdf6026d92622.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-d54e342de60a4e19bb90395c3aff8cb0.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-e313edbdcd554528b76b15d3dd05407d.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-e4ae01f2d60e460aaf4fa63489bab9f1.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-ef869d84c1e4480da8c782686ec2f039.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-f2d7ae70c702459b8daa00e8f59efa45.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/probe-result-f6bde06bb5bc4e1fb2980c91862ae284.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/product-cases.json",
+      "size": 3440,
+      "sha256": "84803bdadfa1ea450c43960e74be975295ebc1a56ee3ba33a26342a1ba2bc8cd"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/run-summary.json",
+      "size": 689,
+      "sha256": "a8489103fda6e1931f2f9ba26bb56c78c3ba1adc55dd454a90935ecc7e98068d"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "cb3cd75933a8612e1219aff0213b3e72ba0490bfbdaef4101d5d716a766a5287"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/standard-product.json",
+      "size": 465,
+      "sha256": "551638c6d6df4ee74d55c51f6a786c16b57c41036269e3e0622b9eb3269877db"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-browser_child-a0844bfbf3874500aace906923b69808.json",
+      "size": 1904,
+      "sha256": "ef0959907e90d243bc0c62d9bef8768e072ccb06a1d0fb25d60b638eeaf84ac1"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-browser_protocol-a9a5e408c2d948dfbcd15f823f471b12.json",
+      "size": 1903,
+      "sha256": "2968f8bc0931c66da0223aa74d4cf094ee509c5fb3c5a01b3efa783d98e2659e"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-browser_sandbox-680f533b2d8644c6aee1187c384a5bf4.json",
+      "size": 1897,
+      "sha256": "f9535b4000b13e8f3a6b182cc7ab28dca577b820b4aebe2efcb4421100b79c16"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-desktop_prepare-3f9d7c94d6f44b2cbe1a3aa3a5012579.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-desktop_prepare-599e1ddd7c674f4db114a2a01bc4da77.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/access-editor-788180e94f1940d2a5e2e02e19947636.json",
+      "size": 1849,
+      "sha256": "ed0ec3c4d2c08e3c3d7a946a5b2707cae9b75742d2894e2acce5532d2b6739d2"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/actor-profile.json",
+      "size": 169,
+      "sha256": "ea7afbd206ae600f35dc2c537122a001fa7785ac7a5cb2ba4d614f3271bb5dcd"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/application-exit.json",
+      "size": 186,
+      "sha256": "8e99cc3c146300405bc3890ebc2c0c904bab5ba413d906d63e0d61edbe4e42f8"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/browser-http-attribution.json",
+      "size": 608,
+      "sha256": "32da1b828a64217026c213b1ea1e8b4fe1f97e8d90ca129da2f81aadc97e0b3d"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/component-faults.json",
+      "size": 178,
+      "sha256": "2440769bc79e867165a79177646282d1ccfbda9451f7edb7fd2d721437fad8f1"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/display-controller.initialization.json",
+      "size": 95,
+      "sha256": "191b61048036ceb13ce7e58e797a24ac980c4641015139356009732568c8b983"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/display-controller.lifecycle.json",
+      "size": 156,
+      "sha256": "941a55524f47cf45bc1e94c015c01058ce8a2ac98a5667afcbab04cb3543b7e8"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/display-controller.preparation.json",
+      "size": 282,
+      "sha256": "4e6f857e5d303a245632d6ccf6c6db3025615925762f4b546db58fe4575e2d53"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/editor-save-observation.json",
+      "size": 118,
+      "sha256": "9108a1e4e7441f5b0cb2c1b3a6105399b00a522423fc0a1f16366344723678bc"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/initial-desktop-preparation.json",
+      "size": 904,
+      "sha256": "b409c03fb31e1816ea01e22685463dbcfc846960aa16100e6a839c5f6c394abe"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/lab-display-channel.json",
+      "size": 173,
+      "sha256": "38c699b0613027304e7e95639ca036454a7a31280efcbdfed16afd8b084a6bbd"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/launch-performance.json",
+      "size": 269,
+      "sha256": "e8688f521a6f772755c54b028260a2831fc31beb76707e537f9d42d118fa103e"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "b3258cfbca5529107af5809fbd6a67ec9482be7bbd0a168ef5b8e301b8a89402"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/official-applications.json",
+      "size": 1918,
+      "sha256": "c21b1ac625c871200f57f4d67a1583c1608504bba86fad20d234b5d58f65b174"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/owned-policy-observations.json",
+      "size": 651,
+      "sha256": "46eac89b6bf36188261533fea0049513f88b7f2ce5712472bcb4fbe71043b1bc"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-03cb67c7eac54cadb8df01f80268347c.json",
+      "size": 1481,
+      "sha256": "c79e4da0db35d020b00ba8b9330e189e073e63d923133b66883e4b5c67dc721e"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-095c09b8c04c4b6882ed63f6442a80ab.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-0ecc97165cf04b45a6fb2343217d22cd.json",
+      "size": 1481,
+      "sha256": "c79e4da0db35d020b00ba8b9330e189e073e63d923133b66883e4b5c67dc721e"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-2635642fbf68499fbeb58dbf30ed52a7.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-311cd6bce14745b8876200dd701add94.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-490aefc7f18f43059a87ed4607145c3b.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-4c8a17f6df57447cb90a31cafd64568a.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-519870615044420fa63d53d9838fca79.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-57c5a962e0b74229b4e1b91a068b2806.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-5f06708780e7450fa442d6827035dd5c.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-753ae4058163450897598a9aff443d5d.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-7a79fe33cb434531b71f18310c6e05e6.json",
+      "size": 1481,
+      "sha256": "2443ddcf8c2aa8023d6b49ef495744724906873280eb68ea04fdd9b5a71f5478"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-834fc7fe14ca45a38f9e2a75f2dc7351.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-91620060e39c442e85c1752cfa72ebcc.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-9f4c42d9568c4f50863e3a0dfea0ca49.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-ac530cea490540abab0c488ef458363f.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-c00b0110e88a4aa9a1a53e8ceb7f4ec8.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-d061894c37694d34b4a292b8ca94d1a2.json",
+      "size": 1518,
+      "sha256": "f1230aa390f590d08a40c0e0fa5a596fd0e4d510539c7d59c1b74d98c5392ad3"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-d14ad3375d6b4aad9ae2c0dd735e08cc.json",
+      "size": 1481,
+      "sha256": "2443ddcf8c2aa8023d6b49ef495744724906873280eb68ea04fdd9b5a71f5478"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-evidence-d43072db08da4f56b5f78429af5205ce.json",
+      "size": 1518,
+      "sha256": "0ccb8465f320921bce267eca146a2fec83b4d8302d5d7ad8f2717dcb88608585"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-03cb67c7eac54cadb8df01f80268347c.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-095c09b8c04c4b6882ed63f6442a80ab.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-0ecc97165cf04b45a6fb2343217d22cd.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-2635642fbf68499fbeb58dbf30ed52a7.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-311cd6bce14745b8876200dd701add94.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-490aefc7f18f43059a87ed4607145c3b.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-4c8a17f6df57447cb90a31cafd64568a.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-519870615044420fa63d53d9838fca79.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-57c5a962e0b74229b4e1b91a068b2806.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-5f06708780e7450fa442d6827035dd5c.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-753ae4058163450897598a9aff443d5d.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-7a79fe33cb434531b71f18310c6e05e6.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-834fc7fe14ca45a38f9e2a75f2dc7351.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-91620060e39c442e85c1752cfa72ebcc.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-9f4c42d9568c4f50863e3a0dfea0ca49.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-ac530cea490540abab0c488ef458363f.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-c00b0110e88a4aa9a1a53e8ceb7f4ec8.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-d061894c37694d34b4a292b8ca94d1a2.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-d14ad3375d6b4aad9ae2c0dd735e08cc.json",
+      "size": 1318,
+      "sha256": "b2370681b105dd9c30492ab8d4df09307c35cb4983afc3517eec4aa8795a3c31"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/probe-result-d43072db08da4f56b5f78429af5205ce.json",
+      "size": 1355,
+      "sha256": "17fbf261845ac49091ac5cc8b37890f564908c06b144ec4de6bbd8f45ecefcfb"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/product-cases.json",
+      "size": 3733,
+      "sha256": "7bf7abd4fbee80fd50b208cda8c574946f884df25eeeadb73cda13e3415ffce5"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/run-summary.json",
+      "size": 689,
+      "sha256": "08e311d9f33ea0c497b9f781785f34ef259e16daa0dda0dc1b13e0f218fef4c2"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "901292a3165cc99249522c91a09aa280662e1dadcfc372d96485d5c9aa0b7592"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/standard-product.json",
+      "size": 465,
+      "sha256": "6e6ef16a2cc6ea0c44564b3090d14fc0cdfe0867ce4520557db07d006b99ff4a"
+    },
+    {
+      "path": "investigation-686f431-apps/windows-2025/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-53f62ce-input/windows-11-arm/input-desktop.json",
+      "size": 1093,
+      "sha256": "390f4f20bc927debfee8a383cf509a71f2cd6346394908aa5e9147cbd1e00051"
+    },
+    {
+      "path": "investigation-53f62ce-input/windows-2025/input-desktop.json",
+      "size": 892,
+      "sha256": "026ce091153199b04c1c3888444b288cd0060d5ebd020cb986ab4f660b4aa758"
+    },
+    {
+      "path": "investigation-410442a-input/windows-11-arm/input-desktop.json",
+      "size": 945,
+      "sha256": "18fd997f8f80c1b661cfc8fd717ae75b511d785176b01218c44dba6fda5d4da9"
+    },
+    {
+      "path": "investigation-410442a-input/windows-11-arm/input-desktop.json.preparation.json",
+      "size": 1064,
+      "sha256": "86a91da57bb4a2d45da4923c6cfe682b3c0e405463b3bc9a928f0e4ea6c1d118"
+    },
+    {
+      "path": "investigation-410442a-input/windows-2025/input-desktop.json",
+      "size": 936,
+      "sha256": "c0d57eb175d4f892fd4bc8a3e9a4d2da3b09aa63ba1e338492a3a76346424f2a"
+    },
+    {
+      "path": "investigation-410442a-input/windows-2025/input-desktop.json.preparation.json",
+      "size": 901,
+      "sha256": "8486cbe5d16be579210b68bdd8231040a6ec588eefb0091725079ac37f6f5925"
+    },
+    {
+      "path": "investigation-3485d92-input/windows-11-arm/input-desktop.json",
+      "size": 945,
+      "sha256": "18fd997f8f80c1b661cfc8fd717ae75b511d785176b01218c44dba6fda5d4da9"
+    },
+    {
+      "path": "investigation-3485d92-input/windows-11-arm/input-desktop.json.preparation.json",
+      "size": 4965,
+      "sha256": "30e214a40faff13f60e3c4c4cac286c44ccea21c992f238a55a7d54e49e9c122"
+    },
+    {
+      "path": "investigation-3485d92-input/windows-2025/input-desktop.json",
+      "size": 936,
+      "sha256": "c0d57eb175d4f892fd4bc8a3e9a4d2da3b09aa63ba1e338492a3a76346424f2a"
+    },
+    {
+      "path": "investigation-3485d92-input/windows-2025/input-desktop.json.preparation.json",
+      "size": 2604,
+      "sha256": "c014b040f951f100c14e74129a846b5455dad8a3d6da9213b8e9890f6987ef32"
+    },
+    {
+      "path": "investigation-8a53b15-input/windows-11-arm/input-desktop.json",
+      "size": 987,
+      "sha256": "befa5dca72844b173867b63f1ab8eac757a2339b02c50410e6bfd216a98e8658"
+    },
+    {
+      "path": "investigation-8a53b15-input/windows-11-arm/input-desktop.json.preparation.json",
+      "size": 4965,
+      "sha256": "30e214a40faff13f60e3c4c4cac286c44ccea21c992f238a55a7d54e49e9c122"
+    },
+    {
+      "path": "investigation-8a53b15-input/windows-2025/input-desktop.json",
+      "size": 977,
+      "sha256": "3f969e21ee2b8bcc9a5b66b7af78b12d98d99514b8251c1fea1e5bce245972ec"
+    },
+    {
+      "path": "investigation-8a53b15-input/windows-2025/input-desktop.json.preparation.json",
+      "size": 2604,
+      "sha256": "c014b040f951f100c14e74129a846b5455dad8a3d6da9213b8e9890f6987ef32"
+    },
+    {
+      "path": "investigation-95279fd-input/windows-11-arm/input-desktop.json",
+      "size": 522,
+      "sha256": "b441815eb54ebb11e5c782d420af3239f9265b2149ecbbfb09f21d1c0c7d6349"
+    },
+    {
+      "path": "investigation-95279fd-input/windows-11-arm/input-desktop.json.preparation.json",
+      "size": 5445,
+      "sha256": "b9a779a6f18799455015380b07b208ea220769328c85481a9b8c1aef8d99c683"
+    },
+    {
+      "path": "investigation-95279fd-input/windows-2025/input-desktop.json",
+      "size": 977,
+      "sha256": "3f969e21ee2b8bcc9a5b66b7af78b12d98d99514b8251c1fea1e5bce245972ec"
+    },
+    {
+      "path": "investigation-95279fd-input/windows-2025/input-desktop.json.preparation.json",
+      "size": 2711,
+      "sha256": "d7fae41becb8700b211742b6d40fe3d3b8cf5776ddb5d1abfac5e4a6f6041543"
+    },
+    {
+      "path": "investigation-95279fd-input/windows-2025/input-desktop.json.revealed.json",
+      "size": 2715,
+      "sha256": "bf536fe11f2e89025b9b25ea391802dbd1e9f28655d3df6695f9b2d5b3ab3d80"
+    },
+    {
+      "path": "investigation-686f431-input/windows-2025/input-desktop.json",
+      "size": 936,
+      "sha256": "c0d57eb175d4f892fd4bc8a3e9a4d2da3b09aa63ba1e338492a3a76346424f2a"
+    },
+    {
+      "path": "investigation-686f431-input/windows-2025/input-desktop.json.preparation.json",
+      "size": 901,
+      "sha256": "8486cbe5d16be579210b68bdd8231040a6ec588eefb0091725079ac37f6f5925"
+    },
+    {
+      "path": "investigation-686f431-input/windows-11-arm/input-desktop.json",
+      "size": 1153,
+      "sha256": "82db7a2e97823e6ffe39d4f7197b9b941a9dee302e9e8feb0b5ebddb30030b01"
+    },
+    {
+      "path": "investigation-686f431-input/windows-11-arm/input-desktop.json.preparation.json",
+      "size": 1064,
+      "sha256": "86a91da57bb4a2d45da4923c6cfe682b3c0e405463b3bc9a928f0e4ea6c1d118"
     }
   ],
   "note": "P09 remains incomplete. Current candidate b04a766 has passed both standalone display fixtures; full application and reference workload proof plus matching P03-P08 retention remain pending. Historical passing native builds or failed/cancelled investigations cannot close the gate.",
@@ -48169,6 +51649,97 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38856154113",
       "result": "FAILED",
       "note": "Bounded z-order enumeration found two visible initial PickerHost windows. The second advertised UIA Close but threw NotImplementedException; the run remained failed and motivated the subsequently scoped WM_CLOSE fallback."
+    },
+    {
+      "tested_commit": "284db7030fcbb5e28712dd4b7cc209ab9f08953d",
+      "run_id": 38858563331,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38858563331",
+      "result": "DIAGNOSTIC_PARTIAL",
+      "note": "Server passed seven native and 76 UI checks; ARM passed six native and all 76 UI checks but failed physical keyboard point ownership. Layout-only evidence cannot close P09."
+    },
+    {
+      "tested_commit": "284db7030fcbb5e28712dd4b7cc209ab9f08953d",
+      "run_id": 38858565472,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38858565472",
+      "result": "FAILED",
+      "note": "Server editor, archive and main browser isolation passed; three browser continuations failed. ARM retained editor/document point failures. Diagnostic-only application mode cannot close P09."
+    },
+    {
+      "tested_commit": "99abd2267def5ac05d677811fd454d056a9559f4",
+      "run_id": 38859910487,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38859910487",
+      "result": "FAILED",
+      "note": "Server selection readiness fix passed the real EXE picker and registration; the secret output marker remained absent, followed by three browser continuation failures. ARM policy check encountered an unreviewed system image with an unassociated fault reporter. No reporting setting or refusal was weakened."
+    },
+    {
+      "tested_commit": "284db7030fcbb5e28712dd4b7cc209ab9f08953d",
+      "run_id": 38858563360,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38858563360",
+      "result": "CANCELLED",
+      "note": "Superseded by the actual application selection readiness fix. Original partial/cancelled JSON is retained; no completed full gate is claimed."
+    },
+    {
+      "tested_commit": "284db7030fcbb5e28712dd4b7cc209ab9f08953d",
+      "run_id": 38858567312,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38858567312",
+      "result": "CANCELLED",
+      "note": "Superseded by the application selection readiness fix; partial diagnostic evidence cannot close the gate."
+    },
+    {
+      "tested_commit": "99abd2267def5ac05d677811fd454d056a9559f4",
+      "run_id": 38859899474,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38859899474",
+      "result": "BUILD_ONLY",
+      "note": "Both native builds and kernel-job measurement fixtures passed after selection readiness changed. This does not replace the full product workload."
+    },
+    {
+      "tested_commit": "686f431468ff5036c646d807c25d0610d8757d0b",
+      "run_id": 38860468979,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38860468979",
+      "result": "FAILED",
+      "note": "Native scan-code navigation still produced only the main browser request on Server; no child/protocol/content-sandbox success is claimed. Actual per-target output remains authoritative."
+    },
+    {
+      "tested_commit": "53f62ce5d33866e1fd56d55eefb44cbdbb5755f6",
+      "run_id": 38860177472,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38860177472",
+      "result": "FIXTURE_PARTIAL",
+      "note": "Synthetic desktop observation only, with no product acceptance claim. Server point ownership was observed; ARM retained a foreign shell input surface or refused incomplete preparation. Raw booleans and original failure remain unchanged."
+    },
+    {
+      "tested_commit": "410442a0da7c3cf257bf9d2a56094821bcdacb8a",
+      "run_id": 38860737385,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38860737385",
+      "result": "FIXTURE_PARTIAL",
+      "note": "Synthetic desktop observation only, with no product acceptance claim. Server point ownership was observed; ARM retained a foreign shell input surface or refused incomplete preparation. Raw booleans and original failure remain unchanged."
+    },
+    {
+      "tested_commit": "3485d927b68606efeead85f1378efb30c592c1f5",
+      "run_id": 38860965218,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38860965218",
+      "result": "FIXTURE_PARTIAL",
+      "note": "Synthetic desktop observation only, with no product acceptance claim. Server point ownership was observed; ARM retained a foreign shell input surface or refused incomplete preparation. Raw booleans and original failure remain unchanged."
+    },
+    {
+      "tested_commit": "8a53b151452d85a01632f10f7e6b3f90e14f6fe6",
+      "run_id": 38861239083,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38861239083",
+      "result": "FIXTURE_PARTIAL",
+      "note": "Synthetic desktop observation only, with no product acceptance claim. Server point ownership was observed; ARM retained a foreign shell input surface or refused incomplete preparation. Raw booleans and original failure remain unchanged."
+    },
+    {
+      "tested_commit": "95279fd9a8d06076411a68caf637daf8fb733fec",
+      "run_id": 38861555246,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38861555246",
+      "result": "FIXTURE_PARTIAL",
+      "note": "Synthetic desktop observation only, with no product acceptance claim. Server point ownership was observed; ARM retained a foreign shell input surface or refused incomplete preparation. Raw booleans and original failure remain unchanged."
+    },
+    {
+      "tested_commit": "686f431468ff5036c646d807c25d0610d8757d0b",
+      "run_id": 38860467086,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38860467086",
+      "result": "FIXTURE_PARTIAL",
+      "note": "The initial authenticated WWAHost window closed on ARM, revealing a Start menu surface; native point ownership remained false. No input or product gate success was claimed."
     }
   ]
 }

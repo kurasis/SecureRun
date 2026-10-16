@@ -1,0 +1,279 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "no_recursive_data_deletion": true,
+      "synthetic_reports_unchanged": true,
+      "retained_diagnostics": 20,
+      "all_successful_definitions_retired": true,
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "root_data_retained": true
+    },
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "environment_count": 4,
+      "performance_exit_gate_claimed": false,
+      "inspector_enabled": false,
+      "native_startup": {
+        "completed_observer_frames": 36,
+        "native_observation_ms": 125,
+        "completed_observer_cpu_seconds": 0.328125,
+        "native_window_created_ms": 3627,
+        "observer_cpu_attribution_complete": false,
+        "webview_memory_target_low": true,
+        "completed_observer_streams": 1,
+        "native_before_webview_ms": 133
+      },
+      "startup_interactive_upper_bound_ms": 3981.1433,
+      "native_window_present_ms": 982.6638
+    },
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "normal_production_binary": true,
+      "ten_owned_environments": false,
+      "real_backend": true,
+      "mock_state": false
+    },
+    "id": "T32",
+    "name": "actual_normal_webview_environment_navigation"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actual_product_ui": true,
+      "metadata_only": true,
+      "permanent_replay_tombstone": true,
+      "policy_and_generation_unchanged": true
+    },
+    "id": "T32",
+    "name": "metadata_rename_preserves_identity_and_never_replays"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "real_windows_uia": true,
+      "native_window_dpi": 96,
+      "accessible_labels_and_roles": true,
+      "tab_order_actual": true,
+      "f6_navigation_actual": true,
+      "native_invoke_changed_page": true
+    },
+    "id": "T32",
+    "name": "real_keyboard_and_windows_screen_reader_provider"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "os_display_setting_modified": false,
+      "labeled_comboboxes": 3,
+      "actual_native_webview_zoom": true,
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "real_chromium_accessibility_tree": true
+    },
+    "id": "T32",
+    "name": "english_russian_themes_and_native_webview_scaling"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "os_security_settings_modified": false,
+      "native_dpi_observations": [
+        {
+          "percent": 100,
+          "native_window_dpi": 96
+        },
+        {
+          "percent": 150,
+          "native_window_dpi": 144
+        },
+        {
+          "percent": 200,
+          "native_window_dpi": 192
+        }
+      ],
+      "actual_windows_display_changes": true,
+      "production_manager_window_measured": true,
+      "content_scale_percent": 100
+    },
+    "id": "T32",
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "update_upper_bound_ms": 1599.8000000000466,
+      "real_external_boxed_member": true,
+      "refresh_interval_ms": 1700
+    },
+    "id": "T32",
+    "name": "real_process_activity_update_latency"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "external_fixture_conflict_explicitly_repaired": true,
+      "explicit_whole_box_stop": true,
+      "queued_in_backend": true,
+      "applied_while_running": false,
+      "managed_launch_receipt_verified": true,
+      "real_native_picker": true,
+      "independent_policy_readback": true
+    },
+    "id": "T32",
+    "name": "running_policy_diff_queue_requires_explicit_stopped_apply"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "first_ui_list_ms": 3975.70000000007,
+      "all_page_walk_ms": 179437.40000000002,
+      "total_files": 10000,
+      "pages": 79,
+      "maximum_page": 128,
+      "maximum_dom_rows": 127
+    },
+    "id": "T63",
+    "name": "ten_thousand_files_bounded_ui_and_complete_pagination"
+  },
+  {
+    "status": "FAILED",
+    "name": "synthetic_argv_and_environment_do_not_enter_manager_logs",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "P09_BOXED_FILE_NOT_UNIQUE",
+    "id": "T66",
+    "line": 14
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "argv_environment_error_canaries_absent": true,
+      "persistent_history_present": true,
+      "native_worker_error_capture_scanned": true,
+      "local_history_and_wal_scanned": true,
+      "utf8_and_utf16_scanned": true,
+      "untrusted_text_cannot_add_event_fields": true,
+      "normal_manager_stderr_scanned": true,
+      "inspected_manager_stderr_scanned": true
+    },
+    "id": "T66",
+    "name": "local_history_and_debug_error_capture_remain_minimized"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "plugins_and_host_update_integrations_outside_validated_workflow": true,
+      "clean_portable_profile": true,
+      "actual_keyboard_edit_and_save": true,
+      "real_gui_editor": true,
+      "official_executable": true,
+      "original_driver_member_observed": true,
+      "host_input_unchanged": true,
+      "host_output_absent": true,
+      "boxed_saved_bytes_verified": true
+    },
+    "id": "T30",
+    "name": "official_editor_saves_boxed_document_without_host_write"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "host_zip_and_extraction_absent": true,
+      "official_gui_observed_boxed": true,
+      "round_trip_sha256_matches": true,
+      "engine_hooks_or_security_exceptions_added": false,
+      "host_input_unchanged": true,
+      "actual_gui_create_and_extract": true,
+      "gui_operation_executable_sha256": "363fb45bb3ea1cab98ae5ab4a564c859277ee668e58c08ffd2ecb6fe9afcd534",
+      "actual_archive_created": true,
+      "actual_archive_extracted": true
+    },
+    "id": "T30",
+    "name": "official_archive_gui_and_create_extract_round_trip"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "unboxed_handoff": false,
+      "explicit_profile_and_no_remote": true,
+      "separate_clean_profiles": true,
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "preexisting_host_browser_verified": true,
+      "socket_owner_and_held_birth_verified": true,
+      "browser_sandbox_disabled": false
+    },
+    "id": "T41",
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff"
+  },
+  {
+    "status": "FAILED",
+    "name": "browser_own_child_request_stays_boxed",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "id": "T41",
+    "line": 14
+  },
+  {
+    "status": "FAILED",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "id": "T41",
+    "line": 14
+  },
+  {
+    "status": "FAILED",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "id": "T30",
+    "line": 14
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "target_startup_included_in_both": true,
+      "production_manager_dispatch_ms": 573.908,
+      "same_fixed_benign_probe": true,
+      "original_dispatch_ms": 11.2538,
+      "target_met": true,
+      "no_required_check_removed": true,
+      "manager_added_upper_bound_ms": 563
+    },
+    "id": "T32",
+    "name": "launch_overhead_observed_against_same_fixed_original_dispatch"
+  }
+]

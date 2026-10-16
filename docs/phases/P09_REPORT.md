@@ -42,12 +42,12 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `284db7030fcbb5e28712dd4b7cc209ab9f08953d`.
+Current runtime/lab candidate: `ace372e0cf3ff9e2a3f137d09d2ec27d2208eb66`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
 |---|---|
-| Repository/specification/evidence validator | Passed locally and in P01 run [38851310872](https://github.com/kurasis/SecureRun/actions/runs/38851310872) |
+| Repository/specification/evidence validator | Passed locally; current P01 run [38862141344](https://github.com/kurasis/SecureRun/actions/runs/38862141344) queued |
 | Python tooling | 18 tests passed |
 | TypeScript/frontend | Type check, 3 state/localization tests and 4 product tests passed |
 | Windows-target Clippy and formatting | Passed after the inert path correction |
@@ -58,9 +58,9 @@ Documentation-only descendants do not replace the required tested source.
 | P06 historical `b04a766` | [38852277993](https://github.com/kurasis/SecureRun/actions/runs/38852277993), passed both; final matching source pending |
 | P07 historical `b04a766` | [38852280456](https://github.com/kurasis/SecureRun/actions/runs/38852280456), passed both; final matching source pending |
 | P08 historical `b04a766` | [38852282413](https://github.com/kurasis/SecureRun/actions/runs/38852282413), passed both; final matching source pending |
-| P09 full workload | [38858563360](https://github.com/kurasis/SecureRun/actions/runs/38858563360), pending |
-| P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM pending |
-| P09 focused diagnostic | [38858567312](https://github.com/kurasis/SecureRun/actions/runs/38858567312), pending; cannot close the full gate |
+| P09 full workload | [38862141330](https://github.com/kurasis/SecureRun/actions/runs/38862141330), queued |
+| P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
+| P09 focused diagnostic | [38862025457](https://github.com/kurasis/SecureRun/actions/runs/38862025457) at `2570dc6`, queued; cannot close the full gate |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
@@ -80,29 +80,44 @@ buffers directly. Exact native path equality, fixed NTFS, root ownership,
 reparse/hardlink refusal and held identity checks remain. A real Windows test
 passed on both architectures, including strict engine/output-name refusal.
 
-On ARM, Windows PickerHost obstructed physical input. The controller successfully
-proved same-user protected Microsoft ownership and cancelled it with UIA; the
-component later reappeared. The current fixture explicitly collapses the owned Settings selection lists and
-checks same-user identity before any foreign process-birth
-query so the standard user can delegate an inaccessible Windows picker. It
-permits bounded cancellation only
-of a PID/creation time enrolled before product GUIs exist, with fresh trust and
-owner checks. It accepts no actor-supplied path, PID or command and must then
-positively re-establish the intended window/point ownership. Product dialogs,
-unknown/replacement processes and process termination are excluded. This recurring
-path still needs actual passing proof.
-The bounded z-order/foreground enumeration found a second surface omitted from
-EnumWindows, whose advertised UIA Close threw NotImplementedException. Only that
-unsupported-method case falls back to exact-window WM_CLOSE after fresh checks.
-The result must actually disappear. Current display setup also collapses and
-verifies both selection popups before minimizing Settings.
+Initial ARM shell surfaces obstruct physical input even in a separate synthetic
+WinForms probe. Packed and structured native point calls agree, while UIA finds
+the intended control. Neither COM apartment isolation nor temporary native input
+queue attachment supplied passing ARM input proof. Closing authenticated
+`WWAHost` revealed Start/search surfaces; `SearchHost` ignored WM_CLOSE.
+
+Current preparation accepts only four fixed initial Microsoft component names,
+protected installation paths, same-user ownership and exact PID/creation time.
+Before product startup it also authenticates hidden instances for later bounded
+cancellation; replacements are never enrolled during product execution. Picker
+and web-host windows receive UIA Close or scoped WM_CLOSE when unsupported. Initial
+Start/search surfaces receive ordinary window minimization with actual
+hidden/iconic-state verification. Preparation has at most four passes and each
+z-order scan is cycle-checked and bounded. Actor requests carry no path, PID or
+command. The intended product/app window and physical point must independently
+pass their original ownership/focus checks afterwards. Actual final proof is
+pending; no foreign input surface is accepted. No process is terminated by this
+preparation. Display setup collapses both owned selection lists before leaving
+Settings.
+
+Server run [38859910487](https://github.com/kurasis/SecureRun/actions/runs/38859910487)
+confirmed a real UI race: application selection was enabled before the selected
+environment had loaded. The button now waits for the loaded environment. The
+actual EXE picker and registration passed; the synthetic target marker remained
+absent. Current fixture proof requires the newly observed dispatch in the exact
+environment, waits for its output, and explicitly creates the target's own
+synthetic known-folder directory rather than assuming host-to-box folder mapping.
+Original byte/inheritance/host-output checks remain mandatory.
 
 Notepad++ editing and Save As passed on Server at `f9b719d`: the actual boxed
 output was observed, exact bytes matched, and host input/output stayed unchanged.
 Server repeated that exact save successfully in apps-only run [38858126567](https://github.com/kurasis/SecureRun/actions/runs/38858126567). That run also proved the controller cancelled two enrolled initial picker windows on ARM using scoped WM_CLOSE, but the subsequent editor/document point checks still failed. The ARM workflow remains pending. Both targets proved all 10,000 files on 79
 pages with at most 128 entries and 127 DOM rows; all 88 UI assertions passed.
 Firefox main-request/profile isolation and 7-Zip GUI round trips passed
-historically on both targets. Final matching editor save, browser child/protocol/own
+historically on both targets. Neither Windows SendKeys nor native scan-code
+navigation produced the required browser continuation requests on Server. Current
+diagnostics capture only the clean synthetic browser window, never raw about:support
+content, to inspect the actual chrome and focus. Final matching editor save, browser child/protocol/own
 sandbox, ARM physical keyboard and the dependent
 secret/export/transfer/lifecycle UI sequence remain mandatory. See the exact
 [application matrix](../APPLICATION_COMPATIBILITY.md).

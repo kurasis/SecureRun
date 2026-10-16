@@ -122,7 +122,7 @@ public static class P09Access {
  [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern IntPtr FindWindowEx(IntPtr parent,IntPtr after,string kind,string title);
  public static IntPtr[] ImmersiveWindows(out bool complete){
   var found=new System.Collections.Generic.HashSet<IntPtr>();bool all=true;
-  foreach(string kind in new[]{"Windows.UI.Core.CoreWindow","ApplicationFrameWindow","Xaml_WindowedPopupClass","WinUIDesktopWin32WindowClass","Microsoft.UI.Content.DesktopChildSiteBridge","Windows.UI.Composition.DesktopWindowContentBridge","Shell_SystemDim"}){
+  foreach(string kind in new[]{"Windows.UI.Core.CoreWindow","ApplicationFrameWindow","Xaml_WindowedPopupClass","WinUIDesktopWin32WindowClass","Microsoft.UI.Content.DesktopChildSiteBridge","Windows.UI.Composition.DesktopWindowContentBridge","Shell_SystemDim","Shell_SystemDialog"}){
    IntPtr window=IntPtr.Zero;var seen=new System.Collections.Generic.HashSet<IntPtr>();int scanned=0;
    while((window=FindWindowEx(IntPtr.Zero,window,kind,null))!=IntPtr.Zero){if(scanned++>=64||!seen.Add(window)){all=false;break;}found.Add(window);}
   }
@@ -287,7 +287,7 @@ function Prepare-InitialDesktopPass{
    if($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER'){$null=$script:enrolledInitialPickers.Add($birthKey)}
    if(-not [P09Access]::IsWindowVisible($window)){continue}
    $result.preparation_stage='VISIBLE_ROOT_OWNER';Need ([P09Access]::SameUser([P09Access]::GetAncestor($window,3)))
-   if([IO.Path]::GetFileName($image) -iin @('StartMenuExperienceHost.exe','SearchHost.exe') -or [P09Access]::ClassIs($window,'Shell_SystemDim',$null)){
+   if([IO.Path]::GetFileName($image) -iin @('StartMenuExperienceHost.exe','SearchHost.exe') -or [P09Access]::ClassIs($window,'Shell_SystemDim',$null) -or [P09Access]::ClassIs($window,'Shell_SystemDialog',$null)){
     Need ([P09Access]::SameUser($window) -and [P09Access]::HitBirthKey($window) -ceq $birthKey);$null=[P09Access]::ShowWindow($window,0);$clock=[Diagnostics.Stopwatch]::StartNew()
     while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50}
     Need (-not [P09Access]::IsWindowVisible($window));$result.close_mechanism='SCOPED_INITIAL_SHELL_WINDOW_HIDE';$result.initial_picker_cancelled=$true;$result.cancelled_window_count++;continue

@@ -194,7 +194,12 @@ function Prepare-InitialDesktop{
    if(-not $trusted){foreach($package in @(Get-AppxPackage -ErrorAction Stop)){if($package.InstallLocation -and $image.StartsWith($package.InstallLocation+'\',[StringComparison]::OrdinalIgnoreCase) -and $package.SignatureKind -eq 'System' -and $package.Status -eq 'Ok' -and $package.Publisher -match '(?:^|,\s*)O=Microsoft Corporation(?:,|$)'){$trusted=$true;break}}}
    $result.authenticated_windows_component=$trusted;Need $trusted;Need ([P09Access]::HitBirthKey($window) -ceq $birthKey)
    if($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER'){$null=$script:enrolledInitialPickers.Add($birthKey)}
-   $element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;if($element.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){$pattern.Close();$result.close_mechanism='UIA_WINDOW_CLOSE'}else{Need ([P09Access]::CancelInitialWindow($window));$result.close_mechanism='SCOPED_WM_CLOSE'}
+   $element=[Windows.Automation.AutomationElement]::FromHandle($window);$pattern=$null;$closeDispatched=$false
+   if($element.TryGetCurrentPattern([Windows.Automation.WindowPattern]::Pattern,[ref]$pattern)){
+    try{$pattern.Close();$closeDispatched=$true;$result.close_mechanism='UIA_WINDOW_CLOSE'}
+    catch{$cause=$_.Exception.GetBaseException();if($cause -isnot [NotImplementedException] -and $cause -isnot [NotSupportedException]){throw};$result.uia_close_not_implemented=$true}
+   }
+   if(-not $closeDispatched){Need ([P09Access]::SameUser($window) -and [P09Access]::HitBirthKey($window) -ceq $birthKey);Need ([P09Access]::CancelInitialWindow($window));$result.close_mechanism='SCOPED_WM_CLOSE'}
    $clock=[Diagnostics.Stopwatch]::StartNew();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.initial_picker_cancelled=$true;$result.cancelled_window_count++
   }
   foreach($candidateWindow in $script:initialPickers){Need (-not [P09Access]::IsWindowVisible($candidateWindow))}
@@ -283,7 +288,7 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  Need ($address -in @('about:blank','about:support') -or $address -cmatch '^http://127\.0\.0\.1:[0-9]{4,5}/(?:main|protocol)/[0-9a-f-]{36}$')
  Focus-BrowserDocument $root $hwnd $id
  $bar=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::AutomationIdProperty,'urlbar-input'))
- if($null -eq $bar){foreach($name in @('Search with Google or enter address','Search or enter address')){$bar=Find $root ([Windows.Automation.ControlType]::Edit) $name;if($null -ne $bar){break}}}
+ if($null -eq $bar){foreach($name in @('Address','Address and Search Bar','Search with Google or enter address','Search or enter address')){$bar=Find $root ([Windows.Automation.ControlType]::Edit) $name;if($null -ne $bar){break}}}
  $value=$null;$result.address_bar_uia_available=($null -ne $bar)
  if($null -ne $bar -and $bar.Current.IsEnabled -and (In-Provider $bar $root) -and $bar.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$value) -and -not $value.Current.IsReadOnly){
   $bar.SetFocus();$value.SetValue($address);Need ($value.Current.Value -ceq $address);$result.address_bar_value_verified=$true;$result.navigation_input='OWNED_WINDOWS_UIA_ADDRESS_BAR'

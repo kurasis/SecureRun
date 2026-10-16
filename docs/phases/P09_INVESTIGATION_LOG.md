@@ -923,3 +923,15 @@ windows without assuming every native picker is enumerated as a classic desktop
 window. Tauri IPC remains protected and unchanged. The missing picker diagnostic
 records only rendered typed errors and a form-presence flag; no raw native
 arguments, selections, URLs or exceptions are exported.
+
+### Initial UWP picker advertises an unimplemented Window.Close
+
+The 83d0e6c ARM layout artifact found two visible PickerHost windows through the
+new z-order enumeration. The controller authenticated both as its same-user
+protected Microsoft component with the enrolled process birth. The first closed;
+the second advertised WindowPattern but threw NotImplementedException from Close.
+The controller now falls back to the same exact-window WM_CLOSE only for
+NotImplementedException/NotSupportedException, repeating owner and birth checks
+immediately before posting. Other failures remain refusals and the window must
+actually become invisible. No new process identity, permission, termination,
+application selection or OS-default change is accepted.

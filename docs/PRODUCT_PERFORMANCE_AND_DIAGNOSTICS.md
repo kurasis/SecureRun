@@ -18,6 +18,11 @@ miss some engineering targets. Normal release runs measured:
 |---|---|---:|---:|---:|---|
 | `38839426236`, `f2ebba3` | Server | 5503.9137 | 0.753328196 | 229493149 | CPU and memory targets met; startup deviation |
 | `38839426236`, `f2ebba3` | ARM | 2362.7337 | 1.220673525 | 245477794 | Startup and memory targets met; CPU deviation |
+| `38851310774`, `b04a766` | Server | 3723.5445 | 1.201683426 | 230145977 | Startup and CPU deviations; mandatory application cases failed |
+
+The `b04a766` ARM run stopped at CREATE 10 with an unreviewed system image and
+an unassociated WerFault; it has no full resource sample. No reporting setting
+is changed and no reporter is killed or accepted through a new whitelist.
 
 Each full sample uses ten actual idle environments, 10,000 files and at least
 60 seconds of complete kernel-job accounting. A later ARM run at `496272b`

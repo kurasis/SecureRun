@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `b04a7668803fc27bc55a9dfb82eed457c014b60a`.
+Current runtime/lab candidate: `284db7030fcbb5e28712dd4b7cc209ab9f08953d`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -51,15 +51,15 @@ Documentation-only descendants do not replace the required tested source.
 | Python tooling | 18 tests passed |
 | TypeScript/frontend | Type check, 3 state/localization tests and 4 product tests passed |
 | Windows-target Clippy and formatting | Passed after the inert path correction |
-| Native product build at `4b2a913` | [38848892796](https://github.com/kurasis/SecureRun/actions/runs/38848892796): both targets passed, including 61 adapter tests and the actual kernel-job measurement fixture |
-| P03 matching source | [38852271708](https://github.com/kurasis/SecureRun/actions/runs/38852271708), pending |
-| P04 matching source | [38852273760](https://github.com/kurasis/SecureRun/actions/runs/38852273760), pending |
-| P05 matching source | [38852275909](https://github.com/kurasis/SecureRun/actions/runs/38852275909), pending |
-| P06 matching source | [38852277993](https://github.com/kurasis/SecureRun/actions/runs/38852277993), pending |
-| P07 matching source | [38852280456](https://github.com/kurasis/SecureRun/actions/runs/38852280456), pending |
-| P08 matching source | [38852282413](https://github.com/kurasis/SecureRun/actions/runs/38852282413), pending |
-| P09 full workload | [38851310774](https://github.com/kurasis/SecureRun/actions/runs/38851310774), pending |
-| P09 focused diagnostic | [38851312530](https://github.com/kurasis/SecureRun/actions/runs/38851312530), pending; cannot close the full gate |
+| Native product build at `f9b719d` | [38854501737](https://github.com/kurasis/SecureRun/actions/runs/38854501737): both targets passed, including 61 adapter tests, 4 native app tests with the independent COM-apartment regression, and the actual kernel-job measurement fixture |
+| P03 historical `b04a766` | [38852271708](https://github.com/kurasis/SecureRun/actions/runs/38852271708), passed both; final matching source pending |
+| P04 historical `b04a766` | [38852853178](https://github.com/kurasis/SecureRun/actions/runs/38852853178), passed both; final matching source pending |
+| P05 historical `b04a766` | [38852275909](https://github.com/kurasis/SecureRun/actions/runs/38852275909), passed both; final matching source pending |
+| P06 historical `b04a766` | [38852277993](https://github.com/kurasis/SecureRun/actions/runs/38852277993), passed both; final matching source pending |
+| P07 historical `b04a766` | [38852280456](https://github.com/kurasis/SecureRun/actions/runs/38852280456), passed both; final matching source pending |
+| P08 historical `b04a766` | [38852282413](https://github.com/kurasis/SecureRun/actions/runs/38852282413), passed both; final matching source pending |
+| P09 full workload | [38858563360](https://github.com/kurasis/SecureRun/actions/runs/38858563360), pending |
+| P09 focused diagnostic | [38858567312](https://github.com/kurasis/SecureRun/actions/runs/38858567312), pending; cannot close the full gate |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
@@ -67,7 +67,8 @@ installed Windows 11 x64 acceptance or certification of other engine/app version
 
 ## Findings and remaining exit gate
 
-All six P03–P08 regressions passed on both targets at `ec2a16b`, `cf6edad` and `4956792`.
+All six P03–P08 regressions passed on both targets at `ec2a16b`, `cf6edad`, `4956792` and `b04a766` (P04 via unchanged-source
+repeat 38852853178).
 Reviewed immutable JSON and hashes retain those results as historical evidence;
 they cannot replace final matching-source checks after subsequent changes.
 
@@ -80,7 +81,8 @@ passed on both architectures, including strict engine/output-name refusal.
 
 On ARM, Windows PickerHost obstructed physical input. The controller successfully
 proved same-user protected Microsoft ownership and cancelled it with UIA; the
-component later reappeared. The current fixture checks same-user identity before any foreign process-birth
+component later reappeared. The current fixture explicitly collapses the owned Settings selection lists and
+checks same-user identity before any foreign process-birth
 query so the standard user can delegate an inaccessible Windows picker. It
 permits bounded cancellation only
 of a PID/creation time enrolled before product GUIs exist, with fresh trust and
@@ -88,13 +90,19 @@ owner checks. It accepts no actor-supplied path, PID or command and must then
 positively re-establish the intended window/point ownership. Product dialogs,
 unknown/replacement processes and process termination are excluded. This recurring
 path still needs actual passing proof.
+The bounded z-order/foreground enumeration found a second surface omitted from
+EnumWindows, whose advertised UIA Close threw NotImplementedException. Only that
+unsupported-method case falls back to exact-window WM_CLOSE after fresh checks.
+The result must actually disappear. Current display setup also collapses and
+verifies both selection popups before minimizing Settings.
 
-Notepad++ native editing/Save As interaction passed on Server, but saved boxed
-output was not observed after the old fixed delay. The current fixture waits for
-actual output before Stop and still requires exact bytes and unchanged host data.
+Notepad++ editing and Save As passed on Server at `f9b719d`: the actual boxed
+output was observed, exact bytes matched, and host input/output stayed unchanged.
+The ARM workflow remains pending. Both targets proved all 10,000 files on 79
+pages with at most 128 entries and 127 DOM rows; all 88 UI assertions passed.
 Firefox main-request/profile isolation and 7-Zip GUI round trips passed
-historically on both targets. Complete editor save, browser child/protocol/own
-sandbox, ARM physical keyboard, full 10,000-file traversal and the dependent
+historically on both targets. Final matching editor save, browser child/protocol/own
+sandbox, ARM physical keyboard and the dependent
 secret/export/transfer/lifecycle UI sequence remain mandatory. See the exact
 [application matrix](../APPLICATION_COMPATIBILITY.md).
 

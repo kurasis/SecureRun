@@ -78,12 +78,12 @@ function Find($root,$type,[string]$name){
 }
 function Focus-OwnedWindow([IntPtr]$hwnd,[int]$id){
  $null=[P09Access]::ShowWindow($hwnd,9);Need ([P09Access]::SetWindowPos($hwnd,[IntPtr]::Zero,0,0,0,0,0x13));$null=[P09Access]::SetForegroundWindow($hwnd)
- if(-not [P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id)){
+ if(-not ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd)){
   $bounds=[P09Rect]::new();Need ([P09Access]::GetWindowRect($hwnd,[ref]$bounds));$point=[P09Point]::new();$point.X=[int](($bounds.Left+$bounds.Right)/2);$point.Y=$bounds.Top+12
-  Need ([P09Access]::OwnedWindow([P09Access]::WindowFromPhysicalPoint($point),$id));Need ([P09Access]::SetCursorPos($point.X,$point.Y))
+  Need ([P09Access]::OwnedWindow([P09Access]::WindowFromPhysicalPoint($point),$id) -and [P09Access]::GetAncestor([P09Access]::WindowFromPhysicalPoint($point),2) -eq $hwnd);Need ([P09Access]::SetCursorPos($point.X,$point.Y))
   try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)}
  }
- $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id)){return};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
+ $clock=[Diagnostics.Stopwatch]::StartNew();do{if([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $hwnd){return};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
  Need $false
 }
 function Focus-NativeEditor([IntPtr]$hwnd,[int]$id){
@@ -133,10 +133,11 @@ function Picker([int]$id,[string]$path){
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
  $result.native_picker_title_recognized=($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
  Need ($title -in @('SecureRun resource selection','SecureRun file selection','Save reviewed diagnostics','Save As','Save as','Save File'))
+ Focus-OwnedWindow $window $id;[Windows.Forms.SendKeys]::SendWait('%n') # Standard File name mnemonic activates lazy native/COM edit controls.
  $script:stage='WAITING_FOR_ENABLED_NATIVE_FILENAME';$clock.Restart();$edit=$null;$nativeField=[IntPtr]::Zero
  do{
-  $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit))
-  foreach($item in $edits){$known=($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder'));if(-not $known -and $item.Current.AutomationId -eq '1001'){$parent=[Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($item);$known=($null -ne $parent -and ($parent.Current.AutomationId -eq '1148' -or $parent.Current.Name -in @('File name:','File name','Folder:','Folder')))};if($item.Current.IsEnabled -and $known){$edit=$item;break}}
+  $edits=$root.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.OrCondition]::new([Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Edit),[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ComboBox)))
+  foreach($item in $edits){$known=($item.Current.AutomationId -eq '1148' -or $item.Current.Name -in @('File name:','File name','Folder:','Folder'));if(-not $known -and $item.Current.AutomationId -eq '1001'){$parent=[Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($item);$known=($null -ne $parent -and ($parent.Current.AutomationId -eq '1148' -or $parent.Current.Name -in @('File name:','File name','Folder:','Folder')))};if($item.Current.IsEnabled -and $known){$candidateValue=$null;if($item.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$candidateValue) -and -not $candidateValue.Current.IsReadOnly){$edit=$item;break}}}
   if($null -ne $edit){break};$nativeField=[P09Access]::Filename($window,$id,$ExpectedBox);if($nativeField -ne [IntPtr]::Zero){break};Start-Sleep -Milliseconds 100
  }while($clock.ElapsedMilliseconds -lt 15000)
  $usedValue=($null -ne $edit);$result.native_filename_field_present=($nativeField -ne [IntPtr]::Zero)

@@ -562,3 +562,8 @@ also keep their exact prior JSON byte limit with incremental item lengths;
 repeated serialization of every previous box is removed. An independent full
 serializer oracle tests Unicode/escapes, exact-limit success and unchanged rows
 on refusal. Native observation content and all response limits remain intact.
+Native picker input first activates the standard File name mnemonic in the exact
+owned foreground dialog, then accepts only its enabled known editable ComboBox/
+Edit provider or fixed-ID native field with exact readback. Focus helpers require
+the exact native root window, in addition to PID ownership. No arbitrary edit
+field, foreign window, native picker result or selection lease is substituted.

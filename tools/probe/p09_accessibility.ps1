@@ -233,6 +233,7 @@ function Prepare-InitialDesktopPass{
   $result.initial_picker_window_count=$script:initialPickers.Count
   $result.cancelled_window_count=0
   foreach($window in $script:initialPickers){
+   if((-not [P09Access]::IsWindowVisible($window) -or [P09Access]::IsIconic($window)) -and -not ($noProductProcesses -and $Mode -eq 'DISPLAY_SERVER')){continue}
    $result.same_user=[P09Access]::SameUser($window);Need $result.same_user;Need ([P09Access]::SameUser([P09Access]::GetAncestor($window,3)))
    $birthKey=[P09Access]::HitBirthKey($window);Need (-not [string]::IsNullOrEmpty($birthKey))
    $enrolled=($Mode -eq 'DISPLAY_SERVER' -and $script:enrolledInitialPickers.Contains($birthKey));$result.enrolled_initial_process=$enrolled
@@ -279,7 +280,7 @@ function Prepare-InitialDesktop{
 }
 if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0}
 if($Mode -eq 'DESKTOP_INPUT'){
- $form=$null
+ $form=$null;$script:initialPickers=[Collections.Generic.List[IntPtr]]::new()
  try{
   if($PrepareInput){$preparation=Prepare-InitialDesktop;$preparation|ConvertTo-Json -Depth 5|Set-Content -LiteralPath ($ResultFile+'.preparation.json') -Encoding UTF8;Need ($preparation.status -eq 'OBSERVED');$result.initial_preparation_observed=$true}
   $form=[Windows.Forms.Form]::new();$form.Text='SecureRun synthetic native input probe';$form.StartPosition='CenterScreen';$form.Width=640;$form.Height=480;$form.TopMost=$true
@@ -289,6 +290,9 @@ if($Mode -eq 'DESKTOP_INPUT'){
   $rect=[P09Rect]::new();Need ([P09Access]::GetWindowRect($field.Handle,[ref]$rect));$point=[P09Point]::new();$point.X=[int](($rect.Left+$rect.Right)/2);$point.Y=[int](($rect.Top+$rect.Bottom)/2)
   $hit=[P09Access]::WindowFromPoint($point);$packed=[P09Access]::PackedPoint($point);$expected=[Diagnostics.Process]::GetCurrentProcess().Id
   $result.struct_point_owned=[P09Access]::OwnedWindow($hit,$expected);$result.packed_point_owned=[P09Access]::OwnedWindow($packed,$expected);$result.point_apis_agree=($hit -eq $packed);$result.struct_point_kind=Native-HitKind $hit;$result.packed_point_kind=Native-HitKind $packed;$result.struct_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($hit,2));$result.packed_root_cloaked=[P09Access]::Cloaked([P09Access]::GetAncestor($packed,2));$result.foreground_owned=[P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$expected)
+  $hitRoot=[P09Access]::GetAncestor($hit,2);$hitRect=[P09Rect]::new();$result.hit_root_iconic=[P09Access]::IsIconic($hitRoot);$result.hit_is_prepared_window=$script:initialPickers.Contains($hit);$result.hit_root_is_prepared_window=$script:initialPickers.Contains($hitRoot)
+  $class=[Text.StringBuilder]::new(128);$null=[P09Access]::GetClassName($hitRoot,$class,128);$result.hit_root_class=if($result.struct_point_kind -in @('WINDOWS_START_MENU','WINDOWS_SEARCH','WINDOWS_WEB_APP_HOST','WINDOWS_PICKER_HOST') -and $class.ToString() -cmatch '^[A-Za-z0-9_.#:-]{1,128}$'){$class.ToString()}else{'WITHHELD'}
+  if([P09Access]::GetWindowRect($hitRoot,[ref]$hitRect)){$result.hit_root_contains_test_point=($point.X -ge $hitRect.Left -and $point.X -lt $hitRect.Right -and $point.Y -ge $hitRect.Top -and $point.Y -lt $hitRect.Bottom);$result.hit_root_width=$hitRect.Right-$hitRect.Left;$result.hit_root_height=$hitRect.Bottom-$hitRect.Top}
   $provider=[Windows.Automation.AutomationElement]::FromPoint([Windows.Point]::new($point.X,$point.Y));$result.uia_point_owned=($provider.Current.ProcessId -eq $expected)
   $result.status='OBSERVED';$result.product_acceptance_claimed=$false;$result.input_dispatched=$false;$result.os_security_settings_modified=$false
   if($result.struct_point_owned -and $result.foreground_owned){

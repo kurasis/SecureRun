@@ -88,6 +88,9 @@ try {
  foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DESKTOP_PREPARE','-ResultFile',(Join-Path $out 'initial-desktop-preparation.json'))){$prepare.ArgumentList.Add($arg)}
  $prepare.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP','ProgramFiles','ProgramW6432')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$prepare.Environment[$key]=$value}};$prepare.Environment['GITHUB_ACTIONS']='true'
  $preparer=[Diagnostics.Process]::Start($prepare);try{if(-not $preparer.WaitForExit(90000) -or $preparer.ExitCode -ne 0){throw 'P09_INITIAL_DESKTOP_PREPARATION_FAILED'}}finally{if(-not $preparer.HasExited){$preparer.Kill($true)};$preparer.Dispose()}
+ # Enroll initial hidden process instances in the long-lived controller itself;
+ # the separate initial cleaner cannot transfer its process identity set.
+ if($controllerReady){$null=$displayEvents[3].Set();if([Threading.WaitHandle]::WaitAny([Threading.WaitHandle[]]$displayEvents[4..5],90000) -ne 0){throw 'P09_INITIAL_CONTROLLER_ENROLLMENT_FAILED'}}
  $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew()
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}

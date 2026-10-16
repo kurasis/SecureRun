@@ -27,6 +27,7 @@ miss some engineering targets. Normal release runs measured:
 | `38879931585`, `aa5b8f5` | ARM | 2872.8287 | 1.286900400 | 239241041 | Startup/memory targets met; CPU deviation; sensitive test export and browser welcome failed |
 | `38887959409`, `0071e2c` | Server | 5848.2869 | 0.739890212 | 230532884 | Startup deviation; CPU/memory met; 99 UI assertions, next confirmation unobserved |
 | `38887959409`, `0071e2c` | ARM | 2411.0373 | 1.227338717 | 244125310 | Startup/memory met; CPU deviation; 101 UI/complete lifecycle passed, archive/browser failed |
+| `38891751077`, `f9a9755` | Server | 5472.0596 | 1.080477340 | 228076482 | All 22 native/101 UI cases passed; startup/CPU deviations; update/added-launch targets met |
 
 The `f4c4603` ARM run stopped at environment seven with an unreviewed system image
 and an unassociated WerFault; that run has no full ARM sample. The later

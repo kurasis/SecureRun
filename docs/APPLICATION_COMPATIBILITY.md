@@ -27,6 +27,13 @@ unknown owner is not hidden or exempted. Fresh complete matching proof remains
 required. The fixture now preserves create/extract outcomes separately without
 changing the original held-process wait or output/hash checks.
 
+Server full `f9a9755`, run 38891751077, then passed all 22 native and 101 UI
+cases, including every editor/archive/browser workflow and the complete manager
+transfer/lifecycle sequence. Its original files pass every independent formal
+P09 target check. ARM in that matrix refused environment eight before the
+reference workload; the phase remains blocked until fresh full matching ARM and
+all exact-source dependency gates pass.
+
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated
 x64 target binaries. Native application results are reported per runner; they do

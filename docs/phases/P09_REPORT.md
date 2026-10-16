@@ -71,7 +71,7 @@ lists include the current tools.
 | First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server later cancelled after the confirmed confirmation-fixture correction. |
 | Latest focused `217f550` | [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): ARM passed 20 native cases and 98 UI assertions, including export/collision rename and all four browser cases. Only native Archive confirmation failed; superseded Server cancelled after 88 UI assertions before transfers. |
 | Full `0071e2c` | [38887959409](https://github.com/kurasis/SecureRun/actions/runs/38887959409): both completed reference measurements. Server 21 native/99 UI passed; next confirmation not observed. ARM completed the real transfer/lifecycle chain and all 101 UI assertions, but archive exit timed out and browser welcome hit an unidentified foreign surface. |
-| First full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): ARM refused environment eight with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and unassociated WerFault; no full sample. Server pending. |
+| First full `f9a9755` | [38891751077](https://github.com/kurasis/SecureRun/actions/runs/38891751077): ARM refused environment eight with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and unassociated WerFault; no full sample. Server passed all 22 native/101 UI cases and every formal target check. |
 | Fresh full `f9a9755` | [38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449): unchanged exact source on a fresh matrix, pending. |
 | P03 exact-source regression | [38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430): both native targets and portable job passed; each native target passed 19 foundation/4 app/3 frontend/32 command cases. Formal original evidence retained. |
 | P04 exact-source regression | [38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564): both targets passed 61 adapter tests and 19 native observation/trust cases; original formal evidence retained. |
@@ -141,6 +141,16 @@ ownership guards remain unchanged. No cause is inferred for the unknown owner,
 no unknown window is hidden and no new process exception is accepted. All 680
 original reviewed JSON files from the failed full matrix are retained.
 
+Server `f9a9755` in run 38891751077 subsequently passed every complete target
+check: 22 native cases and 101 UI assertions, exact diagnostic Save, actual
+transfers/collision/Archive/Unarchive/Reset, editor/archive and all four browser
+cases. The formal target validator independently accepted its original files.
+Its reference sample is ten environments/10000 files/60014 ms/234 samples;
+process update was 1048.8 ms and added launch 498 ms (targets met). Startup
+5472.0596 ms and CPU 1.0804773398% deviated; average working set 228076482 bytes
+met target. All 286 original Server JSON files are retained. This target pass
+does not replace the missing full ARM result or remaining matching dependencies.
+
 ## Measured budgets and remaining risks
 
 Both full `aa5b8f5` and `0071e2c` matrices completed ten actual idle environments, 10,000 files and
@@ -153,6 +163,7 @@ workers/WebViews. Targets remain unchanged.
 | Windows 11 ARM64 | 2872.8287 — met | 1.2869004001 — deviation | 239241041 — met |
 | Server x64, `0071e2c` | 5848.2869 — deviation | 0.7398902124 — met | 230532884 — met |
 | Windows 11 ARM64, `0071e2c` | 2411.0373 — met | 1.2273387172 — deviation | 244125310 — met |
+| Server x64, `f9a9755` | 5472.0596 — deviation | 1.0804773398 — deviation | 228076482 — met |
 
 Slower startup delays interactive controls. Higher idle CPU can increase power use.
 These are measured deviations under specification acceptance gate 7; they do not

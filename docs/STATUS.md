@@ -22,11 +22,12 @@ is pending. P09 remains IN_PROGRESS; P03 and P04 passed at this exact source; ma
 
 First full `f9a9755` ARM attempt 38891751077 refused environment eight with
 DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault; no full sample
-exists. Its Server job continues. Fresh matrix 38894071449 and the P03–P08
+exists. Server passed all 22 native cases and 101 UI assertions, and every independent
+formal target check. Fresh matrix 38894071449 and the P03–P08
 regressions use the same immutable `verify/p09-f9a9755` source. No reporter is
 killed/trusted/exempted and no failed attempt is relabelled successful.
 
-Latest full `0071e2c`, run 38887959409, completed ten environments, 10000 files and
+Historical full `0071e2c`, run 38887959409, completed ten environments, 10000 files and
 at least 60 seconds of complete-job measurement on both targets. ARM passed all
 101 UI assertions and the complete real import/export/collision/Archive/Unarchive/
 Reset workflow with native confirmations, generation/root and host-integrity

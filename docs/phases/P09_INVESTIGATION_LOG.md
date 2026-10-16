@@ -1357,3 +1357,16 @@ source changes would invalidate their use. P03 run 38893325430 passed portable
 and both native targets (19 foundation/4 app/3 frontend/32 command cases each),
 and its formal source-bound evidence is retained. Other phases remain pending;
 no source list or mandatory gate is reduced.
+
+
+## Full f9a9755 Server passes every product target check
+
+Server in 38891751077 passed all 22 native cases and 101 UI assertions, including
+reviewed Save, import/export/collision/Archive/Unarchive/Reset and all official
+editor/archive/browser workflows. The independent formal target validator accepts
+its original reports. Its ten-environment/10000-file/60014-ms/234-sample reference
+measured startup 5472.0596 ms and CPU 1.0804773398 percent (deviations), average
+working set 228076482 bytes (met), update 1048.8 ms and added launch 498 ms (met).
+All 286 original reviewed Server JSON files are retained. The matrix's ARM setup
+failure is preserved and cannot be replaced by this target pass. Fresh exact-
+source full 38894071449 and matching dependencies remain mandatory.

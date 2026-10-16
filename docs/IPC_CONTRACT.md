@@ -183,3 +183,9 @@ the same current HealthView immediately; the fixture remains immediate. The
 reservation is bounded before scheduling and released by its guard, and the
 main-window origin is checked again after waiting. It creates no event-emission,
 generic event-listening, path, shell or operation capability.
+
+P09 control environment views retain `reason` for process observation and add
+`launch_reason` for independent launch eligibility. A complete Running/Observed
+scope may have an exact WFP, ownership, policy or unresolved-operation refusal.
+Neither field is authority to launch or Stop; both actions repeat their own full
+native prerequisite and held-scope checks.

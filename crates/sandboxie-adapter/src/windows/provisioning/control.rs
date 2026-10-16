@@ -652,11 +652,23 @@ pub fn execute(
             .collect();
         reply.receipts = control.receipts()?;
         for e in &all {
-            let eligible = e.lifecycle == crate::lifecycle::State::Active
-                && e.lifecycle_operation.is_none()
-                && e.stage == Stage::Verified
-                && !control.unresolved(e.id, Uuid::nil())?
-                && validate_owned(&engine, e, &all).is_ok();
+            // Launch prerequisites and process visibility are independent facts.
+            // Preserve the exact native refusal instead of reducing it to false.
+            let eligibility = if e.lifecycle != crate::lifecycle::State::Active {
+                Err("ENVIRONMENT_NOT_ACTIVE")
+            } else if e.lifecycle_operation.is_some() {
+                Err("LIFECYCLE_RECONCILIATION_REQUIRED")
+            } else if e.stage != Stage::Verified {
+                Err("POLICY_NOT_VERIFIED")
+            } else if control.unresolved(e.id, Uuid::nil())? {
+                Err("CONTROL_OPERATION_UNRESOLVED")
+            } else {
+                validate_owned(&engine, e, &all)
+            };
+            let eligible = eligibility.is_ok();
+            let launch_reason = eligibility
+                .err()
+                .unwrap_or("CURRENT_PREREQUISITES_SATISFIED");
             let processes = engine
                 .control_scope(e)
                 .and_then(|_scope| engine.api.processes(&e.name()));
@@ -675,6 +687,7 @@ pub fn execute(
                 complete,
                 processes,
                 launch_eligible: eligible,
+                launch_reason: launch_reason.into(),
                 reason: reason.into(),
             });
         }

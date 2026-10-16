@@ -479,3 +479,9 @@ requests and restores it only for the next actual Settings operation. This keeps
 the elevated lab Settings window from covering the standard-user manager during
 physical keyboard checks; actual Windows/manager DPI verification and the final
 100% restoration/close still run unchanged.
+
+Control views now expose separate `launch_reason` and process-observation `reason`.
+The native eligibility calculation preserves its exact refusal code while process
+activity stays independently observed. Both product views use the launch cause;
+P06's real WFP-unavailable/running/Stop case now requires a distinct launch refusal
+while process observation remains OBSERVED. No dispatch or Stop guard changes.

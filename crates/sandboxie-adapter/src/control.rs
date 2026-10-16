@@ -107,6 +107,7 @@ pub struct ProcessView {
     pub complete: bool,
     pub processes: Vec<ProcessIdentity>,
     pub launch_eligible: bool,
+    pub launch_reason: String,
     pub reason: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

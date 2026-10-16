@@ -14,7 +14,7 @@ import icon from './icon.svg';
 import './style.css';
 
 type Owned={id:string;display_name:string;revision:number;generation:number;stage:string;reason:string;lifecycle:string;mode:string;desired:{preset:string}};
-type Control={environment_id:string;activity:string;complete:boolean;launch_eligible:boolean;reason:string};
+type Control={environment_id:string;activity:string;complete:boolean;launch_eligible:boolean;launch_reason:string;reason:string};
 type Tab='applications'|'processes'|'files'|'permissions'|'activity'|'retention';
 const tabs:Tab[]=['applications','processes','files','permissions','activity','retention'];
 function preference<T extends string>(key:string,allowed:readonly T[],fallback:T):T {
@@ -79,7 +79,7 @@ function App() {
   if(clock-controlAt>=15000||controlGeneration!==health?.generation)return 'CONTROL_OBSERVATION_STALE';
   if(e.lifecycle!=='ACTIVE')return 'ENVIRONMENT_NOT_ACTIVE';
   const control=controls.find(c=>c.environment_id===e.id);
-  return control?.launch_eligible?'CURRENT_PREREQUISITES_SATISFIED':control?.reason??'ENVIRONMENT_NOT_OBSERVED';
+  return control?.launch_eligible?'CURRENT_PREREQUISITES_SATISFIED':control?.launch_reason??'ENVIRONMENT_NOT_OBSERVED';
  }
  function networkPolicy(e:Owned) {
   if(!fresh||clock-metadataAt.current>=15000||e.stage!=='VERIFIED'||e.lifecycle!=='ACTIVE')return p.unknown;

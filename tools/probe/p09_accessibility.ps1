@@ -167,9 +167,9 @@ function Native-HitKind([IntPtr]$window){
 $result.powershell_major=$PSVersionTable.PSVersion.Major;try{$null=[ushort]1;$result.ushort_alias_available=$true}catch{$result.ushort_alias_available=$false}
 $result.helper_interactive_station=[P09Access]::InteractiveStation();$result.helper_thread_desktop_default=[P09Access]::ThreadDesktopDefault();$result.helper_session_zero=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq 0);$result.helper_active_console_session=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq [P09Access]::WTSGetActiveConsoleSessionId())
 $script:enrolledInitialPickers=[Collections.Generic.HashSet[string]]::new()
-function Prepare-InitialDesktop{
+function Prepare-InitialDesktopPass{
  $result=@{mode='DESKTOP_PREPARE';real_windows_uia=$true;synthetic_fixture_only=$true;default_input_desktop=[P09Access]::DefaultInputDesktop();helper_interactive_station=[P09Access]::InteractiveStation();helper_thread_desktop_default=[P09Access]::ThreadDesktopDefault();helper_session_zero=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq 0);helper_active_console_session=([Diagnostics.Process]::GetCurrentProcess().SessionId -eq [P09Access]::WTSGetActiveConsoleSessionId())}
- $script:stage='PREPARING_INITIAL_CI_DESKTOP';$result.process_termination_dispatched=$false;$result.os_security_settings_modified=$false;$result.initial_picker_cancelled=$false
+ $script:stage='PREPARING_INITIAL_CI_DESKTOP';$result.process_termination_dispatched=$false;$result.os_security_settings_modified=$false;$result.initial_picker_cancelled=$false;$result.cancelled_window_count=0
  try{
   Need ($env:GITHUB_ACTIONS -eq 'true' -and $ManagerPid -eq 0 -and $result.default_input_desktop -ne 0)
   $noProductProcesses=(@(Get-Process -Name securerun,firefox,notepad++ -ErrorAction SilentlyContinue).Count -eq 0);$result.product_process_present=(-not $noProductProcesses)
@@ -210,6 +210,19 @@ function Prepare-InitialDesktop{
   $result.status='OBSERVED'
  }catch{$result.status='BLOCKED';$result.code='P09_INITIAL_DESKTOP_PREPARATION_FAILED';$kind=$_.FullyQualifiedErrorId.Split(',')[0];$result.error_record_kind=if($kind -cmatch '^[A-Za-z][A-Za-z0-9_.]{0,100}$'){$kind}else{'WITHHELD'}}
  return $result
+}
+function Prepare-InitialDesktop{
+ $passes=[Collections.Generic.List[object]]::new();$cancelled=0
+ for($attempt=0;$attempt -lt 4;$attempt++){
+  $pass=Prepare-InitialDesktopPass;$passes.Add($pass.Clone());$cancelled+=[int]$pass.cancelled_window_count
+  if($pass.status -ne 'OBSERVED' -or $pass.cancelled_window_count -eq 0){
+   $pass.preparation_passes=$passes.ToArray();$pass.cancelled_window_count=$cancelled;$pass.initial_picker_cancelled=($cancelled -gt 0);return $pass
+  }
+  # Closing an initial shell surface may reveal another already running one.
+  # Re-enumerate before product startup, with all original identity/trust checks.
+  Start-Sleep -Milliseconds 250
+ }
+ $pass.status='BLOCKED';$pass.code='P09_INITIAL_DESKTOP_DID_NOT_SETTLE';$pass.preparation_passes=$passes.ToArray();$pass.cancelled_window_count=$cancelled;return $pass
 }
 if($Mode -eq 'DESKTOP_PREPARE'){$result=Prepare-InitialDesktop;$result|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $ResultFile -Encoding UTF8;if($result.status -ne 'OBSERVED'){exit 1};exit 0}
 if($Mode -eq 'DESKTOP_INPUT'){

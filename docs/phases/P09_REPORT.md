@@ -130,7 +130,7 @@ Server focused run 38862025457 ended its complete file-page observation with a
 SocketException before the secret/export sequence; no UI assertion failed. The
 observer now gives the bounded full traversal a separate deadline and records
 socket kind and elapsed failure time. First-page measurement and original page/
-DOM bounds remain unchanged. This change is not missing full-workload proof.
+DOM bounds remain unchanged. An extended observer deadline does not establish full-workload completion.
 
 Final matching editor save, browser child/protocol/own
 sandbox, ARM physical keyboard and the dependent

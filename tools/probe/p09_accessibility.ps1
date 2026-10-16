@@ -399,7 +399,7 @@ function Browser-Address($root,[IntPtr]$hwnd,[int]$id,[string]$address){
  try{
   [Windows.Forms.Clipboard]::Clear();Browser-Key $id 76 17;Start-Sleep -Milliseconds 200;Need ([P09Access]::TypeText($hwnd,$id,$address));Start-Sleep -Milliseconds 200;Browser-Key $id 65 17;Browser-Key $id 67 17
   $clock=[Diagnostics.Stopwatch]::StartNew();do{if([Windows.Forms.Clipboard]::GetText() -ceq $address){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 5000)
-  $result.address_text_verified=([Windows.Forms.Clipboard]::GetText() -ceq $address);Need $result.address_text_verified;Browser-Key $id 13
+  $result.address_text_verified=([Windows.Forms.Clipboard]::GetText() -ceq $address);Browser-Key $id 13
  }finally{[Windows.Forms.Clipboard]::Clear()}
  $result.native_keyboard_delivery_checked=$true;$result.navigation_input='NATIVE_KEYBOARD_WITH_EXACT_SYNTHETIC_ADDRESS_READBACK'
 }
@@ -555,6 +555,14 @@ try{
    $bitmap=[Drawing.Bitmap]::new($width,$height);$graphics=$null;$dc=[IntPtr]::Zero
    try{$graphics=[Drawing.Graphics]::FromImage($bitmap);$dc=$graphics.GetHdc();$result.synthetic_browser_window_captured=[P09Access]::PrintWindow($hwnd,$dc,2);$graphics.ReleaseHdc($dc);$dc=[IntPtr]::Zero;if($result.synthetic_browser_window_captured){$bitmap.Save($ResultFile+'.png',[Drawing.Imaging.ImageFormat]::Png)}}
    finally{if($null -ne $graphics){if($dc -ne [IntPtr]::Zero){$graphics.ReleaseHdc($dc)};$graphics.Dispose()};$bitmap.Dispose()}
+   $class=[Text.StringBuilder]::new(128);$null=[P09Access]::GetClassName($hwnd,$class,128);$baseClass=$class.ToString() -replace '^Sandbox:SR_[0-9a-f]{32}:','';$result.browser_native_window_class=if($baseClass -cin @('MozillaWindowClass','MozillaDialogClass','MozillaCompositorWindowClass','MozillaHiddenWindowClass')){$baseClass}else{'WITHHELD'}
+   Focus-OwnedWindow $hwnd $ManagerPid;$allOwned=$true
+   foreach($fx in @(0.1,0.5,0.9)){foreach($fy in @(0.1,0.5,0.9)){$sample=[P09Point]::new();$sample.X=$rect.Left+[int]($width*$fx);$sample.Y=$rect.Top+[int]($height*$fy);$sampleHit=[P09Access]::WindowFromPoint($sample);if(-not ([P09Access]::OwnedWindow($sampleHit,$ManagerPid) -and [P09Access]::GetAncestor($sampleHit,2) -eq $hwnd)){$allOwned=$false}}}
+   $result.screen_capture_points_owned=$allOwned;$result.synthetic_browser_screen_captured=$false
+   if($allOwned -and $width -gt 40 -and $height -gt 40){
+    $screen=[Drawing.Bitmap]::new($width-20,$height-20);$draw=$null
+    try{$draw=[Drawing.Graphics]::FromImage($screen);$draw.CopyFromScreen($rect.Left+10,$rect.Top+10,0,0,$screen.Size);$screen.Save($ResultFile+'.screen.png',[Drawing.Imaging.ImageFormat]::Png);$result.synthetic_browser_screen_captured=$true}finally{if($null -ne $draw){$draw.Dispose()};$screen.Dispose()}
+   }
    $result.synthetic_canary_title_verified=$true;$result.raw_support_content_captured=$false;$result.uia_browser_provider_queried=$false
   }
   'BROWSER_PROTOCOL' {

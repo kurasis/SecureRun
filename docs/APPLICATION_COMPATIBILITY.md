@@ -44,8 +44,9 @@ retained. These automation corrections still require actual successful results.
 Earlier diagnostic profiles forced Firefox accessibility, but neither the address
 provider nor native navigation passed. That experiment is reverted. The current
 browser fixture reads only native window captions, delivers real keyboard input
-and verifies the exact synthetic address through a cleared clipboard before
-navigation. It avoids optional cross-box COM/UIA queries to Firefox. Manager
+and observes synthetic address readback through a cleared clipboard before
+navigation. Clipboard visibility is diagnostic only; fresh native page titles and
+actual attributed requests remain mandatory. It avoids optional cross-box COM/UIA queries to Firefox. Manager
 screen-reader/UIA checks remain mandatory. Actual requests, held driver membership,
 protocol output and a positive observed about:support sandbox level remain required.
 Server run 38862241469 had no observed browser GUI and retained a live WerFault

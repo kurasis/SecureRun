@@ -68,12 +68,15 @@ Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matchin
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
 installed Windows 11 x64 acceptance or certification of other engine/app versions.
 
-GitHub access expired again after publication and dispatch of `8cc5e26`: the
-authenticated API returns HTTP 401 and HTTPS Git has no usable credentials.
-Public artifacts remain readable without authentication, so result analysis
-continues. New dispatches, final matching regression dispatch/publication, push and
-ordinary merge are blocked until the environment connection is refreshed. No credentials
-are requested in chat. The draft remains unmerged.
+GitHub credentials temporarily expired after dispatch of `8cc5e26`; public
+artifacts remained readable anonymously. Authenticated API and Git access later
+recovered, and all prepared reports/evidence were pushed. The phase is blocked
+by actual final-source verification, not by an assumed successful result.
+
+A complete full P09 run is now pinned to exact source `8cc5e26`,
+[38877810087](https://github.com/kurasis/SecureRun/actions/runs/38877810087).
+Final matching-source P03–P08 dispatch/retention waits for the remaining native
+Save and dependent product UI results. No protected source list is reduced.
 
 ## Findings and remaining exit gate
 
@@ -165,8 +168,9 @@ the exact official raw-copy control. Its separate protocol attempt failed during
 clipboard Clear with ExternalException; this is not protocol escape evidence.
 The current fixture waits at most two seconds only for the exact clipboard-busy
 HRESULT, without replaying any browser action. ARM at `1dabb77` also passed the recognized welcome and actual main/child/
-protocol containment, but failed its own-sandbox clipboard operation. The final
-combined run remains pending. No browser sandbox
+protocol containment, but failed its own-sandbox clipboard operation. Server at `8cc5e26`, run 38876817338, passed all four browser cases in one
+diagnostic trial, including effective level 9. ARM and the final matching full
+run remain pending. No browser sandbox
 setting is changed. All child/protocol/effective-sandbox observations remain mandatory.
 
 The synthetic target proof requires the newly observed dispatch in the exact
@@ -178,7 +182,10 @@ still needs a complete passing final-source workflow.
 
 Notepad++ editing and Save As passed on Server at `f9b719d`: the actual boxed
 output was observed, exact bytes matched, and host input/output stayed unchanged.
-Server repeated that exact save successfully in apps-only run [38858126567](https://github.com/kurasis/SecureRun/actions/runs/38858126567). That run also proved the controller cancelled two enrolled initial picker windows on ARM using scoped WM_CLOSE, but the subsequent editor/document point checks still failed. The ARM workflow remains pending. Both targets proved all 10,000 files on 79
+Server repeated that exact save successfully in apps-only run [38858126567](https://github.com/kurasis/SecureRun/actions/runs/38858126567). That run also proved the controller cancelled two enrolled initial picker windows on ARM using scoped WM_CLOSE, but the subsequent editor/document point checks still failed. At `9df8149`, run 38874505825, ARM positively passed real manager keyboard/
+UIA navigation and official editor edit/Save As, with actual target point/focus
+ownership; Server passed those cases too. Final matching full results remain
+pending. Both targets proved all 10,000 files on 79
 pages with at most 128 entries and 127 DOM rows; all 88 UI assertions passed.
 Firefox main-request/profile isolation and 7-Zip GUI round trips passed
 historically on both targets. Neither SendKeys nor native scan-code navigation
@@ -204,9 +211,9 @@ observer now gives the bounded full traversal a separate deadline and records
 socket kind and elapsed failure time. First-page measurement and original page/
 DOM bounds remain unchanged. An extended observer deadline does not establish full-workload completion.
 
-Final matching editor save, browser child/protocol/own
-sandbox, ARM physical keyboard and the dependent
-secret/export/transfer/lifecycle UI sequence remain mandatory. See the exact
+Final matching editor save, all browser cases, actual manager keyboard and the
+complete diagnostic/export/transfer/lifecycle UI sequence remain mandatory.
+Historical successful constituent cases cannot replace that complete run. See the exact
 [application matrix](../APPLICATION_COMPATIBILITY.md).
 
 No numerical performance target is claimed met by compilation or a focused run.

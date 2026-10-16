@@ -1,0 +1,79 @@
+[
+  {
+    "evidence": {
+      "separate_clean_profiles": true,
+      "browser_sandbox_disabled": false,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "socket_owner_and_held_birth_verified": true,
+      "unboxed_handoff": false,
+      "explicit_profile_and_no_remote": true,
+      "preexisting_host_browser_verified": true,
+      "host_profile_read_blocked_by_reviewed_rule": true
+    },
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "status": "PASSED",
+    "id": "T41"
+  },
+  {
+    "evidence": {
+      "host_url_handoff": false,
+      "process_tree_alone_used_as_proof": false,
+      "actual_browser_child_action": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_CHILD",
+          "host_profile_cookie_present": false
+        }
+      ]
+    },
+    "name": "browser_own_child_request_stays_boxed",
+    "status": "PASSED",
+    "id": "T41"
+  },
+  {
+    "evidence": {
+      "host_marker_absent": true,
+      "generic_external_protocol_support_claimed": false,
+      "actual_boxed_protocol_link_page": true,
+      "real_browser_address_action": true,
+      "original_registered_handler_fixture": true,
+      "reachable_handler_executed_boxed": true,
+      "browser_sandbox_disable_flag": false,
+      "host_protocol_positive_control": true
+    },
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "status": "PASSED",
+    "id": "T41"
+  },
+  {
+    "evidence": {
+      "clean_profiles": true,
+      "browser_own_sandbox_enabled": true,
+      "no_disable_sandbox_argument": true,
+      "no_security_sandbox_preferences_changed": true,
+      "real_about_support": true,
+      "effective_content_sandbox_level": 9
+    },
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "status": "PASSED",
+    "id": "T30"
+  }
+]

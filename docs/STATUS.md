@@ -12,14 +12,15 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P06 | BLOCKED — final P09 runtime regression pending | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
 | P07 | BLOCKED — P09 regression pending | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
 | P08 | BLOCKED — P09 regression pending | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
-| P09 | IN_PROGRESS — native gate and authenticated CI results pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
+| P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
 Current P09 source candidate: `8cc5e265059a790b3de57df2516023d6ad5f9e2b`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
-Latest source changes were pushed and diagnostic CI dispatched before GitHub
-access expired again. API HTTP 401 and missing HTTPS Git credentials currently
-block final matching regression dispatch, push/publication and merge. Public
-artifacts remain readable anonymously, so existing CI results can still be analyzed. P09 is not DONE.
+Authenticated GitHub access recovered after a temporary credential expiry; all
+prepared reports/evidence were pushed. Server passed the four-case browser-only
+diagnostic at `8cc5e26`; both targets passed actual manager keyboard/UIA and
+editor edit/Save As at `9df8149`. Native diagnostic Save, its dependent UI
+sequence and complete matching final-source gates remain pending. P09 is not DONE.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

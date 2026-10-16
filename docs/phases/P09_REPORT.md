@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `f4c460336f0c7878c93409af6dc1349d4bc8a2a5`.
+Current runtime/lab candidate: `7ccda2b199464daa9055ccd3ad398bb7986339d6`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -52,15 +52,15 @@ Documentation-only descendants do not replace the required tested source.
 | TypeScript/frontend | Type check, 3 state/localization tests and 4 product tests passed |
 | Windows-target Clippy and formatting | Passed after the inert path correction |
 | Native product build at `f9b719d` | [38854501737](https://github.com/kurasis/SecureRun/actions/runs/38854501737): both targets passed, including 61 adapter tests, 4 native app tests with the independent COM-apartment regression, and the actual kernel-job measurement fixture |
-| P03 matching `f4c4603` | [38865143592](https://github.com/kurasis/SecureRun/actions/runs/38865143592), in progress |
-| P04 matching `f4c4603` | [38865145944](https://github.com/kurasis/SecureRun/actions/runs/38865145944), in progress |
-| P05 matching `f4c4603` | [38865148521](https://github.com/kurasis/SecureRun/actions/runs/38865148521), in progress |
-| P06 matching `f4c4603` | [38865151731](https://github.com/kurasis/SecureRun/actions/runs/38865151731), in progress |
-| P07 matching `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), in progress |
-| P08 matching `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468), in progress |
-| P09 full workload | [38864957115](https://github.com/kurasis/SecureRun/actions/runs/38864957115), in progress |
+| P03 historical `f4c4603` | [38865143592](https://github.com/kurasis/SecureRun/actions/runs/38865143592), both targets passed; final matching source pending |
+| P04 historical `f4c4603` | [38865145944](https://github.com/kurasis/SecureRun/actions/runs/38865145944), both targets passed; final matching source pending |
+| P05 historical `f4c4603` | [38865148521](https://github.com/kurasis/SecureRun/actions/runs/38865148521), both targets passed; final matching source pending |
+| P06 historical `f4c4603` | [38865151731](https://github.com/kurasis/SecureRun/actions/runs/38865151731), both targets passed; final matching source pending |
+| P07 historical `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), both targets passed; final matching source pending |
+| P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
+| P09 full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695), pending |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
-| P09 focused diagnostic | [38864956955](https://github.com/kurasis/SecureRun/actions/runs/38864956955) at the matching candidate, in progress; cannot close the full gate |
+| P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at UI correction `7e62fd9`, in progress; cannot close the full gate |
 
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
@@ -103,13 +103,21 @@ collapses its owned selection lists before leaving Settings. No security setting
 or foreground policy is changed.
 
 Server run [38859910487](https://github.com/kurasis/SecureRun/actions/runs/38859910487)
-confirmed a real UI race: application selection was enabled before the selected
-environment had loaded. The button now waits for the loaded environment. The
-actual EXE picker and registration passed; the synthetic target marker remained
-absent. Current fixture proof requires the newly observed dispatch in the exact
-environment, waits for its output, and explicitly creates the target's own
-synthetic known-folder directory rather than assuming host-to-box folder mapping.
-Original byte/inheritance/host-output checks remain mandatory.
+confirmed application selection could be enabled before environment metadata loaded.
+The button now waits for that metadata. The real EXE picker and registration passed.
+A later exact-dispatch check exposed `REVISION_CONFLICT`: the fixture selected the
+first Run inside the containing environment article, rather than the named app row.
+It now requires one exact app row. The production interface also used a stored
+application revision for launch after policy changes. It now supplies the loaded
+current environment revision, retaining backend CAS refusal and requiring loaded
+metadata before enabling launch. No mutation is retried automatically.
+
+The synthetic target proof requires the newly observed dispatch in the exact
+environment, its actual boxed marker, intended argument, absent inherited secret
+and absent host marker. Typed refusal and held-process exit observations retain
+actual failures without copying target arguments or raw target errors. The native
+fixture explicitly creates its synthetic known-folder directory. All of this
+still needs a complete passing final-source workflow.
 
 Notepad++ editing and Save As passed on Server at `f9b719d`: the actual boxed
 output was observed, exact bytes matched, and host input/output stayed unchanged.
@@ -121,10 +129,16 @@ produced the required browser continuation requests on Server. Run 38862241469
 had no observed browser GUI and a live reporter associated with SandboxieRpcSs.exe;
 no browser screenshot was produced. The current fixture reverts forced browser
 accessibility and avoids optional cross-box COM/UIA interaction. It uses native
-captions, real keyboard input and exact synthetic address readback through a
-cleared clipboard, while retaining all actual HTTP, protocol and sandbox-level
-requirements. Manager UIA/screen-reader checks remain mandatory. The diagnostic
+captions and real keyboard input, while retaining all actual HTTP, protocol and
+sandbox-level requirements. Synthetic clipboard readback is diagnostic only; no
+shared clipboard capability is assumed. ASCII URI keys use the browser thread's
+existing keyboard layout when Unicode readback is absent. Manager UIA/screen-reader checks remain mandatory. The diagnostic
 captures only a clean synthetic browser window, never raw about:support content.
+The current diagnostic selects a captioned browser frame, records bounded native
+responsiveness and places only that owned window inside the visible work area.
+Browser-only mode uses one real online environment and four browser cases; it is
+explicitly partial and cannot satisfy the full retainer. All 22 mandatory full
+cases and native checks remain unchanged in the default workflow.
 
 Server focused run 38862025457 ended its complete file-page observation with a
 SocketException before the secret/export sequence; no UI assertion failed. The
@@ -142,6 +156,11 @@ No failed/cancelled run is relabelled successful. No browser sandbox, Windows
 security setting, TLS/signature/checksum verification or broad engine exception
 is weakened. No engine is bundled. Native incoming sockets explicitly restore
 blocking mode on acceptance; delayed-request regression passed on both targets.
+
+Read-only WER classification retains only fixed component/module labels, exception
+codes and report kinds after actual failures. It reads bounded current-lab metadata
+and supplies no authority to terminate or trust a process. Full reports, paths,
+arguments and owner identities are excluded.
 
 All project source, Markdown and reviewed evidence are published as authorized.
 Generated binaries, credentials, raw support content and private machine

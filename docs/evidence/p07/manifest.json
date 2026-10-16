@@ -763,6 +763,56 @@
       "path": "investigation-b04a766/windows-2025/standard-normal.json",
       "size": 91,
       "sha256": "6627dcc29edf5f773daee97151c7db05616e2de8d4561627c5a89b1b71792570"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/file-cases.json",
+      "size": 9504,
+      "sha256": "8c380f9e1196a11faca83bf5cda9c9e46db411e38f6c81121988ee6140e52a85"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/run-summary.json",
+      "size": 653,
+      "sha256": "d3131c236d516ebb0594c4241e74ac2d97224ce9e0a4d8f8536246d6c29ff266"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "29155a11e4c4d1c05c34e7c5a0000ddb13a280338cccdd2d7de02ecef2ffb139"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/standard-fault.json",
+      "size": 90,
+      "sha256": "ef71faf2d4ae3c9d903ea2d6cd1dc372bd1f757e98cd54f7363c17208840b78c"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/standard-normal.json",
+      "size": 91,
+      "sha256": "6627dcc29edf5f773daee97151c7db05616e2de8d4561627c5a89b1b71792570"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/file-cases.json",
+      "size": 8928,
+      "sha256": "97ff4ad74aa15eeee35b6f23b3735a23ec3c1f20c0793ca129045d3e69bec5d8"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/run-summary.json",
+      "size": 653,
+      "sha256": "740091f436c38cfd91e5241ee3f8c0c79b7d046b6df7d86fbe9d6fbf1ed06a7a"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/stage.json",
+      "size": 112,
+      "sha256": "e33981a329d1f869f289fd597a0ea2987febb6132ab90c78a99c316bc5783141"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/standard-fault.json",
+      "size": 90,
+      "sha256": "c14ac9bfc4b6a5eff8c042f4b623434af1c28baadf2839a8ead46d141253c838"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/standard-normal.json",
+      "size": 91,
+      "sha256": "81ce1dabebb92d5b59c075233eb291c507491cbe875d7bde77021f75881ae923"
     }
   ],
   "tested_sources": [
@@ -1350,6 +1400,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38852280456",
       "result": "PASSED",
       "note": "Both actual Windows targets passed. Subsequent owned native dialog and picker COM apartment changes require final matching-source retention."
+    },
+    {
+      "tested_commit": "f4c460336f0c7878c93409af6dc1349d4bc8a2a5",
+      "run_id": 38865154061,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38865154061",
+      "result": "PASSED",
+      "note": "Both actual Windows targets passed. A later production UI launch revision correction and lab changes require final matching-source retention."
     }
   ]
 }

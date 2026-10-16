@@ -19,6 +19,10 @@ miss some engineering targets. Normal release runs measured:
 | `38839426236`, `f2ebba3` | Server | 5503.9137 | 0.753328196 | 229493149 | CPU and memory targets met; startup deviation |
 | `38839426236`, `f2ebba3` | ARM | 2362.7337 | 1.220673525 | 245477794 | Startup and memory targets met; CPU deviation |
 | `38851310774`, `b04a766` | Server | 3723.5445 | 1.201683426 | 230145977 | Startup and CPU deviations; mandatory application cases failed |
+| `38864957115`, `f4c4603` | Server | 6933.7482 | 1.137207001 | 230689013 | Startup and CPU deviations; mandatory launch/browser cases failed |
+
+The `f4c4603` ARM run stopped at environment seven with an unreviewed system image
+and an unassociated WerFault; no current full ARM sample exists.
 
 The `b04a766` ARM run stopped at CREATE 10 with an unreviewed system image and
 an unassociated WerFault; it has no full resource sample. No reporting setting

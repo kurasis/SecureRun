@@ -1,0 +1,331 @@
+[
+  {
+    "status": "PASSED",
+    "name": "normal_binary_cannot_activate_transfer_fault_checkpoints",
+    "evidence": {
+      "operation_completed": true,
+      "normal_binary_tested": true,
+      "fault_environment_supplied": true,
+      "checkpoint_activated": false
+    },
+    "id": "T49"
+  },
+  {
+    "status": "PASSED",
+    "name": "boxed_stage_refuses_unboxed_execution",
+    "evidence": {
+      "exit_code": 91,
+      "unboxed_refused_before_target_io": true,
+      "host_dispatch": false
+    },
+    "id": "T49"
+  },
+  {
+    "status": "PASSED",
+    "name": "production_export_correct_bytes_and_motw",
+    "evidence": {
+      "auto_open": false,
+      "production_route": true,
+      "same_bytes": true,
+      "internet_zone": true
+    },
+    "id": "T21"
+  },
+  {
+    "status": "PASSED",
+    "name": "import_collision_duplicate_operation_and_regular_file_only",
+    "evidence": {
+      "duplicate_not_replayed": true,
+      "folder_rejected": true,
+      "collision_no_replace": true
+    },
+    "id": "T20"
+  },
+  {
+    "status": "PASSED",
+    "name": "unsafe_names_and_extensions",
+    "evidence": {
+      "unsafe_names_rejected": 9,
+      "full_extensions": true,
+      "normal_unicode": true
+    },
+    "id": "T63"
+  },
+  {
+    "status": "PASSED",
+    "name": "hardlinks_streams_reparse_and_sensitive_destinations_rejected",
+    "evidence": {
+      "destination_junction_rejected": true,
+      "sensitive_destination_rejected": true,
+      "hardlink_rejected": true,
+      "arbitrary_ads_rejected": true
+    },
+    "id": "T22"
+  },
+  {
+    "status": "PASSED",
+    "name": "inert_metadata_for_html_svg_shortcut_and_executable",
+    "evidence": {
+      "metadata_only": true,
+      "host_execution": false,
+      "files": 4,
+      "preview_handler_invoked": false
+    },
+    "id": "T23"
+  },
+  {
+    "status": "PASSED",
+    "name": "forged_file_and_raw_path_fields_rejected",
+    "evidence": {
+      "frontend_paths_not_authority": true,
+      "forged_id_refused": true
+    },
+    "id": "T49"
+  },
+  {
+    "status": "PASSED",
+    "name": "existing_destination_and_restricted_zone_preserved",
+    "evidence": {
+      "restricted_zone_preserved": true,
+      "url_not_copied": true,
+      "short_alias_generated": true,
+      "case_alias_collision_preserved": true,
+      "collision_preserved": true,
+      "short_alias_collision_preserved": true
+    },
+    "id": "T44"
+  },
+  {
+    "status": "PASSED",
+    "name": "imported_boxed_exe_securerun-launch-probe-x86",
+    "evidence": {
+      "host_report_absent": true,
+      "original_get_handle_path_verified": true,
+      "pe_machine": "014c",
+      "literal_percent_environment_name": true,
+      "logical_launch": true,
+      "physical_host_fallback": false,
+      "probe_sha256": "9c8d7262bc3cfedecb860b552da805a0689683751f6cf98ef33b98a2e9885e41",
+      "boxed": true,
+      "actual_pe": "securerun-launch-probe-x86",
+      "no_shell_associations": true
+    },
+    "id": "T43"
+  },
+  {
+    "status": "PASSED",
+    "name": "imported_boxed_exe_securerun-launch-probe",
+    "evidence": {
+      "host_report_absent": true,
+      "original_get_handle_path_verified": true,
+      "pe_machine": "8664",
+      "literal_percent_environment_name": true,
+      "logical_launch": true,
+      "physical_host_fallback": false,
+      "probe_sha256": "c1c192b697ab67081052e6432bde923384740d559a8e4d4194c76e7082fb899e",
+      "boxed": true,
+      "actual_pe": "securerun-launch-probe",
+      "no_shell_associations": true
+    },
+    "id": "T43"
+  },
+  {
+    "status": "PASSED",
+    "name": "running_environment_blocks_file_mutation",
+    "evidence": {
+      "external_engine_processes_observed": true,
+      "busy_refused": true
+    },
+    "id": "T42"
+  },
+  {
+    "status": "PASSED",
+    "name": "original_sandman_open_does_not_recover_or_delete_managed_data",
+    "evidence": {
+      "automatic_recovery_disabled": true,
+      "original_gui_running": true,
+      "export_correct": true,
+      "automatic_deletion_disabled": true,
+      "source_preserved": true
+    },
+    "id": "T42"
+  },
+  {
+    "status": "PASSED",
+    "name": "greater_than_four_gib_streamed_with_bounded_memory",
+    "evidence": {
+      "logical_size": "4296015873",
+      "equal_hash": true,
+      "chunk_bytes": 1048576,
+      "greater_than_four_gib": true,
+      "actual_sparse_source": true
+    },
+    "id": "T45"
+  },
+  {
+    "name": "real_crash_BeforeMark",
+    "status": "PASSED",
+    "evidence": {
+      "checkpoint": "BeforeMark",
+      "real_worker_killed": true,
+      "payload_before_marker": false,
+      "recovered_state": "INCOMPLETE_RETAINED",
+      "replayed": false,
+      "no_overwrite": true
+    },
+    "id": "T64"
+  },
+  {
+    "name": "real_crash_AfterMark",
+    "status": "PASSED",
+    "evidence": {
+      "checkpoint": "AfterMark",
+      "real_worker_killed": true,
+      "payload_before_marker": false,
+      "recovered_state": "INCOMPLETE_RETAINED",
+      "replayed": false,
+      "no_overwrite": true
+    },
+    "id": "T64"
+  },
+  {
+    "name": "real_crash_MidCopy",
+    "status": "PASSED",
+    "evidence": {
+      "checkpoint": "MidCopy",
+      "real_worker_killed": true,
+      "payload_before_marker": false,
+      "recovered_state": "INCOMPLETE_RETAINED",
+      "replayed": false,
+      "no_overwrite": true
+    },
+    "id": "T64"
+  },
+  {
+    "name": "real_crash_BeforeRename",
+    "status": "PASSED",
+    "evidence": {
+      "checkpoint": "BeforeRename",
+      "real_worker_killed": true,
+      "payload_before_marker": false,
+      "recovered_state": "INCOMPLETE_RETAINED",
+      "replayed": false,
+      "no_overwrite": true
+    },
+    "id": "T64"
+  },
+  {
+    "name": "real_crash_AfterRename",
+    "status": "PASSED",
+    "evidence": {
+      "checkpoint": "AfterRename",
+      "real_worker_killed": true,
+      "payload_before_marker": false,
+      "recovered_state": "COMPLETE_RECOVERED",
+      "replayed": false,
+      "no_overwrite": true
+    },
+    "id": "T64"
+  },
+  {
+    "name": "replaced_staging_file_never_deleted_or_adopted",
+    "status": "PASSED",
+    "evidence": {
+      "path_only_delete": false,
+      "identity_mismatch_refused": true,
+      "replacement_unchanged": true
+    },
+    "id": "T65"
+  },
+  {
+    "name": "discard_only_verified_staging_identity",
+    "status": "PASSED",
+    "evidence": {
+      "held_file_identity_verified": true,
+      "permanent_tombstone": true,
+      "current_generation_verified": true,
+      "held_parent_identity_verified": true,
+      "no_recursive_delete": true
+    },
+    "id": "T65"
+  },
+  {
+    "name": "actual_collision_inserted_before_no_replace_rename",
+    "status": "PASSED",
+    "evidence": {
+      "existing_output_preserved": true,
+      "actual_no_replace_dispatch": true,
+      "unrelated_identity_not_adopted": true
+    },
+    "id": "T44"
+  },
+  {
+    "name": "actual_transfer_cancel_retains_marked_partial",
+    "status": "PASSED",
+    "evidence": {
+      "partial_bytes": 1048576,
+      "final_absent": true,
+      "actual_cancel_command": true,
+      "partial_marked": true
+    },
+    "id": "T20"
+  },
+  {
+    "name": "marker_failure_before_any_payload",
+    "status": "PASSED",
+    "evidence": {
+      "actual_ads_creation_failure": true,
+      "final_absent": true,
+      "copied_payload_bytes": 0
+    },
+    "id": "T44"
+  },
+  {
+    "name": "external_engine_launch_mid_export_aborts_without_publication",
+    "status": "PASSED",
+    "evidence": {
+      "safe_abort_reason": "CONFIGURATION_CONFLICT",
+      "independent_original_engine_dispatch": true,
+      "actual_member_alive_before_resume": true,
+      "process_started_during_copy": true,
+      "held_birth_and_owner_verified": true,
+      "copy_aborted": true,
+      "final_absent": true
+    },
+    "id": "T42"
+  },
+  {
+    "name": "actual_ntfs_disk_full_during_streaming_copy",
+    "status": "PASSED",
+    "evidence": {
+      "no_mock": true,
+      "real_local_fixed_ntfs_volume": true,
+      "final_absent": true,
+      "actual_write_failed": true,
+      "partial_marked": true
+    },
+    "id": "T45"
+  },
+  {
+    "name": "source_and_destination_replacement_denied_while_copy_handles_held",
+    "status": "PASSED",
+    "evidence": {
+      "destination_replacement_denied": true,
+      "source_mutation_denied": true,
+      "original_identity_retained": true
+    },
+    "id": "T22"
+  },
+  {
+    "name": "old_generation_transfer_never_mutates_recreated_root",
+    "status": "PASSED",
+    "evidence": {
+      "old_identity_rejected": true,
+      "missing_root_refused": true,
+      "actual_root_recreated": true,
+      "recreated_root_unchanged": true,
+      "old_generation_mutation": false
+    },
+    "id": "T65"
+  }
+]

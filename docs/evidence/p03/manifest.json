@@ -888,6 +888,46 @@
       "path": "completion-b04a766/windows-11-arm/run-summary.json",
       "sha256": "45613a53e658f71dd8dedd980db749329b7c37b77c001d5ba55771d61848a079",
       "size": 553
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/acl-manifests.json",
+      "size": 73527,
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/capabilities.json",
+      "size": 760,
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/command-boundary.json",
+      "size": 3732,
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/run-summary.json",
+      "size": 553,
+      "sha256": "07ba5612351113dfb3eb10cd0f168523c11a3ecc9b49a6fb58dff5f125ce4bed"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/acl-manifests.json",
+      "size": 73527,
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/capabilities.json",
+      "size": 760,
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/command-boundary.json",
+      "size": 3732,
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/run-summary.json",
+      "size": 552,
+      "sha256": "f9a09f2edf75891eb302329454b5043ddbbf4edc00ddda6506097b0abb668747"
     }
   ],
   "tested_sources": [
@@ -1411,6 +1451,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38852271708",
       "result": "DONE",
       "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+    },
+    {
+      "tested_commit": "f4c460336f0c7878c93409af6dc1349d4bc8a2a5",
+      "run_id": 38865143592,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38865143592",
+      "result": "PASSED",
+      "note": "Both actual Windows targets passed. A later production UI launch revision correction and lab changes require final matching-source retention."
     }
   ],
   "production_acceptance_scenarios_passed": 0,

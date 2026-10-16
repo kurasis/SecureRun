@@ -1,0 +1,24 @@
+{
+  "product_performance_gate_claimed": false,
+  "metrics": {
+    "manager_cpu_seconds": 0.46875,
+    "children_cpu_seconds": 2.828125,
+    "live_webview_cpu_delta_seconds": 0.375,
+    "webview_cpu_attribution_complete": false,
+    "duration_ms": 60264,
+    "cpu_percent": 1.3676744890220427,
+    "cpu_denominator_logical_processors": 4,
+    "average_working_set_bytes": 189992045,
+    "peak_working_set_bytes": 356196352,
+    "samples": 224,
+    "webview_processes": 6,
+    "peak_process_count": 9,
+    "includes_exited_child_cpu": true,
+    "job_group_complete": true,
+    "target_and_engine_processes_excluded": true
+  },
+  "reference_environments": 0,
+  "result": "PASSED",
+  "schema": 1,
+  "native_measurement_fixture_only": true
+}

@@ -864,6 +864,46 @@
       "path": "investigation-b04a766-repeat/windows-2025/standard-user.json",
       "size": 430,
       "sha256": "84ef859f8ffc15a73dd4038b0208c37622fddcba3cce45cac5b77ccb83b15274"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "890a0bd06f31114f8fb8c1ad2ef8b9e23537bc68fc85de5eef2f35a2d268ed52"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "bbdef1c521872bc5676c5cd2c9962f0974d165c8bfc83c63bad0d1cf9c95aa87"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "7fa182851349f561c2e16cc5c289548a4ece88b4a8ebfb5fcb9e8a3ef67bc0f0"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "8fca46b9cf705c959b6eaf6c1c89dff2cfc85ec9766214b6a40e3d429d5389e2"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "6833c0b9f6ebfd86072ace43c17a9ceea9c386f587cd731647deb73a1cfb9e25"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "b47aab57e870f0a7b651dcea575433399ddbef767f35550dbe9b2b905b6f14e0"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "3d3cdf5cc9e90adddc9e70e7aab19ee536352a93a8801e555257d3aaa9191e1e"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "7760389b07b6e9ea60e03459b9dc8e122387daf074b1432632d1e87ec20b8212"
     }
   ],
   "tested_sources": [
@@ -1205,6 +1245,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38852853178",
       "result": "PASSED",
       "note": "Clean VM repeat passed both targets at the unchanged commit and original exit criterion. Earlier startup failure remains historical with undetermined cause."
+    },
+    {
+      "tested_commit": "f4c460336f0c7878c93409af6dc1349d4bc8a2a5",
+      "run_id": 38865145944,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38865145944",
+      "result": "PASSED",
+      "note": "Both actual Windows targets passed. A later production UI launch revision correction and lab changes require final matching-source retention."
     }
   ]
 }

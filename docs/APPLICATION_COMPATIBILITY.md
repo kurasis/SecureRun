@@ -8,9 +8,9 @@ compilation alone do not establish compatibility.
 
 | Application | Exact package version | Architectures | Required actual workflow | Current result |
 |---|---|---|---|---|
-| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Blocked: Server focus failed; exact-provider focus recheck pending |
-| 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Blocked: prior CLI exit failed; GUI-worker recheck pending |
-| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: Server main request/profile isolation passed; remaining browser workflows and ARM pending |
+| Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Blocked: Scintilla UIA provider absent on both; verified native control/keyboard recheck pending |
+| 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
+| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: main request/profile isolation passed on both in 38826425388; child action failed, protocol/content-sandbox proof pending |
 
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated

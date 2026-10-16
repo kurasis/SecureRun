@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `aa5b8f5257aafcbe24fbe1e35045d87806d10a31`.
+Current runtime/lab candidate: `2aef3c7e895418c1af11c055bee35e4113b76b19`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -59,6 +59,7 @@ Documentation-only descendants do not replace the required tested source.
 | P07 historical `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), both targets passed; final matching source pending |
 | P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
 | P09 Server reference workload | [38872735865](https://github.com/kurasis/SecureRun/actions/runs/38872735865), `be0b4c7`: ten environments, 10000 files, 60200 ms/234 samples, 93 UI assertions. Startup 5210.3185 ms and CPU 1.090117483% deviated; average working set 228568370 bytes met target. Four mandatory cases failed; ARM cancelled. |
+| P09 latest Server full workload | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585), `aa5b8f5`: 21 native cases and 95 UI assertions passed, including exact reviewed Save and all editor/archive/browser cases. Only the dependent transfer/lifecycle case failed: ProgramData export was correctly refused. Ten environments/10000 files/60118 ms; startup 4008.2433 ms and CPU 1.2475397684% deviated, average working set 230728418 bytes met target. ARM completed its full measurement and 95 UI assertions but failed sensitive export and browser welcome under Shell_SystemDialog. |
 | P09 browser diagnostic | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124), `784a4c9`: all four real cases passed on both targets; effective own-sandbox level 9. ARM exercised two bounded clipboard-busy waits. Diagnostic only; normal manager/workload gates remain. |
 | P09 historical full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695): ARM completed ten environments, 10000 files, 60135 ms/223 samples of complete-job measurement and 93 UI assertions. Startup 2616.9734 ms and average working set 243431929 bytes met targets; CPU 1.143244435% deviated. Six mandatory cases failed; Server cancelled. Final matching full run pending. |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
@@ -238,6 +239,33 @@ foreground rejection can reacquire focus before typing; no partial input,
 Enter or protocol action is replayed. Both targets subsequently passed all four in the same diagnostic matrix at
 `784a4c9`, run 38878700124, including effective level 9. The complete final-source
 manager/workload gate remains pending.
+
+At `aa5b8f5`, Server passed the native reviewed diagnostic Save in both focused
+38879930769 and full 38879931585 runs. Both passed 95 UI assertions, including
+actual imported-file selection. The full run also passed all official editor,
+archive and four browser cases. The only failed case was the UI transfer/lifecycle
+sequence: its folder picker selected the private ProgramData fixture, and the
+production export guard correctly returned DESTINATION_SENSITIVE_SCOPE. No output
+or downstream lifecycle success is inferred. The current lab selects a unique
+ordinary owner-profile output folder, as the proven P07 lab does; the production
+sensitive-destination guard is unchanged. It also checks the actual UI Complete /
+OBSERVED state without an error before requiring a real file and matching SHA-256.
+Both runners' 889 original reviewed JSON files are retained with exact hashes.
+
+ARM at the same source also positively saved the exact reviewed diagnostic bytes
+and passed all 95 UI assertions in both runs. The full run completed ten
+environments/10000 files/60100 ms/223 complete-job samples: startup 2872.8287 ms
+and average working set 239241041 bytes met target; CPU 1.2869004001% deviated.
+It passed 16 native cases before the same sensitive export refusal and a separate
+browser welcome failure: the physical point belonged to PickerHost's exact
+Shell_SystemDialog surface. The owner controller acknowledged preparation but
+found no eligible visible window through its existing lookups. The current
+fixture adds this exact class to bounded discovery and the existing scoped Hide
+branch. Same-user ownership, protected Microsoft installation/signature, exact
+initial PID/creation time, no replacement enrollment, actual invisibility and
+subsequent target point ownership remain required. No process is terminated.
+The focused ARM run also failed startup UIA navigation; full startup UIA passed.
+Neither failure is waived or inferred corrected without a fresh result.
 
 Final matching editor save, all browser cases, actual manager keyboard and the
 complete diagnostic/export/transfer/lifecycle UI sequence remain mandatory.

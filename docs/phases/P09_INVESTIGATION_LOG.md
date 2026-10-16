@@ -945,3 +945,35 @@ combobox by its existing fixed automation ID, collapses it and verifies Collapse
 before minimizing Settings. This is an ordinary action on the already owned
 Settings control and adds no window/process permission. Windows must confirm
 whether the outstanding PickerHost surfaces and physical input are corrected.
+
+
+### Reviewed Save passes; ordinary export destination required
+
+At `aa5b8f5`, Server focused 38879930769 and full 38879931585 both saved the
+exact reviewed minimized bytes and passed 95 UI assertions. The full run passed
+21 native cases, including actual editor/archive and all four browser workflows.
+The only failed case was the dependent transfer/lifecycle sequence. Its picker
+selected the lab-private ProgramData folder, and the native guard correctly
+refused DESTINATION_SENSITIVE_SCOPE. The UI exposed that exact typed reason.
+The test now selects a unique ordinary owner-profile folder and observes actual
+UI Complete / OBSERVED without an error before checking the real file and its
+SHA-256. Production destination guards are unchanged. No downstream lifecycle
+success is claimed from the failed run. Original JSON and hashes are retained;
+ARM and final matching-source results remain pending.
+
+
+### The second initial PickerHost surface is Shell_SystemDialog
+
+Both ARM `aa5b8f5` runs positively saved exact reviewed bytes and passed 95 UI
+assertions. The full run completed the ten-environment/10000-file/60-second
+workload. In addition to the sensitive export refusal, browser welcome failed a
+real physical point guard: the hit belonged to WINDOWS_PICKER_HOST with exact
+class Shell_SystemDialog. The initial-owner controller acknowledged preparation
+but discovered no eligible visible component window through its existing bounded
+lookups. The lab now queries that exact class and uses the same initial-shell
+Hide branch as Shell_SystemDim, only after existing same-user, protected Microsoft
+image/signature and enrolled PID/creation-time guards. Actual invisibility and
+target point ownership still must pass. New process identities are never enrolled
+during product execution; no process is terminated. Full startup UIA passed;
+focused startup UIA failed with no accessible navigation and remains a real
+historical failure. The fresh matching-source result is mandatory.

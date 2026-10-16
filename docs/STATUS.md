@@ -15,13 +15,21 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Requested scope: full P09.
 | P09 | IN_PROGRESS — final native product gate pending | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10–P12 | NOT_STARTED | Depend on P09 |
 
-Current P09 source candidate: `aa5b8f5257aafcbe24fbe1e35045d87806d10a31`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
+Current P09 source candidate: `2aef3c7e895418c1af11c055bee35e4113b76b19`, [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 Authenticated GitHub access recovered after a temporary credential expiry; all
 prepared reports/evidence were pushed. Both targets passed all four browser-only cases with effective sandbox level 9
 at `784a4c9`, run 38878700124; both targets passed actual manager keyboard/UIA and
-editor edit/Save As at `9df8149`. ARM positively saved the exact reviewed diagnostic bytes at `96159c8`, while
-Server failed the older input sequence. Final native Save, its dependent UI
-sequence and complete matching final-source gates remain pending. P09 is not DONE.
+editor edit/Save As at `9df8149`. ARM positively saved the exact reviewed diagnostic bytes at `96159c8`; Server
+subsequently passed that exact Save at `aa5b8f5` in both focused and full runs.
+Server full run 38879931585 passed 21 native cases and 95 UI assertions; its only
+failed case selected the private ProgramData fixture for export and was refused
+with DESTINATION_SENSITIVE_SCOPE. The current fixture selects a fresh ordinary
+owner-profile folder and observes actual UI completion before hashing output.
+ARM also passed that exact Save and all 95 UI assertions in both runs; full
+measurement completed, but an initial PickerHost Shell_SystemDialog surface
+blocked browser welcome. The lab now discovers that exact class under the same
+initial-process identity and trust guards. Complete matching final-source gates
+remain pending. P09 is not DONE.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

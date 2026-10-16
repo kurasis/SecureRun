@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "product": "SecureRun 0.3.0",
+  "events": [
+    {
+      "action": "LAUNCH",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "d35f3f11-68c7-4f76-8b0c-9fa0c57b7e44",
+      "unix_ms": 1792144609185
+    },
+    {
+      "action": "REGISTER",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "75544e21-3505-4675-a5ad-1ce87d1c2047",
+      "unix_ms": 1792144592972
+    },
+    {
+      "action": "POLICY_APPLY",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "65e7d22a-5bb2-4deb-98fc-15f8379d9d63",
+      "unix_ms": 1792144503072
+    },
+    {
+      "action": "STOP",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "d302041c-729a-41da-9085-178ca324b0d9",
+      "unix_ms": 1792144484397
+    },
+    {
+      "action": "POLICY_QUEUE",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "e7c9524d-86d7-462a-8d58-76a89187527c",
+      "unix_ms": 1792144481991
+    },
+    {
+      "action": "RENAME",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "ffb178fe-9c23-44a4-8b2b-56de610711d7",
+      "unix_ms": 1792144427966
+    },
+    {
+      "action": "RENAME",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "a0c8821f-0066-4693-b3ca-3178492d7475",
+      "unix_ms": 1792144426245
+    },
+    {
+      "action": "RENAME",
+      "outcome": "OBSERVED",
+      "diagnostic_id": "d333770a-74a1-4614-a969-35ba5530dd46",
+      "unix_ms": 1792144423873
+    }
+  ],
+  "engine_access_events_available": false
+}

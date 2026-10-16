@@ -635,7 +635,12 @@ impl NativeEngine {
     fn new(manager_pid: u32, manager_birth: u64) -> R<Self> {
         // This checks held OS identities, protected SCM/component configuration and
         // the actual driver response. It does not invent a service process birth.
-        let observed = observe(manager_pid, manager_birth);
+        // Authenticate once per operation and retain those exact no-write/no-delete
+        // objects through context observation and execution. Nothing survives into
+        // another mutation; current SCM, DACL, driver and contexts are rechecked.
+        let trusted = discover().map_err(|_| "MANAGER_CONTEXT_UNSAFE")?;
+        let api = Api::load(&trusted.home).map_err(|_| "MANAGER_CONTEXT_UNSAFE")?;
+        let observed = observe_retained(manager_pid, manager_birth, Some((&trusted, &api)));
         if observed.trust != "VERIFIED"
             || observed.reason != "OBSERVED"
             || observed.manager_context != Context::Unboxed
@@ -643,8 +648,6 @@ impl NativeEngine {
         {
             return Err("MANAGER_CONTEXT_UNSAFE");
         }
-        let trusted = discover()?;
-        let api = Api::load(&trusted.home)?;
         if api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed
             || api.context(manager_pid) != Context::Unboxed
         {

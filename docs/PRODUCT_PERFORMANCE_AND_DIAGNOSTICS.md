@@ -97,3 +97,10 @@ Readonly control eligibility refreshes every 14 seconds, within its unchanged
 15-second validity; process activity still uses complete 1.7-second native
 observations. Slow/failed refreshes become Unknown. Every action repeats full
 current native guards. These changes require fresh full-workload measurements.
+
+Native operation setup retains its once-authenticated immutable component objects
+through full context observation and execution, avoiding two immediate hash/
+signature passes over the same protected bytes in one operation. Every new
+operation still authenticates independently. Box snapshot byte accounting is
+incremental with the exact same compact-JSON bound; no native checks or fields
+are skipped. Fresh reference measurements are required.

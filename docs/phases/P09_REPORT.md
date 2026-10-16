@@ -552,3 +552,13 @@ only bounded Application Error/WER records for an exact known component list,
 retaining whitelisted module kinds and numeric exception codes. It changes no
 error-reporting, firewall, Defender, engine or OS security setting. This is
 optional fault diagnosis, never a passing containment result.
+
+NativeEngine construction authenticated and released component objects during a
+full observation, then immediately authenticated them again for that same
+operation. It now authenticates once and retains those exact no-write/no-delete
+objects while repeating the existing full SCM/DACL/driver/context/box observation
+and operation guards. No trust cache crosses operations. Complete box snapshots
+also keep their exact prior JSON byte limit with incremental item lengths;
+repeated serialization of every previous box is removed. An independent full
+serializer oracle tests Unicode/escapes, exact-limit success and unchanged rows
+on refusal. Native observation content and all response limits remain intact.

@@ -68,7 +68,8 @@ lists include the current tools.
 | Browser-only `784a4c9` | [38878700124](https://github.com/kurasis/SecureRun/actions/runs/38878700124): all four actual cases passed on both, effective content sandbox level 9; diagnostic only |
 | Full `aa5b8f5` | [38879931585](https://github.com/kurasis/SecureRun/actions/runs/38879931585): Server 21 native/95 UI passed, one failed case; ARM 16 native/95 UI passed before two failed cases and abort |
 | Focused `aa5b8f5` | [38879930769](https://github.com/kurasis/SecureRun/actions/runs/38879930769): Server 20 native/95 UI passed; ARM 14 native/95 UI passed, with startup UIA, export destination and browser welcome failures |
-| Current full/focused | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690) / [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): results pending |
+| First full `217f550` | [38885567690](https://github.com/kurasis/SecureRun/actions/runs/38885567690): ARM refused environment four with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; no full sample. Server pending. |
+| Current fresh full/focused | [38887488001](https://github.com/kurasis/SecureRun/actions/runs/38887488001) / [38885566833](https://github.com/kurasis/SecureRun/actions/runs/38885566833): results pending |
 | Final P03–P08 | Matching exact-source regressions pending. Historical successes remain checksum-bound historical evidence |
 
 Both `aa5b8f5` runners positively saved the exact reviewed diagnostic JSON through
@@ -94,6 +95,13 @@ exact committed-byte hashes. Detailed earlier findings, failed trials, cancellat
 reasons and the prior report snapshot remain in the
 [investigation log](P09_INVESTIGATION_LOG.md) and manifest history. No failed,
 cancelled, diagnostic-only or earlier-source result closes the final gate.
+
+The first full `217f550` ARM attempt refused environment four before the reference
+workload. Read-only CIM observed WerFault without a verified component association;
+no cause is inferred. No reporter is killed, trusted or exempted. Its original
+JSON is retained, and a fresh full matrix repeats the unchanged exact source at
+`verify/p09-217f550`. This pin is a test candidate, not a completed gate. The
+focused workflow and final exact-source P03–P08 regressions remain required.
 
 ## Measured budgets and remaining risks
 

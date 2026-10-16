@@ -1287,3 +1287,15 @@ Complete / TRANSFER_COMPLETED_UNTRUSTED label, no UI error, real output bytes an
 SHA-256 equality. No production code or guard changed. Runs 38884281687 and
 38884280563 were cancelled as superseded by this known assertion correction;
 they cannot close a gate. Fresh runs use the corrected exact source.
+
+
+## First full 217f550 ARM attempt refuses environment four
+
+Run 38885567690 stopped ARM at SEEDING_ENVIRONMENT_04 with
+DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. Read-only CIM observed WerFault without a
+verified target association; fixed component logs had no corresponding event.
+No component cause is inferred and no full reference sample exists. Original
+reviewed JSON and hashes are retained. No reporter is killed/trusted/exempted.
+Fresh full matrix 38887488001 repeats exactly unchanged `217f550` on the immutable
+candidate pin `verify/p09-217f550`. This is a fresh VM retry, not a waived failure
+or successful gate; focused and final matching regressions remain required.

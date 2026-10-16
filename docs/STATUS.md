@@ -30,6 +30,11 @@ measurement completed, but an initial PickerHost Shell_SystemDialog surface
 blocked browser welcome. The lab now discovers that exact class under the same
 initial-process identity and trust guards. Complete matching final-source gates
 remain pending. P09 is not DONE.
+First full `217f550` ARM attempt 38885567690 refused environment four with
+DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED and an unassociated WerFault. No full ARM sample
+exists for that attempt. Fresh full matrix 38887488001 uses the unchanged exact
+source on `verify/p09-217f550`; Server/focused results and final regressions remain
+pending. No reporter is killed, trusted or exempted.
 
 Historical P08 tested runtime: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`. P03–P08 passed on this exact commit.
 Reviewed original JSON and binary provenance are retained with checksums. Failed

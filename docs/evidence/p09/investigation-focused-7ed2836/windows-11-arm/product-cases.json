@@ -1,0 +1,37 @@
+[
+  {
+    "evidence": {
+      "no_recursive_data_deletion": true,
+      "completed_definition_count": 0,
+      "retained_diagnostics": 30,
+      "root_data_retained": true,
+      "all_successful_definitions_retired": true,
+      "synthetic_reports_unchanged": true,
+      "retention_limit": 256
+    },
+    "status": "PASSED",
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence"
+  },
+  {
+    "evidence": {
+      "inspector_enabled": false,
+      "environment_count": 4,
+      "performance_exit_gate_claimed": false,
+      "startup_interactive_upper_bound_ms": 3085.7127,
+      "native_window_present_ms": 2523.0032
+    },
+    "status": "PASSED",
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T32",
+    "line": 35,
+    "code": "P09_REAL_PRODUCT_UI_FAILED",
+    "status": "FAILED",
+    "ui_stage": "OVERVIEW",
+    "name": "actual_normal_webview_environment_navigation"
+  }
+]

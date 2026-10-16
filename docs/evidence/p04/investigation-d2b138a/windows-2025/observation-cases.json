@@ -1,0 +1,261 @@
+[
+  {
+    "name": "missing_engine_fail_closed",
+    "id": "T01",
+    "evidence": {
+      "reason": "ENGINE_MISSING",
+      "production_launch_available": false,
+      "context": "UNKNOWN"
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "trusted_installed_components",
+    "id": "T02",
+    "evidence": {
+      "core_version": "5.73.6",
+      "abi": 356912,
+      "driver_running": true,
+      "reason": "OBSERVED",
+      "manager_context": "UNBOXED",
+      "trust": "VERIFIED",
+      "service_running": true,
+      "bridge_context": "UNBOXED"
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "changed_component_rejected_before_loading",
+    "id": "T02",
+    "evidence": {
+      "reason": "COMPONENT_UNTESTED_OR_CHANGED",
+      "native_queries_not_dispatched": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "stopped_service_is_not_ready",
+    "id": "T01",
+    "evidence": {
+      "reason": "ENGINE_SERVICE_STOPPED",
+      "production_launch_available": false
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "fresh_observation_after_service_restart",
+    "id": "T46",
+    "evidence": {
+      "release_evidence": "PINNED_ROUTE_EVIDENCE_ONLY",
+      "fresh_native_query": true,
+      "service_identity_present": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "production_generation_changes_across_actual_restart",
+    "id": "T46",
+    "evidence": {
+      "same_actual_manager_process": true,
+      "observations_queried_fresh": true,
+      "cached_route_evidence_preserved": true,
+      "generation_reconnected": 3,
+      "generation_before": 1,
+      "generation_stopped": 2
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "unavailable_driver_never_reports_idle",
+    "id": "T01",
+    "evidence": {
+      "reason": "DRIVER_UNHEALTHY",
+      "driver_running": false,
+      "lab_unload": "AUTHENTICATED_ORIGINAL_KMDUTIL",
+      "idle_or_launch_authorized": false,
+      "windows_security_settings_modified": false
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "bounded_typed_protocol_and_generation_tests",
+    "id": "T56",
+    "evidence": {
+      "actual_adapter_tests_passed": 53,
+      "old_worker_and_generation_refused": true,
+      "cached_evidence_is_separate": true,
+      "incomplete_enumeration_never_idle": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "optional_paid_capabilities_do_not_invent_entitlement",
+    "id": "T02",
+    "evidence": {
+      "reason": "NO_VERIFIED_ENTITLEMENT_AND_ENFORCEMENT",
+      "provenance": "QUERY_DRV_INFO_LOW32_NOT_CERTIFICATE_CONTENT",
+      "availability": "UNAVAILABLE",
+      "certificate_contents_recorded": false
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "hostile_cwd_path_and_dll_are_not_loaded",
+    "id": "T50",
+    "evidence": {
+      "production_query_succeeded": true,
+      "host_cwd": "OS_SYSTEM32",
+      "path_and_cwd_impostors_ignored": true,
+      "minimal_worker_environment": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "user_writable_installation_refused",
+    "id": "T02",
+    "evidence": {
+      "reason": "COMPONENT_WRITABLE",
+      "component_queries_not_dispatched": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "false_service_installation_metadata_refused",
+    "id": "T02",
+    "evidence": {
+      "reason": "SERVICE_IMAGE_MISMATCH",
+      "impostor_executed": false
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "unowned_configuration_roots_remain_read_only",
+    "id": "T02",
+    "evidence": {
+      "root_identity_present": true,
+      "root_scope": "CURRENT_CALLER_ONLY",
+      "effective_enforcement_claimed": false,
+      "configuration_bytes_unchanged": true,
+      "unowned_read_only": true,
+      "configuration_count": 24
+    },
+    "status": "PASSED"
+  },
+  {
+    "status": "PASSED",
+    "name": "boxed_actual_manager_and_bridge_refuse_controls",
+    "evidence": {
+      "control_or_elevation_dispatched": false,
+      "boxes_observed": 0,
+      "self_relaunch_or_escape_attempted": false,
+      "trust": "VERIFIED",
+      "manager_context": "BOXED",
+      "actual_manager_executed": true,
+      "production_launch_available": false,
+      "stdout_chars": 1168,
+      "bridge_context": "BOXED",
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "native_exit_code": 0
+    },
+    "id": "T58",
+    "observed": {
+      "report": {
+        "control_or_elevation_dispatched": false,
+        "boxes_observed": 0,
+        "self_relaunch_or_escape_attempted": false,
+        "trust": "VERIFIED",
+        "manager_context": "BOXED",
+        "actual_manager_executed": true,
+        "production_launch_available": false,
+        "stdout_chars": 1168,
+        "bridge_context": "BOXED",
+        "reason": "MANAGER_CONTEXT_UNSAFE",
+        "native_exit_code": 0
+      },
+      "exit_code": 43,
+      "report_count": 1,
+      "completed": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "native_and_x86_process_identities_observed",
+    "evidence": {
+      "fixture_pe_machine": "014c",
+      "creation_times_verified": true,
+      "all_session_complete": true,
+      "production_target_launches": 0,
+      "native_and_genuine_x86_pids_present": true
+    },
+    "id": "T36",
+    "observed": {
+      "box_reason": "OBSERVED",
+      "matching_box_count": 1,
+      "reason": "OBSERVED",
+      "box_complete": true,
+      "native_pid_present": true,
+      "x86_pid_present": true,
+      "process_count": 3
+    }
+  },
+  {
+    "status": "PASSED",
+    "name": "boxed_normal_desktop_startup_exits_before_metadata",
+    "evidence": {
+      "control_or_elevation_dispatched": false,
+      "self_escape_attempted": false,
+      "actual_normal_desktop_entrypoint": true,
+      "metadata_profile_opened": false,
+      "unsafe_context_exit": 78
+    },
+    "id": "T58",
+    "observed": {
+      "exit_code": 78,
+      "completed": true
+    }
+  },
+  {
+    "name": "live_process_wrong_birth_cannot_be_attributed",
+    "id": "T07",
+    "evidence": {
+      "wrong_birth_rejected": true,
+      "process_termination_not_implemented": true,
+      "numeric_pid_only_identity_not_used": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "exited_process_identity_is_not_reused",
+    "id": "T07",
+    "evidence": {
+      "held_object_birth_required": true,
+      "completed_process_refused": true,
+      "pid_reuse_not_forced": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "standard_user_same_sid_in_two_actual_sessions",
+    "id": "T36",
+    "evidence": {
+      "windows_logon_policy_changed": false,
+      "production_observation": {
+        "private_identity_or_paths_recorded": false,
+        "production_bridge_context": "UNBOXED",
+        "production_manager_context": "UNBOXED",
+        "same_owner_verified": true,
+        "production_mutations": 0,
+        "status": "PASSED",
+        "simultaneous_session_count": 2,
+        "process_count": 4,
+        "standard_user": true,
+        "all_births_present": true,
+        "activity": "RUNNING",
+        "unowned_read_only": true,
+        "all_session_complete": true
+      },
+      "password_in_argv_or_environment": false
+    },
+    "status": "PASSED"
+  }
+]

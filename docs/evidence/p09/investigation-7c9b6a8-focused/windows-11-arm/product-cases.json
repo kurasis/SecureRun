@@ -1,0 +1,58 @@
+[
+  {
+    "id": "T32",
+    "evidence": {
+      "synthetic_reports_unchanged": true,
+      "retained_diagnostics": 30,
+      "no_recursive_data_deletion": true,
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "all_successful_definitions_retired": true
+    },
+    "status": "PASSED",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence"
+  },
+  {
+    "id": "T32",
+    "evidence": {
+      "performance_exit_gate_claimed": false,
+      "startup_interactive_upper_bound_ms": 4976.0991,
+      "native_window_present_ms": 3895.0783,
+      "environment_count": 4,
+      "inspector_enabled": false
+    },
+    "status": "PASSED",
+    "name": "normal_manager_startup_diagnostic_only"
+  },
+  {
+    "id": "T32",
+    "evidence": {
+      "real_backend": true,
+      "normal_production_binary": true,
+      "ten_owned_environments": false,
+      "mock_state": false
+    },
+    "status": "PASSED",
+    "name": "actual_normal_webview_environment_navigation"
+  },
+  {
+    "id": "T32",
+    "evidence": {
+      "permanent_replay_tombstone": true,
+      "policy_and_generation_unchanged": true,
+      "metadata_only": true,
+      "actual_product_ui": true
+    },
+    "status": "PASSED",
+    "name": "metadata_rename_preserves_identity_and_never_replays"
+  },
+  {
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "line": 5,
+    "status": "FAILED",
+    "id": "T32",
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "exception_type": "System.Management.Automation.RuntimeException"
+  }
+]

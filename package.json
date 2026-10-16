@@ -9,6 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/ui_state.test.ts",
+    "test:product": "node --experimental-strip-types --test tests/product_ui.test.ts",
     "tauri": "tauri"
   },
   "dependencies": { "@tauri-apps/api": "2.12.3", "react": "19.3.0", "react-dom": "19.3.0" },

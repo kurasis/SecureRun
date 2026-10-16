@@ -1,5 +1,15 @@
 # P08 — Lifecycle, cleanup and recovery
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893340716](https://github.com/kurasis/SecureRun/actions/runs/38893340716).
+Both targets passed all 38 actual lifecycle/recovery cases, with zero failures or actor failures. This includes interruption, native confirmation, generation, stale-root and unsafe-hook refusal checks.
+All earlier dependencies passed on the same source. The
+[manifest](../evidence/p08/manifest.json) binds original reports and every
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
+the original completion and historical regressions.
+
+
 Status: DONE. Scope is P08 only. Matching P03–P07 regressions passed.
 
 Runtime source: `74d86db6dc883e692dfc04c8185eee790bdcf0a9`.

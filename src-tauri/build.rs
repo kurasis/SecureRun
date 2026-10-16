@@ -12,6 +12,7 @@ fn main() {
                 "prepare_transfer",
                 "get_operation",
                 "diagnostic_summary",
+                "product_request",
                 "policy_request",
                 "control_request",
                 "files_request",

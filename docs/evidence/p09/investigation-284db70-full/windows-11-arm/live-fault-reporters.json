@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "readonly_cim_available": true,
+  "records": [
+    {
+      "associated_component_kind": "SandboxieRpcSs.exe",
+      "reporter_kind": "WerFault.exe",
+      "cim_target_present": true,
+      "association_authorizes_no_action": true
+    }
+  ],
+  "termination_dispatched": false,
+  "raw_arguments_paths_and_ids_retained": false,
+  "os_error_reporting_modified": false
+}

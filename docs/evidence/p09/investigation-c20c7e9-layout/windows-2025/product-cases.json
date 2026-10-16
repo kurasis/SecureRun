@@ -1,0 +1,118 @@
+[
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "evidence": {
+      "synthetic_reports_unchanged": true,
+      "no_recursive_data_deletion": true,
+      "all_successful_definitions_retired": true,
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "retained_diagnostics": 2,
+      "root_data_retained": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only",
+    "evidence": {
+      "startup_interactive_upper_bound_ms": 10014.1067,
+      "native_window_present_ms": 5707.1203,
+      "inspector_enabled": false,
+      "environment_count": 1,
+      "performance_exit_gate_claimed": false,
+      "native_startup": {
+        "native_window_created_ms": 8920,
+        "native_observation_ms": 83,
+        "native_before_webview_ms": 90,
+        "webview_memory_target_low": true
+      }
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "actual_normal_webview_environment_navigation",
+    "evidence": {
+      "normal_production_binary": true,
+      "mock_state": false,
+      "real_backend": true,
+      "ten_owned_environments": false
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "evidence": {
+      "actual_product_ui": true,
+      "permanent_replay_tombstone": true,
+      "policy_and_generation_unchanged": true,
+      "metadata_only": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "evidence": {
+      "tab_order_actual": true,
+      "native_invoke_changed_page": true,
+      "real_windows_uia": true,
+      "native_window_dpi": 96,
+      "f6_navigation_actual": true,
+      "accessible_labels_and_roles": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "evidence": {
+      "real_chromium_accessibility_tree": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "actual_native_webview_zoom": true,
+      "os_display_setting_modified": false,
+      "labeled_comboboxes": 3,
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "languages": [
+        "en",
+        "ru"
+      ]
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "evidence": {
+      "production_manager_window_measured": true,
+      "native_dpi_observations": [
+        {
+          "percent": 100,
+          "native_window_dpi": 96
+        },
+        {
+          "percent": 150,
+          "native_window_dpi": 144
+        },
+        {
+          "percent": 200,
+          "native_window_dpi": 192
+        }
+      ],
+      "content_scale_percent": 100,
+      "actual_windows_display_changes": true,
+      "os_security_settings_modified": false
+    }
+  }
+]

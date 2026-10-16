@@ -1,0 +1,109 @@
+[
+  {
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "evidence": {
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "no_recursive_data_deletion": true,
+      "synthetic_reports_unchanged": true,
+      "retained_diagnostics": 20,
+      "all_successful_definitions_retired": true
+    },
+    "status": "PASSED",
+    "id": "T32"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "actual_normal_webview_environment_navigation",
+    "line": 28,
+    "id": "T32",
+    "code": "P09_INSPECTOR_EVALUATION_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "line": 28,
+    "id": "T32",
+    "code": "P09_INSPECTOR_EVALUATION_FAILED"
+  },
+  {
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "evidence": {
+      "real_windows_uia": true,
+      "tab_order_actual": true,
+      "accessible_labels_and_roles": true,
+      "native_invoke_changed_page": true,
+      "native_window_dpi": 96,
+      "f6_navigation_actual": true
+    },
+    "status": "PASSED",
+    "id": "T32"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "line": 28,
+    "id": "T32",
+    "code": "P09_INSPECTOR_EVALUATION_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "line": 5,
+    "id": "T32",
+    "code": "P09_ACCESSIBILITY_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "real_process_activity_update_latency",
+    "line": 28,
+    "id": "T32",
+    "code": "P09_INSPECTOR_EVALUATION_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.PSInvalidCastException",
+    "status": "FAILED",
+    "name": "running_policy_diff_queue_requires_explicit_stopped_apply",
+    "line": 125,
+    "id": "T32",
+    "code": "P09_CASE_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "ten_thousand_files_bounded_ui_and_complete_pagination",
+    "line": 28,
+    "id": "T63",
+    "code": "P09_INSPECTOR_EVALUATION_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "synthetic_argv_and_environment_do_not_enter_manager_logs",
+    "line": 5,
+    "id": "T66",
+    "code": "P09_NATIVE_PICKER_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "native_diagnostic_save_matches_reviewed_minimized_bytes",
+    "line": 5,
+    "id": "T66",
+    "code": "P09_NATIVE_PICKER_FAILED"
+  },
+  {
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "status": "FAILED",
+    "name": "actual_ui_import_export_collision_archive_and_reset_workflow",
+    "line": 5,
+    "id": "T32",
+    "code": "P09_NATIVE_PICKER_FAILED"
+  }
+]

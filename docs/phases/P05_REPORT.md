@@ -1,5 +1,15 @@
 # P05 — policy and safe provisioning report
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893332061](https://github.com/kurasis/SecureRun/actions/runs/38893332061).
+Each target passed 61 adapter tests and 45 applicable native policy/provisioning cases, with zero failures. T52 is explicitly not applicable because the product has no elevation/helper route; OS-current-user profile authority remains mandatory.
+All earlier dependencies passed on the same source. The
+[manifest](../evidence/p05/manifest.json) binds original reports and every
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
+the original completion and historical regressions.
+
+
 Status: DONE. All required P05 outputs and applicable native exit gates passed.
 Dependencies: current P03 and P04 regressions on the same runtime source.
 Implementation source: `a6cdbd1d8c5f3630d7a0b2c1d2426fdd042f5636`.

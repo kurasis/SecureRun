@@ -1,0 +1,27 @@
+name: P09 Windows display scaling discovery
+on:
+  push:
+    branches: ['p09/**']
+    paths: ['.github/workflows/p09-display.yml', 'tools/lab/Test-P09-Display.ps1', 'tools/probe/p09_accessibility.ps1']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  display-provider:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Verify bounded retained Settings controller (fixture only)
+        shell: pwsh
+        run: ./tools/lab/Test-P09-Display.ps1
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p09-display-${{ matrix.runner }}
+          path: artifacts/p09-display/*.json
+          retention-days: 14

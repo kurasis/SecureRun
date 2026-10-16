@@ -1,0 +1,21 @@
+{
+  "standard_user": true,
+  "mode": "accepted",
+  "status": "PASSED",
+  "cases": [
+    {
+      "name": "actual_dispatch_interruption_accepted",
+      "id": "T61",
+      "status": "PASSED",
+      "evidence": {
+        "automatic_replay": false,
+        "real_worker_killed": true,
+        "duplicate_deliveries": 3,
+        "target_executions": 1,
+        "checkpoint": "Accepted",
+        "standard_user": true,
+        "receipt_state": "UNKNOWN"
+      }
+    }
+  ]
+}

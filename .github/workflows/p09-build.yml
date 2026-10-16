@@ -1,0 +1,61 @@
+name: P09 native product build
+on:
+  push:
+    branches: ['p09/**']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tests/product_ui.test.ts', 'tools/lab/Install-P09-Node.ps1', 'tools/lab/Test-P09-Measurement.ps1', 'tools/probe/p09_desktop.cs', '.github/workflows/p09-build.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - id: key
+        shell: pwsh
+        run: '"value=p09-build-${{ matrix.runner }}-${{ hashFiles(''Cargo.lock'', ''crates/**/*.rs'', ''src-tauri/src/**/*.rs'', ''src-tauri/Cargo.toml'') }}" | Out-File $env:GITHUB_OUTPUT -Append'
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ steps.key.outputs.value }}
+          restore-keys: |
+            p09-build-${{ matrix.runner }}-
+            p08-${{ matrix.runner }}-rust190-
+      - name: Build actual product and check native commands
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+          if($LASTEXITCODE -ne 0){throw 'TOOLCHAIN_FAILED'}
+          ./tools/lab/Install-P09-Node.ps1
+          npm run build
+          if($LASTEXITCODE -ne 0){throw 'UI_BUILD_FAILED'}
+          npm run test:product
+          if($LASTEXITCODE -ne 0){throw 'PRODUCT_TESTS_FAILED'}
+          cargo test --locked
+          if($LASTEXITCODE -ne 0){throw 'PORTABLE_NATIVE_TESTS_FAILED'}
+          cargo clippy --locked -p securerun --all-targets -- -D warnings
+          if($LASTEXITCODE -ne 0){throw 'PRODUCT_LINT_FAILED'}
+          npm run tauri -- build --debug --no-bundle
+          if($LASTEXITCODE -ne 0){throw 'PRODUCT_BUILD_FAILED'}
+      - name: Exercise actual kernel job measurement API (fixture only)
+        shell: pwsh
+        run: ./tools/lab/Test-P09-Measurement.ps1 -Manager target/debug/securerun.exe
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p09-measurement-fixture-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p09-build/*.json
+          if-no-files-found: warn
+          retention-days: 14

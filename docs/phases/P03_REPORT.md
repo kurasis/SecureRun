@@ -1,5 +1,16 @@
 # P03 phase report
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893325430](https://github.com/kurasis/SecureRun/actions/runs/38893325430).
+Each target passed 19 foundation tests, 4 native app tests, 3 frontend tests and
+32 actual Windows command-boundary cases with zero engine operations. Both actual
+Windows architectures and the portable job passed. The [manifest](../evidence/p03/manifest.json)
+binds original reports and every protected source, including current lab tools.
+P04–P09 also passed on this exact source; see the [P09 report](P09_REPORT.md).
+The sections below preserve the original completion and historical regressions.
+
+
 Status: DONE. Requested scope: full P03. P01/P02 remain DONE with their original
 retained evidence. All 26 specification documents remain byte-for-byte unchanged.
 This historical report describes the original P03 scope; P04 observation is documented separately.
@@ -136,3 +147,22 @@ The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this p
 laboratories in [run 38763953821](https://github.com/kurasis/SecureRun/actions/runs/38763953821): 19 foundation, 2 normal native, 3 UI and 29 actual command-boundary cases passed.
 The [manifest](../evidence/p03/manifest.json) binds the current source and
 original structured evidence; earlier results above remain historical.
+
+## P09 product regression
+
+Both Windows Server 2025 x64 and Windows 11 ARM64 passed the production regression
+on `ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae`. The immutable structured results
+are retained in the phase manifest. This confirms this phase only; the P09
+product exit gate remains pending.
+
+Run: https://github.com/kurasis/SecureRun/actions/runs/38793638963
+
+P09 regression at `83985827bfb1cb55b1ebdd2071bc0fa8332a83da` passed both targets
+in run `38800451929`. Current production Rust/UI bytes match this validation;
+later P09 diagnostic scripts do not constitute final matching P09 dependency proof.
+
+
+P09 observer/UI regression at `eaab83c8a8a39e2b6ea293d6972b3e0d33b15096`
+passed both targets in Actions `38811673054`: 19 foundation, three normal native,
+three frontend and 32 actual command-boundary cases on each. This covers the
+current production sources. It does not close P09's app or performance gate.

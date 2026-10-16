@@ -1,0 +1,21 @@
+﻿{
+    "stage":  "ACTIVATING_SYNTHETIC_BROWSER_DOCUMENT",
+    "default_input_desktop":  1,
+    "focus_native_hit_kind":  "OTHER_WITHHELD",
+    "code":  "P09_NATIVE_ACCESSIBILITY_FAILED",
+    "helper_per_monitor_dpi_aware":  true,
+    "synthetic_fixture_only":  true,
+    "status":  "FAILED",
+    "real_windows_uia":  true,
+    "mode":  "BROWSER_CHILD",
+    "exception_type":  "System.Management.Automation.RuntimeException",
+    "native_window_dpi":  96,
+    "source_lines":  [
+                         64,
+                         107,
+                         124,
+                         135,
+                         286
+                     ],
+    "owned_window_temporarily_raised":  true
+}

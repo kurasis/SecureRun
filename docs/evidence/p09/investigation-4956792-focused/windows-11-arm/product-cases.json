@@ -1,0 +1,16 @@
+[
+  {
+    "status": "PASSED",
+    "id": "T32",
+    "evidence": {
+      "retention_limit": 256,
+      "root_data_retained": true,
+      "all_successful_definitions_retired": true,
+      "retained_diagnostics": 30,
+      "synthetic_reports_unchanged": true,
+      "completed_definition_count": 0,
+      "no_recursive_data_deletion": true
+    },
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence"
+  }
+]

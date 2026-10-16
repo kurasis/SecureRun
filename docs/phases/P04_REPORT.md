@@ -1,5 +1,15 @@
 # P04 phase report
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893328564](https://github.com/kurasis/SecureRun/actions/runs/38893328564).
+Both native targets passed 61 adapter tests and 19 observation/trust scenarios,
+with zero production mutations or target launches. Matching P03 passed on the
+same source. The [manifest](../evidence/p04/manifest.json) binds the original
+reports and all protected sources. P05–P09 also passed on this exact source; see the [P09 report](P09_REPORT.md).
+The sections below preserve the original completion and historical regressions.
+
+
 Status: DONE. Requested scope: full P04. Dependencies: P02 feasibility and P03
 foundation/IPC, with current P03 native regression for the same final source.
 This historical section describes original P04 scope; current P05 regression is
@@ -139,3 +149,24 @@ The current P08 runtime `74d86db6dc883e692dfc04c8185eee790bdcf0a9` passed this p
 laboratories in [run 38763957687](https://github.com/kurasis/SecureRun/actions/runs/38763957687): 48 adapter tests and 19 native observation cases passed.
 The [manifest](../evidence/p04/manifest.json) binds the current source and
 original structured evidence; earlier results above remain historical.
+
+## P09 product regression
+
+Both Windows Server 2025 x64 and Windows 11 ARM64 passed the production regression
+on `ce6098f1cad4cc36aa1dacaf96aaeb0628c94bae`. The immutable structured results
+are retained in the phase manifest. This confirms this phase only; the P09
+product exit gate remains pending.
+
+Run: https://github.com/kurasis/SecureRun/actions/runs/38793642900
+
+Fresh P09 regression `38802021230` at `d2b138a39acb50e596852eef0b1c1886c40d8ba0`
+passed both targets, including both actual boxed-manager refusal checks and the
+standard-user all-session observations. The earlier ARM timeout is preserved.
+The phase manifest remains provisional until final matching P03/source proof.
+
+
+P09 bounded-observer/UI regression at
+`eaab83c8a8a39e2b6ea293d6972b3e0d33b15096` passed both targets in Actions
+`38811676793`, including real boxed-manager refusal, standard-user all-session
+observation and native trust/context cases. Evidence remains independent of
+P09's application and resource gate.

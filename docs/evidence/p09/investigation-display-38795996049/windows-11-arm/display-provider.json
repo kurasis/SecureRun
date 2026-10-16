@@ -1,0 +1,310 @@
+﻿{
+    "failure_line":  55,
+    "resolution_options":  [
+                               {
+                                   "height":  1080,
+                                   "width":  1920
+                               },
+                               {
+                                   "height":  1050,
+                                   "width":  1680
+                               },
+                               {
+                                   "height":  1200,
+                                   "width":  1600
+                               },
+                               {
+                                   "height":  900,
+                                   "width":  1600
+                               },
+                               {
+                                   "height":  900,
+                                   "width":  1440
+                               },
+                               {
+                                   "height":  768,
+                                   "width":  1366
+                               },
+                               {
+                                   "height":  1024,
+                                   "width":  1280
+                               },
+                               {
+                                   "height":  800,
+                                   "width":  1280
+                               },
+                               {
+                                   "height":  720,
+                                   "width":  1280
+                               },
+                               {
+                                   "height":  864,
+                                   "width":  1152
+                               },
+                               {
+                                   "height":  768,
+                                   "width":  1024
+                               },
+                               {
+                                   "height":  600,
+                                   "width":  800
+                               }
+                           ],
+    "option_name_codepoints":  [
+                                   [
+                                       49,
+                                       48,
+                                       48,
+                                       37,
+                                       32,
+                                       40,
+                                       82,
+                                       101,
+                                       99,
+                                       111,
+                                       109,
+                                       109,
+                                       101,
+                                       110,
+                                       100,
+                                       101,
+                                       100,
+                                       41
+                                   ],
+                                   [
+                                       49,
+                                       57,
+                                       50,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       49,
+                                       48,
+                                       56,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       54,
+                                       56,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       49,
+                                       48,
+                                       53,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       54,
+                                       48,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       49,
+                                       50,
+                                       48,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       54,
+                                       48,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       57,
+                                       48,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       52,
+                                       52,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       57,
+                                       48,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       51,
+                                       54,
+                                       54,
+                                       32,
+                                       215,
+                                       32,
+                                       55,
+                                       54,
+                                       56
+                                   ],
+                                   [
+                                       49,
+                                       50,
+                                       56,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       49,
+                                       48,
+                                       50,
+                                       52
+                                   ],
+                                   [
+                                       49,
+                                       50,
+                                       56,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       56,
+                                       48,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       50,
+                                       56,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       55,
+                                       50,
+                                       48
+                                   ],
+                                   [
+                                       49,
+                                       49,
+                                       53,
+                                       50,
+                                       32,
+                                       215,
+                                       32,
+                                       56,
+                                       54,
+                                       52
+                                   ],
+                                   [
+                                       49,
+                                       48,
+                                       50,
+                                       52,
+                                       32,
+                                       215,
+                                       32,
+                                       55,
+                                       54,
+                                       56,
+                                       32,
+                                       40,
+                                       82,
+                                       101,
+                                       99,
+                                       111,
+                                       109,
+                                       109,
+                                       101,
+                                       110,
+                                       100,
+                                       101,
+                                       100,
+                                       41
+                                   ],
+                                   [
+                                       56,
+                                       48,
+                                       48,
+                                       32,
+                                       215,
+                                       32,
+                                       54,
+                                       48,
+                                       48
+                                   ]
+                               ],
+    "controls":  [
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  true,
+                         "enabled":  true
+                     },
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Resolution_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  false,
+                         "enabled":  true
+                     },
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Orientation_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  false,
+                         "enabled":  false
+                     }
+                 ],
+    "hresult":  -2146233087,
+    "schema":  1,
+    "exception_type":  "System.Management.Automation.RuntimeException",
+    "display_settings_modified":  true,
+    "actual_dpi":  [
+                       {
+                           "requested_percent":  100,
+                           "observed_window_dpi":  96
+                       },
+                       {
+                           "requested_percent":  150,
+                           "observed_window_dpi":  144
+                       },
+                       {
+                           "requested_percent":  200,
+                           "observed_window_dpi":  192
+                       },
+                       {
+                           "requested_percent":  100,
+                           "observed_window_dpi":  192
+                       }
+                   ],
+    "synthetic_actions_vm_only":  true,
+    "status":  "FAILED",
+    "stage":  "SELECTING_ACTUAL_WINDOWS_SCALE",
+    "scale_options":  [
+                          100,
+                          125,
+                          150,
+                          175,
+                          200
+                      ],
+    "code":  "WINDOWS_DISPLAY_PROVIDER_DISCOVERY_FAILED"
+}

@@ -1,0 +1,17 @@
+{
+  "inspector_enabled": false,
+  "performance_exit_gate_claimed": false,
+  "environment_count": 4,
+  "startup_interactive_upper_bound_ms": 2239.9825,
+  "native_startup": {
+    "native_window_created_ms": 907,
+    "native_before_webview_ms": 164,
+    "native_observation_ms": 154,
+    "webview_memory_target_low": true,
+    "completed_observer_frames": 36,
+    "completed_observer_cpu_seconds": 0.234375,
+    "observer_cpu_attribution_complete": false,
+    "completed_observer_streams": 1
+  },
+  "native_window_present_ms": 493.7845
+}

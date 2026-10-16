@@ -8,6 +8,7 @@ pub mod control;
 pub mod files;
 pub mod lifecycle;
 mod network;
+pub mod product;
 use windows_sys::Win32::{
     System::{Com::CoTaskMemFree, RemoteDesktop::ProcessIdToSessionId},
     UI::Shell::*,
@@ -216,6 +217,16 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
         })
         .collect::<R<Vec<File>>>()?;
     let value = path.to_str().ok_or("PATH_GRAMMAR_UNSUPPORTED")?;
+    // Inert source filenames may contain direction controls. Decode these exact
+    // native path buffers without the stricter engine/INI text grammar; the
+    // source path grammar and held-object equality checks still apply below.
+    let path_text = |data: &[u16]| -> R<String> {
+        if !file_names {
+            return text(data);
+        }
+        let end = data.iter().position(|v| *v == 0).ok_or("PATH_TEXT_BOUND")?;
+        String::from_utf16(&data[..end]).map_err(|_| "PATH_TEXT_INVALID")
+    };
     let mut final_name = [0u16; 1024];
     let n = unsafe {
         GetFinalPathNameByHandleW(
@@ -227,7 +238,7 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
     };
     if n == 0
         || n >= 1024
-        || !text(&final_name)?
+        || !path_text(&final_name)?
             .strip_prefix("\\\\?\\")
             .is_some_and(|s| s.eq_ignore_ascii_case(value))
     {
@@ -235,7 +246,7 @@ fn canonical_validated(path: &Path, sharing: u32, file_names: bool) -> R<Vec<Fil
     }
     let mut long = [0u16; 1024];
     let n = unsafe { GetLongPathNameW(wide(value).as_ptr(), long.as_mut_ptr(), 1024) };
-    if n == 0 || n >= 1024 || !text(&long)?.eq_ignore_ascii_case(value) {
+    if n == 0 || n >= 1024 || !path_text(&long)?.eq_ignore_ascii_case(value) {
         return Err("PATH_ALIAS_UNSUPPORTED");
     }
     for file in &held {
@@ -634,7 +645,12 @@ impl NativeEngine {
     fn new(manager_pid: u32, manager_birth: u64) -> R<Self> {
         // This checks held OS identities, protected SCM/component configuration and
         // the actual driver response. It does not invent a service process birth.
-        let observed = observe(manager_pid, manager_birth);
+        // Authenticate once per operation and retain those exact no-write/no-delete
+        // objects through context observation and execution. Nothing survives into
+        // another mutation; current SCM, DACL, driver and contexts are rechecked.
+        let trusted = discover().map_err(|_| "MANAGER_CONTEXT_UNSAFE")?;
+        let api = Api::load(&trusted.home).map_err(|_| "MANAGER_CONTEXT_UNSAFE")?;
+        let observed = observe_retained(manager_pid, manager_birth, Some((&trusted, &api)));
         if observed.trust != "VERIFIED"
             || observed.reason != "OBSERVED"
             || observed.manager_context != Context::Unboxed
@@ -642,8 +658,6 @@ impl NativeEngine {
         {
             return Err("MANAGER_CONTEXT_UNSAFE");
         }
-        let trusted = discover()?;
-        let api = Api::load(&trusted.home)?;
         if api.context(unsafe { GetCurrentProcessId() }) != Context::Unboxed
             || api.context(manager_pid) != Context::Unboxed
         {
@@ -1284,7 +1298,9 @@ pub fn bounded_request(request: &Request) -> Reply {
         // The request is bounded before dispatch; the same job/output/timeout
         // machinery as observation kills the narrow worker on failure.
         let child = command.spawn().map_err(|_| "BRIDGE_START_FAILED")?;
-        let bytes = capture_child(child, Duration::from_secs(120), Some(data))?;
+        // A full 12-box rollout performs up to 36 fixed architecture-specific
+        // enforcement diagnostics. Keep a finite deadline without dropping checks.
+        let bytes = capture_child(child, Duration::from_secs(600), Some(data))?;
         let reply: Reply = serde_json::from_slice(&bytes).map_err(|_| "POLICY_RESPONSE_INVALID")?;
         if reply.protocol != 1
             || reply.production_launch_available
@@ -1471,11 +1487,22 @@ fn exercise_network(canary: &Canary) -> ChildNetwork {
             };
             if let Ok(socket) = std::net::UdpSocket::bind(bind) {
                 let _ = socket.set_read_timeout(Some(Duration::from_millis(750)));
-                let mut reply = [0u8; 1];
-                sockets[i] = socket.connect(address).is_ok()
-                    && socket.send(b"P").is_ok()
-                    && socket.recv(&mut reply).is_ok_and(|n| n == 1)
-                    && reply == *b"R";
+                if socket.connect(address).is_ok() {
+                    let deadline = Instant::now() + Duration::from_secs(4);
+                    loop {
+                        let mut reply = [0u8; 1];
+                        sockets[i] = socket.send(b"P").is_ok()
+                            && socket.recv(&mut reply).is_ok_and(|n| n == 1)
+                            && reply == *b"R";
+                        // Availability may repeat this fixed benign online probe.
+                        // Offline sends once; independent server observations still
+                        // reject any target traffic, including a lost reply.
+                        if sockets[i] || canary.offline || Instant::now() >= deadline {
+                            break;
+                        }
+                        std::thread::sleep(Duration::from_millis(50));
+                    }
+                }
             }
         }
     }
@@ -1600,7 +1627,7 @@ pub fn run_canary(encoded: &str) -> i32 {
             .err()
             .is_some_and(|e| e.raw_os_error() == Some(5));
         let child_network = spawn_canary_child(&canary)?;
-        let incoming = network::incoming_probe(&canary.incoming_output)?;
+        let incoming = network::incoming_probe(&canary.incoming_output, canary.offline)?;
         let network = exercise_network(&canary);
         let report = CanaryReport {
             member: true,
@@ -1664,11 +1691,12 @@ struct Endpoints {
     lan_address: [u8; 4],
     ports: [u16; 6],
     counts: std::sync::Arc<[std::sync::atomic::AtomicUsize; 6]>,
+    control_counts: [usize; 6],
     stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
     threads: Vec<std::thread::JoinHandle<()>>,
 }
 impl Endpoints {
-    fn new() -> R<Self> {
+    fn new(metadata: &Path, nonce: &str) -> R<Self> {
         use std::sync::{
             Arc,
             atomic::{AtomicBool, AtomicUsize, Ordering},
@@ -1703,13 +1731,11 @@ impl Endpoints {
                     let deadline = Instant::now() + Duration::from_secs(60);
                     while Instant::now() < deadline && !stopped.load(Ordering::SeqCst) {
                         if let Ok((mut socket, _)) = listener.accept() {
-                            let _ = socket.set_read_timeout(Some(Duration::from_secs(1)));
+                            let _ = socket.set_read_timeout(Some(Duration::from_secs(3)));
                             let mut b = [0u8; 1];
-                            if socket.read_exact(&mut b).is_ok()
-                                && b == *b"P"
-                                && socket.write_all(b"R").is_ok()
-                            {
+                            if socket.read_exact(&mut b).is_ok() && b == *b"P" {
                                 counter[i].fetch_add(1, Ordering::SeqCst);
+                                let _ = socket.write_all(b"R");
                             }
                         }
                         std::thread::sleep(Duration::from_millis(10));
@@ -1731,18 +1757,19 @@ impl Endpoints {
                         let mut b = [0u8; 1];
                         if let Ok((1, peer)) = socket.recv_from(&mut b)
                             && b == *b"P"
-                            && socket.send_to(b"R", peer).is_ok_and(|n| n == 1)
                         {
                             counter[i].fetch_add(1, Ordering::SeqCst);
+                            let _ = socket.send_to(b"R", peer);
                         }
                     }
                 }));
             }
         }
-        let endpoints = Self {
+        let mut endpoints = Self {
             lan_address,
             ports,
             counts,
+            control_counts: [0; 6],
             stop,
             threads,
         };
@@ -1756,47 +1783,79 @@ impl Endpoints {
             } else {
                 format!("[::1]:{port}")
             };
-            let mut answer = [0u8; 1];
-            if i < 2 || i == 4 {
-                let mut socket = std::net::TcpStream::connect(&address)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .set_read_timeout(Some(Duration::from_secs(1)))
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .write_all(b"P")
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .read_exact(&mut answer)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-            } else {
-                let socket = std::net::UdpSocket::bind(if i >= 4 {
-                    format!("{lan}:0")
-                } else if i % 2 == 0 {
-                    "127.0.0.1:0".into()
-                } else {
-                    "[::1]:0".into()
-                })
-                .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .set_read_timeout(Some(Duration::from_secs(1)))
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                socket
-                    .send_to(b"P", &address)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?;
-                if socket
-                    .recv_from(&mut answer)
-                    .map_err(|_| "ENDPOINT_POSITIVE_CONTROL_FAILED")?
-                    .0
-                    != 1
-                {
-                    return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
+            let mut stage = "ADDRESS";
+            let deadline = Instant::now() + Duration::from_secs(4);
+            let mut attempts = 0;
+            let result = loop {
+                attempts += 1;
+                let result = (|| -> std::io::Result<()> {
+                    let mut answer = [0u8; 1];
+                    if i < 2 || i == 4 {
+                        let address: std::net::SocketAddr = address
+                            .parse()
+                            .map_err(|_| std::io::Error::from(std::io::ErrorKind::InvalidInput))?;
+                        stage = "TCP_CONNECT";
+                        let mut socket =
+                            std::net::TcpStream::connect_timeout(&address, Duration::from_secs(1))?;
+                        socket.set_read_timeout(Some(Duration::from_secs(1)))?;
+                        socket.set_write_timeout(Some(Duration::from_secs(1)))?;
+                        stage = "TCP_WRITE";
+                        socket.write_all(b"P")?;
+                        stage = "TCP_READ";
+                        socket.read_exact(&mut answer)?;
+                    } else {
+                        stage = "UDP_BIND";
+                        let socket = std::net::UdpSocket::bind(if i >= 4 {
+                            format!("{lan}:0")
+                        } else if i % 2 == 0 {
+                            "127.0.0.1:0".into()
+                        } else {
+                            "[::1]:0".into()
+                        })?;
+                        socket.set_read_timeout(Some(Duration::from_millis(750)))?;
+                        stage = "UDP_SEND";
+                        socket.send_to(b"P", &address)?;
+                        stage = "UDP_READ";
+                        if socket.recv_from(&mut answer)?.0 != 1 {
+                            return Err(std::io::ErrorKind::InvalidData.into());
+                        }
+                    }
+                    stage = "ANSWER";
+                    if answer != *b"R" {
+                        return Err(std::io::ErrorKind::InvalidData.into());
+                    }
+                    Ok(())
+                })();
+                if result.is_ok() || Instant::now() >= deadline {
+                    break result;
                 }
-            }
-            if answer != *b"R" {
+                std::thread::sleep(Duration::from_millis(50));
+            };
+            if let Err(error) = result {
+                // Only endpoint kind, fixed phase and numeric status are retained;
+                // no IP, port, user path or OS error text enters diagnostics.
+                let report = serde_json::json!({"schema":1,"endpoint_index":i,"stage":stage,"attempts":attempts,"os_error":error.raw_os_error(),"timed_out":matches!(error.kind(),std::io::ErrorKind::TimedOut|std::io::ErrorKind::WouldBlock),"positive_control":true,"target_dispatched":false});
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                    .open(metadata.join(format!("endpoint-status-{nonce}.json")))
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                file.write_all(
+                    &serde_json::to_vec(&report).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                )
+                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                file.sync_all()
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                 return Err("ENDPOINT_POSITIVE_CONTROL_FAILED");
             }
         }
+        // Every server increments before replying. A successful final handshake
+        // therefore includes all earlier control attempts in this baseline.
+        // No canary has been dispatched yet. Any later packet counts as target
+        // activity; retries must never be mistaken for offline target traffic.
+        endpoints.control_counts =
+            std::array::from_fn(|i| endpoints.counts[i].load(Ordering::SeqCst));
         Ok(endpoints)
     }
     fn observed(mut self) -> [bool; 6] {
@@ -1806,12 +1865,37 @@ impl Endpoints {
         for thread in self.threads.drain(..) {
             let _ = thread.join();
         }
-        std::array::from_fn(|i| self.counts[i].load(Ordering::SeqCst) > 1)
+        std::array::from_fn(|i| self.counts[i].load(Ordering::SeqCst) > self.control_counts[i])
     }
 }
 impl Drop for Endpoints {
     fn drop(&mut self) {
         self.stop.store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+#[test]
+fn completed_control_attempts_never_hide_later_endpoint_traffic() {
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, AtomicUsize},
+    };
+    for controls in 1..=4 {
+        for target in [None, Some(0), Some(1), Some(2), Some(3), Some(4), Some(5)] {
+            let endpoint = Endpoints {
+                lan_address: [127, 0, 0, 1],
+                ports: [0; 6],
+                counts: Arc::new(std::array::from_fn(|i| {
+                    AtomicUsize::new(controls + usize::from(target == Some(i)))
+                })),
+                control_counts: [controls; 6],
+                stop: Arc::new(AtomicBool::new(false)),
+                threads: Vec::new(),
+            };
+            assert_eq!(
+                endpoint.observed(),
+                std::array::from_fn(|i| target == Some(i))
+            );
+        }
     }
 }
 fn locate_report(root: &Path, leaf: &str) -> R<PathBuf> {
@@ -1856,7 +1940,13 @@ impl NativeEngine {
                 .keys()
                 .chain(expected.keys())
                 .filter(|key| section.get(*key) != expected.get(*key))
-                .cloned()
+                .map(|key| {
+                    if expected.contains_key(key) {
+                        key.clone()
+                    } else {
+                        "UNREVIEWED_KEY_WITHHELD".into()
+                    }
+                })
                 .collect::<std::collections::BTreeSet<_>>()
                 .into_iter()
                 .collect();
@@ -1980,6 +2070,32 @@ impl NativeEngine {
                             )
                         });
                     if !original_helper {
+                        // A short-lived OS reporter can finish while its image is
+                        // being inspected. Waiting on this same held object is
+                        // not authority to terminate an unreviewed live process.
+                        if unsafe { WaitForSingleObject(held.0, 60_000) } == WAIT_OBJECT_0 {
+                            let data = serde_json::json!({"schema":1,"unreviewed_process_completed":true,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
+                            let mut record = OpenOptions::new()
+                                .write(true)
+                                .create_new(true)
+                                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                                .open(self.profile.join("metadata").join(format!(
+                                    "image-status-{}-{}.json",
+                                    diagnostic.id.simple(),
+                                    Uuid::new_v4().simple()
+                                )))
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            record
+                                .write_all(
+                                    &serde_json::to_vec(&data)
+                                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                                )
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            record
+                                .sync_all()
+                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                            continue;
+                        }
                         let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
                         let allowed_name = [
                             "SandboxieRpcSs.exe",
@@ -2004,7 +2120,7 @@ impl NativeEngine {
                         } else {
                             "OTHER_LOCATION"
                         };
-                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location});
+                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location,"unreviewed_process_completed":false,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
                         std::fs::write(
                             self.profile
                                 .join("metadata")
@@ -2026,7 +2142,7 @@ impl NativeEngine {
                 let mut sid = [0u16; 96];
                 let mut session = 0;
                 let mut observed_birth = 0;
-                if unsafe {
+                let query_status = unsafe {
                     (self.api.query)(
                         process.pid as usize as _,
                         0,
@@ -2036,14 +2152,36 @@ impl NativeEngine {
                         &mut session,
                         &mut observed_birth,
                     )
-                } != 0
-                    || text(&name)? != diagnostic.name()
-                    || text(&sid)? != self.owner
-                    || observed_birth != created
-                {
-                    if unsafe { WaitForSingleObject(held.0, 0) } == WAIT_OBJECT_0 {
+                };
+                let same_box = query_status == 0 && text(&name)? == diagnostic.name();
+                let same_owner = query_status == 0 && text(&sid)? == self.owner;
+                let same_birth = query_status == 0 && observed_birth == created;
+                if !same_box || !same_owner || !same_birth {
+                    // Driver membership can disappear before the same retained
+                    // kernel object signals exit. Wait only for that object;
+                    // an unknown live process never authorizes termination.
+                    let waited = unsafe { WaitForSingleObject(held.0, 1000) };
+                    if waited == WAIT_OBJECT_0 {
                         continue;
                     }
+                    let status = serde_json::json!({"schema":1,"operation":"DIAGNOSTIC_MEMBERSHIP","query_status":query_status,"same_box":same_box,"same_owner":same_owner,"same_birth":same_birth,"wait_status":waited,"termination_dispatched":false});
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                        .open(
+                            self.profile
+                                .join("metadata")
+                                .join(format!("scope-status-{}.json", diagnostic.id.simple())),
+                        )
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                    file.write_all(
+                        &serde_json::to_vec(&status)
+                            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                    )
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                    file.sync_all()
+                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                     return Err("DIAGNOSTIC_PROCESS_SCOPE_CHANGED");
                 }
                 // A process can finish after membership validation. Windows
@@ -2097,9 +2235,9 @@ impl NativeEngine {
                     .to_string_lossy()
                     .starts_with("diagnostic-")
             })
-            .take(65)
+            .take(MAX_RETAINED_DIAGNOSTICS + 1)
             .count();
-        if count >= 64 {
+        if count >= MAX_RETAINED_DIAGNOSTICS {
             return Err("DIAGNOSTIC_RETENTION_QUOTA");
         }
         let id = Uuid::new_v4();
@@ -2240,7 +2378,7 @@ impl NativeEngine {
         self.root_leases
             .borrow_mut()
             .retain(|file| identity(file).ok() != diagnostic.root_identity);
-        let endpoints = Endpoints::new()?;
+        let endpoints = Endpoints::new(&self.profile.join("metadata"), &nonce)?;
         let icmp_observer = network::IcmpObserver::new(&nonce)?;
         let dns = network::DnsControl::new(&nonce, &self.profile.join("metadata"))?;
         let raw_host = network::raw_echo(&format!("control-{nonce}"));
@@ -2266,6 +2404,7 @@ impl NativeEngine {
                 .and_then(|v| v.to_str())
                 .ok_or("CANARY_SCOPE_INVALID")?
                 .to_owned(),
+            owned.compiled.offline,
         );
         let canary = Canary {
             box_name: diagnostic.name(),
@@ -2370,6 +2509,7 @@ impl NativeEngine {
             serde_json::from_slice(&data).map_err(|_| "DIAGNOSTIC_REPORT_INVALID")
         })();
         let fenced = self.set(&diagnostic.name(), "Enabled", &["n".into()]);
+        let endpoint_control_counts = endpoints.control_counts;
         let observed = endpoints.observed();
         fenced?;
         let report = result?;
@@ -2382,7 +2522,7 @@ impl NativeEngine {
             self.profile
                 .join("metadata")
                 .join(format!("probe-result-{nonce}.json")),
-            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"server_observed":observed,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
+            serde_json::to_vec(&serde_json::json!({"schema":1,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"server_observed":observed,"endpoint_control_counts":endpoint_control_counts,"incoming_host_observed":incoming_observed,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive}))
                 .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
@@ -2470,7 +2610,7 @@ impl NativeEngine {
         {
             return Err("NETWORK_ENFORCEMENT_FAILED");
         }
-        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
+        let evidence = serde_json::json!({"schema":1,"family":FAMILY,"probe_sha256":probe_hash,"report":report,"raw_host_control":raw_host,"icmp_observer":icmp_observed,"smb_host_positive":smb_positive,"mapped_share_host_positive":mapped_positive,"dns_server_observed":dns.observed(),"unattributed_icmp_echo_delta":network::icmp_sent()?.wrapping_sub(icmp_before),"server_observed":observed,"endpoint_control_counts":endpoint_control_counts,"incoming_host_observed":incoming_observed,"host_file_unchanged":true,"host_registry_unchanged":true});
         std::fs::write(
             self.profile
                 .join("metadata")
@@ -2478,6 +2618,64 @@ impl NativeEngine {
             serde_json::to_vec(&evidence).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
         )
         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        // Completed private canary definitions must not exhaust ordinary box
+        // enumeration. Retire only this worker-generated, fully verified scope;
+        // all root data and durable diagnostic evidence remain retained.
+        self.mutation_context()?;
+        self.validate_root(&diagnostic)?;
+        self.idle(&diagnostic.name())?;
+        let current_global = self.global()?;
+        if current_global != global {
+            return Err("DIAGNOSTIC_SCOPE_CHANGED");
+        }
+        let raw = self.section(&diagnostic.name(), false)?;
+        let effective = self.section(&diagnostic.name(), true)?;
+        let mut fenced = diagnostic.compiled.clone();
+        fenced.section.insert("Enabled".into(), vec!["n".into()]);
+        verify_readback(&fenced, &raw, &effective, &current_global)?;
+        validate_automation(&raw, &effective, &current_global)?;
+        self.set(&diagnostic.name(), "*", &[])?;
+        self.reload()?;
+        if self.exists(&diagnostic.name())? {
+            return Err("DIAGNOSTIC_DEFINITION_STILL_PRESENT");
+        }
+        let saved_report = locate_report(
+            Path::new(&self.root_for(id)),
+            output.file_name().unwrap().to_str().unwrap(),
+        )?;
+        let mut saved_file = lease(&saved_report, false)?;
+        let mut saved_bytes = Vec::new();
+        Read::by_ref(&mut saved_file)
+            .take(4097)
+            .read_to_end(&mut saved_bytes)
+            .map_err(|_| "DIAGNOSTIC_RETAINED_REPORT_CHANGED")?;
+        if saved_bytes.len() > 4096 {
+            return Err("DIAGNOSTIC_RETAINED_REPORT_CHANGED");
+        }
+        let retained: CanaryReport = serde_json::from_slice(&saved_bytes)
+            .map_err(|_| "DIAGNOSTIC_RETAINED_REPORT_CHANGED")?;
+        if fingerprint(&retained) != fingerprint(&report) {
+            return Err("DIAGNOSTIC_RETAINED_REPORT_CHANGED");
+        }
+        let retired = self
+            .profile
+            .join("metadata")
+            .join(format!("probe-retired-{nonce}.json"));
+        let mut retired_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(retired)
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        let retirement = serde_json::json!({"schema":1,"completed":true,"definition_removed":true,"root_data_retained":true,"synthetic_report_unchanged":true});
+        retired_file
+            .write_all(
+                &serde_json::to_vec(&retirement).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+            )
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+        retired_file
+            .sync_all()
+            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
         Ok(fingerprint(&(
             FAMILY,
             probe_hash,

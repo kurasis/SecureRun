@@ -135,8 +135,8 @@ try {
         Case 'T54' 'stop_survives_launch_policy_ineligibility_without_entitlement' {
             Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')))
             $lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box);$lab.Wfp($false)
-            try{$r=Call @{action='LIST'};$v=$r.environments|Where-Object environment_id -eq $e.id;Require (-not $v.launch_eligible -and $v.activity -eq 'RUNNING') 'LAUNCH_NOT_BLOCKED';$stopped=Stop-Owned;$v=$stopped.environments|Where-Object environment_id -eq $e.id;Require ($v.activity -eq 'IDLE' -and $v.complete) 'STOP_DEPENDS_ON_NETWORK_ELIGIBILITY'}finally{$lab.Wfp($true)}
-            @{launch_blocked=$true;stop_completed=$true;paid_entitlement_required=$false;optional_paid_expiry='NOT_APPLICABLE_BASELINE_HAS_NO_PAID_DEPENDENCY'}
+            try{$r=Call @{action='LIST'};$v=$r.environments|Where-Object environment_id -eq $e.id;Require (-not $v.launch_eligible -and $v.activity -eq 'RUNNING') 'LAUNCH_NOT_BLOCKED';$launchReason=$v.launch_reason;Require ($v.reason -eq 'OBSERVED' -and $launchReason -cmatch '^[A-Z][A-Z0-9_]{2,100}$' -and $launchReason -notin @('OBSERVED','CURRENT_PREREQUISITES_SATISFIED','NOT_OBSERVED')) 'LAUNCH_REFUSAL_CAUSE_NOT_SEPARATE';$stopped=Stop-Owned;$v=$stopped.environments|Where-Object environment_id -eq $e.id;Require ($v.activity -eq 'IDLE' -and $v.complete) 'STOP_DEPENDS_ON_NETWORK_ELIGIBILITY'}finally{$lab.Wfp($true)}
+            @{launch_blocked=$true;launch_refusal_reason=$launchReason;process_observation_reason_separate=$true;stop_completed=$true;paid_entitlement_required=$false;optional_paid_expiry='NOT_APPLICABLE_BASELINE_HAS_NO_PAID_DEPENDENCY'}
         }
         Case 'T06' 'background_child_keeps_environment_running' {
             $leaf='background-'+[Guid]::NewGuid().ToString('N')+'.jsonl';$a=New-App $probe.FullName @('background',(Join-Path $Fixture $leaf));$receipt=Launch $a;Start-Sleep -Milliseconds 500;$r=Call @{action='LIST'};$v=$r.environments|Where-Object environment_id -eq $e.id
@@ -199,6 +199,8 @@ try {
     }
 }catch{Case 'T01' 'required_prerequisites' {throw $_}}
 finally{
+    $endpointMetadata=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'SecureRun/metadata'
+    if(Test-Path -LiteralPath $endpointMetadata){Get-ChildItem -LiteralPath $endpointMetadata -Filter 'endpoint-status-*.json' -File|Where-Object Length -LE 8192|Copy-Item -Destination $Fixture}
     Save
     @{status=$(if(@($cases|Where-Object status -eq 'FAILED').Count -eq 0){'PASSED'}else{'FAILED'});standard_user=$true;mode=$Mode;cases=@($cases.ToArray())}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $Fixture ('standard-'+$Mode+'.json')) -Encoding utf8
 }

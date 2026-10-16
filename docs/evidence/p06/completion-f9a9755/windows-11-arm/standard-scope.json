@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "evidence": {
+        "real_held_handles": true,
+        "scope_changed_before_dispatch": true,
+        "numeric_pid_fallback": false,
+        "target_survives": true,
+        "unknown_completion_preserved": true,
+        "concurrent_second_manager_refused": true
+      },
+      "id": "T62",
+      "status": "PASSED",
+      "name": "actual_scope_change_after_process_handles_retained"
+    },
+    {
+      "evidence": {
+        "numeric_pid_fallback": false,
+        "actual_primary_exit_while_held": true,
+        "unrelated_process_survives": true,
+        "retained_handle_prevents_pid_reuse_until_close": true,
+        "completion_waited": true
+      },
+      "id": "T07",
+      "status": "PASSED",
+      "name": "exited_retained_object_does_not_retarget_unrelated_process"
+    }
+  ],
+  "mode": "scope",
+  "status": "PASSED",
+  "standard_user": true
+}

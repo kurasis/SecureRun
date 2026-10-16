@@ -53,7 +53,9 @@ independent from each environment's lifetime generation.
 
 Policy requests use an isolated same-executable worker with an OS-captured parent
 PID/birth, a private bounded inherited pipe, job containment established before
-request release, 16 KiB request/2 MiB response limits and a 120-second deadline.
+request release, 16 KiB request/2 MiB response limits and a 600-second deadline
+for complete multi-box, multi-architecture policy verification. Individual
+observation, launch/control and file-worker bounds remain separate.
 Worker context and original owner are independently checked before profile access.
 Only the fixed protected diagnostic executable can be dispatched, in a fresh
 generated diagnostic scope. Current manager/probe and engine identities bind the
@@ -142,3 +144,55 @@ launch-reservation path. See [safe file workflows](SAFE_FILE_WORKFLOWS.md).
 See [Lifecycle and recovery](LIFECYCLE_AND_RECOVERY.md) for retention, native
 confirmation, generation invalidation and inspect-only recovery. P08 passed on both owner-selected Windows targets; see
 [the phase report](phases/P08_REPORT.md) for exact-source proof and limitations.
+
+## P09 product integration
+
+`product_request` is a normal main-window permission with independent backend
+origin/label authorization. List returns bounded typed manager history and an
+advisory free-volume observation. Preview returns an immutable minimized bundle
+and backend-issued, single-use 60-second ID. Save accepts only that ID and an
+EN/RU picker-language enum; a native picker chooses a new JSON file and the backend
+writes the exact reviewed body. Cancel consumes the preview. No renderer path,
+free-form record/body, executable, URL or filesystem operation is accepted.
+Scale accepts only 100/150/200; Help accepts two fixed official topic enums.
+
+`policy_request` additionally supports Queue/ApplyQueued/DiscardQueued and
+metadata Rename. Queued drafts hold original native selections, current engine
+generation, environment revision/generation and a monotonic deadline. Apply
+consumes the draft before dispatch and revalidates identity and complete stopped
+scope. Rename uses a current display-name/revision/generation comparison and a
+permanent operation tombstone; it changes neither applied permissions nor data.
+
+The native policy/control/file/lifecycle entry points share a bounded, serialized
+request gate. Picker completion is reauthorized after its asynchronous dialog.
+Transfer cancellation remains independent so it can interrupt a held transfer.
+Normal request replies carry generated diagnostic IDs used by the typed history.
+Original operation journals remain authoritative for uncertain outcomes; logging
+failure never converts an unknown action into success. Session-only or unconfirmed
+history persistence is explicitly identified in the product UI.
+
+See [product UX](PRODUCT_UX.md) and
+[minimized diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). P09 native proof
+remains pending until its evidence gate and matching regressions pass.
+
+
+`get_engine_health` accepts an optional unsigned `afterSequence` argument. With
+the current sequence, one outstanding main-window request can wait for a complete
+new observation, bounded to three seconds. Missing/different sequences return
+the same current HealthView immediately; the fixture remains immediate. The
+reservation is bounded before scheduling and released by its guard, and the
+main-window origin is checked again after waiting. It creates no event-emission,
+generic event-listening, path, shell or operation capability.
+
+P09 control environment views retain `reason` for process observation and add
+`launch_reason` for independent launch eligibility. A complete Running/Observed
+scope may have an exact WFP, ownership, policy or unresolved-operation refusal.
+Neither field is authority to launch or Stop; both actions repeat their own full
+native prerequisite and held-scope checks.
+
+Control replies carry `environment_scope`: Register/Launch/Stop observe exactly
+the requested environment; LIST, StopManaged and Reconcile retain the complete
+owned collection (`null` scope). The parent verifies scope and row IDs before
+returning a successful response. This limits response-only availability work;
+namespace, policy, ownership, target identity and actual dispatch/Stop guards
+still run in full. A scoped response never claims another environment is absent.

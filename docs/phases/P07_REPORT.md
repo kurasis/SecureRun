@@ -1,5 +1,15 @@
 # P07 — Safe file workflows and boxed executable references
 
+Current P09 dependency regression: DONE at
+`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
+[run 38893338017](https://github.com/kurasis/SecureRun/actions/runs/38893338017).
+Server passed 28 and ARM passed 29 actual safe-file/boxed-EXE cases, with zero failures or actor failures. Normal/fault binary provenance and staged executable hashes are retained.
+All earlier dependencies passed on the same source. The
+[manifest](../evidence/p07/manifest.json) binds original reports and every
+protected source, including current lab tools. Full P09 also passed on this exact source; see the [P09 report](P09_REPORT.md). The sections below preserve
+the original completion and historical regressions.
+
+
 Status: DONE. Specification: 1.3. Requested scope: complete P07.
 Implementation branch: `p07/safe-files`. Current runtime:
 `bec50c8fa7d0b47c4f05aa6662eeeb24faa18f68`.

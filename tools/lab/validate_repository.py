@@ -144,7 +144,7 @@ def validate(root: Path) -> None:
                 raise ValueError('P03 DONE contradicts native command outcomes')
             if not boundary['real_webview2'] or not boundary['real_native_picker'] or boundary['engine_operations_executed'] != 0:
                 raise ValueError('Missing real P03 boundary/phase separation')
-            if summary['foundation_tests_passed'] < 19 or summary['frontend_tests_passed'] != 3 or summary['normal_native_tests_passed'] != 2 or len(boundary['cases']) != summary['windows_command_cases_passed']:
+            if summary['foundation_tests_passed'] < 19 or summary['frontend_tests_passed'] != 3 or summary['normal_native_tests_passed'] < 3 or len(boundary['cases']) != summary['windows_command_cases_passed']:
                 raise ValueError('P03 required suites did not execute')
             names = {case['name'] for case in boundary['cases']}
             if not {'local_ungranted_webview_denied', 'remote_origin_commands_denied', 'standard_user_token_observed', 'actual_replaced_windows_artifact_retained', 'selection_consumed_once', 'backend_event_has_independent_generations_and_sequence'}.issubset(names):
@@ -373,6 +373,42 @@ def validate(root: Path) -> None:
                 if not path.is_relative_to(root.resolve()):
                     raise ValueError('Unsafe P08 source path')
                 verify_file(path, entry['sha256'], entry['size'])
+
+    p09_path=root/'docs/evidence/p09/manifest.json'
+    if p09_path.exists():
+        p09=json.loads(p09_path.read_text())
+        if p09['phase']!='P09' or p09['result'] not in {'DONE','BLOCKED'} or not re.fullmatch('[0-9a-f]{40}',p09['tested_commit']):
+            raise ValueError('Invalid P09 phase/source')
+        seen=set()
+        for entry in p09['files']:
+            path=(p09_path.parent/entry['path']).resolve()
+            if entry['path'] in seen or not path.is_relative_to(p09_path.parent.resolve()):
+                raise ValueError('Unsafe/duplicate P09 evidence path')
+            seen.add(entry['path']);verify_file(path,entry['sha256'],entry['size'])
+        if p09['result']=='DONE':
+            for phase in range(3,9):
+                dependency=json.loads((root/f'docs/evidence/p{phase:02}/manifest.json').read_text())
+                if dependency['result']!='DONE' or dependency['tested_commit']!=p09['tested_commit']:
+                    raise ValueError('P09 DONE requires matching current P03 through P08 regressions')
+            if p09['url']!=f"https://github.com/kurasis/SecureRun/actions/runs/{p09['run_id']}" or p09['run_id']<=0:
+                raise ValueError('Invalid P09 run provenance')
+            if len(p09['targets'])!=2 or {t['runner'] for t in p09['targets']}!={'windows-2025','windows-11-arm'}:
+                raise ValueError('P09 requires both Windows laboratories')
+            import importlib.util
+            spec=importlib.util.spec_from_file_location('p09_gate',root/'tools/lab/retain_p09_evidence.py')
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            for target in p09['targets']:
+                folder=(p09_path.parent/target['evidence_directory']).resolve()
+                if not folder.is_relative_to(p09_path.parent.resolve()):raise ValueError('Unsafe P09 target directory')
+                for name in ('run-summary.json','standard-product.json','product-cases.json','ui-cases.json','official-applications.json','performance.json','file-workload.json','process-update.json','browser-http-attribution.json','reviewed-diagnostic-example.json'):
+                    if (folder/name).relative_to(p09_path.parent.resolve()).as_posix() not in seen:raise ValueError('P09 required report is not checksum-bound')
+                module.check_target(folder,p09['tested_commit'],'aa64' if target['runner']=='windows-11-arm' else '8664')
+            if {entry['path'] for entry in p09['tested_sources']}!=set(module.source_paths(root)):
+                raise ValueError('P09 source binding does not cover all current product and harness files')
+            for entry in p09['tested_sources']:
+                path=(root/entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):raise ValueError('Unsafe P09 source path')
+                verify_file(path,entry['sha256'],entry['size'])
 
 
 if __name__ == '__main__':

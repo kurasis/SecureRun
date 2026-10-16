@@ -1,0 +1,35 @@
+[
+  {
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "evidence": {
+      "no_recursive_data_deletion": true,
+      "retained_diagnostics": 165,
+      "root_data_retained": true,
+      "retention_limit": 256,
+      "all_successful_definitions_retired": true,
+      "completed_definition_count": 0,
+      "synthetic_reports_unchanged": true
+    },
+    "id": "T32",
+    "status": "PASSED"
+  },
+  {
+    "name": "ten_real_idle_environments_and_populated_box",
+    "evidence": {
+      "actual_files": 10000,
+      "actual_environments": 10,
+      "all_idle": true,
+      "synthetic_only": true
+    },
+    "id": "T32",
+    "status": "PASSED"
+  },
+  {
+    "status": "FAILED",
+    "exception_type": "System.InvalidOperationException",
+    "id": "T32",
+    "name": "normal_manager_startup_and_complete_process_group_idle_budget",
+    "code": "P09_CASE_FAILED",
+    "line": 85
+  }
+]

@@ -1,4 +1,5 @@
 //! Independently declared read-only ABI for the source-pinned native 64-bit engine.
+pub mod live;
 pub mod provisioning;
 use crate::*;
 use sha2::{Digest, Sha256};
@@ -252,6 +253,7 @@ fn birth(h: &Handle) -> R<u64> {
         Ok(((a.dwHighDateTime as u64) << 32) | a.dwLowDateTime as u64)
     }
 }
+#[derive(PartialEq, Eq)]
 struct Service {
     path: PathBuf,
     running: bool,
@@ -350,6 +352,7 @@ fn service(name: &str) -> R<Service> {
     }
 }
 struct Trusted {
+    protected_indices: Vec<usize>,
     home: PathBuf,
     _leases: Vec<File>,
     identity: String,
@@ -383,6 +386,7 @@ fn discover() -> R<Trusted> {
         .iter()
         .find(|t| t["architecture"] == std::env::consts::ARCH)
         .ok_or("ARCHITECTURE_UNTESTED")?;
+    let mut protected_indices = vec![held.len() - 1];
     let mut digest = Sha256::new();
     for entry in target["components"].as_array().ok_or("MANIFEST_INVALID")? {
         let name = entry["name"].as_str().ok_or("MANIFEST_INVALID")?;
@@ -418,9 +422,11 @@ fn discover() -> R<Trusted> {
         signature(&p, &f)?;
         digest.update(hash.as_bytes());
         digest.update(identity(&f)?.as_bytes());
+        protected_indices.push(held.len());
         held.push(f);
     }
     Ok(Trusted {
+        protected_indices,
         home,
         _leases: held,
         identity: format!("{:x}", digest.finalize()),
@@ -768,7 +774,34 @@ impl Api {
     }
 }
 
+fn append_observed_box(
+    boxes: &mut Vec<BoxObservation>,
+    encoded_length: &mut usize,
+    value: BoxObservation,
+    limit: usize,
+) -> R<()> {
+    // Compact JSON arrays are brackets + item bytes + one comma between items.
+    // Keep the exact previous byte bound without serializing every earlier box
+    // again for each append. Fields and all native observations stay unchanged.
+    let item = serde_json::to_vec(&value).map_err(|_| "BRIDGE_PROTOCOL_INVALID")?;
+    let length = encoded_length
+        .checked_add(item.len())
+        .and_then(|n| n.checked_add(usize::from(!boxes.is_empty())))
+        .filter(|n| *n <= limit)
+        .ok_or("BOX_RESPONSE_BOUND")?;
+    boxes.push(value);
+    *encoded_length = length;
+    Ok(())
+}
+
 pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
+    observe_retained(manager_pid, manager_birth, None)
+}
+fn observe_retained(
+    manager_pid: u32,
+    manager_birth: u64,
+    retained: Option<(&Trusted, &Api)>,
+) -> Observation {
     let mut report = Observation::failure("NOT_OBSERVED");
     report.manager_pid = manager_pid;
     report.manager_birth = manager_birth;
@@ -791,7 +824,22 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
         if birth(&parent)? != manager_birth {
             return Err("MANAGER_IDENTITY_CHANGED");
         }
-        let trusted = discover()?;
+        let owned_trusted;
+        let trusted = if let Some((trusted, _)) = retained {
+            // No signature/hash is cached across released file objects. These
+            // retained no-write/no-delete objects pin the authenticated bytes.
+            for index in &trusted.protected_indices {
+                protected(&trusted._leases[*index])?;
+                identity(&trusted._leases[*index])?;
+            }
+            if service("SbieSvc")? != trusted.svc || service("SbieDrv")? != trusted.drv {
+                return Err("ENGINE_SERVICE_IDENTITY_CHANGED");
+            }
+            trusted
+        } else {
+            owned_trusted = discover()?;
+            &owned_trusted
+        };
         report.trust = "VERIFIED".into();
         report.installation_identity = Some(trusted.identity.clone());
         report.service_running = trusted.svc.running;
@@ -804,7 +852,13 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             "SCM_STATUS_ONLY_PROCESS_IDENTITY_UNKNOWN"
         }
         .into();
-        let api = Api::load(&trusted.home)?;
+        let owned_api;
+        let api = if let Some((_, api)) = retained {
+            api
+        } else {
+            owned_api = Api::load(&trusted.home)?;
+            &owned_api
+        };
         let mut version = [0u16; 16];
         let mut abi = 0;
         if unsafe { (api.version)(version.as_mut_ptr(), &mut abi) } != 0 {
@@ -874,11 +928,12 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             Capability {
                 name: "production_launch".into(),
                 availability: Availability::Unavailable,
-                reason: "P05_P06_NOT_IMPLEMENTED".into(),
+                reason: "OBSERVATION_ONLY".into(),
                 provenance: "PHASE_BOUNDARY".into(),
             },
         ];
         let mut ended = false;
+        let mut boxes_encoded_length = 2usize;
         for index in 0..MAX_BOXES as u32 {
             let Some(section) = api.conf(None, None, index | 0x30000000)? else {
                 ended = true;
@@ -897,15 +952,12 @@ pub fn observe(manager_pid: u32, manager_birth: u64) -> Observation {
             if api.conf(Some(&section), Some("Enabled"), 0)?.is_none() {
                 continue;
             }
-            report.boxes.push(api.box_observation(&section));
-            if serde_json::to_vec(&report.boxes)
-                .map_err(|_| "BRIDGE_PROTOCOL_INVALID")?
-                .len()
-                > RESPONSE_LIMIT / 2
-            {
-                report.boxes.pop();
-                return Err("BOX_RESPONSE_BOUND");
-            }
+            append_observed_box(
+                &mut report.boxes,
+                &mut boxes_encoded_length,
+                api.box_observation(&section),
+                RESPONSE_LIMIT / 2,
+            )?;
         }
         report.enumeration_complete = ended && report.boxes.iter().all(|b| b.complete);
         if !ended {
@@ -1122,6 +1174,62 @@ mod native_bounds {
             std::io::stdout()
                 .write_all(&vec![b'A'; RESPONSE_LIMIT + 1024])
                 .unwrap();
+        }
+    }
+}
+
+#[cfg(test)]
+mod observation_encoding_tests {
+    use super::*;
+    #[test]
+    fn incremental_box_bound_matches_actual_json_and_preserves_previous_rows_on_refusal() {
+        let mut boxes = Vec::new();
+        let mut bytes = 2;
+        for (index, text) in [
+            "plain",
+            "quotes\"and\\slashes",
+            "Русский",
+            "line\ncontrol\0",
+        ]
+        .into_iter()
+        .cycle()
+        .take(12)
+        .enumerate()
+        {
+            let value = BoxObservation {
+                name: format!("Box{index}"),
+                owned: false,
+                read_only: true,
+                activity: "UNKNOWN".into(),
+                complete: false,
+                reason: "NOT_OBSERVED".into(),
+                processes: vec![],
+                root: crate::RootObservation {
+                    path: None,
+                    identity: None,
+                    reason: "NOT_OBSERVED".into(),
+                    scope: "UNVERIFIED".into(),
+                },
+                configuration: vec![crate::ConfigurationEntry {
+                    key: "Test".into(),
+                    raw: vec![text.into()],
+                    effective: vec![text.into()],
+                }],
+                configuration_fingerprint: "unknown".into(),
+            };
+            let previous = serde_json::to_vec(&boxes).unwrap();
+            let mut expected = boxes.clone();
+            expected.push(value.clone());
+            let exact = serde_json::to_vec(&expected).unwrap().len();
+            assert_eq!(
+                append_observed_box(&mut boxes, &mut bytes, value.clone(), exact - 1),
+                Err("BOX_RESPONSE_BOUND")
+            );
+            assert_eq!(serde_json::to_vec(&boxes).unwrap(), previous);
+            assert_eq!(bytes, previous.len());
+            append_observed_box(&mut boxes, &mut bytes, value, exact).unwrap();
+            assert_eq!(bytes, exact);
+            assert_eq!(serde_json::to_vec(&boxes).unwrap().len(), exact);
         }
     }
 }

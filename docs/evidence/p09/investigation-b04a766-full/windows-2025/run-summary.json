@@ -1,0 +1,21 @@
+{
+  "engineering_budget_status": "MEASURED_DEVIATION",
+  "workload_mode": "FULL",
+  "synthetic_profiles_only": true,
+  "os_security_settings_modified": false,
+  "result": "FAILED",
+  "build": "release",
+  "manager_binary_sha256": "d89d40974e96e5fc27c149d88bc52a0c2ba91a7815ada2826736774f0c60c96b",
+  "phase": "P09",
+  "browser_sandbox_disabled": false,
+  "pe_machine": "8664",
+  "native_cases_passed": 15,
+  "ui_failed": 0,
+  "real_normal_webview": true,
+  "ui_cases_passed": 88,
+  "elevated_product_helper": false,
+  "standard_user": true,
+  "os_build": 26100,
+  "manager_commit": "b04a7668803fc27bc55a9dfb82eed457c014b60a",
+  "failed": 5
+}

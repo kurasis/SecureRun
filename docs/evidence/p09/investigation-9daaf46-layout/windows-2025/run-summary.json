@@ -1,0 +1,20 @@
+{
+  "real_normal_webview": true,
+  "browser_sandbox_disabled": false,
+  "os_build": 26100,
+  "os_security_settings_modified": false,
+  "manager_binary_sha256": "58a645d3401cbafb9432fe86dbf23d0ceb251c6ee4518b729e4ba25c155ceae2",
+  "standard_user": true,
+  "phase": "P09",
+  "manager_commit": "9daaf464831e43b445a8804dfaa1762cf8ca0c55",
+  "failed": 1,
+  "elevated_product_helper": false,
+  "ui_failed": 0,
+  "pe_machine": "8664",
+  "result": "FAILED",
+  "synthetic_profiles_only": true,
+  "workload_mode": "DIAGNOSTIC_ONLY",
+  "build": "release",
+  "native_cases_passed": 6,
+  "ui_cases_passed": 40
+}

@@ -1,0 +1,172 @@
+{
+  "cases": [
+    {
+      "id": "T49",
+      "name": "trusted_main_scoped_boundary",
+      "passed": true
+    },
+    {
+      "id": "T56",
+      "name": "backend_event_has_independent_generations_and_sequence",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "renderer_cannot_emit_authoritative_state",
+      "passed": true
+    },
+    {
+      "id": "T28",
+      "name": "typed_metadata_draft_never_claims_ready",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "launch_renderer_paths_cannot_bypass_registration",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "application_selection_token_required",
+      "passed": true
+    },
+    {
+      "id": "T66",
+      "name": "diagnostic_renderer_cannot_supply_bundle_or_output_path",
+      "passed": true
+    },
+    {
+      "id": "T66",
+      "name": "diagnostic_preview_capability_cannot_be_forged",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "queued_policy_capability_cannot_be_forged",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "lifecycle_renderer_confirmation_is_not_authority",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "lifecycle_backend_plan_is_not_a_renderer_command",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "file_transfer_raw_paths_rejected",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "file_transfer_selection_token_required",
+      "passed": true
+    },
+    {
+      "id": "T59",
+      "name": "policy_renderer_paths_cannot_bypass_picker",
+      "passed": true
+    },
+    {
+      "id": "T53",
+      "name": "policy_selection_token_required",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "forged_path_and_confirmation_rejected",
+      "passed": true
+    },
+    {
+      "id": "T66",
+      "name": "control_character_label_rejected",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "forged_environment_id_rejected",
+      "passed": true
+    },
+    {
+      "id": "T56",
+      "name": "stale_generation_rejected_at_boundary",
+      "passed": true
+    },
+    {
+      "id": "T61",
+      "name": "launch_command_surface_unavailable",
+      "passed": true
+    },
+    {
+      "id": "T61",
+      "name": "duplicate_ipc_reservation_same_operation",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "unbound_selection_rejected",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "real_backend_native_picker_bound",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "raw_path_cannot_replace_selection_authority",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "engine_file_execution_still_unavailable",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "selection_consumed_once",
+      "passed": true
+    },
+    {
+      "id": "T66",
+      "name": "shared_diagnostics_exclude_secret_canaries",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "standard_user_token_observed",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "local_ungranted_webview_denied",
+      "passed": true
+    },
+    {
+      "id": "T49",
+      "name": "remote_origin_commands_denied",
+      "passed": true
+    },
+    {
+      "id": "T65",
+      "name": "actual_replaced_windows_artifact_retained",
+      "passed": true
+    },
+    {
+      "id": "T66",
+      "name": "local_log_and_shared_bundle_minimized",
+      "passed": true
+    }
+  ],
+  "engine_operations_executed": 0,
+  "phase": "P03",
+  "real_native_picker": true,
+  "real_webview2": true,
+  "remote_command_accepted": false,
+  "remote_probe_started": true,
+  "remote_unexpected_denial": false,
+  "result": "PASSED"
+}

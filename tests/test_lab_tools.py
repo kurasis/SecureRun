@@ -14,6 +14,20 @@ SPEC.loader.exec_module(validator)
 
 
 class IntegrityTests(unittest.TestCase):
+    def test_focused_p09_run_cannot_claim_a_full_gate_even_with_passed_status(self):
+        spec = importlib.util.spec_from_file_location('p09_retainer', ROOT / 'tools/lab/retain_p09_evidence.py')
+        retainer = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(retainer)
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / 'run-summary.json').write_text(json.dumps({
+                'phase': 'P09', 'result': 'PASSED', 'workload_mode': 'DIAGNOSTIC_ONLY',
+            }))
+            for name, data in [('product-cases.json', []), ('ui-cases.json', []), ('standard-product.json', {})]:
+                (folder / name).write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, 'native architecture/source/result'):
+                retainer.check_target(folder, 'a' * 40, '8664')
+
     def test_official_candidate_structure_and_all_outputs(self):
         validator.validate(ROOT)
 
@@ -144,6 +158,15 @@ class IntegrityTests(unittest.TestCase):
                         source.update(sha256=hashlib.sha256(data).hexdigest(), size=len(data))
                 evidence.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ValueError, 'P08 cleanup component pins differ'):
+                validator.validate(copy)
+
+    def test_p09_cannot_close_without_current_lifecycle_regression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            copy=Path(tmp)/'repo'
+            shutil.copytree(ROOT,copy,ignore=shutil.ignore_patterns('.git','artifacts','__pycache__','node_modules','target','dist','gen'))
+            path=copy/'docs/evidence/p09/manifest.json';manifest=json.loads(path.read_text());manifest['result']='DONE';path.write_text(json.dumps(manifest))
+            dependency=copy/'docs/evidence/p08/manifest.json';stale=json.loads(dependency.read_text());stale['result']='BLOCKED';dependency.write_text(json.dumps(stale))
+            with self.assertRaisesRegex(ValueError,'P09 DONE requires matching current P03 through P08 regressions'):
                 validator.validate(copy)
 
 if __name__ == '__main__':

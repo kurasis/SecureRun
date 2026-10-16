@@ -56,10 +56,10 @@ refusal because the desktop never loads engine code; absence of that module neve
 establishes Unboxed. Unknown startup supplies read-only setup; no production profile is
 opened/migrated, no elevation is requested and no self-escape/relaunch occurs.
 
-The normal desktop currently remains observation-only even when context is safe:
-provisioning belongs to P05 and production dispatch to P06. The independently
-compiled P03 metadata fixture remains synthetic, visibly marked and incapable of
-executing engine operations.
+This observation protocol remains read-only. The normal desktop uses separate
+P05 through P08 workers for provisioning, dispatch, file transfer and lifecycle
+operations. The independently compiled P03 metadata fixture remains synthetic,
+visibly marked and incapable of executing engine operations.
 
 ## Identity, completeness and configuration
 
@@ -97,8 +97,10 @@ installation identity changes, context/health transitions, expiry and the Window
 GetTickCount64 versus QueryUnbiasedInterruptTime suspend delta invalidate health.
 The desktop checks host transitions every second, expires observations after 15
 seconds, clears selection leases and increments the persistence connection
-generation. The UI polls every five seconds, rejects older generation/sequence
-views and independently ages displayed activity. Resume/focus invalidates the
+generation. The UI keeps one conditional health read outstanding, rejects older generation/
+sequence views and independently ages displayed activity. Separate production
+control summaries refresh every ten seconds and after managed mutations; their
+eligibility expires after fifteen seconds and cannot cross a health generation. Resume/focus invalidates the
 display before taking another observation. Existing-running versus blocked/unknown
 eligibility remains orthogonal.
 
@@ -117,3 +119,54 @@ The debug executable's --observation-once and bounded six-snapshot
 Their output can contain private roots/configuration/OS identities and must not be
 uploaded as shared logs. CI retains only allowlisted counts, statuses and test
 outcomes, omitting private paths, SIDs, raw arguments/environments and certificates.
+
+## Production operation route and P09 status
+
+The P04 observation flag remains false when service process image/birth is
+unavailable to a standard user. It is not a claim that P05 through P08 cannot
+operate: those workers independently validate protected SCM/component provenance,
+the authenticated original SDK/driver route and actual held manager/worker
+contexts before opening metadata or performing an action. They never invent a
+service birth or control a service process through an unverified PID.
+
+P09 browses owned metadata only with a fresh trusted Unboxed observation. It
+recognizes the basic production route only after an actual policy/control worker
+returns OBSERVED, tied to the current observation generation and a 15-second
+lifetime. Focus, stale observations or refused controls invalidate that UI proof.
+The service-process diagnostic capability remains explicitly unavailable. Every
+operation still performs its independent native authorization and verification.
+
+
+## Bounded continuous read-only observation
+
+P09's passive observer holds authenticated component and ancestor file objects
+for at most sixty seconds. Initial discovery performs the same hash, architecture,
+Authenticode and protected ownership/DACL checks as one-shot observation. While
+those no-write/no-delete handles remain held, each 1.7-second frame checks current
+SCM service/driver status and configuration, held component ownership/DACL/link
+identity, native ABI/version, held manager identity/context, worker context and
+the complete box/process/root/configuration snapshot. It does not reuse a prior
+activity or root snapshot. Rotation authenticates new objects from scratch.
+
+The fixed self-worker accepts only the OS-observed manager PID and birth. It has
+no mutation or renderer-supplied payload, receives only trusted Windows directory
+variables and remains in a one-process, 128 MiB, kill-on-close job. Each newline-
+framed response is bounded to 2 MiB, timestamped and validated against the held
+manager identity; a one-frame queue bounds buffering. First response has a
+20-second bound, later responses four seconds, and the whole stream sixty seconds.
+Early exit, malformed/stale frames, changed SCM or expiry clear availability.
+Generation changes discard pending frames and invalidate selections/handles.
+
+Production mutation workers retain their independent fresh discovery, context,
+policy and target checks. The continuous observer cannot authorize an operation.
+
+
+A conditional `get_engine_health` call may supply its last sequence. If that
+sequence is still current, a single reserved waiter sleeps until a complete new
+snapshot or a three-second deadline. Reservation precedes thread scheduling and
+Drop releases it on completion/cancellation; no backend lock crosses the wait.
+Publication stores the new sequence before notification, so early updates are
+not lost. The invoking window is authorized again before returning. No new
+command, event-bus permission or renderer callback queue is introduced. Every
+1.7-second worker frame still collects the complete live configuration/context/
+root/process snapshot. The actual two-second process-update gate must pass.

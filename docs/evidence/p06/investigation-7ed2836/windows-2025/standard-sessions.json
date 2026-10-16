@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "name": "production_stop_covers_two_actual_windows_sessions",
+      "status": "PASSED",
+      "evidence": {
+        "real_windows_sessions": [
+          0,
+          2
+        ],
+        "os_logon_policy_modified": false,
+        "product_helper": false,
+        "same_owner_verified": true,
+        "processes_after": 0,
+        "processes_before": 4,
+        "stop_waits_completed": true
+      },
+      "id": "T36"
+    }
+  ],
+  "standard_user": true,
+  "mode": "sessions",
+  "status": "PASSED"
+}

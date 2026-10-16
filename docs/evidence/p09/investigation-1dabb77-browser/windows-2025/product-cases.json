@@ -1,0 +1,73 @@
+[
+  {
+    "id": "T41",
+    "status": "PASSED",
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "evidence": {
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "browser_sandbox_disabled": false,
+      "socket_owner_and_held_birth_verified": true,
+      "separate_clean_profiles": true,
+      "preexisting_host_browser_verified": true,
+      "unboxed_handoff": false,
+      "explicit_profile_and_no_remote": true
+    }
+  },
+  {
+    "id": "T41",
+    "status": "PASSED",
+    "name": "browser_own_child_request_stays_boxed",
+    "evidence": {
+      "process_tree_alone_used_as_proof": false,
+      "actual_browser_child_action": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_CHILD",
+          "host_profile_cookie_present": false
+        }
+      ],
+      "host_url_handoff": false
+    }
+  },
+  {
+    "id": "T41",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "elapsed_ms": 4650,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "line": 15,
+    "status": "FAILED"
+  },
+  {
+    "id": "T30",
+    "status": "PASSED",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "evidence": {
+      "real_about_support": true,
+      "no_security_sandbox_preferences_changed": true,
+      "browser_own_sandbox_enabled": true,
+      "clean_profiles": true,
+      "effective_content_sandbox_level": 9,
+      "no_disable_sandbox_argument": true
+    }
+  }
+]

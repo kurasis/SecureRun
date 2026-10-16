@@ -1,8 +1,13 @@
 use crate::native;
 use securerun_foundation::{binding::*, *};
-use securerun_sandboxie_adapter::{Health, HealthView};
+use securerun_sandboxie_adapter::{Health, HealthView, live_wait::HealthUpdates};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs::File, sync::Mutex, time::Instant};
+use std::{
+    collections::HashMap,
+    fs::File,
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 use tauri::{Manager, State, WebviewWindow};
 use uuid::Uuid;
 
@@ -76,7 +81,7 @@ impl From<Operation> for OperationView {
 }
 pub struct Backend {
     pub health: Health,
-    pub observation_inflight: bool,
+    pub health_updates: Arc<HealthUpdates>,
     pub state_channels: HashMap<Uuid, tauri::ipc::Channel<StateEvent>>,
     pub store: Store,
     pub selections: Selections,
@@ -192,40 +197,34 @@ fn get_snapshot(window: WebviewWindow, state: State<AppState>) -> Result<Snapsho
 async fn get_engine_health(
     window: WebviewWindow,
     state: State<'_, AppState>,
+    after_sequence: Option<u64>,
 ) -> Result<HealthView> {
-    let ticket = {
-        let mut backend = locked(&window, &state)?;
-        if backend.fixture || backend.observation_inflight {
-            return Ok(backend.health.view(Instant::now()));
+    let lease = {
+        let backend = locked(&window, &state)?;
+        let view = backend.health.view(Instant::now());
+        if backend.fixture || after_sequence != Some(view.sequence) {
+            return Ok(view);
         }
-        backend.observation_inflight = true;
-        let before = backend.health.view(Instant::now()).generation;
-        let ticket = backend.health.begin(Instant::now());
-        if backend.health.view(Instant::now()).generation != before {
-            backend.store.reconnect()?;
-            backend.handles.clear();
-            backend.selections = Selections::default();
-        }
-        ticket
+        backend
+            .health_updates
+            .reserve(view.sequence)
+            .map_err(|reason| {
+                AppError::new(if reason == "HEALTH_WAIT_BUSY" {
+                    ErrorCode::OperationConflict
+                } else {
+                    ErrorCode::CapabilityUnavailable
+                })
+            })?
     };
-    let observation =
-        tauri::async_runtime::spawn_blocking(securerun_sandboxie_adapter::windows::bounded_observe)
-            .await
-            .unwrap_or_else(|_| {
-                securerun_sandboxie_adapter::Observation::failure("BRIDGE_TASK_FAILED")
-            });
-    let mut backend = locked(&window, &state)?;
-    backend.observation_inflight = false;
-    let before = backend.health.view(Instant::now()).generation;
-    backend.health.accept(ticket, observation, Instant::now());
-    let view = backend.health.view(Instant::now());
-    if view.generation != before {
-        backend.store.reconnect()?;
-        backend.handles.clear();
-        backend.selections = Selections::default();
-    }
-    Ok(view)
+    // The reservation exists before scheduling and its Drop releases the one
+    // slot even when the caller disappears. No backend lock crosses the wait.
+    tauri::async_runtime::spawn_blocking(move || lease.wait(std::time::Duration::from_secs(3)))
+        .await
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?
+        .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+    Ok(locked(&window, &state)?.health.view(Instant::now()))
 }
+
 #[derive(Serialize)]
 pub struct SubscriptionView {
     id: Uuid,
@@ -479,7 +478,17 @@ async fn ci_report(
     }
 }
 
+fn startup_mark(name: &str, began: Instant) {
+    use std::io::Write;
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "{name}={}",
+        began.elapsed().as_millis()
+    );
+}
+
 pub fn run() {
+    let startup = Instant::now();
     std::panic::set_hook(Box::new(|_| eprintln!("MANAGER_INTERNAL_ERROR")));
     if securerun_sandboxie_adapter::windows::has_engine_module() {
         eprintln!("MANAGER_CONTEXT_UNSAFE");
@@ -513,7 +522,9 @@ pub fn run() {
         (None, false, None);
     let mut health = Health::default();
     if !fixture {
+        let observing = Instant::now();
         let observation = securerun_sandboxie_adapter::windows::bounded_observe();
+        startup_mark("MANAGER_STARTUP_OBSERVATION_MS", observing);
         if observation.manager_context == securerun_sandboxie_adapter::Context::Boxed
             || observation.bridge_context == securerun_sandboxie_adapter::Context::Boxed
         {
@@ -531,9 +542,10 @@ pub fn run() {
         Ok(v) => v,
         Err(_) => return,
     };
+    let health_updates = Arc::new(HealthUpdates::new(health.view(Instant::now()).sequence));
     let backend = Backend {
         health,
-        observation_inflight: false,
+        health_updates,
         store,
         state_channels: HashMap::new(),
         selections: Selections::default(),
@@ -547,6 +559,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .manage(crate::policies::PolicyState::default())
         .manage(AppState(Mutex::new(backend)))
+        .manage(crate::product::ProductState::default())
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
             get_engine_health,
@@ -558,6 +571,7 @@ pub fn run() {
             prepare_transfer,
             get_operation,
             diagnostic_summary,
+            crate::product::product_request,
             crate::policies::policy_request,
             crate::policies::control_request,
             crate::policies::files_request,
@@ -583,6 +597,9 @@ pub fn run() {
                                 backend.health.invalidate("HOST_TRANSITION");
                             }
                             if changed || expired {
+                                let _ = backend
+                                    .health_updates
+                                    .publish(backend.health.view(Instant::now()).sequence);
                                 let _ = backend.store.reconnect();
                                 backend.handles.clear();
                                 backend.selections = Selections::default();
@@ -596,12 +613,100 @@ pub fn run() {
             if fixture {
                 config.url = tauri::WebviewUrl::App("index.html?foundation-ci".into());
             }
-            tauri::WebviewWindowBuilder::from_config(app, &config)?
+            startup_mark("MANAGER_STARTUP_BEFORE_WEBVIEW_MS", startup);
+            let window = tauri::WebviewWindowBuilder::from_config(app, &config)?
                 .on_navigation(|url| {
                     authorized_origin("main", url.as_str(), cfg!(debug_assertions))
                 })
                 .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
                 .build()?;
+            startup_mark("MANAGER_STARTUP_WINDOW_CREATED_MS", startup);
+            // The supported WebView2 resource policy keeps its sandbox and CSP.
+            // It reduces caches rather than omitting processes from measurement.
+            let _ = window.with_webview(|view| unsafe {
+                use webview2_com::Microsoft::Web::WebView2::Win32::{
+                    COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW, ICoreWebView2_19,
+                };
+                use windows::core::Interface;
+                if let Ok(core) = view.controller().CoreWebView2()
+                    && let Ok(memory) = core.cast::<ICoreWebView2_19>()
+                    && memory
+                        .SetMemoryUsageTargetLevel(COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW)
+                        .is_ok()
+                {
+                    use std::io::Write;
+                    let _ = writeln!(std::io::stderr().lock(), "WEBVIEW_MEMORY_TARGET_LOW");
+                }
+            });
+            if !fixture {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(std::time::Duration::from_millis(500));
+                    loop {
+                        let state = handle.state::<AppState>();
+                        let epoch = match state.inner().0.lock() {
+                            Ok(backend) => backend.health.view(Instant::now()).generation,
+                            Err(_) => return,
+                        };
+                        let mut stream =
+                            securerun_sandboxie_adapter::windows::live::Stream::start();
+                        let mut retry_delay = std::time::Duration::from_secs(1);
+                        loop {
+                            let report = match &mut stream {
+                                Ok(stream) => stream.next_frame(),
+                                Err(reason) => Err(*reason),
+                            };
+                            let normal_end = matches!(report, Err("BRIDGE_STREAM_ENDED"));
+                            if normal_end {
+                                retry_delay = std::time::Duration::ZERO;
+                                break;
+                            }
+                            let failed = !report
+                                .as_ref()
+                                .is_ok_and(|value| value.reason == "OBSERVED");
+                            let observation = report
+                                .unwrap_or_else(securerun_sandboxie_adapter::Observation::failure);
+                            let mut backend = match state.inner().0.lock() {
+                                Ok(backend) => backend,
+                                Err(_) => return,
+                            };
+                            if backend.health.view(Instant::now()).generation != epoch {
+                                break;
+                            }
+                            let before = backend.health.view(Instant::now()).generation;
+                            let ticket = backend.health.begin(Instant::now());
+                            if backend.health.view(Instant::now()).generation != epoch {
+                                backend.handles.clear();
+                                backend.selections = Selections::default();
+                                if backend.store.reconnect().is_err() {
+                                    backend.health.invalidate("METADATA_CONTEXT_RESET_FAILED");
+                                }
+                                break;
+                            }
+                            backend.health.accept(ticket, observation, Instant::now());
+                            let view = backend.health.view(Instant::now());
+                            let notify_failed =
+                                backend.health_updates.publish(view.sequence).is_err();
+                            if notify_failed {
+                                backend.health.invalidate("HEALTH_WAIT_UNAVAILABLE");
+                            }
+                            let changed = notify_failed || view.generation != before;
+                            if changed {
+                                backend.handles.clear();
+                                backend.selections = Selections::default();
+                                if backend.store.reconnect().is_err() {
+                                    backend.health.invalidate("METADATA_CONTEXT_RESET_FAILED");
+                                }
+                            }
+                            if failed || changed {
+                                break;
+                            }
+                        }
+                        drop(stream);
+                        std::thread::sleep(retry_delay);
+                    }
+                });
+            }
             #[cfg(feature = "foundation-ci")]
             if fixture {
                 crate::ci::start(app.handle().clone(), profile.clone().unwrap())?;
@@ -626,7 +731,7 @@ mod normal_configuration_tests {
     fn normal_shell_context_unknown_cannot_enable_metadata_or_engine_actions() {
         let backend = Backend {
             health: Health::default(),
-            observation_inflight: false,
+            health_updates: Arc::new(HealthUpdates::new(0)),
             state_channels: HashMap::new(),
             store: Store::memory("S-1-5-21-SYNTHETIC").unwrap(),
             selections: Selections::default(),

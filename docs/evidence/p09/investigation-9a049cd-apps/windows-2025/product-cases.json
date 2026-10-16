@@ -1,0 +1,113 @@
+[
+  {
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "id": "T32",
+    "evidence": {
+      "all_successful_definitions_retired": true,
+      "retained_diagnostics": 20,
+      "retention_limit": 256,
+      "no_recursive_data_deletion": true,
+      "completed_definition_count": 0,
+      "root_data_retained": true,
+      "synthetic_reports_unchanged": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "official_editor_saves_boxed_document_without_host_write",
+    "id": "T30",
+    "evidence": {
+      "original_driver_member_observed": true,
+      "boxed_saved_bytes_verified": true,
+      "host_output_absent": true,
+      "real_gui_editor": true,
+      "clean_portable_profile": true,
+      "official_executable": true,
+      "plugins_and_host_update_integrations_outside_validated_workflow": true,
+      "host_input_unchanged": true,
+      "actual_keyboard_edit_and_save": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "official_archive_gui_and_create_extract_round_trip",
+    "id": "T30",
+    "evidence": {
+      "host_zip_and_extraction_absent": true,
+      "actual_gui_create_and_extract": true,
+      "round_trip_sha256_matches": true,
+      "engine_hooks_or_security_exceptions_added": false,
+      "host_input_unchanged": true,
+      "official_gui_observed_boxed": true,
+      "gui_operation_executable_sha256": "363fb45bb3ea1cab98ae5ab4a564c859277ee668e58c08ffd2ecb6fe9afcd534",
+      "actual_archive_extracted": true,
+      "actual_archive_created": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+    "id": "T41",
+    "evidence": {
+      "preexisting_host_browser_verified": true,
+      "separate_clean_profiles": true,
+      "host_profile_read_blocked_by_reviewed_rule": true,
+      "socket_owner_and_held_birth_verified": true,
+      "unboxed_handoff": false,
+      "host_profile_cookie_absent_in_boxed_request": true,
+      "browser_sandbox_disabled": false,
+      "explicit_profile_and_no_remote": true,
+      "actual_http_requests": [
+        {
+          "source_scope_verified": true,
+          "source_boxed": true,
+          "source_unboxed": false,
+          "held_live_process_identity": true,
+          "original_driver_query": true,
+          "socket_owner_attributed": true,
+          "request_kind": "BOXED_MAIN",
+          "host_profile_cookie_present": false
+        }
+      ]
+    },
+    "status": "PASSED"
+  },
+  {
+    "status": "FAILED",
+    "line": 14,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "name": "browser_own_child_request_stays_boxed",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T41"
+  },
+  {
+    "status": "FAILED",
+    "line": 14,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "name": "browser_reachable_protocol_handler_does_not_escape",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T41"
+  },
+  {
+    "status": "FAILED",
+    "line": 14,
+    "code": "P09_ACCESSIBILITY_FAILED",
+    "name": "browser_own_content_sandbox_remains_enabled",
+    "exception_type": "System.Management.Automation.RuntimeException",
+    "id": "T30"
+  },
+  {
+    "name": "launch_overhead_observed_against_same_fixed_original_dispatch",
+    "id": "T32",
+    "evidence": {
+      "manager_added_upper_bound_ms": 576,
+      "target_met": true,
+      "original_dispatch_ms": 22.8506,
+      "production_manager_dispatch_ms": 598.4028,
+      "target_startup_included_in_both": true,
+      "same_fixed_benign_probe": true,
+      "no_required_check_removed": true
+    },
+    "status": "PASSED"
+  }
+]

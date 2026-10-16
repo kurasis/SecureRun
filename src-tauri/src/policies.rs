@@ -20,11 +20,57 @@ struct Selection {
     generation: u64,
     issued: Instant,
 }
+struct QueuedPolicy {
+    environment: Uuid,
+    revision: u64,
+    generation: u64,
+    engine_generation: u64,
+    desired: DesiredPolicy,
+    held: Vec<Selection>,
+    view_ack: bool,
+    created: Instant,
+}
+#[derive(Serialize)]
+pub struct QueuedView {
+    queue_id: Uuid,
+    environment_id: Uuid,
+    revision: u64,
+    generation: u64,
+    desired: DesiredPolicy,
+    expires_in_seconds: u64,
+}
+#[derive(Serialize)]
+pub struct PolicyReply {
+    diagnostic_id: Uuid,
+    #[serde(flatten)]
+    reply: Reply,
+    queued_policies: Vec<QueuedView>,
+}
 #[derive(Default)]
 pub struct PolicyState(
     Mutex<HashMap<Uuid, Selection>>,
     std::sync::atomic::AtomicU64,
+    Mutex<HashMap<Uuid, QueuedPolicy>>,
+    tauri::async_runtime::Mutex<()>,
+    std::sync::atomic::AtomicUsize,
 );
+struct CommandSlot<'a>(&'a std::sync::atomic::AtomicUsize);
+impl Drop for CommandSlot<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+fn command_slot(state: &PolicyState) -> Result<CommandSlot<'_>> {
+    state
+        .4
+        .fetch_update(
+            std::sync::atomic::Ordering::SeqCst,
+            std::sync::atomic::Ordering::SeqCst,
+            |count| (count < 8).then_some(count + 1),
+        )
+        .map_err(|_| AppError::new(ErrorCode::OperationConflict))?;
+    Ok(CommandSlot(&state.4))
+}
 fn authorize(window: &WebviewWindow) -> Result<()> {
     let url = window
         .url()
@@ -33,6 +79,12 @@ fn authorize(window: &WebviewWindow) -> Result<()> {
         return err(ErrorCode::Unauthorized);
     }
     Ok(())
+}
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PickerLanguage {
+    En,
+    Ru,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -43,6 +95,8 @@ pub struct PickerRequest {
     directory: bool,
     #[serde(default)]
     file_transfer: bool,
+    #[serde(default)]
+    language: Option<PickerLanguage>,
 }
 #[derive(Serialize)]
 pub struct PickerReply {
@@ -57,6 +111,8 @@ pub async fn select_policy_path(
     request: PickerRequest,
 ) -> Result<PickerReply> {
     authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
     let list = tauri::async_runtime::spawn_blocking(|| {
         securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
     })
@@ -77,17 +133,27 @@ pub async fn select_policy_path(
         return err(ErrorCode::InvalidInput);
     }
     let directory = request.directory;
+    let title = match request.language {
+        Some(PickerLanguage::Ru) => "Выбор ресурса SecureRun",
+        _ => "SecureRun resource selection",
+    };
+    let dialog_parent = window.clone();
     let selected = tauri::async_runtime::spawn_blocking(move || {
-        let dialog = rfd::FileDialog::new();
-        if directory {
-            dialog.pick_folder()
-        } else {
-            dialog.pick_file()
-        }
+        native::picker_thread(|| {
+            let dialog = rfd::FileDialog::new()
+                .set_title(title)
+                .set_parent(&dialog_parent);
+            if directory {
+                dialog.pick_folder()
+            } else {
+                dialog.pick_file()
+            }
+        })
     })
     .await
-    .map_err(|_| AppError::new(ErrorCode::PathUnsafe))?
+    .map_err(|_| AppError::new(ErrorCode::PathUnsafe))??
     .ok_or_else(|| AppError::new(ErrorCode::SelectionExpired))?;
+    authorize(&window)?;
     let path = selected
         .to_str()
         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?
@@ -153,6 +219,30 @@ pub struct UiGrant {
 )]
 pub enum UiRequest {
     List,
+    Rename {
+        environment_id: Uuid,
+        expected_revision: u64,
+        expected_generation: u64,
+        expected_display_name: String,
+        display_name: String,
+        operation_id: Uuid,
+    },
+    Queue {
+        environment_id: Uuid,
+        expected_revision: u64,
+        preset: Preset,
+        grants: Vec<UiGrant>,
+        operation_id: Uuid,
+        acknowledge_view_change: bool,
+    },
+    ApplyQueued {
+        queue_id: Uuid,
+        operation_id: Uuid,
+    },
+    DiscardQueued {
+        queue_id: Uuid,
+    },
+
     Create {
         display_name: String,
         preset: Preset,
@@ -246,8 +336,7 @@ async fn grants(
     }
     Ok((result, held))
 }
-#[tauri::command]
-pub async fn policy_request(
+async fn policy_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiRequest,
@@ -255,6 +344,41 @@ pub async fn policy_request(
     authorize(&window)?;
     let mut held = vec![];
     let request = match request {
+        UiRequest::Queue { .. }
+        | UiRequest::ApplyQueued { .. }
+        | UiRequest::DiscardQueued { .. } => return err(ErrorCode::InvalidInput),
+
+        UiRequest::Rename {
+            environment_id,
+            expected_revision,
+            expected_generation,
+            expected_display_name,
+            display_name,
+            operation_id,
+        } => {
+            let renamed = tauri::async_runtime::spawn_blocking(move || {
+                securerun_sandboxie_adapter::windows::provisioning::product::bounded_request(
+                    &securerun_sandboxie_adapter::product::Request::Rename {
+                        environment_id,
+                        expected_revision,
+                        expected_generation,
+                        expected_display_name,
+                        display_name,
+                        operation_id,
+                    },
+                )
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))?;
+            if renamed.reason != "OBSERVED" {
+                return Ok(Reply::failure(&renamed.reason));
+            }
+            return tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown));
+        }
         UiRequest::List => Request::List,
         UiRequest::Create {
             display_name,
@@ -363,13 +487,13 @@ pub enum UiControlRequest {
 }
 #[derive(Serialize)]
 pub struct ControlReply {
+    diagnostic_id: Uuid,
     #[serde(flatten)]
     reply: securerun_sandboxie_adapter::control::Reply,
     engine_generation: u64,
     sequence: u64,
 }
-#[tauri::command]
-pub async fn control_request(
+async fn control_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiControlRequest,
@@ -464,6 +588,7 @@ pub async fn control_request(
         return err(ErrorCode::StaleOperation);
     }
     Ok(ControlReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation,
         sequence: ticket,
@@ -521,12 +646,12 @@ pub enum UiFilesRequest {
 }
 #[derive(Serialize)]
 pub struct FilesReply {
+    diagnostic_id: Uuid,
     #[serde(flatten)]
     reply: securerun_sandboxie_adapter::files::Reply,
     engine_generation: u64,
 }
-#[tauri::command]
-pub async fn files_request(
+async fn files_request_inner(
     window: WebviewWindow,
     state: State<'_, PolicyState>,
     request: UiFilesRequest,
@@ -660,6 +785,7 @@ pub async fn files_request(
         return err(ErrorCode::StaleOperation);
     }
     Ok(FilesReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation: generation,
     })
@@ -687,6 +813,7 @@ pub enum UiLifecycleRequest {
 }
 #[derive(Serialize)]
 pub struct LifecycleReply {
+    diagnostic_id: Uuid,
     reply: securerun_sandboxie_adapter::lifecycle::Reply,
     engine_generation: u64,
 }
@@ -792,8 +919,7 @@ pub fn perform_lifecycle(
         }
     }
 }
-#[tauri::command]
-pub async fn lifecycle_request(
+async fn lifecycle_request_inner(
     window: WebviewWindow,
     request: UiLifecycleRequest,
     backend: State<'_, crate::app::AppState>,
@@ -821,7 +947,386 @@ pub async fn lifecycle_request(
         return err(ErrorCode::CapabilityUnavailable);
     }
     Ok(LifecycleReply {
+        diagnostic_id: Uuid::new_v4(),
         reply,
         engine_generation: generation,
     })
+}
+
+// History accepts typed manager events only; no target arguments or error text.
+fn event_outcome(reason: Option<&str>) -> securerun_sandboxie_adapter::product::Outcome {
+    use securerun_sandboxie_adapter::product::Outcome;
+    match reason {
+        Some("OBSERVED") => Outcome::Observed,
+        Some(r) if !r.contains("UNKNOWN") => Outcome::Refused,
+        _ => Outcome::Unknown,
+    }
+}
+#[tauri::command]
+pub async fn policy_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<PolicyReply> {
+    authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiRequest::Rename { environment_id, .. }
+        | UiRequest::Apply { environment_id, .. }
+        | UiRequest::Queue { environment_id, .. }
+        | UiRequest::Inspect { environment_id }
+        | UiRequest::Repair { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiRequest::List => None,
+        UiRequest::Create { .. } => Some(A::PolicyCreate),
+        UiRequest::Rename { .. } => Some(A::Rename),
+        UiRequest::Queue { .. } => Some(A::PolicyQueue),
+        UiRequest::DiscardQueued { .. } => Some(A::PolicyDraftDiscard),
+        UiRequest::Inspect { .. } => Some(A::PolicyInspect),
+        UiRequest::Repair { .. } => Some(A::PolicyRepair),
+        _ => Some(A::PolicyApply),
+    };
+    let engine_generation = backend
+        .0
+        .lock()
+        .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+        .health
+        .view(Instant::now())
+        .generation;
+    let result: Result<Reply> = match request {
+        UiRequest::Queue {
+            environment_id,
+            expected_revision,
+            preset,
+            grants: requested,
+            operation_id,
+            acknowledge_view_change,
+        } => {
+            let (grants, held) = grants(
+                &state,
+                requested,
+                operation_id,
+                Some(environment_id),
+                expected_revision,
+            )
+            .await?;
+            let current = tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+            if current.reason != "OBSERVED" {
+                return err(ErrorCode::ManagerContextUnsafe);
+            }
+            let e = current
+                .environments
+                .iter()
+                .find(|e| e.id == environment_id && e.revision == expected_revision)
+                .ok_or_else(|| AppError::new(ErrorCode::RevisionConflict))?;
+            let generation = e.generation;
+            let mut queues = state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?;
+            queues.retain(|_, q| {
+                q.created.elapsed() < Duration::from_secs(60) && q.environment != environment_id
+            });
+            if queues.len() >= 12 {
+                return err(ErrorCode::OperationConflict);
+            }
+            queues.insert(
+                operation_id,
+                QueuedPolicy {
+                    environment: environment_id,
+                    revision: expected_revision,
+                    generation,
+                    engine_generation,
+                    desired: DesiredPolicy {
+                        schema: 1,
+                        preset,
+                        grants,
+                    },
+                    held,
+                    view_ack: acknowledge_view_change,
+                    created: Instant::now(),
+                },
+            );
+            Ok(current)
+        }
+        UiRequest::ApplyQueued {
+            queue_id,
+            operation_id,
+        } => {
+            let queued = state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+                .remove(&queue_id)
+                .ok_or_else(|| AppError::new(ErrorCode::SelectionExpired))?;
+            if queued.created.elapsed() >= Duration::from_secs(60)
+                || queued.engine_generation != engine_generation
+                || queued.held.iter().any(|s| {
+                    s.issued.elapsed() >= Duration::from_secs(60)
+                        || native::identify(&s._lease.file).ok() != Some(s._lease.identity.clone())
+                })
+            {
+                return err(ErrorCode::SelectionExpired);
+            }
+            let current = tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?;
+            if current.reason != "OBSERVED"
+                || !current.environments.iter().any(|e| {
+                    e.id == queued.environment
+                        && e.revision == queued.revision
+                        && e.generation == queued.generation
+                })
+            {
+                return err(ErrorCode::StaleOperation);
+            }
+            tauri::async_runtime::spawn_blocking(move || {
+                let _held = queued.held;
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(
+                    &Request::Apply {
+                        environment_id: queued.environment,
+                        expected_revision: queued.revision,
+                        policy: queued.desired,
+                        operation_id,
+                        acknowledge_view_change: queued.view_ack,
+                    },
+                )
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::OperationOutcomeUnknown))
+        }
+        UiRequest::DiscardQueued { queue_id } => {
+            state
+                .2
+                .lock()
+                .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?
+                .remove(&queue_id);
+            tauri::async_runtime::spawn_blocking(|| {
+                securerun_sandboxie_adapter::windows::provisioning::bounded_request(&Request::List)
+            })
+            .await
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))
+        }
+        other => policy_request_inner(window, state.clone(), other).await,
+    };
+    let diagnostic_id = result
+        .as_ref()
+        .err()
+        .map_or_else(Uuid::new_v4, |e| e.diagnostic_id);
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reason.as_str())),
+            environment_id,
+            Some(diagnostic_id),
+        )
+        .await;
+    }
+    let reply = result?;
+    let queued_policies = {
+        let mut queues = state
+            .2
+            .lock()
+            .map_err(|_| AppError::new(ErrorCode::DatabaseUnavailable))?;
+        queues.retain(|_, q| {
+            q.created.elapsed() < Duration::from_secs(60)
+                && q.engine_generation == engine_generation
+                && reply.environments.iter().any(|e| {
+                    e.id == q.environment
+                        && e.revision == q.revision
+                        && e.generation == q.generation
+                })
+        });
+        queues
+            .iter()
+            .map(|(id, q)| QueuedView {
+                queue_id: *id,
+                environment_id: q.environment,
+                revision: q.revision,
+                generation: q.generation,
+                desired: q.desired.clone(),
+                expires_in_seconds: 60 - q.created.elapsed().as_secs(),
+            })
+            .collect()
+    };
+    Ok(PolicyReply {
+        diagnostic_id,
+        reply,
+        queued_policies,
+    })
+}
+#[tauri::command]
+pub async fn control_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiControlRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<ControlReply> {
+    authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiControlRequest::Register { environment_id, .. }
+        | UiControlRequest::Launch { environment_id, .. }
+        | UiControlRequest::Stop { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiControlRequest::List => None,
+        UiControlRequest::Register { .. } => Some(A::Register),
+        UiControlRequest::Launch { .. } => Some(A::Launch),
+        UiControlRequest::Stop { .. } => Some(A::Stop),
+        UiControlRequest::StopManaged { .. } => Some(A::StopManaged),
+        UiControlRequest::Reconcile { .. } => Some(A::LifecycleInspect),
+    };
+    let result = control_request_inner(window, state.clone(), request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
+        )
+        .await;
+    }
+    result
+}
+#[tauri::command]
+pub async fn files_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiFilesRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<FilesReply> {
+    authorize(&window)?;
+    let cancel = matches!(&request, UiFilesRequest::Cancel { .. });
+    let _slot = if cancel {
+        None
+    } else {
+        Some(command_slot(&state)?)
+    };
+    let _gate = if cancel {
+        None
+    } else {
+        Some(state.3.lock().await)
+    };
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiFilesRequest::List { environment_id, .. }
+        | UiFilesRequest::Import { environment_id, .. }
+        | UiFilesRequest::Export { environment_id, .. }
+        | UiFilesRequest::Register { environment_id, .. }
+        | UiFilesRequest::Recover { environment_id, .. }
+        | UiFilesRequest::Discard { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiFilesRequest::List { .. } => None,
+        UiFilesRequest::Import { .. } => Some(A::Import),
+        UiFilesRequest::Export { .. } => Some(A::Export),
+        UiFilesRequest::Register { .. } => Some(A::Register),
+        UiFilesRequest::Recover { .. } => Some(A::TransferInspect),
+        UiFilesRequest::Discard { .. } | UiFilesRequest::Cancel { .. } => Some(A::TransferDiscard),
+    };
+    let result = files_request_inner(window, state.clone(), request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
+        )
+        .await;
+    }
+    result
+}
+#[tauri::command]
+pub async fn lifecycle_request(
+    window: WebviewWindow,
+    state: State<'_, PolicyState>,
+    request: UiLifecycleRequest,
+    backend: State<'_, crate::app::AppState>,
+    product: State<'_, crate::product::ProductState>,
+) -> Result<LifecycleReply> {
+    authorize(&window)?;
+    let _slot = command_slot(&state)?;
+    let _gate = state.3.lock().await;
+    use securerun_sandboxie_adapter::product::Action as A;
+    let environment_id = match &request {
+        UiLifecycleRequest::Act { environment_id, .. } => Some(*environment_id),
+        _ => None,
+    };
+    let action = match &request {
+        UiLifecycleRequest::List => None,
+        UiLifecycleRequest::Act { .. } => Some(A::RetentionChange),
+        UiLifecycleRequest::Recover { .. } => Some(A::LifecycleInspect),
+    };
+    let result = lifecycle_request_inner(window, request, backend.clone()).await;
+    if let Some(action) = action {
+        crate::product::record(
+            &product,
+            &backend,
+            action,
+            event_outcome(result.as_ref().ok().map(|r| r.reply.reason.as_str())),
+            environment_id,
+            Some(match &result {
+                Ok(reply) => reply.diagnostic_id,
+                Err(error) => error.diagnostic_id,
+            }),
+        )
+        .await;
+    }
+    result
+}
+
+#[cfg(test)]
+mod product_command_tests {
+    use super::*;
+    #[test]
+    fn waiting_managed_commands_are_bounded_and_dropped_slots_are_reusable() {
+        let state = PolicyState::default();
+        let mut held = (0..8)
+            .map(|_| command_slot(&state).unwrap())
+            .collect::<Vec<_>>();
+        assert!(matches!(
+            command_slot(&state),
+            Err(AppError {
+                code: ErrorCode::OperationConflict,
+                ..
+            })
+        ));
+        held.pop();
+        let replacement = command_slot(&state).unwrap();
+        assert!(command_slot(&state).is_err());
+        drop(replacement);
+        drop(held);
+        assert_eq!(state.4.load(std::sync::atomic::Ordering::SeqCst), 0);
+    }
 }

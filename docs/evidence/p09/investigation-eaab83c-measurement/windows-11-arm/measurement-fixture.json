@@ -1,0 +1,20 @@
+{
+  "native_measurement_fixture_only": true,
+  "reference_environments": 0,
+  "metrics": {
+    "duration_ms": 60198,
+    "cpu_percent": 1.142061805557587,
+    "cpu_denominator_logical_processors": 4,
+    "average_working_set_bytes": 183158149,
+    "peak_working_set_bytes": 357826560,
+    "samples": 226,
+    "webview_processes": 6,
+    "peak_process_count": 9,
+    "includes_exited_child_cpu": true,
+    "job_group_complete": true,
+    "target_and_engine_processes_excluded": true
+  },
+  "product_performance_gate_claimed": false,
+  "schema": 1,
+  "result": "PASSED"
+}

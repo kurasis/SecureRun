@@ -1,0 +1,3721 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "elevated_helper": false,
+      "production_target_launches": 0,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    "name": "missing_context_cannot_open_control_plane",
+    "id": "T58"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "global_setting": "NetworkEnableWFP=y",
+      "os_security_settings_modified": false,
+      "driver_flag_verified": true,
+      "product_global_writes": 0,
+      "lab_installation_reviewed": true
+    },
+    "name": "explicit_lab_wfp_prerequisite",
+    "id": "T39"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reason": "PAID_PRESET_UNVERIFIED",
+      "paid_features_enabled": 0
+    },
+    "name": "paid_presets_rejected_without_entitlement",
+    "id": "T14"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "elevated_helper": false,
+      "root_identity_bound": true,
+      "independent_enforcement_present": true,
+      "stage": "VERIFIED",
+      "production_target_launches": 0,
+      "fingerprint_present": true
+    },
+    "name": "native_pending_root_and_verified_policy",
+    "id": "T55"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "inferred_mock_enforcement": false,
+      "production_target_launches": 0,
+      "fresh_architecture_reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ]
+    },
+    "name": "baseline_effective_file_registry_network_evidence",
+    "id": "T08"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T09",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t09",
+    "id": "T09"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T10",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t10",
+    "id": "T10"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T11",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t11",
+    "id": "T11"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T12",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t12",
+    "id": "T12"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T31",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t31",
+    "id": "T31"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "scoped_scenario": "T40",
+      "actual_native_path": true
+    },
+    "name": "actual_baseline_report_t40",
+    "id": "T40"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "channels": [
+        "TCP_IPV4",
+        "TCP_IPV6",
+        "UDP_IPV4",
+        "UDP_IPV6"
+      ],
+      "actual_reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ],
+      "inferred_mock_enforcement": false
+    },
+    "name": "unsolicited_incoming_ipv4_ipv6_tcp_udp_denied",
+    "id": "T12"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_host_com_activations": 0,
+      "host_control": "AVAILABLE",
+      "source": "PINNED_TEMPLATE_COM",
+      "actual_boxed_status": "E_ACCESSDENIED",
+      "transfer_job_created": false,
+      "host_hresult": 0,
+      "reports": [
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        },
+        {
+          "dns_server_observed": false,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 0
+          },
+          "incoming_host_observed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": false,
+              "icmp_echo": false,
+              "icmp_status": 5,
+              "sockets": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": false,
+            "icmp_echo": false,
+            "icmp_status": 5,
+            "incoming": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": false,
+              "receive_error": 0,
+              "send_accepted": false,
+              "send_error": 10061
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 0
+        }
+      ]
+    },
+    "name": "bits_com_activation_is_explicitly_denied",
+    "id": "T40"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "control_dispatched": false,
+      "claimed_unboxed_parent_accepted": false,
+      "status": "PASSED",
+      "production_target_launches": 0,
+      "actual_boxed_manager_executed": true,
+      "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+      "privileged_helper": false,
+      "actual_boxed_worker_executed": true,
+      "worker_reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    "name": "boxed_production_manager_and_worker_refuse_forged_parent",
+    "id": "T58"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "control_dispatched": false,
+      "claimed_unboxed_parent_accepted": false,
+      "status": "PASSED",
+      "production_target_launches": 0,
+      "actual_boxed_manager_executed": true,
+      "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+      "privileged_helper": false,
+      "actual_boxed_worker_executed": true,
+      "worker_reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    "name": "boxed_same_sid_client_cannot_claim_unboxed_authority",
+    "id": "T47"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "privileged_helper": false,
+      "actual_boxed_control_refused": true,
+      "uac_denial_subcase": "NOT_APPLICABLE_NO_ELEVATION_ROUTE"
+    },
+    "name": "boxed_ipc_client_has_no_privileged_route",
+    "id": "T27"
+  },
+  {
+    "status": "NOT_APPLICABLE",
+    "evidence": {
+      "production_target_launches": 0,
+      "original_profile_authority": "OS_CURRENT_USER",
+      "reason": "NO_PRODUCT_ELEVATION_OR_HELPER_ROUTE"
+    },
+    "name": "different_admin_uac_route_is_absent",
+    "id": "T52"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production_target_launches": 0,
+      "mandatory_root_overlap_rejected": true,
+      "percent_comma_crlf_stream_unc_wildcard_rejected": true
+    },
+    "name": "literal_grammar_and_root_grants_rejected",
+    "id": "T37"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "same_operation_returned_existing_root": true,
+      "changed_payload_refused": true,
+      "duplicate_probe_dispatches": 0
+    },
+    "name": "idempotent_create_does_not_dispatch_and_payload_replay_is_refused",
+    "id": "T17"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "reason": "REVISION_CONFLICT",
+      "mutation_dispatches": 0
+    },
+    "name": "stale_revision_cannot_modify_policy",
+    "id": "T17"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "controlled_tcp_udp_ipv4_ipv6_positive": true,
+      "network_shares_not_granted": true,
+      "host_files_unchanged": true,
+      "actual_online_reports": [
+        {
+          "dns_server_observed": true,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 1
+          },
+          "incoming_host_observed": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "bf23a349c90e5931a428e7c36703faac1f7c2a9fceca3f4949db1171e792d628",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": true,
+              "icmp_echo": true,
+              "icmp_status": 0,
+              "sockets": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": true,
+            "icmp_echo": true,
+            "icmp_status": 0,
+            "incoming": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": true,
+              "receive_error": 0,
+              "send_accepted": true,
+              "send_error": 0
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 2
+        },
+        {
+          "dns_server_observed": true,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 1
+          },
+          "incoming_host_observed": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "4c4612c4b1e141deda3baeecb848446c45eb6246719113f6b34e72ca35965477",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": true,
+              "icmp_echo": true,
+              "icmp_status": 0,
+              "sockets": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": true,
+            "icmp_echo": true,
+            "icmp_status": 0,
+            "incoming": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": true,
+              "receive_error": 0,
+              "send_accepted": true,
+              "send_error": 0
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 2
+        },
+        {
+          "dns_server_observed": true,
+          "endpoint_control_counts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "family": "STANDARD_V1",
+          "host_file_unchanged": true,
+          "host_registry_unchanged": true,
+          "icmp_observer": {
+            "available": true,
+            "control_packets": 1,
+            "target_packets": 1
+          },
+          "incoming_host_observed": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "mapped_share_host_positive": true,
+          "probe_sha256": "930d6daae8aa83412aab3f9ca57884d67bd6eda194cee8c02ae4521839ad5873",
+          "raw_host_control": {
+            "created": true,
+            "echo_received": true,
+            "receive_error": 0,
+            "send_accepted": true,
+            "send_error": 0
+          },
+          "report": {
+            "bits_activation_status": -2147024891,
+            "blocked_read": true,
+            "child_network": {
+              "dns_network": true,
+              "icmp_echo": true,
+              "icmp_status": 0,
+              "sockets": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            "dns_cached_answer": false,
+            "dns_network": true,
+            "icmp_echo": true,
+            "icmp_status": 0,
+            "incoming": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "mapped_share_denied": true,
+            "member": true,
+            "metadata_alias_denied": true,
+            "metadata_case_denied": true,
+            "metadata_denied": true,
+            "metadata_short_denied": true,
+            "raw": {
+              "created": true,
+              "echo_received": true,
+              "receive_error": 0,
+              "send_accepted": true,
+              "send_error": 0
+            },
+            "read_only_read": true,
+            "read_only_write_denied": true,
+            "registry_virtualized": true,
+            "sibling_alias_denied": true,
+            "sibling_case_denied": true,
+            "sibling_denied": true,
+            "sibling_short_denied": true,
+            "smb_denied": true,
+            "sockets": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "standard_read_visible": true,
+            "virtualized_delete": true,
+            "virtualized_write": true
+          },
+          "schema": 1,
+          "server_observed": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "smb_host_positive": true,
+          "unattributed_icmp_echo_delta": 2
+        }
+      ],
+      "mandatory_denials_retained": true
+    },
+    "name": "online_policy_keeps_file_and_sibling_protection",
+    "id": "T13"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "offline_policy_invalidated": true,
+      "hooks_only_fallback": false,
+      "windows_bfe_or_firewall_settings_changed": false
+    },
+    "name": "wfp_loss_invalidates_offline_policy",
+    "id": "T39"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "explicit_current_fingerprint_repair": true,
+      "drift_detected": true,
+      "external_write_preserved_before_review": true
+    },
+    "name": "external_owned_setting_requires_reviewed_repair",
+    "id": "T17"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "secret_command_line_values": 0,
+      "product_password_prompt": false,
+      "password_value_read_into_product": false,
+      "protected_control_refused": true,
+      "reason": "PASSWORD_PROTECTED_CONFIGURATION"
+    },
+    "name": "configuration_password_refused_without_secret_transport",
+    "id": "T37"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "unsafe_automation_not_executed": true,
+      "inherited_global_template_rejected": true,
+      "unmanaged_sections_unchanged": true
+    },
+    "name": "global_template_changes_block_without_overwrite",
+    "id": "T17"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "fixture_only_used_box_observation": true,
+      "readonly": {
+        "member": true,
+        "view": "HOST",
+        "write_succeeded": false
+      },
+      "restored": {
+        "member": true,
+        "view": "BOX",
+        "write_succeeded": false
+      },
+      "boxed_data_bytes_preserved": true,
+      "product_diagnostics_remain_fresh": true,
+      "host_unchanged": true,
+      "explicit_acknowledgement_required": true,
+      "before": {
+        "member": true,
+        "view": "BOX",
+        "write_succeeded": true
+      }
+    },
+    "name": "populated_readonly_view_change_preserves_overlay_and_restores_it",
+    "id": "T38"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "new_runtime_fingerprint": true,
+      "view_change_acknowledged": true,
+      "family": "STANDARD_V1",
+      "release_per_user_path_required": false,
+      "fresh_box_diagnostic": true
+    },
+    "name": "new_supported_path_grant_keeps_tested_family",
+    "id": "T53"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "same_spelling_different_object_refused": true,
+      "new_storage_not_adopted": true,
+      "replacement_acl_was_equivalent": true,
+      "production_target_launches": 0
+    },
+    "name": "same_path_root_replacement_is_not_adopted",
+    "id": "T55"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "mandatory_denial_unchanged": true,
+      "junction_grant_rejected": true
+    },
+    "name": "reparse_and_dos_alias_grants_rejected",
+    "id": "T59"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "product_namespace_mutations": 0,
+      "actual_subst_alias": true,
+      "reason": "DOS_NAMESPACE_ALIAS_UNSUPPORTED"
+    },
+    "name": "actual_subst_namespace_is_rejected_before_mutation",
+    "id": "T59"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "shadow_file_retained": true,
+      "actual_virtualized_executable_shadow": true,
+      "existing_storage_not_diagnostic_host": true,
+      "protected_host_probe_unchanged": true,
+      "fresh_throwaway_record_created": true
+    },
+    "name": "polluted_existing_box_does_not_host_diagnostic",
+    "id": "T51"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "manager_launch_disabled": true,
+      "new_storage_absent": true,
+      "running_box_not_terminated": true
+    },
+    "name": "running_sibling_prevents_any_new_storage",
+    "id": "T60"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "policy_applied_while_running": false,
+      "held_process_not_terminated": true,
+      "reason": "STOP_REQUIRED_ALL_SESSIONS"
+    },
+    "name": "running_policy_mutation_is_deferred",
+    "id": "T16"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "production": {
+        "new_storage_absent": true,
+        "standard_user": true,
+        "credential_values_retained": false,
+        "apply_reason": "STOP_REQUIRED_ALL_SESSIONS",
+        "target_session": 0,
+        "same_owner_verified": true,
+        "production_target_launches": 0,
+        "all_session_complete": true,
+        "actor_session": 2,
+        "status": "PASSED",
+        "real_windows_sessions": true,
+        "create_reason": "STOP_REQUIRED_ALL_SESSIONS",
+        "held_process_not_terminated": true
+      },
+      "protected_lab_transport": {
+        "peer_sid_verified_from_os": true,
+        "peer_unboxed_verified": true,
+        "peer_image_pinned": true,
+        "protected_local_pipe": true,
+        "password_in_argv_or_environment": false,
+        "windows_logon_policy_changed": false,
+        "fixture_not_a_product_helper": true
+      },
+      "product_helper": false,
+      "windows_logon_policy_changed": false
+    },
+    "name": "actual_other_session_prevents_policy_and_sibling_mutation",
+    "id": "T16"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "fixture_only_target": true,
+      "new_sibling_rule_read_back": true,
+      "namespace_parent_deny_assumed": false,
+      "host_canary_positive": true,
+      "root_identity_bound_after_rollout": true,
+      "all_affected_stopped": true,
+      "actual_old_box_denied_new_root": {
+        "member": true,
+        "sibling_denied": true
+      }
+    },
+    "name": "future_sibling_denials_verified_before_root_creation",
+    "id": "T60"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "verified_without_uac": true,
+      "root_identity_bound": true,
+      "owner_from_os": true,
+      "standard_user": true,
+      "context": "UNBOXED",
+      "production_target_launches": 0,
+      "status": "PASSED",
+      "elevated_helper": false,
+      "original_user_profile_preserved": true
+    },
+    "name": "production_provisioning_as_actual_standard_user",
+    "id": "T35"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "metadata_denied": true,
+      "standard_user": true,
+      "root_denied": true
+    },
+    "name": "second_standard_user_cannot_read_root_or_metadata",
+    "id": "T35"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "accepted_config_without_enforcement": true,
+      "standard_user": true,
+      "production_target_launches": 0,
+      "conflict_after_failed_probe": true,
+      "status": "PASSED",
+      "reason": "DIAGNOSTIC_EXECUTION_FAILED",
+      "protected_status": false,
+      "root_binding_present": true
+    },
+    "name": "accepted_writes_without_independent_enforcement_remain_conflicted",
+    "id": "T15"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_user": true,
+      "privileged_helper": false,
+      "status": "PASSED",
+      "launch_blocked": true,
+      "foreign_resource_writes": 0,
+      "forged_compiler_root_and_mandatory_layer_refused": true
+    },
+    "name": "forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules",
+    "id": "T57"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "status": "PASSED",
+      "stage": "Intent",
+      "launch_blocked": true,
+      "conflict_after_restart": true,
+      "standard_user": true,
+      "automatic_replay": false,
+      "real_process_interruption": true,
+      "actions_marker_present": true
+    },
+    "name": "actual_worker_interruption_intent",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_user": true,
+      "automatic_replay": false,
+      "launch_blocked": true,
+      "native_reason": "OBSERVED",
+      "conflict_after_restart": true,
+      "actions_marker_present": true,
+      "stage": "Fenced",
+      "real_process_interruption": true,
+      "status": "PASSED"
+    },
+    "name": "actual_worker_interruption_fenced",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_user": true,
+      "actions_marker_present": true,
+      "launch_blocked": true,
+      "stage": "Writing",
+      "status": "PASSED",
+      "real_process_interruption": true,
+      "conflict_after_restart": true,
+      "automatic_replay": false
+    },
+    "name": "actual_worker_interruption_writing",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "automatic_replay": false,
+      "conflict_after_restart": true,
+      "launch_blocked": true,
+      "actions_marker_present": true,
+      "real_process_interruption": true,
+      "standard_user": true,
+      "status": "PASSED",
+      "stage": "Readback"
+    },
+    "name": "actual_worker_interruption_readback",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "status": "PASSED",
+      "automatic_replay": false,
+      "standard_user": true,
+      "stage": "PendingRoot",
+      "launch_blocked": true,
+      "conflict_after_restart": true,
+      "real_process_interruption": true,
+      "actions_marker_present": true
+    },
+    "name": "actual_worker_interruption_pendingroot",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "automatic_replay": false,
+      "actions_marker_present": true,
+      "standard_user": true,
+      "launch_blocked": true,
+      "real_process_interruption": true,
+      "conflict_after_restart": true,
+      "stage": "RootBound",
+      "status": "PASSED"
+    },
+    "name": "actual_worker_interruption_rootbound",
+    "id": "T18"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "status": "PASSED",
+      "real_process_interruption": true,
+      "standard_user": true,
+      "automatic_replay": false,
+      "launch_blocked": true,
+      "conflict_after_restart": true,
+      "stage": "Verifying",
+      "actions_marker_present": true
+    },
+    "name": "actual_worker_interruption_verifying",
+    "id": "T18"
+  }
+]

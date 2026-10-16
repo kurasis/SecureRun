@@ -1,0 +1,122 @@
+[
+  {
+    "id": "T32",
+    "name": "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+    "status": "PASSED",
+    "evidence": {
+      "retention_limit": 256,
+      "completed_definition_count": 0,
+      "root_data_retained": true,
+      "no_recursive_data_deletion": true,
+      "retained_diagnostics": 2,
+      "synthetic_reports_unchanged": true,
+      "all_successful_definitions_retired": true
+    }
+  },
+  {
+    "id": "T32",
+    "name": "normal_manager_startup_diagnostic_only",
+    "status": "PASSED",
+    "evidence": {
+      "native_startup": {
+        "completed_observer_cpu_seconds": 0.0,
+        "completed_observer_frames": 0,
+        "native_observation_ms": 126,
+        "webview_memory_target_low": true,
+        "observer_cpu_attribution_complete": false,
+        "native_before_webview_ms": 134,
+        "completed_observer_streams": 0,
+        "native_window_created_ms": 3682
+      },
+      "inspector_enabled": false,
+      "environment_count": 1,
+      "native_window_present_ms": 917.7282,
+      "performance_exit_gate_claimed": false,
+      "startup_interactive_upper_bound_ms": 4178.0777
+    }
+  },
+  {
+    "id": "T32",
+    "name": "actual_normal_webview_environment_navigation",
+    "status": "PASSED",
+    "evidence": {
+      "real_backend": true,
+      "ten_owned_environments": false,
+      "mock_state": false,
+      "normal_production_binary": true
+    }
+  },
+  {
+    "id": "T32",
+    "name": "metadata_rename_preserves_identity_and_never_replays",
+    "status": "PASSED",
+    "evidence": {
+      "policy_and_generation_unchanged": true,
+      "actual_product_ui": true,
+      "metadata_only": true,
+      "permanent_replay_tombstone": true
+    }
+  },
+  {
+    "id": "T32",
+    "name": "real_keyboard_and_windows_screen_reader_provider",
+    "status": "PASSED",
+    "evidence": {
+      "accessible_labels_and_roles": true,
+      "native_window_dpi": 96,
+      "native_invoke_changed_page": true,
+      "tab_order_actual": true,
+      "f6_navigation_actual": true,
+      "real_windows_uia": true
+    }
+  },
+  {
+    "id": "T32",
+    "name": "english_russian_themes_and_native_webview_scaling",
+    "status": "PASSED",
+    "evidence": {
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "content_scales": [
+        100,
+        150,
+        200
+      ],
+      "actual_native_webview_zoom": true,
+      "os_display_setting_modified": false,
+      "real_chromium_accessibility_tree": true,
+      "languages": [
+        "en",
+        "ru"
+      ],
+      "labeled_comboboxes": 3
+    }
+  },
+  {
+    "id": "T32",
+    "name": "actual_windows_display_dpi_and_bilingual_product_layouts",
+    "status": "PASSED",
+    "evidence": {
+      "actual_windows_display_changes": true,
+      "native_dpi_observations": [
+        {
+          "native_window_dpi": 96,
+          "percent": 100
+        },
+        {
+          "native_window_dpi": 144,
+          "percent": 150
+        },
+        {
+          "native_window_dpi": 192,
+          "percent": 200
+        }
+      ],
+      "os_security_settings_modified": false,
+      "production_manager_window_measured": true,
+      "content_scale_percent": 100
+    }
+  }
+]

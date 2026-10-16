@@ -532,7 +532,7 @@ fn list(
     offset: u32,
     reply: &mut contract::Reply,
 ) -> R<()> {
-    if offset > 4096 {
+    if offset > 16384 {
         return Err("ENUMERATION_BOUND");
     }
     let root = engine.root_for(e.id);
@@ -1072,6 +1072,25 @@ pub fn bounded_request(request: &crate::files::Request) -> crate::files::Reply {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn inert_directional_filename_keeps_native_identity_and_escaped_suffix() {
+        let temp = tempfile::tempdir_in(known(&FOLDERID_LocalAppData).unwrap()).unwrap();
+        let name = "report\u{202e}fdp.exe";
+        let source = temp.path().join(name);
+        std::fs::write(&source, b"INERT_FILENAME_ONLY").unwrap();
+        let held = transfer_canonical(&source).unwrap();
+        let expected = File::open(&source).unwrap();
+        assert_eq!(
+            identity(held.last().unwrap()).unwrap(),
+            identity(&expected).unwrap()
+        );
+        assert_eq!(contract::display(name), "report\\u{202e}fdp.exe");
+        assert!(canonical(&source).is_err());
+        assert!(contract::leaf(name).is_err());
+        drop(held);
+        drop(expected);
+    }
+
     #[test]
     fn ntfs_marker_precedes_payload_and_handle_rename_never_replaces() {
         let temp = tempfile::tempdir_in(known(&FOLDERID_LocalAppData).unwrap()).unwrap();

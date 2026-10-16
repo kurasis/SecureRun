@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "status": "MEASURED_DEVIATION",
+  "mandatory_checks_waived": false,
+  "metrics": [
+    {
+      "metric": "STARTUP_INTERACTIVE",
+      "observed": 2616.9734,
+      "target": 3000,
+      "relation": "<=",
+      "unit": "ms",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "IDLE_CPU",
+      "observed": 1.143244435350002,
+      "target": 1,
+      "relation": "<",
+      "unit": "percent",
+      "result": "DEVIATION",
+      "user_impact": "The idle manager consumes more processor time and may increase power use."
+    },
+    {
+      "metric": "IDLE_WORKING_SET",
+      "observed": 243431929,
+      "target": 250000000,
+      "relation": "<",
+      "unit": "bytes",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "PROCESS_UPDATE",
+      "observed": 1290,
+      "target": 2000,
+      "relation": "<=",
+      "unit": "ms",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "ADDED_LAUNCH",
+      "observed": 573,
+      "target": 1000,
+      "relation": "<",
+      "unit": "ms",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    }
+  ]
+}

@@ -82,8 +82,13 @@ process birth, owner SID and both self/parent box context from the OS and origin
 driver. Credentials are removed from its environment before probe launch. A bounded
 worker job, bounded input/output and held process receipt limit failures; an
 unknown result blocks verification. The private journal records diagnostic scope
-before effects; failed probes are fenced. Retained diagnostics have a quota of 64;
-no generic recursive deletion is introduced ahead of the lifecycle phase.
+before effects; failed probes are fenced. Retained diagnostics have a quota of 256, covering the required ten-environment
+workload with native/x86/x64 verification. Successful fresh diagnostic definitions
+are retired only after full enforcement proof, complete stopped scope, held root
+identity and exact current configuration/automation checks. Their data and audit
+records are retained; failed scopes remain fenced and inspect-only. No diagnostic
+root data is recursively deleted. Mandatory sibling denials compile in canonical
+root order, independent of UUID insertion versus durable listing order.
 
 Original RPC support can outlive the fixed probe. The private diagnostic stop
 validates this worker's generated box, exact current section, marker and held
@@ -125,3 +130,20 @@ Source review is pinned to Sandboxie commit
 [templates](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/install/Templates.ini),
 [driver flags](https://github.com/sandboxie-plus/Sandboxie/blob/cdba7096240b93d79c5373aa81a75a1c5c71b883/Sandboxie/core/drv/api_flags.h).
 No SandMan implementation or engine binary is copied or bundled.
+
+A full policy namespace rollout has a finite 600-second worker deadline. Up to
+12 owned environments and all required native/x86/x64 fixed diagnostics are
+verified; shortening a rollout by omitting enforcement checks is not permitted.
+Unboxed endpoint positive controls may repeat a fixed benign handshake in a
+bounded four-second availability window. Server counters increment before reply;
+the completed control-count baseline is frozen before dispatching any canary.
+Every subsequent matching request counts as target traffic, including requests
+whose replies are lost. Native regression tests cover one to four control attempts
+and a later packet on each of all six endpoints. Numeric control baselines are
+retained with probe proof; failure records contain only endpoint index, fixed stage,
+attempt count and numeric status. No IP, port or private path is exported.
+
+Online TCP and UDP availability probes may repeat only their exact fixed benign
+request within a bounded four-second window. Offline probes retain one attempt
+and any independent server-observed traffic still rejects verification. This does
+not retry user applications or discard failed enforcement results.

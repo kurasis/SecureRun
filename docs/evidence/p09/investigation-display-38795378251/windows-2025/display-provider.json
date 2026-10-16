@@ -1,0 +1,61 @@
+﻿{
+    "failure_line":  35,
+    "resolution_options":  [
+
+                           ],
+    "controls":  [
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Scaling_ItemSizeOverride_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  true,
+                         "enabled":  true
+                     },
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Resolution_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  false,
+                         "enabled":  true
+                     },
+                     {
+                         "patterns":  [
+                                          "SelectionPatternIdentifiers.Pattern",
+                                          "ExpandCollapsePatternIdentifiers.Pattern",
+                                          "ScrollItemPatternIdentifiers.Pattern",
+                                          "ItemContainerPatternIdentifiers.Pattern"
+                                      ],
+                         "automation_id":  "SystemSettings_Display_Orientation_ComboBox",
+                         "type":  "ControlType.ComboBox",
+                         "percentage":  null,
+                         "scale_label":  false,
+                         "enabled":  false
+                     }
+                 ],
+    "hresult":  -2146233087,
+    "schema":  1,
+    "exception_type":  "System.Management.Automation.RuntimeException",
+    "display_settings_modified":  false,
+    "actual_dpi":  [
+
+                   ],
+    "synthetic_actions_vm_only":  true,
+    "status":  "FAILED",
+    "stage":  "ENUMERATING_ADVERTISED_RESOLUTIONS",
+    "scale_options":  [
+
+                      ],
+    "code":  "WINDOWS_DISPLAY_PROVIDER_DISCOVERY_FAILED"
+}

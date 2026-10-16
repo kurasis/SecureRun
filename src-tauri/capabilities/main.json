@@ -7,6 +7,6 @@
   "permissions": [
     "allow-get-snapshot", "allow-get-engine-health", "allow-subscribe-state", "allow-unsubscribe-state", "allow-create-draft", "allow-reserve-operation",
     "allow-select-file", "allow-prepare-transfer", "allow-get-operation",
-    "allow-diagnostic-summary", "allow-policy-request", "allow-control-request", "allow-files-request", "allow-lifecycle-request", "allow-select-policy-path"
+    "allow-diagnostic-summary", "allow-product-request", "allow-policy-request", "allow-control-request", "allow-files-request", "allow-lifecycle-request", "allow-select-policy-path"
   ]
 }

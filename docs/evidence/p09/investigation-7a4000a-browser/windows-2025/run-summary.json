@@ -1,0 +1,23 @@
+{
+  "phase": "P09",
+  "os_security_settings_modified": false,
+  "pe_machine": "8664",
+  "ui_failed": 0,
+  "engineering_budget_status": "NOT_MEASURED",
+  "apps_only": true,
+  "failed": 3,
+  "native_cases_passed": 1,
+  "ui_cases_passed": 0,
+  "browser_only": true,
+  "real_normal_webview": false,
+  "elevated_product_helper": false,
+  "build": "release",
+  "os_build": 26100,
+  "browser_sandbox_disabled": false,
+  "result": "FAILED",
+  "synthetic_profiles_only": true,
+  "manager_binary_sha256": "cbd09943d64639b561368d20339e647dc6dfa0fccf8e0504b98a29694d508960",
+  "workload_mode": "DIAGNOSTIC_ONLY",
+  "standard_user": true,
+  "manager_commit": "7a4000a01593d0f915f06ba7a0b2497490502aa6"
+}

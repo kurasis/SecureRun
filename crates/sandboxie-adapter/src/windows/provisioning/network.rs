@@ -46,7 +46,7 @@ pub(super) fn bits_activation_status() -> i32 {
 // Fresh boxed listeners test unsolicited incoming traffic as well as replies
 // on established outbound flows. Four OS-assigned ports are the entire private
 // rendezvous; neither peer supplies a remote address or executable.
-pub(super) fn incoming_probe(output: &str) -> R<[bool; 4]> {
+pub(super) fn incoming_probe(output: &str, offline: bool) -> R<[bool; 4]> {
     let mut tcp = Vec::new();
     let mut udp = Vec::new();
     let mut ports = [0u16; 4];
@@ -65,7 +65,11 @@ pub(super) fn incoming_probe(output: &str) -> R<[bool; 4]> {
         let socket = std::net::UdpSocket::bind(address).ok();
         if let Some(socket) = &socket {
             socket
-                .set_read_timeout(Some(Duration::from_millis(900)))
+                .set_read_timeout(Some(Duration::from_millis(if offline {
+                    1800
+                } else {
+                    5000
+                })))
                 .map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?;
             ports[i + 2] = socket
                 .local_addr()
@@ -84,33 +88,65 @@ pub(super) fn incoming_probe(output: &str) -> R<[bool; 4]> {
     file.sync_all()
         .map_err(|_| "INCOMING_PROBE_REPORT_UNAVAILABLE")?;
     drop(file);
-    let mut result = [false; 4];
-    for (i, listener) in tcp.into_iter().enumerate() {
-        let Some(listener) = listener else { continue };
-        let clock = Instant::now();
-        while clock.elapsed() < Duration::from_millis(1800) {
-            if let Ok((mut socket, peer)) = listener.accept() {
-                if peer.ip().is_loopback() {
-                    let _ = socket.set_read_timeout(Some(Duration::from_millis(900)));
-                    let mut bytes = [0u8; 1];
-                    result[i] = socket.read_exact(&mut bytes).is_ok()
-                        && bytes == *b"P"
-                        && socket.write_all(b"R").is_ok();
+    // Every channel has its own observation window. A refused/slow IPv4
+    // accept must not consume another listener's or UDP receiver's deadline.
+    let tcp_jobs = tcp
+        .into_iter()
+        .map(|listener| {
+            std::thread::spawn(move || {
+                let Some(listener) = listener else {
+                    return false;
+                };
+                let clock = Instant::now();
+                let window = Duration::from_millis(if offline { 1800 } else { 5000 });
+                while clock.elapsed() < window {
+                    if let Ok((mut socket, peer)) = listener.accept() {
+                        if !peer.ip().is_loopback() {
+                            return false;
+                        }
+                        // Winsock accept inherits the listener's nonblocking
+                        // mode. A read timeout does not make that socket blocking.
+                        // Wait for the bounded handshake instead of mistaking
+                        // WSAEWOULDBLOCK before the first byte for a policy block.
+                        if socket.set_nonblocking(false).is_err() {
+                            return false;
+                        }
+                        // A connected online peer may still be descheduled on an
+                        // emulated target. Keep its positive handshake window as
+                        // long as the host read; offline observations stay short.
+                        let handshake = Duration::from_millis(if offline { 900 } else { 5000 });
+                        let _ = socket.set_read_timeout(Some(handshake));
+                        let _ = socket.set_write_timeout(Some(handshake));
+                        let mut bytes = [0u8; 1];
+                        return socket.read_exact(&mut bytes).is_ok()
+                            && bytes == *b"P"
+                            && socket.write_all(b"R").is_ok();
+                    }
+                    std::thread::sleep(Duration::from_millis(10));
                 }
-                break;
-            }
-            std::thread::sleep(Duration::from_millis(10));
-        }
-    }
-    for (i, socket) in udp.into_iter().enumerate() {
-        if let Some(socket) = socket {
-            let mut bytes = [0u8; 1];
-            if let Ok((1, peer)) = socket.recv_from(&mut bytes) {
-                result[i + 2] = peer.ip().is_loopback()
-                    && bytes == *b"P"
-                    && socket.send_to(b"R", peer).is_ok_and(|n| n == 1);
-            }
-        }
+                false
+            })
+        })
+        .collect::<Vec<_>>();
+    let udp_jobs = udp
+        .into_iter()
+        .map(|socket| {
+            std::thread::spawn(move || {
+                let Some(socket) = socket else { return false };
+                let mut bytes = [0u8; 1];
+                if let Ok((1, peer)) = socket.recv_from(&mut bytes) {
+                    peer.ip().is_loopback()
+                        && bytes == *b"P"
+                        && socket.send_to(b"R", peer).is_ok_and(|n| n == 1)
+                } else {
+                    false
+                }
+            })
+        })
+        .collect::<Vec<_>>();
+    let mut result = [false; 4];
+    for (i, job) in tcp_jobs.into_iter().chain(udp_jobs).enumerate() {
+        result[i] = job.join().map_err(|_| "INCOMING_PROBE_UNAVAILABLE")?;
     }
     Ok(result)
 }
@@ -120,7 +156,7 @@ pub(super) struct IncomingControl {
     thread: Option<std::thread::JoinHandle<R<[bool; 4]>>>,
 }
 impl IncomingControl {
-    pub(super) fn new(root: PathBuf, leaf: String) -> Self {
+    pub(super) fn new(root: PathBuf, leaf: String, offline: bool) -> Self {
         let stop = Arc::new(AtomicBool::new(false));
         let stopped = stop.clone();
         let thread = std::thread::spawn(move || {
@@ -148,44 +184,71 @@ impl IncomingControl {
             };
             // Exercise channels concurrently: a blocked IPv4 connect must not
             // consume the IPv6 listener's or UDP receiver's observation window.
-            let jobs = ports
-                .into_iter()
-                .enumerate()
-                .map(|(i, port)| {
-                    std::thread::spawn(move || {
-                        if port == 0 {
-                            return false;
-                        }
-                        let address = if i % 2 == 0 {
-                            std::net::SocketAddr::from(([127, 0, 0, 1], port))
-                        } else {
-                            std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], port))
-                        };
-                        let mut bytes = [0u8; 1];
-                        if i < 2 {
-                            let Ok(mut socket) = std::net::TcpStream::connect_timeout(
-                                &address,
-                                Duration::from_millis(900),
-                            ) else {
+            let jobs =
+                ports
+                    .into_iter()
+                    .enumerate()
+                    .map(|(i, port)| {
+                        std::thread::spawn(move || {
+                            if port == 0 {
                                 return false;
+                            }
+                            let address = if i % 2 == 0 {
+                                std::net::SocketAddr::from(([127, 0, 0, 1], port))
+                            } else {
+                                std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], port))
                             };
-                            let _ = socket.set_read_timeout(Some(Duration::from_millis(900)));
-                            socket.write_all(b"P").is_ok()
-                                && socket.read_exact(&mut bytes).is_ok()
-                                && bytes == *b"R"
-                        } else {
-                            let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
-                            let Ok(socket) = std::net::UdpSocket::bind(bind) else {
-                                return false;
-                            };
-                            let _ = socket.set_read_timeout(Some(Duration::from_millis(1800)));
-                            socket.send_to(b"P", address).is_ok()
-                                && socket.recv(&mut bytes).is_ok_and(|n| n == 1)
-                                && bytes == *b"R"
-                        }
+                            let mut bytes = [0u8; 1];
+                            if i < 2 {
+                                // Only the synthetic online availability control
+                                // may retry a connect that has not connected. Offline
+                                // still makes exactly one attempt; an established
+                                // connection is never repeated or counted as a retry.
+                                let began = Instant::now();
+                                let mut socket = loop {
+                                    let remaining =
+                                        Duration::from_secs(4).saturating_sub(began.elapsed());
+                                    if !offline && remaining.is_zero() {
+                                        return false;
+                                    }
+                                    let attempt = if offline {
+                                        Duration::from_millis(900)
+                                    } else {
+                                        remaining.min(Duration::from_millis(900))
+                                    };
+                                    match std::net::TcpStream::connect_timeout(&address, attempt) {
+                                        Ok(socket) => break socket,
+                                        Err(_)
+                                            if !offline
+                                                && began.elapsed() < Duration::from_secs(4) =>
+                                        {
+                                            std::thread::sleep(Duration::from_millis(20));
+                                        }
+                                        Err(_) => return false,
+                                    }
+                                };
+                                let _ = socket.set_read_timeout(Some(Duration::from_millis(
+                                    if offline { 900 } else { 5000 },
+                                )));
+                                let _ = socket.set_write_timeout(Some(Duration::from_millis(900)));
+                                socket.write_all(b"P").is_ok()
+                                    && socket.read_exact(&mut bytes).is_ok()
+                                    && bytes == *b"R"
+                            } else {
+                                let bind = if i % 2 == 0 { "127.0.0.1:0" } else { "[::1]:0" };
+                                let Ok(socket) = std::net::UdpSocket::bind(bind) else {
+                                    return false;
+                                };
+                                let _ = socket.set_read_timeout(Some(Duration::from_millis(
+                                    if offline { 1800 } else { 5000 },
+                                )));
+                                socket.send_to(b"P", address).is_ok()
+                                    && socket.recv(&mut bytes).is_ok_and(|n| n == 1)
+                                    && bytes == *b"R"
+                            }
+                        })
                     })
-                })
-                .collect::<Vec<_>>();
+                    .collect::<Vec<_>>();
             let mut observed = [false; 4];
             for (i, job) in jobs.into_iter().enumerate() {
                 observed[i] = job.join().map_err(|_| "INCOMING_OBSERVER_FAILED")?;
@@ -651,5 +714,70 @@ impl Drop for DnsControl {
         if let Some(thread) = self.thread.take() {
             let _ = thread.join();
         }
+    }
+}
+
+#[cfg(test)]
+mod incoming_tests {
+    use super::*;
+
+    #[test]
+    fn unanswered_ipv4_does_not_starve_ipv6_or_udp_receivers() {
+        // Ordinary unboxed loopback fixture; this is not containment evidence.
+        let path = std::env::temp_dir().join(format!("securerun-incoming-{}.json", Uuid::new_v4()));
+        struct Remove(std::path::PathBuf);
+        impl Drop for Remove {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_file(&self.0);
+            }
+        }
+        let _cleanup = Remove(path.clone());
+        let output = path.to_str().unwrap().to_owned();
+        let target = std::thread::spawn(move || incoming_probe(&output, false));
+        let began = Instant::now();
+        let ports: [u16; 4] = loop {
+            if let Ok(bytes) = std::fs::read(&path)
+                && let Ok(ports) = serde_json::from_slice(&bytes)
+            {
+                break ports;
+            }
+            assert!(
+                began.elapsed() < Duration::from_secs(5),
+                "listener rendezvous missing"
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        };
+        assert!(ports.iter().all(|port| *port >= 1024));
+        // Deliberately leave IPv4 TCP unanswered until its own window ends.
+        let address = std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], ports[1]));
+        let mut tcp =
+            std::net::TcpStream::connect_timeout(&address, Duration::from_secs(2)).unwrap();
+        tcp.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        // Positive online traffic must tolerate scheduling after connection;
+        // the former 900 ms target read expired before this byte was sent.
+        std::thread::sleep(Duration::from_millis(1100));
+        tcp.write_all(b"P").unwrap();
+        let mut response = [0u8; 1];
+        tcp.read_exact(&mut response).unwrap();
+        assert_eq!(response, *b"R");
+        for (bind, address) in [
+            (
+                "127.0.0.1:0",
+                std::net::SocketAddr::from(([127, 0, 0, 1], ports[2])),
+            ),
+            (
+                "[::1]:0",
+                std::net::SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], ports[3])),
+            ),
+        ] {
+            let socket = std::net::UdpSocket::bind(bind).unwrap();
+            socket
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .unwrap();
+            socket.send_to(b"P", address).unwrap();
+            assert_eq!(socket.recv(&mut response).unwrap(), 1);
+            assert_eq!(response, *b"R");
+        }
+        assert_eq!(target.join().unwrap().unwrap(), [false, true, true, true]);
     }
 }

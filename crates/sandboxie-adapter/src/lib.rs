@@ -2,7 +2,9 @@
 pub mod control;
 pub mod files;
 pub mod lifecycle;
+pub mod live_wait;
 pub mod policy;
+pub mod product;
 pub mod provision;
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
@@ -11,6 +13,8 @@ pub const PROTOCOL: u32 = 1;
 pub const RESPONSE_LIMIT: usize = 2 * 1024 * 1024;
 pub const MAX_PROCESSES: usize = 1024;
 pub const MAX_BOXES: usize = 128;
+// Twelve owned boxes require up to 234 native/x86/x64 rollout diagnostics.
+pub const MAX_RETAINED_DIAGNOSTICS: usize = 256;
 pub const FRESHNESS: Duration = Duration::from_secs(15);
 pub const COMPATIBILITY: &str = include_str!("../compatibility-v1.json");
 

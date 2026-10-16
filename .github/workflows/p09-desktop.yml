@@ -1,0 +1,42 @@
+name: P09 input desktop diagnosis and preparation
+on:
+  push:
+    branches: ['p09/**']
+    paths: ['.github/workflows/p09-desktop.yml']
+  workflow_dispatch:
+    inputs:
+      input_probe:
+        description: 'Observe native point ABI and UIA ownership in an owned synthetic window'
+        type: boolean
+        default: false
+      prepare:
+        description: 'Cancel authenticated same-user initial picker/web-host windows before test applications start'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Observe or prepare the initial CI input desktop
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          New-Item -ItemType Directory -Path artifacts/p09-desktop -Force | Out-Null
+          $mode=if('${{ inputs.input_probe }}' -eq 'true'){'DESKTOP_INPUT'}elseif('${{ inputs.prepare }}' -eq 'true'){'DESKTOP_PREPARE'}else{'DESKTOP_DIAGNOSTIC'}
+          ./tools/probe/p09_accessibility.ps1 -Mode $mode -ResultFile artifacts/p09-desktop/input-desktop.json -PrepareInput:$${{ inputs.prepare && 'true' || 'false' }}
+      - name: Retain minimized desktop observation
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: p09-desktop-${{ matrix.runner }}-${{ github.sha }}
+          path: artifacts/p09-desktop/*.json
+          if-no-files-found: error
+          retention-days: 14

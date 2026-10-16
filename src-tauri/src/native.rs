@@ -202,3 +202,38 @@ pub fn accept_fixture_picker() {
         }
     });
 }
+
+/// Keep native picker COM state independent of reused asynchronous worker threads.
+pub fn picker_thread<T: Send>(action: impl FnOnce() -> T + Send) -> Result<T> {
+    std::thread::scope(|scope| {
+        std::thread::Builder::new()
+            .name("securerun-native-picker".into())
+            .spawn_scoped(scope, action)
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))?
+            .join()
+            .map_err(|_| AppError::new(ErrorCode::CapabilityUnavailable))
+    })
+}
+
+#[cfg(test)]
+mod picker_tests {
+    use super::*;
+    #[link(name = "ole32")]
+    unsafe extern "system" {
+        fn CoInitializeEx(reserved: *const core::ffi::c_void, flags: u32) -> i32;
+        fn CoUninitialize();
+    }
+    #[test]
+    fn native_picker_apartment_is_independent_of_an_mta_caller() {
+        assert!(unsafe { CoInitializeEx(std::ptr::null(), 0) } >= 0);
+        let apartment = picker_thread(|| {
+            let result = unsafe { CoInitializeEx(std::ptr::null(), 2) };
+            if result >= 0 {
+                unsafe { CoUninitialize() };
+            }
+            result
+        });
+        unsafe { CoUninitialize() };
+        assert!(apartment.unwrap() >= 0);
+    }
+}

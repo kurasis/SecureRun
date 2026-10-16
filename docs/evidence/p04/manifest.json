@@ -1,45 +1,45 @@
 {
   "phase": "P04",
   "result": "DONE",
-  "tested_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
-  "run_id": 38763957687,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38763957687",
+  "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
+  "run_id": 38893328564,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38893328564",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-74d86db/windows-2025",
+      "evidence_directory": "completion-f9a9755/windows-2025",
       "summary": {
-        "phase": "P04",
-        "result": "PASSED",
+        "manager_binary_sha256": "01c99ee44368046a1a71d0ff1f38a63b31edc88b446c4a3bc0d830c2e107bf13",
         "teardown": "DISCARD_ACTIONS_VM",
-        "target": "x86_64-pc-windows-msvc",
         "production_mutations": 0,
-        "native_cases_passed": 19,
-        "pe_machine": "8664",
-        "adapter_tests_passed": 48,
-        "manager_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
-        "manager_binary_sha256": "1b3ef46c65e4abe238ebc0b21f67e1f0cb38fa86fa5c760f7d5ccfc247cb03d4",
-        "os_build": "10.0.26100.0",
+        "adapter_tests_passed": 61,
         "production_target_launches": 0,
-        "os_security_settings_modified": false
+        "os_build": "10.0.26100.0",
+        "manager_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
+        "native_cases_passed": 19,
+        "os_security_settings_modified": false,
+        "pe_machine": "8664",
+        "result": "PASSED",
+        "phase": "P04",
+        "target": "x86_64-pc-windows-msvc"
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-74d86db/windows-11-arm",
+      "evidence_directory": "completion-f9a9755/windows-11-arm",
       "summary": {
-        "target": "aarch64-pc-windows-msvc",
-        "manager_binary_sha256": "f5f6d2293b58e7b21b461b62dec368aa50bcde1d97073a3301b37c0760865ab5",
         "os_build": "10.0.26200.0",
-        "production_target_launches": 0,
-        "pe_machine": "aa64",
-        "os_security_settings_modified": false,
-        "result": "PASSED",
-        "phase": "P04",
-        "production_mutations": 0,
-        "manager_commit": "74d86db6dc883e692dfc04c8185eee790bdcf0a9",
         "teardown": "DISCARD_ACTIONS_VM",
-        "adapter_tests_passed": 48,
+        "phase": "P04",
+        "production_target_launches": 0,
+        "manager_binary_sha256": "f5cf5fe9d42ca9e501ac9957482332c44d05aa4b78be468c563bbe6157d5e91a",
+        "pe_machine": "aa64",
+        "result": "PASSED",
+        "manager_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
+        "os_security_settings_modified": false,
+        "target": "aarch64-pc-windows-msvc",
+        "production_mutations": 0,
+        "adapter_tests_passed": 61,
         "native_cases_passed": 19
       }
     }
@@ -504,6 +504,446 @@
       "path": "completion-74d86db/windows-11-arm/standard-user.json",
       "sha256": "fcf5e344e10f979eaf76ce3a5e7046c878255c447eb2c61a919d3612dbac31b2",
       "size": 430
+    },
+    {
+      "path": "completion-ce6098f/windows-2025/stage.json",
+      "sha256": "9baec2bdbe41549e8205cd285a80a05eeb67ea9a3133ef4e14bea47b5db35de1",
+      "size": 152
+    },
+    {
+      "path": "completion-ce6098f/windows-2025/run-summary.json",
+      "sha256": "a16c85f8818401256d71536176ace25d5eb4e09f15c95be4ad423f945e92e718",
+      "size": 510
+    },
+    {
+      "path": "completion-ce6098f/windows-2025/observation-cases.json",
+      "sha256": "bc035072c4a3de049c95b7bc40f302a54278c204db0ffb218a80a652d05e9e24",
+      "size": 7320
+    },
+    {
+      "path": "completion-ce6098f/windows-2025/standard-user.json",
+      "sha256": "25f8228444e1cf5d95c8ef75d2f43c6f1861c981f63190ca106198a41a4533d3",
+      "size": 430
+    },
+    {
+      "path": "completion-ce6098f/windows-11-arm/stage.json",
+      "sha256": "39f020a8fd0f709ef38d26947bdefa58f8d8420c660472b6c7145a1a5f43b4e1",
+      "size": 152
+    },
+    {
+      "path": "completion-ce6098f/windows-11-arm/run-summary.json",
+      "sha256": "df40fc8d4376c7a506bbd9bd8237ed26e1ef0a850bca573bc9c408b9f45b7e4f",
+      "size": 511
+    },
+    {
+      "path": "completion-ce6098f/windows-11-arm/observation-cases.json",
+      "sha256": "ebd3ceca7cbc7549bbaea3b7069914ba8f299341a0e95aa63c4dde79d2ce875c",
+      "size": 7320
+    },
+    {
+      "path": "completion-ce6098f/windows-11-arm/standard-user.json",
+      "sha256": "0efd526994758d0c1f9206b8e62d210a71a5bd564532531e92aa68dd57ac7476",
+      "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/standard-user.json",
+      "sha256": "503aee3dfe2dd62f7faa6123109a6ceb6e43f2b3ad6e23a841329b7a50dbb4e4",
+      "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/stage.json",
+      "sha256": "6394fdeef4ea1985a353278375af6e9e015ea0d8ce66f52bff8088f8120d9f9e",
+      "size": 152
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/observation-cases.json",
+      "sha256": "3035c08193f482db0b40530597612ae113c79653a400485b5c694c0572c7dc3f",
+      "size": 6420
+    },
+    {
+      "path": "investigation-8398582/windows-11-arm/run-summary.json",
+      "sha256": "1586182cb542d6e062056575b07e3dc6dd12926aa331efff25b6af2786fc55dc",
+      "size": 511
+    },
+    {
+      "path": "investigation-8398582/windows-2025/standard-user.json",
+      "sha256": "8ad006f6d9cf27a2404004000eedb374f7569de574394c89e5cffaec22b29248",
+      "size": 430
+    },
+    {
+      "path": "investigation-8398582/windows-2025/stage.json",
+      "sha256": "64a891354b4148c02d7c8228f3649503033a021175f6e39e03c40d16578b7ec4",
+      "size": 152
+    },
+    {
+      "path": "investigation-8398582/windows-2025/run-summary.json",
+      "sha256": "eddf3189572fecac19e25f16953e92ca7d0131183ea4fd1671248c345266ebb6",
+      "size": 510
+    },
+    {
+      "path": "investigation-8398582/windows-2025/observation-cases.json",
+      "sha256": "7348cc0dbbbb72a3eb62779b473271f52b5c5b2104eaece7aa933dca53a66d7c",
+      "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/standard-user.json",
+      "sha256": "ebbfe8cc856ba522795de87cc5b98ca32ff7f2c316ce57fde92ce5e8bfd7efc1",
+      "size": 430
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/run-summary.json",
+      "sha256": "9b87262ac70daa814e937eafc136ba47106ff52034d8f08177f92f919af889a1",
+      "size": 511
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/observation-cases.json",
+      "sha256": "5c8a2644a6baa53a801c93e173ef1b83d086686115fa1fd3661a20ea4d7b0504",
+      "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-11-arm/stage.json",
+      "sha256": "e79a59fa465660f71e4c2ab0ea1f04a5144946a7f5b1370e1e6e4a4fa4c28057",
+      "size": 152
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/standard-user.json",
+      "sha256": "958401d7f128d9000db8d297aeb8486fa285f7a3bf224c143a07185cedf7bb3a",
+      "size": 430
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/stage.json",
+      "sha256": "7cf58435945b5ec16639bd56734eb677f306de34160e0d0f1673909d1c37a2e8",
+      "size": 152
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/observation-cases.json",
+      "sha256": "dadbefe826e969e1d01a65a1c7f72f6c9cb1a74e8a7a1d35c594e1efdea60d43",
+      "size": 7320
+    },
+    {
+      "path": "investigation-d2b138a/windows-2025/run-summary.json",
+      "sha256": "7bf21e0f1e0c9589016b42779eadfd4a392fdbc8059cfd0744f985611205d7c0",
+      "size": 510
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/stage.json",
+      "sha256": "ee19ec5486d296d59f8f5b20c30764ddb06954e26a29d4defc6f1b558fa014c4",
+      "size": 152
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/run-summary.json",
+      "sha256": "96983616bc3b30809897f7b63aa710a73b0cfcf8ac694a17ec6a876772bbbaeb",
+      "size": 510
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/observation-cases.json",
+      "sha256": "31db0fde555d5e246c2c0619665bc75245850b7674fca1a0f2cb4f5832b83394",
+      "size": 7320
+    },
+    {
+      "path": "completion-eaab83c/windows-2025/standard-user.json",
+      "sha256": "2b5c8e939fe10c03f0d454cc82d9fd9ba2a05fe2007ebdf539c620e02197e930",
+      "size": 430
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/stage.json",
+      "sha256": "bebf35f3bd1ced4a8b4e38b259372ab32c43069435d2431f27af10c53736a0f6",
+      "size": 152
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/run-summary.json",
+      "sha256": "34c79e0f886ef722756bc13404f0e61611e82d35cccee51a16bbc232378c117d",
+      "size": 511
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/observation-cases.json",
+      "sha256": "88e84d291e386c9bab4081196699cb30b6250c76d505d2f7028cf2a8b69bc26d",
+      "size": 7320
+    },
+    {
+      "path": "completion-eaab83c/windows-11-arm/standard-user.json",
+      "sha256": "14031087211a1a7d54784e7b309cd312072b7c9a2b35ca3fc43c2b810630f95b",
+      "size": 430
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/stage.json",
+      "sha256": "3cbe32b419eb4ce58783c9388ba17425498583169c5acacd1a32713b31180d35",
+      "size": 152
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/run-summary.json",
+      "sha256": "af4438ed3c4bad19c8fd1641385f5faf345e563fe48d3afb16ce4adfa6f0e203",
+      "size": 510
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/observation-cases.json",
+      "sha256": "211f9e628a94c3890ada758d63adc3f6588334180cce58bd39c1e68731933d5c",
+      "size": 7320
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/standard-user.json",
+      "sha256": "8a6519477e173d7361dd92acf7abd51d94f92d2d77d18f897871820481fa0e3c",
+      "size": 430
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/stage.json",
+      "sha256": "e73473b91cd1534f3f55c94cb0013b8696b94f81d584ecdca81c31bebf21003d",
+      "size": 152
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/run-summary.json",
+      "sha256": "03d8bea00e8eb5e7259f1a213f7acac6ef6a2ca562f6d4d9e54309395098593d",
+      "size": 511
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/observation-cases.json",
+      "sha256": "cbfd52625c6175fe499c8758ff4a4d3eab1b5a24255fa1acb40361115f431a94",
+      "size": 7320
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/standard-user.json",
+      "sha256": "eb015a1a5377341cf580b74bd8bd66023175fa5ce9923d89d222939322b4b4f5",
+      "size": 430
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "2d1612b2dc0828f602c08cd1f21abb116725dd0c2cbef3456cca637b6acd9f20"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "7430f17795b2c33761ccd325cd87296efcf5ea5a3ce3b9a44ac6993213ae7b73"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "28e26349b2a5b9f1df08b1c4b0a1463e9a9ca14564b10a220f5d2ab567f8e767"
+    },
+    {
+      "path": "investigation-cf6edad/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "b31f5a57a9cb31ebc7be68c7af97e566fec5e6af95c8dd7d7de45abee59950ba"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "d9cb09f5226265fa208fcfd5ae52dce18cf763a2967c778feb53eedde3daa536"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "dd6a57f07aa977cdbbf9090561213d1b7aa6b2f11455ed959a9705e474e93de9"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "28e26349b2a5b9f1df08b1c4b0a1463e9a9ca14564b10a220f5d2ab567f8e767"
+    },
+    {
+      "path": "investigation-cf6edad/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "036a43d0bc54e6751ab10d72aa7b2e21b3d4358eb39ca37836b808697a12299c"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "3bc1ba5187e5e2610d2d806cef1ec0f4d6111ea5bd6fed7558155e2396676b8c"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "590c2677b59e8f22568866b756f34fe749015260709c92ce5eaa24145251feab"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "51a3915a68efc6f063a9844ce9d2431897c2d1fb8b357314361d56f0d1dbecb2"
+    },
+    {
+      "path": "investigation-4956792/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "52661f68460d1445aacc760b2f2b3557bc90204acd1e979360269040f30bfcf2"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "0d0642dcd57f9b83377dcd2f6586b05e81e3edcd7096ec27473697f963b80c22"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "02866677b3f8dd15e5766c776a0036c59cdb0522b1cc6f777d00800696883919"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "64054f1425416e96d0c39bdd9844ea1e583b9a491cc65932c7434e5d60ab5fe0"
+    },
+    {
+      "path": "investigation-4956792/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "b73f7062ddd66b230e392bef8384a5247170555e41fc310f72630a9282448277"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "471f42fc76b133424227f5ce425f0b5fac960a4e54093e45518aebab3b1b50d4"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "c21d15b8066cddc4d174582632a534f92465780dfebfbb10f4a13fa627665f5d"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "d807a8564ba9052ae1d056baa0f144b2272d68d5422c3360291dd7e64990b38f"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "f2065ee19d32bc1ab0ea3db084af03549a3d4dc769d58a576a9d044cf38f8dd3"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/observation-cases.json",
+      "size": 7203,
+      "sha256": "f9f70c3f1e5bc1142e79e26e848821c641825a8da2e90c1912c4984ac19b73ac"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "960640dabfdc98be5d9604886b8891810d3b00cfc39778f55433aa3413f66c59"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "918f60b26fc006461265e52ef1ec4a32f3cd30c53d048ecf23b707127b482532"
+    },
+    {
+      "path": "investigation-b04a766-first/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "54f9fefefa39d550a17e9980670e42275cc339e9d94054e146f436e3aa6bd158"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "2e4d8d4b0dff702001c1fa1944ba483b0cdf278e70341f342f1976f6529c95ff"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "1898f8e7900db1841f83cb20bca13530c8f3e75b5cede303c2d9c3b95637ad0b"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "370acf7efdd98f0f0596f6442b3f2391bc279ac636622531c1657a1ba28702a4"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "00db1aea984ef75a5c38c462dd0b12717d539e9d775bef39421d95ef17b191e2"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "20ea2008855dd2d85011b8ab9410a5e612fb465c265a747c8548fe001e6e4fa7"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "94b4aa1b94189ead35d193fd0a99b37225a7e667c952d3940f03534871678eba"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "7d5435bf26876b449cd6b16c19f538c223d7dddf7719d05d6abc87476d3961f9"
+    },
+    {
+      "path": "investigation-b04a766-repeat/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "84ef859f8ffc15a73dd4038b0208c37622fddcba3cce45cac5b77ccb83b15274"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/observation-cases.json",
+      "size": 7320,
+      "sha256": "890a0bd06f31114f8fb8c1ad2ef8b9e23537bc68fc85de5eef2f35a2d268ed52"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/run-summary.json",
+      "size": 511,
+      "sha256": "bbdef1c521872bc5676c5cd2c9962f0974d165c8bfc83c63bad0d1cf9c95aa87"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "7fa182851349f561c2e16cc5c289548a4ece88b4a8ebfb5fcb9e8a3ef67bc0f0"
+    },
+    {
+      "path": "investigation-f4c4603/windows-11-arm/standard-user.json",
+      "size": 430,
+      "sha256": "8fca46b9cf705c959b6eaf6c1c89dff2cfc85ec9766214b6a40e3d429d5389e2"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/observation-cases.json",
+      "size": 7320,
+      "sha256": "6833c0b9f6ebfd86072ace43c17a9ceea9c386f587cd731647deb73a1cfb9e25"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/run-summary.json",
+      "size": 510,
+      "sha256": "b47aab57e870f0a7b651dcea575433399ddbef767f35550dbe9b2b905b6f14e0"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "3d3cdf5cc9e90adddc9e70e7aab19ee536352a93a8801e555257d3aaa9191e1e"
+    },
+    {
+      "path": "investigation-f4c4603/windows-2025/standard-user.json",
+      "size": 430,
+      "sha256": "7760389b07b6e9ea60e03459b9dc8e122387daf074b1432632d1e87ec20b8212"
+    },
+    {
+      "path": "completion-f9a9755/windows-2025/stage.json",
+      "sha256": "d39a5435bb27bbc9c55958c8fb3e9ce7c7d1fd724cf68ab648caa60a7a5a4d4b",
+      "size": 152
+    },
+    {
+      "path": "completion-f9a9755/windows-2025/run-summary.json",
+      "sha256": "c00accfeb52de19bcd76d521ac721ab8234c6b5f2674f5cad6ac6440065c9d10",
+      "size": 510
+    },
+    {
+      "path": "completion-f9a9755/windows-2025/observation-cases.json",
+      "sha256": "2d18a238605ec3fdcfc02903afa4dec4ecef2099ec4d828736e701b1c7d0502e",
+      "size": 7320
+    },
+    {
+      "path": "completion-f9a9755/windows-2025/standard-user.json",
+      "sha256": "2b6c5cd5dfad26384c2b322e43a6d5b022fa6b8a5508fd24e361e772a54bd85c",
+      "size": 430
+    },
+    {
+      "path": "completion-f9a9755/windows-11-arm/stage.json",
+      "sha256": "c46cdc26ff526a67407638ca637b60b03939fb4f9c8827e87437ad43208f2d20",
+      "size": 152
+    },
+    {
+      "path": "completion-f9a9755/windows-11-arm/run-summary.json",
+      "sha256": "9c3aaf801a8dbddd1663a296568932144316215df86b54cf14c7d1ae39b6353b",
+      "size": 511
+    },
+    {
+      "path": "completion-f9a9755/windows-11-arm/observation-cases.json",
+      "sha256": "0f03bf8673ddd96fad655bbfe805fba6352e6e9418b28367214aac8611e6745e",
+      "size": 7320
+    },
+    {
+      "path": "completion-f9a9755/windows-11-arm/standard-user.json",
+      "sha256": "1d7447db7676f44cf773fd93d598f3cdf1770e89b8538bde9d55d2631499f029",
+      "size": 430
     }
   ],
   "tested_sources": [
@@ -579,8 +1019,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/control.rs",
-      "sha256": "16f594ec2df9fc91a752ecac5060b654a960e63515a4fe2c6419fca6d1f8fc1f",
-      "size": 16848
+      "sha256": "30cf88de2993f71bdbbb58d78d7299b72045e739f9552d919fcf29ef06fd7e4d",
+      "size": 17323
     },
     {
       "path": "crates/sandboxie-adapter/src/files.rs",
@@ -589,8 +1029,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/lib.rs",
-      "sha256": "90f97c6bdee235bd3a9f5b607551918f6e981420bae011c13c820c1d4961a5d1",
-      "size": 16720
+      "sha256": "0efdb8292c090f3407ec00c6b62e05dc04116ccc5028374e8a7883e956872a05",
+      "size": 16881
     },
     {
       "path": "crates/sandboxie-adapter/src/lifecycle.rs",
@@ -598,14 +1038,29 @@
       "size": 12609
     },
     {
+      "path": "crates/sandboxie-adapter/src/live_wait.rs",
+      "sha256": "9286a51b0201cb2aa378c4938d1b4eeb96412957a2512bebf7dc5096b13f2e50",
+      "size": 2445
+    },
+    {
       "path": "crates/sandboxie-adapter/src/policy.rs",
       "sha256": "a03940eedbe3dff9108a97ea53dadfcaf76c063ae6b21ae178e74ad049abec32",
       "size": 17805
     },
     {
+      "path": "crates/sandboxie-adapter/src/product.rs",
+      "sha256": "240ce2e86a448a952a49e0a7ecc52d49fe7aaec91246bc52d70714b327abc2f0",
+      "size": 12244
+    },
+    {
       "path": "crates/sandboxie-adapter/src/provision.rs",
-      "sha256": "fe2da5fafa3692e0ce1dfa2f95b92998cea25f7ad8bee06efa3aedfb085e9f22",
-      "size": 35602
+      "sha256": "9339c466fd8144a0b4d5c483472da9f6c7750e1e00357b2f4465c72253a4fb90",
+      "size": 37655
+    },
+    {
+      "path": "crates/sandboxie-adapter/src/windows/live.rs",
+      "sha256": "0047fdedcb1400b741456eef0dc08c39d51d0b9d2b053f7988faea9fc4e8fd71",
+      "size": 9837
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/aliases.rs",
@@ -614,13 +1069,13 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/control.rs",
-      "sha256": "d56757e8dd1e17d283b7ddbd6a19e5ce4d987cb0c526059fb40d9775095d4122",
-      "size": 29409
+      "sha256": "6f734131f6fb96807dc737f665a5f98b39ce3a6f555cc0e2fed37dfd45c2c577",
+      "size": 30965
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/files.rs",
-      "sha256": "2630763d728036e927fefffaea2b3d628b3544b26eda7273c6490a253d4e2a41",
-      "size": 41062
+      "sha256": "057293341a8114eedac2ded94430ad1b8cf22a3ea190431e108c1906ff94578c",
+      "size": 41850
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/lifecycle/seal.rs",
@@ -634,28 +1089,33 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/network.rs",
-      "sha256": "cbd7d0276b31b71a7674c3b5bad8a05a479a878e59bfca67bf6c4fd44c1f4423",
-      "size": 24883
+      "sha256": "48207b449393704a1dc49fd6c0b2883ecf4a01fdd5e39b074cfceb9026f58d26",
+      "size": 31244
+    },
+    {
+      "path": "crates/sandboxie-adapter/src/windows/provisioning/product.rs",
+      "sha256": "f100cbb01598c688b706795535b5c5756815be07e5cd0c37170423e5a3474ddd",
+      "size": 5656
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning.rs",
-      "sha256": "202d1f238d42f612e0a609a909274fe2e763bbe6ae7d0462375ddd62cdb3cacc",
-      "size": 99830
+      "sha256": "c25215cee029a0677c1ba6951f563dedcbb901f33ee9cdebd796b52387f17a0a",
+      "size": 111351
     },
     {
       "path": "crates/sandboxie-adapter/src/windows.rs",
-      "sha256": "135ecf0a29eb903e450be27f0fba35a99bd6aa918fafc8e49d537f0cf22fbd9d",
-      "size": 40127
+      "sha256": "9352bfd1e3447bc1d4a60c99d2a06d6e392478b0ff98ed125e46a74dcb9ac348",
+      "size": 44015
     },
     {
       "path": "src-tauri/Cargo.toml",
-      "sha256": "4a71a7d9bb784c6c8e1f6ab6c0c6527b0ed4968d68a84107597ec3f1e4d78f0a",
-      "size": 1017
+      "sha256": "9d196ca29e4718bccc5f9aba2cacea01b39ca7862ac497dc8a6bee09414f6b33",
+      "size": 968
     },
     {
       "path": "src-tauri/build.rs",
-      "sha256": "640b187c0ec35c2c755de917698817c59d43665d0fc8a11bcf9808a8d0c72384",
-      "size": 876
+      "sha256": "962e523578ffac9e5e6ee5b135c64771ba2fee6ac72baf27dbf07082cec0672f",
+      "size": 911
     },
     {
       "path": "src-tauri/capabilities/foundation-ci.json",
@@ -664,8 +1124,8 @@
     },
     {
       "path": "src-tauri/capabilities/main.json",
-      "sha256": "e2b2837b9fbdd528ab3efd677a8d2fc5e2eac678942511aed329325d509d894d",
-      "size": 621
+      "sha256": "c9cb538ea155c4fe0249218515fa9399d47f90d94fd853dfd959e88809058385",
+      "size": 646
     },
     {
       "path": "src-tauri/icons/icon.ico",
@@ -679,28 +1139,33 @@
     },
     {
       "path": "src-tauri/src/app.rs",
-      "sha256": "0a7753c172d6c21af5248c958027f68d97a82347a5ed001adcbc3b47d873fb4b",
-      "size": 22234
+      "sha256": "cf912d1459c32f647134e9e75eff0e13322cb1e361f7103d9b64d4caf7234dd0",
+      "size": 27714
     },
     {
       "path": "src-tauri/src/ci.rs",
-      "sha256": "0dd7ec07ae4f4c2584f89dfceb498c5965324dd43f8ba0e6dd836b0ec16f60db",
-      "size": 10495
+      "sha256": "af5881b83adce496b484aa5137863b66aa6cdc5cf783a1a38515d9c0d50271d9",
+      "size": 10513
     },
     {
       "path": "src-tauri/src/main.rs",
-      "sha256": "cc568fc3c8dd9fa37c3f9e2e4d622f8520ebac2bbade1b919fbfb93856283200",
-      "size": 7763
+      "sha256": "6f4a25c0378803aca8e802362d6d3216ce4100bc47050f418be71d3d5ef5f721",
+      "size": 9404
     },
     {
       "path": "src-tauri/src/native.rs",
-      "sha256": "f599bc5752d4a89b44a871bf6ad1918b3a6f86eee84a6eae0b6e72e359453cce",
-      "size": 7125
+      "sha256": "e1c98ea928620dffaea5a45e876c814a49f2bf7571297bd5971a6a1dca4eabbc",
+      "size": 8326
     },
     {
       "path": "src-tauri/src/policies.rs",
-      "sha256": "fe22a3d85255069de65e5c20313470c2c7f2130b5ef416cedd2c6c88f253da39",
-      "size": 25877
+      "sha256": "3f62049f9a7461bf099df44062e8e3fe7259dfa94d54dc4f25f6e3168635e232",
+      "size": 43758
+    },
+    {
+      "path": "src-tauri/src/product.rs",
+      "sha256": "86e6b1df686095a8d71c9a8efe61e203519715954adc94954f3ab6f6208f680e",
+      "size": 12711
     },
     {
       "path": "src-tauri/tauri.ci.conf.json",
@@ -713,39 +1178,59 @@
       "size": 861
     },
     {
+      "path": "ui/backend.ts",
+      "sha256": "d7253cba9f7d6300ab34ab665d4a454a87f260baea79af8abe0419fe0f67460e",
+      "size": 958
+    },
+    {
       "path": "ui/contracts.ts",
       "sha256": "5c4f962dfdfee530d2b9c26c6b36042d2d8b83c187f4984f1b4381c26a119b1d",
       "size": 2259
     },
     {
       "path": "ui/controls.tsx",
-      "sha256": "1c8a7b2e3c95f25569299363c26f1f49570955ab339085cbfedc72f056038f6a",
-      "size": 9678
+      "sha256": "1dfd45db19d6428f816018c02db212a9ee6520745be610d05ada0d3088b371b6",
+      "size": 11786
+    },
+    {
+      "path": "ui/diagnostics.tsx",
+      "sha256": "7681752a5066239665b35c573190ec782a433ebd51c7fd71fe8d57c4e71d6a48",
+      "size": 5047
+    },
+    {
+      "path": "ui/error.tsx",
+      "sha256": "0b80b74fdedfdd167162e0a31c1735c74fe814e79c0872d1fa8fc24b209034c2",
+      "size": 754
     },
     {
       "path": "ui/files.tsx",
-      "sha256": "4dbfbc7a40e8636c430e970f51151c7298d95e39ccfd3b2e0f7b581648320f83",
-      "size": 10436
+      "sha256": "29db890a7d66abfe22630f5198e43c9f85472bcfd8f371a947d8600778a21532",
+      "size": 11411
     },
     {
       "path": "ui/lifecycle.tsx",
-      "sha256": "c3fc0fbc3abc56a28afc7ee35734f2f585680c9ff22df13d6a4dd99d19930735",
-      "size": 7693
+      "sha256": "6e17fecb0acecca0691c6f64aeab82c42b431e5226bc742c1fb7e38fb6bbe80a",
+      "size": 8439
     },
     {
       "path": "ui/main.tsx",
-      "sha256": "7e2bb18043c80fb8c7e97672eb7eac506d4eb49a90f48147e1eb00c647790824",
-      "size": 9010
+      "sha256": "42bd6579fcf5d2fb017f9880ce461cc48e0afd715d1a7a06496c5519d5ff4bdc",
+      "size": 22441
     },
     {
       "path": "ui/policies.tsx",
-      "sha256": "12b60a3190ec587dc2f82f216eddfc91afee5fa20c9029f434884a4cb46d68c6",
-      "size": 12194
+      "sha256": "aa710db0f62439624840783e5b85bf8889e599e09384e7ec117e1ab84f90b8cc",
+      "size": 15427
+    },
+    {
+      "path": "ui/product.ts",
+      "sha256": "354690a87976595c016e4a1d66cb5fc6dbf5238cc9ce4df492a2ed3dde454612",
+      "size": 22028
     },
     {
       "path": "ui/selftest.ts",
-      "sha256": "e57f8b7f8921a2d136e89d8852358a258b54383a063a230b74e9229a6d69e0be",
-      "size": 8190
+      "sha256": "fb11ba18f85951b0b47ecc699910bb75feb2feabb530e43765f85dbb9273ece1",
+      "size": 8852
     },
     {
       "path": "ui/state.ts",
@@ -759,8 +1244,8 @@
     },
     {
       "path": "ui/style.css",
-      "sha256": "240b373ed9e72d13bef7bb148fe263a3e8a4501f7a07f86a8658cf1657eed024",
-      "size": 3461
+      "sha256": "3ab79377235add71be6f608bd470e682b76b4529f627f62f52f3189f6a0e8303",
+      "size": 6640
     }
   ],
   "production_acceptance_scenarios_passed": 0,

@@ -320,17 +320,32 @@ pub trait Engine {
     fn verify_enforcement(&self, e: &OwnedEnvironment) -> PolicyResult<String>;
 }
 fn mandatory(engine: &impl Engine, id: Uuid, owner: &str, all: &[OwnedEnvironment]) -> Mandatory {
+    // Future rollouts append a new identity; the durable listing sorts by UUID.
+    // Mandatory denials have identical semantics and must compile canonically.
+    let mut siblings: Vec<_> = all
+        .iter()
+        .filter(|e| e.id != id)
+        .map(|e| engine.root_for(e.id))
+        .collect();
+    siblings.sort();
     Mandatory {
         root: engine.root_for(id),
         metadata: engine.metadata(),
         code: engine.code(),
-        siblings: all
-            .iter()
-            .filter(|e| e.id != id)
-            .map(|e| engine.root_for(e.id))
-            .collect(),
+        siblings,
         marker: format!("v1:{owner}:{}", id.simple()),
     }
+}
+pub fn validate_display_name(display_name: &str) -> PolicyResult<()> {
+    if display_name.trim().is_empty()
+        || display_name.chars().count() > 80
+        || display_name
+            .chars()
+            .any(|c| c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'))
+    {
+        return Err("DISPLAY_NAME_INVALID");
+    }
+    Ok(())
 }
 pub fn create(
     journal: &mut Journal,
@@ -344,14 +359,7 @@ pub fn create(
     if let Some(e) = journal.operation(operation_id, &operation_signature)? {
         return Ok(e);
     }
-    if display_name.trim().is_empty()
-        || display_name.chars().count() > 80
-        || display_name
-            .chars()
-            .any(|c| c.is_control() || matches!(c,'\u{202a}'..='\u{202e}'|'\u{2066}'..='\u{2069}'))
-    {
-        return Err("DISPLAY_NAME_INVALID");
-    }
+    validate_display_name(display_name)?;
     let all = journal.list()?;
     if all.len() >= 12 {
         return Err("OWNED_ENVIRONMENT_BOUND");
@@ -876,6 +884,56 @@ mod tests {
             "ROOT_IDENTITY_CHANGED"
         );
         assert_eq!(f.roots.borrow().len(), 1);
+    }
+    #[test]
+    fn rollout_and_reopened_journal_have_identical_sibling_protections() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = store(&t);
+        let f = Fake::new();
+        let base = create(
+            &mut j,
+            &f,
+            "test-owner",
+            "A",
+            Default::default(),
+            Uuid::new_v4(),
+        )
+        .unwrap();
+        let mut a = base.clone();
+        a.id = Uuid::from_u128(1);
+        let mut b = base.clone();
+        b.id = Uuid::from_u128(2);
+        let mut c = base;
+        c.id = Uuid::from_u128(3);
+        let listing = vec![a.clone(), b.clone(), c.clone()];
+        let rollout = vec![c, a, b.clone()];
+        let before = compile(&b.desired, &mandatory(&f, b.id, "test-owner", &rollout)).unwrap();
+        let after = compile(&b.desired, &mandatory(&f, b.id, "test-owner", &listing)).unwrap();
+        assert_eq!(before.section, after.section);
+        assert_eq!(before.desired_fingerprint, after.desired_fingerprint);
+    }
+    #[test]
+    fn ten_sequential_creations_preserve_every_current_owned_policy() {
+        let t = tempfile::tempdir().unwrap();
+        let mut j = store(&t);
+        let f = Fake::new();
+        for index in 0..10 {
+            create(
+                &mut j,
+                &f,
+                "test-owner",
+                &format!("Reference {index}"),
+                Default::default(),
+                Uuid::new_v4(),
+            )
+            .unwrap();
+            let all = j.list().unwrap();
+            assert_eq!(all.len(), index + 1);
+            for e in &all {
+                validate_owned(&f, e, &all).unwrap();
+            }
+        }
+        assert_eq!(f.roots.borrow().len(), 10);
     }
     #[test]
     fn new_sibling_requires_stopped_rollout_before_materialization() {

@@ -21,6 +21,7 @@ pub enum ErrorCode {
     ManagerContextUnsafe,
     CapabilityUnavailable,
     PathUnsafe,
+    DestinationExists,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

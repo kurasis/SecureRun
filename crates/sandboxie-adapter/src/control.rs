@@ -90,6 +90,16 @@ pub enum Request {
         operation_id: Uuid,
     },
 }
+impl Request {
+    pub fn environment_scope(&self) -> Option<Uuid> {
+        match self {
+            Self::Register { environment_id, .. }
+            | Self::Launch { environment_id, .. }
+            | Self::Stop { environment_id, .. } => Some(*environment_id),
+            Self::List | Self::StopManaged { .. } | Self::Reconcile { .. } => None,
+        }
+    }
+}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Receipt {
@@ -107,12 +117,14 @@ pub struct ProcessView {
     pub complete: bool,
     pub processes: Vec<ProcessIdentity>,
     pub launch_eligible: bool,
+    pub launch_reason: String,
     pub reason: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Reply {
     pub protocol: u32,
+    pub environment_scope: Option<Uuid>,
     pub reason: String,
     pub applications: Vec<ApplicationView>,
     pub environments: Vec<ProcessView>,
@@ -122,6 +134,7 @@ impl Reply {
     pub fn failure(reason: &str) -> Self {
         Self {
             protocol: 1,
+            environment_scope: None,
             reason: reason.into(),
             applications: vec![],
             environments: vec![],

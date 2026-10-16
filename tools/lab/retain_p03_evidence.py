@@ -32,7 +32,7 @@ def retain(download, commit, run_id):
         summary, boundary = read(folder / 'run-summary.json'), read(folder / 'command-boundary.json')
         if summary['manager_commit'] != commit or summary['result'] != 'PASSED' or summary['pe_machine'] != machine:
             raise ValueError('Native Windows source/result mismatch')
-        if summary['foundation_tests_passed'] < 19 or summary['normal_native_tests_passed'] != 2 or summary['frontend_tests_passed'] != 3:
+        if summary['foundation_tests_passed'] < 19 or summary['normal_native_tests_passed'] < 3 or summary['frontend_tests_passed'] != 3:
             raise ValueError('Required actual test suites missing')
         if boundary['result'] != 'PASSED' or not boundary['real_webview2'] or not boundary['real_native_picker'] or boundary['engine_operations_executed'] != 0:
             raise ValueError('Actual command boundary was not proven')

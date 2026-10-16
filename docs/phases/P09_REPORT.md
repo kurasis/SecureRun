@@ -715,3 +715,29 @@ comparison with the legacy physical-point API diagnoses disagreement. On failure
 unknown process names remain hashed. Only a valid Microsoft-signed component
 under the protected Windows system directories may expose its component basename;
 no path, PID, certificate data or arbitrary application inventory is retained.
+
+At `ec2a16b`, both Windows targets still had a foreign PickerHost window over
+all physical input targets. Its name hash matched `pickerhost.exe` in the public
+Windows filename catalog; it is not admitted as a manager/browser input owner.
+Before product GUIs start, a lab-only preparation step may cancel one visible
+initial PickerHost dialog only after same-user, protected Windows location and
+Microsoft signature/system-package validation. It uses WindowPattern.Close,
+waits for that exact window to disappear, dispatches no process termination,
+selects no application and changes no defaults or Windows security setting.
+The normal native ownership checks remain mandatory afterwards.
+
+The editor's actual dialog exposes Edit/1001 rather than the legacy filename
+IDs. An explicitly delivered File name mnemonic can identify the native focused
+editable child of that exact dialog; set/readback and actual boxed saved bytes
+remain required. Browser input uses the Windows PowerShell 5.1 UInt16 type name,
+with sanitized error-record kinds and actual INPUT/pointer sizes on failures.
+The deceptive filename is located through actual bounded UI pagination instead
+of assuming its enumeration position. Complete native traversal still requires
+10,000 unique files, and before/after registration/receipt observations must both
+be successful. Only an explicit pre-work readonly LIST lock refusal can wait;
+no mutation or uncertain outcome is retried.
+
+P03–P08 all passed both targets at `ec2a16b` (runs `38842214153`,
+`38842216379`, `38842218236`, `38842220204`, `38842222263`, `38842224221`).
+Their reviewed original JSON remains retained. The next P09 fixture changes
+require matching final-source confirmation; no native runtime code changed.

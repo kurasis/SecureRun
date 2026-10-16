@@ -1,9 +1,14 @@
-name: P09 readonly input desktop diagnosis
+name: P09 input desktop diagnosis and preparation
 on:
   push:
     branches: ['p09/**']
     paths: ['.github/workflows/p09-desktop.yml']
   workflow_dispatch:
+    inputs:
+      prepare:
+        description: 'Cancel one authenticated same-user initial Windows picker before test applications start'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -16,12 +21,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: Observe input desktop without changing Windows settings
+      - name: Observe or prepare the initial CI input desktop
         shell: powershell
         run: |
           $ErrorActionPreference='Stop'
           New-Item -ItemType Directory -Path artifacts/p09-desktop -Force | Out-Null
-          ./tools/probe/p09_accessibility.ps1 -Mode DESKTOP_DIAGNOSTIC -ResultFile artifacts/p09-desktop/input-desktop.json
+          $mode=if('${{ inputs.prepare }}' -eq 'true'){'DESKTOP_PREPARE'}else{'DESKTOP_DIAGNOSTIC'}
+          ./tools/probe/p09_accessibility.ps1 -Mode $mode -ResultFile artifacts/p09-desktop/input-desktop.json
       - name: Retain minimized desktop observation
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4

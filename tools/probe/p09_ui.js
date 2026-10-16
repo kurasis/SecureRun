@@ -1,7 +1,7 @@
 /* Executed only by the disposable loopback inspector against the normal product. */
 window.__p09_state={};
 window.__p09_run=async function(stage,config={}) {
- const cases=[];const state=window.__p09_state;const native=(request,command='product_request')=>window.__TAURI_INTERNALS__.invoke(command,{request});
+ const cases=[];const state=window.__p09_state;const native=async(request,command='product_request')=>{const deadline=performance.now()+4000;while(true){const reply=await window.__TAURI_INTERNALS__.invoke(command,{request});if(request.action==='LIST'&&reply.reason==='NAMESPACE_OPERATION_BUSY'&&performance.now()<deadline){await new Promise(resolve=>setTimeout(resolve,50));continue;}return reply;}};
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  const wait=async(predicate,timeout=90000)=>{const end=performance.now()+timeout;while(performance.now()<end){const value=predicate();if(value)return value;await pause(50);}throw Error('P09_UI_WAIT_EXPIRED');};
  const text=element=>element.textContent.replace(/\s+/g,' ').trim();
@@ -75,15 +75,21 @@ window.__p09_run=async function(stage,config={}) {
     state.fileStep='FILE_TAB';await tab('Files');await wait(()=>button('Storage root'));const start=performance.now();state.fileStep='FILE_ROOT';await click('Storage root');await wait(()=>document.querySelector('tbody tr'));
     for(const [index,name] of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')].entries()){state.fileStep=['FILE_DRIVE','FILE_SYSTEM_VOLUME','FILE_WORKSPACE','FILE_ENVIRONMENT'][index];const e=await wait(()=>directoryButton(name));e.click();await pause(80);await wait(()=>!Array.from(document.querySelectorAll('p[role=status]')).some(e=>e.textContent.includes('Operation in progress')));}
     state.fileStep='FILE_ROWS';await wait(()=>{const count=document.querySelectorAll('tbody tr').length;return count>0&&count<=128;});state.listFirstMs=performance.now()-start;check('T63','populated_box_ui_page_is_bounded',document.querySelectorAll('tbody tr').length>0&&document.querySelectorAll('tbody tr').length<=128&&!!Array.from(document.querySelectorAll('button')).find(e=>e.textContent.startsWith('Next page')));
-    const deceptive=Array.from(document.querySelectorAll('tbody button')).find(e=>e.textContent.includes('fdp.exe'));check('T63','full_deceptive_filename_rendered_inertly',deceptive&&/\\u\{?202e\}?|U\+202E/i.test(deceptive.textContent)&&deceptive.textContent.endsWith('fdp.exe'));
-    const before=await native({action:'LIST'},'control_request');deceptive.click();await pause(100);const after=await native({action:'LIST'},'control_request');check('T63','filename_selection_never_dispatches_or_registers',before.applications.length===after.applications.length&&before.receipts.length===after.receipts.length);
+    let maximumDomRows=document.querySelectorAll('tbody tr').length;let deceptive=Array.from(document.querySelectorAll('tbody button')).find(e=>e.textContent.includes('fdp.exe'));
+    for(let page=0;!deceptive&&page<80;page++){
+     const next=Array.from(document.querySelectorAll('button')).find(e=>e.textContent.startsWith('Next page'));if(!next)break;
+     const first=document.querySelector('tbody button bdi')?.textContent;next.click();await wait(()=>!Array.from(document.querySelectorAll('p[role=status]')).some(e=>e.textContent.includes('Operation in progress'))&&document.querySelector('tbody button bdi')?.textContent!==first);
+     maximumDomRows=Math.max(maximumDomRows,document.querySelectorAll('tbody tr').length);if(maximumDomRows>128)throw Error('P09_FILE_DOM_BOUND_EXCEEDED');deceptive=Array.from(document.querySelectorAll('tbody button')).find(e=>e.textContent.includes('fdp.exe'));
+    }
+    check('T63','full_deceptive_filename_rendered_inertly',deceptive&&/\\u\{?202e\}?|U\+202E/i.test(deceptive.textContent)&&deceptive.textContent.endsWith('fdp.exe'));
+    const before=await native({action:'LIST'},'control_request');deceptive.click();await pause(100);const after=await native({action:'LIST'},'control_request');check('T63','filename_selection_never_dispatches_or_registers',before.reason==='OBSERVED'&&after.reason==='OBSERVED'&&before.applications.length===after.applications.length&&before.receipts.length===after.receipts.length);
     const r=await readyPolicy();const e=r.environments.find(e=>e.id===config.environment_id);let node=null;let current;
     for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){current=await native({action:'LIST',environment_id:e.id,expected_revision:e.revision,node_id:node,offset:0},'files_request');const matches=current.entries.filter(v=>v.name.toLowerCase()===name.toLowerCase());if(matches.length!==1)throw Error('P09_DIRECTORY_NODE_MISSING');node=matches[0].id;}
     let offset=0,total=0,pages=0,maximum=0;const seen=new Set();const walk=performance.now();
     do{const page=await native({action:'LIST',environment_id:e.id,expected_revision:e.revision,node_id:node,offset},'files_request');if(page.reason!=='OBSERVED')throw Error('P09_FULL_PAGE_WALK_FAILED');total+=page.entries.length;maximum=Math.max(maximum,page.entries.length);pages++;for(const item of page.entries){seen.add(item.id);if(item.name.includes('fdp.exe'))state.deceptiveName=item.name;}offset=page.next_offset;}while(offset!==null&&pages<130);
     check('T63','all_ten_thousand_entries_reachable_without_unbounded_dom',total===10000&&seen.size===10000&&maximum<=128&&pages===79&&offset===null&&document.querySelectorAll('tbody tr').length<=128);
     check('T63','deceptive_suffix_and_direction_controls_visible',state.deceptiveName?.endsWith('fdp.exe')&&/\\u\{?202e\}?|U\+202E/i.test(state.deceptiveName));
-    return {status:'PASSED',cases,metrics:{first_ui_list_ms:state.listFirstMs,all_page_walk_ms:performance.now()-walk,total_files:total,pages,maximum_page:maximum,maximum_dom_rows:document.querySelectorAll('tbody tr').length}};
+    return {status:'PASSED',cases,metrics:{first_ui_list_ms:state.listFirstMs,all_page_walk_ms:performance.now()-walk,total_files:total,pages,maximum_page:maximum,maximum_dom_rows:maximumDomRows}};
    }
    case 'TRANSFER_IMPORT_PICK':{await open();await tab('Files');await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Import file');break;}
    case 'TRANSFER_EXPORT_PICK':{

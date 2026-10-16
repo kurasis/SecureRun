@@ -563,6 +563,56 @@
       "path": "investigation-eaab83c/windows-2025/standard-normal.json",
       "sha256": "d387e6689eb4c26aeb43a90d25ce725dcdd543e5abc627f2b2fb19fc054251a5",
       "size": 91
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/standard-normal.json",
+      "sha256": "f2fb91655859f69db0c1cae828b898b7da4d7adab3aa7b725a6a1d1ca46a3767",
+      "size": 91
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/standard-fault.json",
+      "sha256": "3b733afd73af2ce61cc5f6f6d32d0d35b783a181dc68570f3a921e047f930098",
+      "size": 90
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/run-summary.json",
+      "sha256": "ec45006939236db5febc5d256c4bde80e5ab99a552d7ce946b9af7f95e4e5ef9",
+      "size": 653
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/stage.json",
+      "sha256": "7ae19972ec2f2e0594b6ada7a2c5164898ee103494d2f0533b1b240470b853fa",
+      "size": 112
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/file-cases.json",
+      "sha256": "e84e30907a1bf85b119d3edd1cc2cc33bb0267cd63ab5ed75f845bf0867c4818",
+      "size": 9504
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/standard-normal.json",
+      "sha256": "e9abf546eec152b792cef42b1b6c0172517c7646f209cbff7d387b774c0463c7",
+      "size": 91
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/standard-fault.json",
+      "sha256": "835d6943de3436ecd091e4c3bceac36e720ca4864cf98cbb805bf9d5b8097ca1",
+      "size": 90
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/stage.json",
+      "sha256": "00ae41a74151afa9c0b62dc0ad012f9ec8e474b804be735ad6b0fb297a257b12",
+      "size": 112
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/run-summary.json",
+      "sha256": "dbe1bc9cdc5a782c2150b14182498f6b96efcf7be0a974e1b06cddd8b7e82dd6",
+      "size": 653
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/file-cases.json",
+      "sha256": "9334764a6203d32186e2b65bab5a802dd2055898faf96471c87399fa34a36e5b",
+      "size": 8928
     }
   ],
   "tested_sources": [
@@ -1122,6 +1172,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38811686369",
       "result": "PASSED",
       "note": "Historical actual native results. Later source changes require matching regressions; diagnostic/measurement modes cannot close P09."
+    },
+    {
+      "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
+      "run_id": 38842222263,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38842222263",
+      "result": "PASSED",
+      "note": "Actual regression passed both Windows targets. P09 lab fixture source subsequently changed; matching final-source phase retention remains pending."
     }
   ]
 }

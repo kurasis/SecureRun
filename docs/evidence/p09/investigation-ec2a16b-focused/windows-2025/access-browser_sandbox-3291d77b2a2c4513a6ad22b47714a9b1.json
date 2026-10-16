@@ -1,0 +1,19 @@
+﻿{
+    "stage":  "READING_BROWSER_SANDBOX_STATE",
+    "default_input_desktop":  1,
+    "code":  "P09_NATIVE_ACCESSIBILITY_FAILED",
+    "helper_per_monitor_dpi_aware":  true,
+    "synthetic_fixture_only":  true,
+    "status":  "FAILED",
+    "real_windows_uia":  true,
+    "mode":  "BROWSER_SANDBOX",
+    "exception_type":  "System.Management.Automation.RuntimeException",
+    "native_window_dpi":  96,
+    "source_lines":  [
+                         160,
+                         163,
+                         168,
+                         324
+                     ],
+    "owned_window_temporarily_raised":  true
+}

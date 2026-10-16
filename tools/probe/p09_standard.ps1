@@ -105,6 +105,7 @@ user_pref("network.protocol-handler.external.securerun-p09", true);
  Case 'T32' 'ten_real_idle_environments_and_populated_box' { $r=Native @{action='LIST'} 'control';Require (@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0) 'P09_IDLE_SEED_SCOPE_INCOMPLETE';@{actual_environments=$all.Count;actual_files=10000;all_idle=(@($r.environments|Where-Object {$_.activity -ne 'IDLE' -or -not $_.complete}).Count -eq 0);synthetic_only=$true} }
  }
  # Prewarm the UIA provider before timing the normal manager, without an inspector.
+ $null=Access 'DESKTOP_PREPARE' 0
  $startupCase=if($Focused){'normal_manager_startup_diagnostic_only'}else{'normal_manager_startup_and_complete_process_group_idle_measurement'}
  function Startup-Trace {
   $trace=[IO.FileStream]::new((Join-Path $Fixture 'normal-manager.log'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)

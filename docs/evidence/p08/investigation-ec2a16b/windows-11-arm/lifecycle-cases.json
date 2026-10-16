@@ -1,0 +1,610 @@
+[
+  {
+    "evidence": {
+      "generation_advanced": true,
+      "retained_root_identity": true,
+      "host_application_retained_and_launchable": true,
+      "generic_root_deletion": false,
+      "original_native_cleanup": true,
+      "definition_retained": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T24",
+    "name": "reset_preserves_definition_applications_and_retained_root_identity"
+  },
+  {
+    "evidence": {
+      "unarchive_fresh_policy_and_identity": true,
+      "definition_and_data_retained": true,
+      "manager_launch_refused": true,
+      "installer_retention": "P11"
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T48",
+    "name": "archive_retains_data_blocks_manager_launch_and_unarchive_revalidates"
+  },
+  {
+    "evidence": {
+      "forged_plan_refused": true,
+      "frontend_boolean_is_not_authority": true,
+      "data_preserved": true,
+      "stale_generation_refused": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T26",
+    "name": "forged_confirmation_and_stale_generation_refused_without_mutation"
+  },
+  {
+    "evidence": {
+      "real_native_dialog": true,
+      "renderer_confirmation_boolean": false,
+      "normal_production_binary": true,
+      "affected_environment_uuid_visible": true,
+      "explicit_accept_completed_reset": true,
+      "cancelled_plan_consumed": true,
+      "cancel_preserves_data": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T24",
+    "name": "native_confirmation_names_environment_and_cancel_consumes_plan"
+  },
+  {
+    "evidence": {
+      "auto_cleanup": false,
+      "normal_desktop_window_opened_and_closed": true,
+      "actual_boxed_process_survived": true,
+      "protected_normal_binary": true,
+      "complete_all_session_observation": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T25",
+    "name": "persistent_workload_survives_actual_normal_window_close"
+  },
+  {
+    "evidence": {
+      "automatic_cleanup": false,
+      "import_pending_before_first_target": true,
+      "data_preserved": true,
+      "launch_waited_for_explicit_resume": true,
+      "independent_original_client_observed": true,
+      "leftover_durable_after_independent_exit": true,
+      "fresh_process_reopened_state": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T25",
+    "name": "disposable_import_and_independent_activity_remain_visible_after_restart"
+  },
+  {
+    "evidence": {
+      "leftover_reopened_from_durable_metadata": true,
+      "resume_explicit": true,
+      "actual_manager_process_killed": true,
+      "cleanup_refused_until_entire_box_empty": true,
+      "actual_background_descendants": 2,
+      "automatic_export_or_cleanup": false,
+      "workloads_survived": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T06",
+    "name": "disposable_waits_for_background_descendants_and_survives_manager_crash"
+  },
+  {
+    "evidence": {
+      "generation_advanced": true,
+      "actual_imported_executable_ran_logically_before_reset": true,
+      "old_file_reference_refused": true,
+      "application_record_retained_unavailable": true,
+      "host_report_absent": true,
+      "physical_host_fallback": false,
+      "old_boxed_launch_refused": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T43",
+    "name": "reset_invalidates_imported_executable_and_old_transfer_references"
+  },
+  {
+    "evidence": {
+      "safe_stop_after_reviewed_hook_removal": true,
+      "automatic_recovery_and_delete_drift_rejected": true,
+      "unapproved_values_not_silently_removed": true,
+      "real_host_marker_fixture": true,
+      "host_hook_executed": false,
+      "effective_inherited_hook_rejected": true,
+      "confirmed_plan_revalidated_after_hook_drift": true,
+      "data_retained": true,
+      "stop_refused_unapproved_termination_hook": true,
+      "direct_delete_command_rejected": true,
+      "current_hook_rejected": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T33",
+    "name": "current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair"
+  },
+  {
+    "evidence": {
+      "original_identity_restored_by_fixture_only": true,
+      "replacement_canary_preserved": true,
+      "unexpected_root_identity_refused": true,
+      "missing_root_not_recreated": true,
+      "unsupported_images_refused": true,
+      "no_root_rebinding_or_deletion_by_path": true
+    },
+    "also_ids": [
+      "T55"
+    ],
+    "status": "PASSED",
+    "id": "T34",
+    "name": "root_substitution_and_unsupported_image_configuration_never_authorize_cleanup"
+  },
+  {
+    "evidence": {
+      "reparse_rejected_before_dispatch": true,
+      "outside_canary_preserved": true,
+      "hardlink_rejected_before_dispatch": true,
+      "generic_recursive_cleanup": false
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T24",
+    "name": "hardlinks_and_reparse_traversal_rejected_before_native_dispatch"
+  },
+  {
+    "evidence": {
+      "locked_data_preserved": true,
+      "outside_root_delete": false,
+      "actual_no_delete_share_handle": true,
+      "fresh_explicit_cleanup_after_unlock": true,
+      "recovery_inspected_without_replay": true,
+      "failure_visible": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T24",
+    "name": "locked_file_cleanup_is_refused_or_visible_and_recovers_without_replay"
+  },
+  {
+    "evidence": {
+      "remove_without_ownership_refused": true,
+      "original_database_not_overwritten": true,
+      "data_preserved": true,
+      "fresh_process_reopened_sqlite": true,
+      "existing_engine_box_not_adopted": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T28",
+    "name": "missing_ownership_database_cannot_adopt_or_remove_existing_box"
+  },
+  {
+    "evidence": {
+      "data_retained": true,
+      "actual_service_stopped": true,
+      "unknown_operation_not_replayed": true,
+      "actual_signed_dependency_substituted": true,
+      "pinned_hash_refused_before_load": true,
+      "security_checks_disabled": false,
+      "missing_context_refused": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T33",
+    "name": "missing_service_and_changed_original_cleanup_component_fail_closed"
+  },
+  {
+    "evidence": {
+      "original_native_cleanup_completed": true,
+      "original_gui_running": true,
+      "auto_recovery_and_delete_disabled": true,
+      "archive_retained_data": true,
+      "host_auto_recovery": false
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T42",
+    "name": "original_sandman_coexists_without_automatic_recovery_or_deletion"
+  },
+  {
+    "evidence": {
+      "automatic_replay": false,
+      "new_generation_data_preserved": true,
+      "real_old_plan_refused": true,
+      "old_import_tombstone_refused": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T56",
+    "name": "old_confirmation_and_import_operation_cannot_mutate_reset_generation"
+  },
+  {
+    "evidence": {
+      "cleanup_completed": true,
+      "normal_production_binary": true,
+      "fault_variable_supplied": true,
+      "fault_checkpoint_activated": false
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T34",
+    "name": "normal_binary_cannot_activate_lifecycle_fault_checkpoints"
+  },
+  {
+    "evidence": {
+      "known_empty_root_recorded": true,
+      "real_native_remove_confirmation": true,
+      "native_cancel_preserved_definition": true,
+      "original_section_delete_read_back_absent": true,
+      "contents_cleared_before_definition_delete": true,
+      "audit_tombstone": true,
+      "unrelated_boxes_untouched": true
+    },
+    "also_ids": [],
+    "status": "PASSED",
+    "id": "T24",
+    "name": "remove_clears_before_definition_deletion_and_keeps_audit_tombstone"
+  },
+  {
+    "evidence": {
+      "old_operation_refused": true,
+      "unknown_receipt_preserved": true,
+      "fresh_explicit_launch_boxed": true,
+      "automatic_replay": false,
+      "executions_before_reset": 0,
+      "actual_worker_killed": true,
+      "checkpoint": "Reserved"
+    },
+    "id": "T61",
+    "also_ids": [],
+    "name": "reset_reconciles_uncertain_launch_without_replay_Reserved",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "old_operation_refused": true,
+      "unknown_receipt_preserved": true,
+      "fresh_explicit_launch_boxed": true,
+      "automatic_replay": false,
+      "executions_before_reset": 1,
+      "actual_worker_killed": true,
+      "checkpoint": "Accepted"
+    },
+    "id": "T61",
+    "also_ids": [],
+    "name": "reset_reconciles_uncertain_launch_without_replay_Accepted",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "generation_changed": true,
+      "post_rename_reconciled_before_reset": true,
+      "host_artifact_unchanged": true,
+      "recovery_and_discard_refused": true,
+      "path_pattern_delete": false,
+      "automatic_replay": false,
+      "checkpoint": "AfterRename",
+      "actual_worker_killed": true,
+      "substituted_file_preserved": false
+    },
+    "id": "T64",
+    "also_ids": [],
+    "name": "reset_refuses_stale_export_recovery_AfterRename",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "generation_changed": true,
+      "post_rename_reconciled_before_reset": false,
+      "host_artifact_unchanged": true,
+      "recovery_and_discard_refused": true,
+      "path_pattern_delete": false,
+      "automatic_replay": false,
+      "checkpoint": "MidCopy",
+      "actual_worker_killed": true,
+      "substituted_file_preserved": true
+    },
+    "id": "T65",
+    "also_ids": [],
+    "name": "reset_refuses_stale_export_recovery_MidCopy",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "INTERRUPTED_RETAINED_ARCHIVED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "SnapshotCaptured",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": null,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_SnapshotCaptured",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "INTERRUPTED_RETAINED_ARCHIVED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "Fenced",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": true,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_Fenced",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "INTERRUPTED_RETAINED_ARCHIVED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "Sealed",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": true,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_Sealed",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "INTERRUPTED_RETAINED_ARCHIVED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "DispatchReserved",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": true,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_DispatchReserved",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "INTERRUPTED_RETAINED_ARCHIVED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "NativeReturned",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": null,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_NativeReturned",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "COMPLETE_RECOVERED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "Cleared",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": null,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_Cleared",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "controller_acl_restored": true,
+      "privileged_helper": false,
+      "replayed": false,
+      "recovered_state": "COMPLETE_RECOVERED",
+      "fresh_explicit_cleanup": true,
+      "old_cleanup_journal_after_new_reset_inspection_only": true,
+      "real_executor_killed": true,
+      "checkpoint": "MetadataCommitted",
+      "recovery_inspection_only": true,
+      "external_original_dispatch_rejected": null,
+      "competing_manager_refused": true
+    },
+    "id": "T18",
+    "also_ids": [
+      "T26",
+      "T65"
+    ],
+    "name": "real_cleanup_executor_interruption_MetadataCommitted",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "SnapshotCaptured",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_SnapshotCaptured",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "Fenced",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_Fenced",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "Sealed",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_Sealed",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "DispatchReserved",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_DispatchReserved",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "NativeReturned",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_NativeReturned",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "Cleared",
+      "fresh_intent_required_before_definition_delete": true
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_Cleared",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "DefinitionRemoved",
+      "fresh_intent_required_before_definition_delete": false
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_DefinitionRemoved",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "real_executor_killed": true,
+      "known_empty_root_retained": true,
+      "competing_manager_refused": true,
+      "metadata_reconciled_without_delete_replay": true,
+      "actual_definition_absent": true,
+      "checkpoint": "MetadataCommitted",
+      "fresh_intent_required_before_definition_delete": false
+    },
+    "id": "T18",
+    "also_ids": [],
+    "name": "real_remove_interruption_MetadataCommitted",
+    "status": "PASSED"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "real_windows_sessions": [
+        0,
+        2
+      ],
+      "cleanup_refused_while_other_session_running": true,
+      "os_logon_policy_changed": false,
+      "product_privileged_helper": false,
+      "complete_idle_before_actual_cleanup": true,
+      "original_native_cleanup_after_stop": true,
+      "same_owner_members_observed": true
+    },
+    "id": "T36",
+    "also_ids": [],
+    "name": "cleanup_requires_complete_idle_across_actual_windows_sessions"
+  }
+]

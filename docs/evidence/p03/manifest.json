@@ -1,50 +1,50 @@
 {
   "phase": "P03",
-  "result": "BLOCKED",
-  "run_id": 38811673054,
-  "url": "https://github.com/kurasis/SecureRun/actions/runs/38811673054",
-  "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
+  "result": "DONE",
+  "run_id": 38842214153,
+  "url": "https://github.com/kurasis/SecureRun/actions/runs/38842214153",
+  "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
   "targets": [
     {
       "runner": "windows-2025",
-      "evidence_directory": "completion-eaab83c/windows-2025",
+      "evidence_directory": "completion-ec2a16b/windows-2025",
       "summary": {
-        "foundation_tests_passed": 19,
-        "target": "x86_64-pc-windows-msvc",
-        "teardown": "DISCARD_ACTIONS_VM",
-        "manager_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
         "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
-        "os_security_settings_modified": false,
-        "result": "PASSED",
         "pe_machine": "8664",
+        "windows_command_cases_passed": 32,
+        "os_security_settings_modified": false,
+        "normal_native_tests_passed": 3,
         "node_version": "v24.19.0",
         "phase": "P03",
         "os_build": "10.0.26100.0",
+        "result": "PASSED",
+        "target": "x86_64-pc-windows-msvc",
+        "manager_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
+        "frontend_tests_passed": 3,
+        "foundation_tests_passed": 19,
         "engine_operations_executed": 0,
-        "normal_native_tests_passed": 3,
-        "windows_command_cases_passed": 32,
-        "frontend_tests_passed": 3
+        "teardown": "DISCARD_ACTIONS_VM"
       }
     },
     {
       "runner": "windows-11-arm",
-      "evidence_directory": "completion-eaab83c/windows-11-arm",
+      "evidence_directory": "completion-ec2a16b/windows-11-arm",
       "summary": {
-        "os_security_settings_modified": false,
-        "foundation_tests_passed": 19,
-        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
-        "normal_native_tests_passed": 3,
-        "phase": "P03",
-        "frontend_tests_passed": 3,
-        "node_version": "v24.19.0",
         "windows_command_cases_passed": 32,
-        "teardown": "DISCARD_ACTIONS_VM",
-        "engine_operations_executed": 0,
         "pe_machine": "aa64",
+        "foundation_tests_passed": 19,
+        "teardown": "DISCARD_ACTIONS_VM",
+        "manager_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
         "target": "aarch64-pc-windows-msvc",
-        "manager_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
-        "result": "PASSED",
-        "os_build": "10.0.26200.0"
+        "engine_operations_executed": 0,
+        "phase": "P03",
+        "rust_version": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+        "os_build": "10.0.26200.0",
+        "node_version": "v24.19.0",
+        "normal_native_tests_passed": 3,
+        "frontend_tests_passed": 3,
+        "os_security_settings_modified": false,
+        "result": "PASSED"
       }
     }
   ],
@@ -728,6 +728,46 @@
       "path": "completion-eaab83c/windows-11-arm/run-summary.json",
       "sha256": "9bf18a9688d1d1bdc3f146d694ff0a2470e33083639e726609383f7d92b198dc",
       "size": 553
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/acl-manifests.json",
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b",
+      "size": 73527
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/capabilities.json",
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b",
+      "size": 760
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/command-boundary.json",
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa",
+      "size": 3732
+    },
+    {
+      "path": "completion-ec2a16b/windows-2025/run-summary.json",
+      "sha256": "c76b13c1dc53b88b0634ada247f8eb2f377118127b6327603c7b3a317739158b",
+      "size": 552
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/acl-manifests.json",
+      "sha256": "bcd28c37c6394b3c53a1db969ed9c1ec6c17fdf337af6a5f6b0db9bedf92348b",
+      "size": 73527
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/capabilities.json",
+      "sha256": "5db2b1e602d65889993a1c0e83b62e80579454ca36b8dcdf7e8bde22526b540b",
+      "size": 760
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/command-boundary.json",
+      "sha256": "59b1021b4b5b145b28c7df7cbad32dd5213c9b2e40be408151c46a3abecd8efa",
+      "size": 3732
+    },
+    {
+      "path": "completion-ec2a16b/windows-11-arm/run-summary.json",
+      "sha256": "1cc04b28b2ce8c1d5f5464e1b36cfcb9b455dd6cbb3ef0392aee2c7de17127fc",
+      "size": 553
     }
   ],
   "tested_sources": [
@@ -863,8 +903,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/control.rs",
-      "sha256": "16f594ec2df9fc91a752ecac5060b654a960e63515a4fe2c6419fca6d1f8fc1f",
-      "size": 16848
+      "sha256": "30cf88de2993f71bdbbb58d78d7299b72045e739f9552d919fcf29ef06fd7e4d",
+      "size": 17323
     },
     {
       "path": "crates/sandboxie-adapter/src/files.rs",
@@ -873,13 +913,18 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/lib.rs",
-      "sha256": "9866b8b8f34dd173316d97c71b1f98d069ef78283ee1de9f69da21a37b181a77",
-      "size": 16862
+      "sha256": "0efdb8292c090f3407ec00c6b62e05dc04116ccc5028374e8a7883e956872a05",
+      "size": 16881
     },
     {
       "path": "crates/sandboxie-adapter/src/lifecycle.rs",
       "sha256": "65633e4e9416b727bf52827ce11a5b2bd53bcdf5b477f4877114cdd04f8e8be4",
       "size": 12609
+    },
+    {
+      "path": "crates/sandboxie-adapter/src/live_wait.rs",
+      "sha256": "9286a51b0201cb2aa378c4938d1b4eeb96412957a2512bebf7dc5096b13f2e50",
+      "size": 2445
     },
     {
       "path": "crates/sandboxie-adapter/src/policy.rs",
@@ -888,8 +933,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/product.rs",
-      "sha256": "79edde3563d89502afe04a3adbf0e77e7bc9fa7d44bafcb8eef423f26b511da7",
-      "size": 9570
+      "sha256": "240ce2e86a448a952a49e0a7ecc52d49fe7aaec91246bc52d70714b327abc2f0",
+      "size": 12244
     },
     {
       "path": "crates/sandboxie-adapter/src/provision.rs",
@@ -898,8 +943,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/live.rs",
-      "sha256": "fe62910264088c0b5d0e2650f7d6e2bbbb4cc1fc0dcf5492557eefa04febdd03",
-      "size": 8993
+      "sha256": "0047fdedcb1400b741456eef0dc08c39d51d0b9d2b053f7988faea9fc4e8fd71",
+      "size": 9837
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/aliases.rs",
@@ -908,8 +953,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/control.rs",
-      "sha256": "d56757e8dd1e17d283b7ddbd6a19e5ce4d987cb0c526059fb40d9775095d4122",
-      "size": 29409
+      "sha256": "6f734131f6fb96807dc737f665a5f98b39ce3a6f555cc0e2fed37dfd45c2c577",
+      "size": 30965
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/files.rs",
@@ -928,8 +973,8 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/network.rs",
-      "sha256": "cbd7d0276b31b71a7674c3b5bad8a05a479a878e59bfca67bf6c4fd44c1f4423",
-      "size": 24883
+      "sha256": "48207b449393704a1dc49fd6c0b2883ecf4a01fdd5e39b074cfceb9026f58d26",
+      "size": 31244
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning/product.rs",
@@ -938,13 +983,13 @@
     },
     {
       "path": "crates/sandboxie-adapter/src/windows/provisioning.rs",
-      "sha256": "3c54d71a8fc3ccfd91c41ec7ef969c15346829db054e85ac436a51532c2d1a2b",
-      "size": 110264
+      "sha256": "b03b80dc1448f83be82d167200c8c8be22b3349345da2b492062264b9f70ab05",
+      "size": 110829
     },
     {
       "path": "crates/sandboxie-adapter/src/windows.rs",
-      "sha256": "e7e8d7b63b7a99a6f5e2519a4fc2049c4c6864d531e5bcefe5a35c17e0f10850",
-      "size": 41321
+      "sha256": "9352bfd1e3447bc1d4a60c99d2a06d6e392478b0ff98ed125e46a74dcb9ac348",
+      "size": 44015
     },
     {
       "path": "src-tauri/Cargo.toml",
@@ -978,8 +1023,8 @@
     },
     {
       "path": "src-tauri/src/app.rs",
-      "sha256": "710f1425567df089acb2dab1dc84b49e2e9f61b3a5abcf83455cf014931950d8",
-      "size": 25388
+      "sha256": "cf912d1459c32f647134e9e75eff0e13322cb1e361f7103d9b64d4caf7234dd0",
+      "size": 27714
     },
     {
       "path": "src-tauri/src/ci.rs",
@@ -1003,8 +1048,8 @@
     },
     {
       "path": "src-tauri/src/product.rs",
-      "sha256": "d7beaabb5be0900ee80d04e4fb8fe8988d39f8c240be4bbf5234dd8dbd7edfbd",
-      "size": 12266
+      "sha256": "11562896fb45d522c9a75b7767c0cee7944e945e321dde674a72b77a87ea691d",
+      "size": 12528
     },
     {
       "path": "src-tauri/tauri.ci.conf.json",
@@ -1028,8 +1073,8 @@
     },
     {
       "path": "ui/controls.tsx",
-      "sha256": "3015885d32f8737fd5fa71020bd0f5f0f6a7272b1a5d44378850a42860cac581",
-      "size": 11117
+      "sha256": "ecb004a8b11943ae4017b03774126ff200fe6d266e64fabd41f5caac419c45cc",
+      "size": 11177
     },
     {
       "path": "ui/diagnostics.tsx",
@@ -1058,8 +1103,8 @@
     },
     {
       "path": "ui/main.tsx",
-      "sha256": "52042a4ccf415285dd1cfe534937b58a10ea889bd38f68047c374b76fc87dd60",
-      "size": 21279
+      "sha256": "42bd6579fcf5d2fb017f9880ce461cc48e0afd715d1a7a06496c5519d5ff4bdc",
+      "size": 22441
     },
     {
       "path": "ui/policies.tsx",
@@ -1204,8 +1249,15 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38800451929",
       "result": "BLOCKED",
       "note": "P09 UI now distinguishes the independently verified production SDK route from unavailable P04 service process identity. A fresh matching native regression is required."
+    },
+    {
+      "tested_commit": "eaab83c8a8a39e2b6ea293d6972b3e0d33b15096",
+      "run_id": 38811673054,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38811673054",
+      "result": "BLOCKED",
+      "note": "Historical matching observer proof retained; a bounded natural-completion wait adjustment requires a fresh exact-source regression."
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Historical matching observer proof retained; a bounded natural-completion wait adjustment requires a fresh exact-source regression."
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
 }

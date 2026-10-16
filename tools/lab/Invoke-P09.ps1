@@ -80,6 +80,12 @@ try {
  $controllerReady=($readyIndex -eq 0 -and -not $controller.HasExited)
  if(-not $controllerReady -and -not $controller.HasExited){$controller.Kill($true);$null=$controller.WaitForExit(10000)}
  @{startup_ready=$controllerReady;process_completed=$controller.HasExited;exit_code=$(if($controller.HasExited){$controller.ExitCode}else{$null});fixture_only=$true;independent_product_cases_continue=$true}|ConvertTo-Json|Set-Content (Join-Path $out 'display-controller.lifecycle.json') -Encoding utf8
+ # Cancel only the initial authenticated same-user Windows app chooser before
+ # any product GUI/target starts. Never select an application or change defaults.
+ $prepare=[Diagnostics.ProcessStartInfo]::new((Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'));$prepare.UseShellExecute=$false;$prepare.CreateNoWindow=$true;$prepare.WorkingDirectory=Join-Path $env:SystemRoot 'System32'
+ foreach($arg in @('-NoLogo','-NoProfile','-NonInteractive','-STA','-File',(Join-Path $productHome 'p09_accessibility.ps1'),'-Mode','DESKTOP_PREPARE','-ResultFile',(Join-Path $out 'initial-desktop-preparation.json'))){$prepare.ArgumentList.Add($arg)}
+ $prepare.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','PATH','USERPROFILE','LOCALAPPDATA','APPDATA','TEMP','TMP','ProgramFiles','ProgramW6432')){$value=[Environment]::GetEnvironmentVariable($key);if($null -ne $value){$prepare.Environment[$key]=$value}};$prepare.Environment['GITHUB_ACTIONS']='true'
+ $preparer=[Diagnostics.Process]::Start($prepare);try{if(-not $preparer.WaitForExit(90000) -or $preparer.ExitCode -ne 0){throw 'P09_INITIAL_DESKTOP_PREPARATION_FAILED'}}finally{if(-not $preparer.HasExited){$preparer.Kill($true)};$preparer.Dispose()}
  $actor=[Diagnostics.Process]::Start($start);$actorClock=[Diagnostics.Stopwatch]::StartNew()
  while(-not $actor.WaitForExit(250)){
   if($actorClock.ElapsedMilliseconds -ge 2700000){throw 'P09_PRODUCT_ACTOR_TIMEOUT'}

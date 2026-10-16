@@ -358,6 +358,66 @@
       "path": "investigation-eaab83c/windows-2025/standard-sessions.json",
       "sha256": "a1b15d18c37f8d94b4c99aa3dead7c37adb7c1aa92bde414d75cfa9d0e775a9e",
       "size": 93
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/standard-sessions.json",
+      "sha256": "09f42cfcdc9c56581cab87ab06b53f47213a9aaa0f81d5079deeb5f7be33a107",
+      "size": 93
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/standard-normal.json",
+      "sha256": "f9ef6b709cfd2a76262a73abebea93e759af0b2df5aa21262e3476422a6141ca",
+      "size": 91
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/standard-fault.json",
+      "sha256": "de7b7dd8d0989b0e3976a99bb47e68a24489abed909e32af8ca3e5a489c2adf9",
+      "size": 90
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/stage.json",
+      "sha256": "2c11454fb050fdb797a162537787bffda4af4c7ba923b8517a992b0a742769b3",
+      "size": 112
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/run-summary.json",
+      "sha256": "c07e46a48716d137627eb5a7c92e244d1f3e162352ae67b62e120cf1a2a08266",
+      "size": 653
+    },
+    {
+      "path": "investigation-ec2a16b/windows-2025/lifecycle-cases.json",
+      "sha256": "57cba9da6ae65b3d1214d70249924b2ffb217712542bbabfd35215dba9bc7409",
+      "size": 18957
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/standard-sessions.json",
+      "sha256": "09f42cfcdc9c56581cab87ab06b53f47213a9aaa0f81d5079deeb5f7be33a107",
+      "size": 93
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/standard-normal.json",
+      "sha256": "d683f4146a5edef165e2c404ef777f0e70b6216165077fe2a8a8fe5da324890a",
+      "size": 91
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/stage.json",
+      "sha256": "ef42e0ff503e7768b455408da8cee659e99671bb8b52475f5a6ae6b72e477839",
+      "size": 112
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/standard-fault.json",
+      "sha256": "3cda7e6f7369972fdd868339a0f0f9186bafc84519b3564bbbbd34fba4f52acd",
+      "size": 90
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/run-summary.json",
+      "sha256": "f000d3840927d990559ae50cef10610ee5d2477960072f8fe90f73e0e816c570",
+      "size": 653
+    },
+    {
+      "path": "investigation-ec2a16b/windows-11-arm/lifecycle-cases.json",
+      "sha256": "7b7d12499e2caba51273f33e89b5182975a3614588606f0a91a0b8e6526b1622",
+      "size": 18957
     }
   ],
   "tested_sources": [
@@ -861,6 +921,13 @@
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38811689873",
       "result": "PASSED",
       "note": "Historical actual native results. Later source changes require matching regressions. Diagnostic/isolated-fixture results never close P09."
+    },
+    {
+      "tested_commit": "ec2a16b1949be3cca6cf2b7c67e084c91c208bf5",
+      "run_id": 38842224221,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/38842224221",
+      "result": "PASSED",
+      "note": "Actual regression passed both Windows targets. P09 lab fixture source subsequently changed; matching final-source phase retention remains pending."
     }
   ]
 }

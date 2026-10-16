@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `1dabb77f19e39b741e6b71b447a06f05af0dc157`.
+Current runtime/lab candidate: `8cc5e265059a790b3de57df2516023d6ad5f9e2b`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -58,6 +58,8 @@ Documentation-only descendants do not replace the required tested source.
 | P06 historical `f4c4603` | [38865151731](https://github.com/kurasis/SecureRun/actions/runs/38865151731), both targets passed; final matching source pending |
 | P07 historical `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), both targets passed; final matching source pending |
 | P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
+| P09 Server reference workload | [38872735865](https://github.com/kurasis/SecureRun/actions/runs/38872735865), `be0b4c7`: ten environments, 10000 files, 60200 ms/234 samples, 93 UI assertions. Startup 5210.3185 ms and CPU 1.090117483% deviated; average working set 228568370 bytes met target. Four mandatory cases failed; ARM cancelled. |
+| P09 Server browser diagnostic | [38874970770](https://github.com/kurasis/SecureRun/actions/runs/38874970770), `1dabb77`: actual main/child requests and effective own-sandbox level 9 passed; protocol failed during clipboard cleanup. The public ARM artifact was later retrieved anonymously: actual main/child requests and boxed protocol passed; own-sandbox observation failed at a clipboard operation. |
 | P09 historical full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695): ARM completed ten environments, 10000 files, 60135 ms/223 samples of complete-job measurement and 93 UI assertions. Startup 2616.9734 ms and average working set 243431929 bytes met targets; CPU 1.143244435% deviated. Six mandatory cases failed; Server cancelled. Final matching full run pending. |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
 | P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at `7e62fd9`: both completed 93 UI assertions, 10000 files/79 pages and the actual synthetic target secret-isolation proof. Native diagnostic save failed on both; ARM keyboard/editor and three browser continuations also failed. Diagnostic only; 220 original JSON files retained. |
@@ -65,6 +67,13 @@ Documentation-only descendants do not replace the required tested source.
 Targets are owner-selected Windows Server 2025 x64 and Windows 11 ARM64. Matching
 regressions include actual x86 targets and emulated x64 on ARM. This is not final
 installed Windows 11 x64 acceptance or certification of other engine/app versions.
+
+GitHub access expired again after publication and dispatch of `8cc5e26`: the
+authenticated API returns HTTP 401 and HTTPS Git has no usable credentials.
+Public artifacts remain readable without authentication, so result analysis
+continues. New dispatches, final matching regression dispatch/publication, push and
+ordinary merge are blocked until the environment connection is refreshed. No credentials
+are requested in chat. The draft remains unmerged.
 
 ## Findings and remaining exit gate
 
@@ -126,7 +135,11 @@ uses verified native keyboard input if direct filename messaging is refused.
 The original failure was the post-acceptance close assertion, not a failed
 filename write. Save dialogs now select Save explicitly rather than preferring
 any descendant Open button; this correction awaits the Windows result.
-The saved output must still exactly match the reviewed minimized bytes.
+Server full run 38872735865 confirmed an enabled native Save dialog and exact
+filename write/readback, but NATIVE_IDOK did not close it. The current fixture
+focuses the actual filename field, types and verifies the exact path, then uses
+real Enter. The saved output must still exactly match the reviewed minimized
+bytes; the keyboard correction has no passing Windows result yet.
 
 Reviewed real visible screenshots on both targets at `7ccda2b` reveal the
 same official Firefox first-run Terms of Use/Privacy Notice modal above the
@@ -140,15 +153,20 @@ Continue, checks physical point ownership, clicks and positively observes the
 heading disappear. OCR text and raw support content are never persisted.
 The first Server OCR attempt reached result handling but failed a PowerShell
 projection/property access before any click; the typed task result and bounded
-projected collections are now handled explicitly. This implementation still
+projected collections are now handled explicitly. The welcome implementation
 passed on Server at `9111127`: the exact heading/notices/unique Continue
 were observed, the owned native click was dispatched and the welcome disappeared.
 Actual main and child HTTP attribution and the browser-reachable boxed protocol
 handler then passed; the effective own-sandbox level remained unobserved. A
 current fallback recognizes the official about:support raw-copy button through
 Windows OCR and reads its JSON transiently. Only the effective positive level
-can pass; configured preferences cannot replace that observation. This final
-sandbox-reading change and ARM results remain pending. No browser sandbox
+can pass; configured preferences cannot replace that observation. Server at `1dabb77` then positively read effective sandbox level 9 through
+the exact official raw-copy control. Its separate protocol attempt failed during
+clipboard Clear with ExternalException; this is not protocol escape evidence.
+The current fixture waits at most two seconds only for the exact clipboard-busy
+HRESULT, without replaying any browser action. ARM at `1dabb77` also passed the recognized welcome and actual main/child/
+protocol containment, but failed its own-sandbox clipboard operation. The final
+combined run remains pending. No browser sandbox
 setting is changed. All child/protocol/effective-sandbox observations remain mandatory.
 
 The synthetic target proof requires the newly observed dispatch in the exact

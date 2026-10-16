@@ -463,10 +463,14 @@ function Picker([int]$id,[string]$path){
   }
  }
  if($Mode -eq 'EDITOR'){[Windows.Forms.SendKeys]::SendWait('{ENTER}')}else{
- $button=Find $root ([Windows.Automation.ControlType]::Button) 'Open';if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Save'};if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Select Folder'};if($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
+ $script:stage='ACCEPTING_EXACT_NATIVE_PICKER';$saving=($title -in @('Save reviewed diagnostics','Сохранить просмотренную диагностику','Save As','Save as','Save File'))
+ $buttonName=if($saving){'Save'}else{'Open'};$button=Find $root ([Windows.Automation.ControlType]::Button) $buttonName
+ if($null -eq $button -and -not $saving){$buttonName='Select Folder';$button=Find $root ([Windows.Automation.ControlType]::Button) $buttonName}
+ $result.native_accept_button_kind=if($null -ne $button){$buttonName}else{'NATIVE_IDOK'};$result.native_save_dialog=$saving
+ if($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
  }
  if($AllowOverwrite){Start-Sleep -Milliseconds 300;$confirm=Window $id $true;if($confirm -ne [IntPtr]::Zero){$confirmRoot=[Windows.Automation.AutomationElement]::FromHandle($confirm);Need ($confirmRoot.Current.Name -eq 'Confirm Save As');Click (Find $confirmRoot ([Windows.Automation.ControlType]::Button) 'Yes')}}
- $clock.Restart();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 10000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.picker_window_closed=$true
+ $script:stage='WAITING_FOR_NATIVE_PICKER_CLOSE';$clock.Restart();while([P09Access]::IsWindowVisible($window) -and $clock.ElapsedMilliseconds -lt 10000){Start-Sleep -Milliseconds 50};Need (-not [P09Access]::IsWindowVisible($window));$result.picker_window_closed=$true
  return @{real_native_picker=$true;value_pattern_used=$usedValue;native_filename_control_used=(-not $usedValue);explicit_button_invoked=($Mode -ne 'EDITOR');native_enter_accept=($Mode -eq 'EDITOR');picker_window_closed=$true;overwrite_prompt_authorized=[bool]$AllowOverwrite}
 }
 function Collapse-DisplayCombo($root,[string]$automationId){

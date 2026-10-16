@@ -41,7 +41,13 @@ protocol fixture activates a real HTTP canary link, and its own sandbox level is
 read from actual about:support JSON or rendered text. Raw support content is not
 retained. These automation corrections still require actual successful results.
 
-Disposable Firefox profiles enable the Windows accessibility provider with
-`accessibility.force_disabled=-1` for actual UI Automation interaction. No content
-sandbox preference or engine compatibility exception is changed. The actual
-about:support effective content sandbox level must remain positive.
+Earlier diagnostic profiles forced Firefox accessibility, but neither the address
+provider nor native navigation passed. That experiment is reverted. The current
+browser fixture reads only native window captions, delivers real keyboard input
+and verifies the exact synthetic address through a cleared clipboard before
+navigation. It avoids optional cross-box COM/UIA queries to Firefox. Manager
+screen-reader/UIA checks remain mandatory. Actual requests, held driver membership,
+protocol output and a positive observed about:support sandbox level remain required.
+Server run 38862241469 had no observed browser GUI and retained a live WerFault
+associated with SandboxieRpcSs.exe; no causal claim or successful browser workflow
+is inferred from that failed run, and no reporter is killed or exempted.

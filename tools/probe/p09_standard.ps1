@@ -83,8 +83,6 @@ try{
  $editor=Join-Path $productHome 'applications/editor/notepad++.exe';$archive=Join-Path $productHome 'applications/archive/7z.exe';$browser=Join-Path $productHome 'applications/browser/core/firefox.exe'
  $hostProfile=Join-Path $Fixture 'host-browser-profile';$boxedProfile=Join-Path $Fixture 'boxed-browser-profile';$protocolBase=Join-Path $env:LOCALAPPDATA 'SecureRunP09Protocol';foreach($path in @($hostProfile,$boxedProfile,$protocolBase)){$null=New-Item -ItemType Directory -Path $path}
  $prefs=@'
-// Enable the Windows accessibility provider in these disposable test profiles.
-user_pref("accessibility.force_disabled", -1);
 user_pref("browser.shell.checkDefaultBrowser", false);
 user_pref("browser.startup.homepage_override.mstone", "ignore");
 user_pref("browser.aboutwelcome.enabled", false);

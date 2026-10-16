@@ -18,8 +18,8 @@ function Read-OwnedBrowserWords([IntPtr]$window,[int]$owner){
   $buffer=[Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions]::AsBuffer($pixels)
   $software=[Windows.Graphics.Imaging.SoftwareBitmap]::CreateCopyFromBuffer($buffer,[Windows.Graphics.Imaging.BitmapPixelFormat]::Bgra8,$width,$height,[Windows.Graphics.Imaging.BitmapAlphaMode]::Ignore)
   $method=@([System.WindowsRuntimeSystemExtensions].GetMethods()|Where-Object {$_.Name -eq 'AsTask' -and $_.IsGenericMethodDefinition -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'});Need ($method.Count -eq 1)
-  $task=$method[0].MakeGenericMethod([Windows.Media.Ocr.OcrResult]).Invoke($null,@($engine.RecognizeAsync($software)));Need ($task.Wait(15000));$recognized=$task.GetAwaiter().GetResult()
-  Need ($recognized.Lines.Count -le 128);return @{lines=@($recognized.Lines);left=$rect.Left;top=$rect.Top;owned_window=$window}
+  $task=$method[0].MakeGenericMethod([Windows.Media.Ocr.OcrResult]).Invoke($null,@($engine.RecognizeAsync($software)));Need ($task.Wait(15000));$recognized=$task.Result;$result.ocr_result_expected_type=($recognized -is [Windows.Media.Ocr.OcrResult]);Need $result.ocr_result_expected_type
+  $lines=@($recognized.Lines);$result.ocr_line_count=$lines.Count;Need ($lines.Count -le 128);return @{lines=$lines;left=$rect.Left;top=$rect.Top;owned_window=$window}
  }finally{if($null -ne $software){$software.Dispose()};if($null -ne $locked){$image.UnlockBits($locked)};if($null -ne $draw){$draw.Dispose()};$image.Dispose()}
 }
 function Continue-VisualFirefoxWelcome([IntPtr]$window,[int]$owner){
@@ -28,7 +28,7 @@ function Continue-VisualFirefoxWelcome([IntPtr]$window,[int]$owner){
  $text=($lines|ForEach-Object {$_.Text}) -join "`n";$terms=$text.Contains('Terms of Use');$privacy=$text.Contains('Privacy Notice')
  $result.visual_welcome_heading_observed=($heading.Count -eq 1);$result.visual_terms_notice_observed=$terms;$result.visual_privacy_notice_observed=$privacy;$result.visual_exact_continue_buttons=$continue.Count
  if($heading.Count -eq 0){return}
- Need ($heading.Count -eq 1 -and $terms -and $privacy -and $continue.Count -eq 1 -and $continue[0].Words.Count -eq 1)
+ Need ($heading.Count -eq 1 -and $terms -and $privacy -and $continue.Count -eq 1 -and @($continue[0].Words).Count -eq 1)
  $box=$continue[0].Words[0].BoundingRect;$point=[P09Point]::new();$point.X=$view.left+[int]($box.X+$box.Width/2);$point.Y=$view.top+[int]($box.Y+$box.Height/2)
  $script:stage='CONTINUING_VISUALLY_RECOGNIZED_FIREFOX_WELCOME';$null=Owned-Point $point $window $owner;Need ([P09Access]::SetCursorPos($point.X,$point.Y))
  try{[P09Access]::mouse_event(2,0,0,0,[UIntPtr]::Zero)}finally{[P09Access]::mouse_event(4,0,0,0,[UIntPtr]::Zero)};$result.official_welcome_continue_invoked=$true;$result.welcome_input='NATIVE_CLICK_WITH_EXACT_WINDOWS_OCR'

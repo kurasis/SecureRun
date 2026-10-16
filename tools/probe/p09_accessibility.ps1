@@ -180,7 +180,7 @@ function Window([int]$id,[bool]$dialog=$false){
  $windows=@($script:ownedCandidateWindows|Select-Object -Unique)
  foreach($hwnd in $windows){
   $caption=[P09Access]::Caption($hwnd);$isDialog=([P09Access]::ClassIs($hwnd,'#32770',$ExpectedBox) -or (Known-PickerTitle $caption))
-  if($dialog -and $isDialog){return $hwnd}
+  if($dialog -and $isDialog -and [P09Access]::IsWindowEnabled($hwnd)){return $hwnd}
   if(-not $dialog -and -not $isDialog -and $Mode.StartsWith('BROWSER_') -and ([P09Access]::GetWindowLong($hwnd,-16) -band 0x00c00000) -ne 0x00c00000){continue}
   if(-not $dialog -and -not $isDialog){$rectangle=[P09Rect]::new();if(-not [P09Access]::GetWindowRect($hwnd,[ref]$rectangle)){continue};$area=([long]$rectangle.Right-$rectangle.Left)*($rectangle.Bottom-$rectangle.Top);if($area -gt $script:foundArea){$script:found=$hwnd;$script:foundArea=$area}}
  }
@@ -443,7 +443,7 @@ function Picker([int]$id,[string]$path){
  while($window -eq [IntPtr]::Zero -and $clock.ElapsedMilliseconds -lt 45000){$window=Window $id $true;if($window -eq [IntPtr]::Zero){Start-Sleep -Milliseconds 100}}
  Need ($window -ne [IntPtr]::Zero);$root=[Windows.Automation.AutomationElement]::FromHandle($window);$title=$root.Current.Name;$script:stage='VERIFYING_NATIVE_PICKER_TITLE'
  if($title.StartsWith('[#] ') -and $title.EndsWith(' [#]')){$title=$title.Substring(4,$title.Length-8)}
- $result.native_picker_title_recognized=Known-PickerTitle $title
+ $result.native_picker_title_recognized=Known-PickerTitle $title;$result.selected_picker_enabled=[P09Access]::IsWindowEnabled($window)
  Need $result.native_picker_title_recognized
  $script:stage='WAITING_FOR_ENABLED_NATIVE_FILENAME';$clock.Restart();$edit=$null;$nativeField=[IntPtr]::Zero;$activationTried=$false
  do{
@@ -455,7 +455,13 @@ function Picker([int]$id,[string]$path){
  if($Mode -eq 'EDITOR'){
   $usedValue=$false;Focus-OwnedWindow $window $id;[Windows.Forms.SendKeys]::SendWait('%n');Start-Sleep -Milliseconds 150;$nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero)
   [Windows.Forms.SendKeys]::SendWait('^a');Send-LiteralKeys $path;Need ([P09Access]::FilenameEquals($nativeField,$path));$result.editor_filename_actual_keyboard=$true;$result.native_filename_field_present=$true;$result.native_filename_mnemonic_focus_verified=$true
- }elseif($usedValue){$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path)}else{Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::SetFilename($nativeField,$path))}
+ }elseif($usedValue){$value=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$value.SetValue($path);Need ($value.Current.Value -ceq $path)}else{
+  Need ($nativeField -ne [IntPtr]::Zero);$result.native_filename_message_verified=[P09Access]::SetFilename($nativeField,$path)
+  if(-not $result.native_filename_message_verified){
+   $script:stage='TYPING_EXACT_NATIVE_FILENAME';Focus-OwnedWindow $window $id;Need ([P09Access]::Chord($window,$id,[uint16]78,[uint16]18));Start-Sleep -Milliseconds 100
+   $nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero);Need ([P09Access]::Chord($window,$id,[uint16]65,[uint16]17));Need ([P09Access]::TypeText($window,$id,$path));Need ([P09Access]::FilenameEquals($nativeField,$path));$result.native_filename_keyboard_verified=$true
+  }
+ }
  if($Mode -eq 'EDITOR'){[Windows.Forms.SendKeys]::SendWait('{ENTER}')}else{
  $button=Find $root ([Windows.Automation.ControlType]::Button) 'Open';if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Save'};if($null -eq $button){$button=Find $root ([Windows.Automation.ControlType]::Button) 'Select Folder'};if($null -ne $button){Click $button}else{Need ([P09Access]::AcceptPicker($window,$id,$ExpectedBox))}
  }
@@ -585,7 +591,7 @@ try{
     foreach($check in $checks){if($check.Current.Name -match '(?i)diagnostic|interaction|technical'){$toggle=$null;Need ($check.TryGetCurrentPattern([Windows.Automation.TogglePattern]::Pattern,[ref]$toggle));if($toggle.Current.ToggleState -eq [Windows.Automation.ToggleState]::On){$toggle.Toggle()};Need ($toggle.Current.ToggleState -eq [Windows.Automation.ToggleState]::Off);$disabled++}}
     $result.diagnostic_data_choices_observed_off=$disabled;$stage='CONTINUING_RECOGNIZED_FIREFOX_WELCOME';$pattern=$null
     if($continue[0].TryGetCurrentPattern([Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke()}else{$continue[0].SetFocus();Browser-Key $ManagerPid 13};$result.official_welcome_continue_invoked=$true
-    $clock=[Diagnostics.Stopwatch]::StartNew();do{$remaining=Find $root ([Windows.Automation.ControlType]::Text) 'Welcome to Firefox';if($null -eq $remaining){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
+    $clock=[Diagnostics.Stopwatch]::StartNew();do{$remaining=$root.FindFirst([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::NameProperty,'Welcome to Firefox'));if($null -eq $remaining){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
     $result.known_welcome_dismissed=($null -eq $remaining);Need $result.known_welcome_dismissed
    }
   }

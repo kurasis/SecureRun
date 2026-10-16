@@ -99,7 +99,7 @@ window.__p09_run=async function(stage,config={}) {
    case 'TRANSFER_EXPORT_PICK':{
     await wait(()=>button('Import file')&&!button('Import file').disabled);await click('Storage root');
     for(const name of ['drive','C','SecureRunWorkspace',config.environment_id.replaceAll('-','')]){const e=await wait(()=>directoryButton(name));e.click();await pause(100);}
-    const item=await wait(()=>Array.from(document.querySelectorAll('tbody button')).find(e=>text(e).endsWith('workflow-source.txt')));item.click();await pause(50);check('T32','actual_ui_import_is_visible_without_opening',!!document.querySelector('fieldset legend')?.textContent.includes('workflow-source.txt'));await click('Export to selected folder');break;
+    const filePanel=await wait(()=>document.querySelector('section[aria-labelledby=files-title]'));const item=await wait(()=>Array.from(filePanel.querySelectorAll('tbody button')).find(e=>e.querySelector('bdi')?.textContent==='workflow-source.txt'&&!e.matches(':disabled')));item.click();const selected=await wait(()=>Array.from(filePanel.querySelectorAll('fieldset legend')).find(e=>text(e)==='workflow-source.txt'));check('T32','actual_ui_import_is_visible_without_opening',text(selected)==='workflow-source.txt');await click('Export to selected folder',filePanel);break;
    }
    case 'TRANSFER_COLLISION_PICK':{await pause(150);await click('Export to selected folder');break;}
    case 'TRANSFER_RENAME_PICK':{

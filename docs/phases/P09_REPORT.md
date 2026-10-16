@@ -42,7 +42,7 @@ still prevent completion.
 
 ## Current validation
 
-Current runtime/lab candidate: `4a98aa48e281064781cc43e21e751ccb355971a2`.
+Current runtime/lab candidate: `1dabb77f19e39b741e6b71b447a06f05af0dc157`.
 Documentation-only descendants do not replace the required tested source.
 
 | Check | Actual result |
@@ -58,7 +58,7 @@ Documentation-only descendants do not replace the required tested source.
 | P06 historical `f4c4603` | [38865151731](https://github.com/kurasis/SecureRun/actions/runs/38865151731), both targets passed; final matching source pending |
 | P07 historical `f4c4603` | [38865154061](https://github.com/kurasis/SecureRun/actions/runs/38865154061), both targets passed; final matching source pending |
 | P08 historical `f4c4603` | [38865156468](https://github.com/kurasis/SecureRun/actions/runs/38865156468): Server 38 passed; ARM 30 passed, 8 failed after an unreviewed system image; final matching source pending |
-| P09 full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695), pending |
+| P09 historical full workload | [38870280695](https://github.com/kurasis/SecureRun/actions/runs/38870280695): ARM completed ten environments, 10000 files, 60135 ms/223 samples of complete-job measurement and 93 UI assertions. Startup 2616.9734 ms and average working set 243431929 bytes met targets; CPU 1.143244435% deviated. Six mandatory cases failed; Server cancelled. Final matching full run pending. |
 | P09 layout diagnostic | [38858563331](https://github.com/kurasis/SecureRun/actions/runs/38858563331): Server passed 7 native and 76 UI cases; ARM failed physical keyboard ownership while passing 76 UI cases |
 | P09 focused diagnostic | [38869199205](https://github.com/kurasis/SecureRun/actions/runs/38869199205) at `7e62fd9`: both completed 93 UI assertions, 10000 files/79 pages and the actual synthetic target secret-isolation proof. Native diagnostic save failed on both; ARM keyboard/editor and three browser continuations also failed. Diagnostic only; 220 original JSON files retained. |
 
@@ -95,7 +95,10 @@ window-class lookup supplements desktop/thread enumeration. Replacements are
 never enrolled during product execution. Picker/web-host windows receive UIA
 Close or scoped WM_CLOSE when unsupported. Ordinary minimization did not release
 Start/search hit testing; the current fixture hides only those authenticated
-initial surfaces and requires actual invisibility. No process is terminated.
+initial surfaces and requires actual invisibility. The observed `Shell_SystemDim` PickerHost overlay is also discovered explicitly
+and hidden only after those same initial-process guards. ARM browser run
+38873055280 identified that exact foreign surface at the physical point; the
+fixture must still prove target ownership afterwards. No process is terminated.
 Preparation has at most four passes and all enumeration is bounded. Actor requests
 carry no path, PID or command. The intended product/app window, physical point and
 focus must independently pass their original checks afterwards. Display setup
@@ -120,16 +123,33 @@ history and captured manager errors remained minimized. Both completed all
 failed before the dependent import/export/archive/reset sequence. Its current
 fixture waits for an enabled owned dialog, verifies the selected filename, and
 uses verified native keyboard input if direct filename messaging is refused.
+The original failure was the post-acceptance close assertion, not a failed
+filename write. Save dialogs now select Save explicitly rather than preferring
+any descendant Open button; this correction awaits the Windows result.
 The saved output must still exactly match the reviewed minimized bytes.
 
-A real visible Server screenshot at `7ccda2b` revealed the official Firefox
-first-run Terms of Use/Privacy Notice modal above the loaded canary page. This
-explains that run's blocked address/navigation controls; PrintWindow's earlier
-branding-only surface did not establish browser readiness. A diagnostic now
-recognizes the exact welcome heading, both notices and one enabled Continue
-through the real UIA provider, observes available diagnostic choices off, then
-requires the heading to disappear. It changes no browser sandbox setting and
-cannot replace the mandatory child/protocol/effective-sandbox observations.
+Reviewed real visible screenshots on both targets at `7ccda2b` reveal the
+same official Firefox first-run Terms of Use/Privacy Notice modal above the
+loaded canary page. The screenshots and original diagnostic JSON are retained.
+PrintWindow's earlier branding-only surface did not establish readiness. At
+`7a4000a`, neither target's UIA provider exposed the heading/notices/Continue;
+no click was dispatched and the three continuation cases still failed.
+The current fallback uses native Windows OCR over a freshly captured owned
+synthetic window in memory, recognizes the exact heading, both notices and one
+Continue, checks physical point ownership, clicks and positively observes the
+heading disappear. OCR text and raw support content are never persisted.
+The first Server OCR attempt reached result handling but failed a PowerShell
+projection/property access before any click; the typed task result and bounded
+projected collections are now handled explicitly. This implementation still
+passed on Server at `9111127`: the exact heading/notices/unique Continue
+were observed, the owned native click was dispatched and the welcome disappeared.
+Actual main and child HTTP attribution and the browser-reachable boxed protocol
+handler then passed; the effective own-sandbox level remained unobserved. A
+current fallback recognizes the official about:support raw-copy button through
+Windows OCR and reads its JSON transiently. Only the effective positive level
+can pass; configured preferences cannot replace that observation. This final
+sandbox-reading change and ARM results remain pending. No browser sandbox
+setting is changed. All child/protocol/effective-sandbox observations remain mandatory.
 
 The synthetic target proof requires the newly observed dispatch in the exact
 environment, its actual boxed marker, intended argument, absent inherited secret
@@ -147,7 +167,8 @@ historically on both targets. Neither SendKeys nor native scan-code navigation
 produced the required browser continuation requests on Server. Run 38862241469
 had no observed browser GUI and a live reporter associated with SandboxieRpcSs.exe;
 no browser screenshot was produced. The current fixture reverts forced browser
-accessibility and avoids optional cross-box COM/UIA interaction. It uses native
+accessibility. Its first-run UIA attempt and guarded OCR fallback are described
+above; navigation uses native input. It uses native
 captions and real keyboard input, while retaining all actual HTTP, protocol and
 sandbox-level requirements. Synthetic clipboard readback is diagnostic only; no
 shared clipboard capability is assumed. ASCII URI keys use the browser thread's
@@ -181,6 +202,7 @@ codes and report kinds after actual failures. It reads bounded current-lab metad
 and supplies no authority to terminate or trust a process. Full reports, paths,
 arguments and owner identities are excluded.
 
+The implementation is reviewable in [draft PR #10](https://github.com/kurasis/SecureRun/pull/10).
 All project source, Markdown and reviewed evidence are published as authorized.
 Generated binaries, credentials, raw support content and private machine
 inventory stay excluded. Detailed superseded investigations are preserved in

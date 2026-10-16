@@ -10,7 +10,7 @@ compilation alone do not establish compatibility.
 |---|---|---|---|---|
 | Notepad++ | 8.9.8.1 | x64, ARM64 | Clean portable profile, real GUI edit and Save As, verify boxed bytes and unchanged host input | Passed on Server at `f9b719d`: actual keyboard edit, native Save As, exact boxed bytes and unchanged host data. Repeated on Server at `99abd22`; ARM and final matching full run remain pending. |
 | 7-Zip | 26.04 | x64, ARM64 | Boxed file manager, official 7zG GUI create/extract, compare round-trip SHA-256 and absent host outputs | Actual workflow passed on both targets in focused run 38826425388; final matching full run pending |
-| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: main request/profile isolation passed on both in 38826425388; main isolation repeated at `686f431`, but native scan-code navigation still failed; child/protocol/content-sandbox proof pending |
+| Firefox ESR | 153.5.0esr | x64, ARM64 | Separate clean host/boxed profiles, existing host instance, actual main/child HTTP attribution, reachable protocol handler, effective content sandbox | Partial: Server passed actual main/child HTTP attribution and the reachable boxed protocol handler at `9111127` after the recognized first-run welcome was dismissed. Effective content-sandbox observation, ARM and the final matching full run remain pending |
 
 Owner-selected targets are Windows Server 2025 x64 and Windows 11 ARM64. The
 matching P03–P08 production regressions also exercise x86 and, on ARM64, emulated
@@ -46,7 +46,7 @@ provider nor native navigation passed. That experiment is reverted. The current
 browser fixture reads only native window captions, delivers real keyboard input
 and observes synthetic address readback through a cleared clipboard before
 navigation. Clipboard visibility is diagnostic only; fresh native page titles and
-actual attributed requests remain mandatory. Only the known first-run welcome uses UIA: the exact heading, terms, privacy notice and unique enabled Continue must match before interaction; diagnostic choices are observed off when available. The welcome must disappear before native navigation continues. This handles the modal observed in the real visible screenshot at `7ccda2b`. Manager
+actual attributed requests remain mandatory. Only the known first-run welcome attempts UIA, with guarded native Windows OCR when that provider exposes no heading: the exact heading, terms, privacy notice and unique enabled Continue must match before interaction; diagnostic choices are observed off when available. The welcome must disappear before native navigation continues. Both targets exposed no welcome controls through UIA at `7a4000a`; Windows OCR positively recognized and dismissed the welcome on Server at `9111127`. Its actual child/protocol containment then passed; the own-sandbox and ARM gates remain pending. The same modal is observed in the reviewed real visible screenshots on both targets at `7ccda2b`. Manager
 screen-reader/UIA checks remain mandatory. Actual requests, held driver membership,
 protocol output and a positive observed about:support sandbox level remain required.
 Server run 38862241469 had no observed browser GUI and retained a live WerFault

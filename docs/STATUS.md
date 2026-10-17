@@ -1,6 +1,6 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-16 UTC. Completed scope: full P09.
+Specification: 1.3. Updated: 2026-10-17 UTC. Current scope: full P10 (in progress).
 
 | Phase | Status | Evidence |
 |---|---|---|
@@ -13,14 +13,18 @@ Specification: 1.3. Updated: 2026-10-16 UTC. Completed scope: full P09.
 | P07 | DONE | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
 | P08 | DONE | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
 | P09 | DONE | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
-| P10–P12 | NOT_STARTED | P10 is next eligible; outside the P09 request |
+| P10 | IN_PROGRESS | Internal adversarial review and exact-source P03–P09 revalidation |
+| P11–P12 | NOT_STARTED | Packaging and installed acceptance follow P10 |
 
-Verified runtime/lab source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
-All P03–P09 gates passed on this exact commit; documentation/evidence descendants
+Previous verified runtime/lab source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
+All P03–P09 gates previously passed on this exact commit; historical documentation/evidence descendants
 preserve its protected source bytes. [PR #10](https://github.com/kurasis/SecureRun/pull/10)
 contains the implementation and all reviewed project documents/evidence.
 
-## Matching native proof
+Current P10 source changes invalidate the formal P03–P09 manifests pending rerun.
+The following table records historical P09 completion, not current P10 validation.
+
+## Historical matching native proof
 
 | Gate | Actions run | Actual result on owner-selected targets |
 |---|---|---|
@@ -59,7 +63,7 @@ Windows security/TLS/signature/checksum/browser sandbox check weakened.
 
 All 26 original specification documents are unchanged. Installed T01–T66 final
 acceptance remains NOT_STARTED until P12; T48 packaging completes in P11. P09
-phase proof does not complete release acceptance. No P10 implementation is included.
+phase proof does not complete release acceptance. P10 currently revalidates all affected source manifests; previous DONE results are historical until the new exact-source run passes.
 
 The owner authorizes automatic push of all project files, including Markdown and
 reviewed structured evidence, followed by ordinary validated merge. Credentials,

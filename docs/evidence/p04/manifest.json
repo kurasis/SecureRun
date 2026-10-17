@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
   "run_id": 38893328564,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38893328564",
@@ -1249,5 +1249,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
 }

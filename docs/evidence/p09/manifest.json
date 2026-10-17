@@ -1,6 +1,6 @@
 {
   "phase": "P09",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
   "run_id": 38894071449,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38894071449",
@@ -84359,5 +84359,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Actual product UX, official apps and performance; installed-candidate acceptance remains P12."
+  "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
 }

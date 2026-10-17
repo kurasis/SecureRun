@@ -1,6 +1,6 @@
 {
   "phase": "P05",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
   "run_id": 38893332061,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38893332061",
@@ -12580,5 +12580,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "P05 production policy/provisioning paths and fixed synthetic diagnostics only; this regression executes no P06 user-target launch."
+  "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
 }

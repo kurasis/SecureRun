@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 38893325430,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38893325430",
   "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
@@ -1508,5 +1508,5 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
 }

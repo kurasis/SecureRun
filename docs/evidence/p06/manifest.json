@@ -1,6 +1,6 @@
 {
   "phase": "P06",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f",
   "run_id": 38893334893,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/38893334893",
@@ -2134,7 +2134,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production phase paths; final installed-candidate acceptance remains P12.",
+  "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure.",
   "historical_runs": [
     {
       "tested_commit": "572592d18a5f73db81d000b5883f704f35253036",

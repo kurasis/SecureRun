@@ -9,6 +9,17 @@ pub const HISTORY_LIMIT: usize = 512;
 pub const SHARED_LIMIT: usize = 64;
 pub const RETENTION_DAYS: u64 = 30;
 
+pub fn diagnostic_save_context(observation: &crate::Observation) -> bool {
+    observation.protocol == crate::PROTOCOL
+        && observation.trust == "VERIFIED"
+        && observation.reason == "OBSERVED"
+        && observation.manager_context == crate::Context::Unboxed
+        && observation.bridge_context == crate::Context::Unboxed
+        && observation.service_running
+        && observation.driver_running
+        && !observation.restart_required
+}
+
 /// Admission to an independently authenticated history worker, not storage authority.
 /// Standard users may observe protected SCM status without its process identity.
 /// The worker still authenticates components, contexts and metadata on every use.
@@ -263,6 +274,30 @@ impl Journal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn diagnostic_save_requires_fresh_native_unboxed_context() {
+        let mut observation = crate::Observation::failure("OBSERVED");
+        assert!(!diagnostic_save_context(&observation));
+        observation.trust = "VERIFIED".into();
+        observation.manager_context = crate::Context::Unboxed;
+        observation.bridge_context = crate::Context::Unboxed;
+        observation.service_running = true;
+        observation.driver_running = true;
+        assert!(diagnostic_save_context(&observation));
+        for context in [crate::Context::Boxed, crate::Context::Unknown] {
+            observation.manager_context = context;
+            assert!(!diagnostic_save_context(&observation));
+            observation.manager_context = crate::Context::Unboxed;
+            observation.bridge_context = context;
+            assert!(!diagnostic_save_context(&observation));
+        }
+        observation.bridge_context = crate::Context::Unboxed;
+        observation.reason = "SERVICE_UNAVAILABLE".into();
+        assert!(!diagnostic_save_context(&observation));
+        observation.reason = "OBSERVED".into();
+        observation.restart_required = true;
+        assert!(!diagnostic_save_context(&observation));
+    }
     #[test]
     fn standard_history_admission_preserves_unknown_service_identity_and_refuses_unsafe_context() {
         let mut observation = crate::Observation::failure("OBSERVED");

@@ -5,7 +5,7 @@ export async function run(unauthorized: boolean) {
   if (window.__foundationTestsStarted) return; window.__foundationTestsStarted = true;
   if (unauthorized) {
     let denied = true;
-    for (const command of ['get_snapshot', 'create_draft', 'reserve_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path', 'control_request', 'files_request', 'lifecycle_request', 'product_request']) {
+    for (const command of ['get_snapshot', 'get_engine_health', 'subscribe_state', 'unsubscribe_state', 'create_draft', 'reserve_operation', 'select_file', 'prepare_transfer', 'get_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path', 'control_request', 'files_request', 'lifecycle_request', 'product_request']) {
       try { await invoke(command, { request: { display_name: 'UNAUTHORIZED' }, cases: [] }); denied = false; } catch (error) { denied &&= typeof error === 'string' && /not allowed|permission|capability|scope/i.test(error); }
     }
     window.__foundationAclDenied = denied; return;
@@ -31,6 +31,9 @@ export async function run(unauthorized: boolean) {
     check('T49','application_selection_token_required',await deniedCode('control_request',{request:{action:'REGISTER',environment_id:crypto.randomUUID(),expected_revision:1,operation_id:crypto.randomUUID(),display_name:'P06 boundary',executable_selection:crypto.randomUUID(),arguments:[],directory_selection:null}},'SELECTION_EXPIRED'));
     check('T66','diagnostic_renderer_cannot_supply_bundle_or_output_path',await denied('product_request',{request:{action:'SAVE',preview_id:crypto.randomUUID(),language:'en',path:'C:\\P09_FORGED.json',bundle:'P09_SYNTHETIC_SECRET'}}));
     check('T66','diagnostic_preview_capability_cannot_be_forged',await deniedCode('product_request',{request:{action:'SAVE',preview_id:crypto.randomUUID(),language:'en'}},'SELECTION_EXPIRED'));
+    const preview = await invoke<{ preview_id: string }>('product_request', { request: { action: 'PREVIEW' } });
+    check('T58','valid_diagnostic_preview_cannot_save_in_unknown_native_context',await deniedCode('product_request',{request:{action:'SAVE',preview_id:preview.preview_id,language:'en'}},'MANAGER_CONTEXT_UNSAFE'));
+    check('T58','refused_diagnostic_save_consumes_preview_without_picker',await deniedCode('product_request',{request:{action:'SAVE',preview_id:preview.preview_id,language:'en'}},'SELECTION_EXPIRED'));
     check('T49','queued_policy_capability_cannot_be_forged',await deniedCode('policy_request',{request:{action:'APPLY_QUEUED',queue_id:crypto.randomUUID(),operation_id:crypto.randomUUID()}},'SELECTION_EXPIRED'));
     check('T49','lifecycle_renderer_confirmation_is_not_authority',await denied('lifecycle_request',{request:{action:'ACT',environment_id:crypto.randomUUID(),expected_revision:1,expected_generation:0,operation_id:crypto.randomUUID(),intent:'RESET',language:'en',confirmed:true}}));
     check('T49','lifecycle_backend_plan_is_not_a_renderer_command',await denied('lifecycle_request',{request:{action:'COMMIT',operation_id:crypto.randomUUID(),plan_id:crypto.randomUUID()}}));

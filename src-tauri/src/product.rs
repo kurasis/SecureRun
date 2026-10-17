@@ -16,6 +16,16 @@ struct Preview {
     body: String,
     created: Instant,
 }
+fn require_unboxed_save_context() -> Result<()> {
+    // History may fall back to an in-memory setup view. That is not authority
+    // to write a host file. Reobserve the actual manager/worker at each use,
+    // including after the asynchronous native picker.
+    let observation = securerun_sandboxie_adapter::windows::bounded_observe();
+    if !contract::diagnostic_save_context(&observation) {
+        return err(ErrorCode::ManagerContextUnsafe);
+    }
+    Ok(())
+}
 #[derive(Default)]
 pub struct ProductState {
     events: Mutex<VecDeque<Event>>,
@@ -291,6 +301,7 @@ pub async fn product_request(
             };
             let dialog_parent = window.clone();
             let saved = tauri::async_runtime::spawn_blocking(move || -> Result<bool> {
+                require_unboxed_save_context()?;
                 let title = if language == "ru" {
                     "Сохранить просмотренную диагностику"
                 } else {
@@ -307,6 +318,7 @@ pub async fn product_request(
                 else {
                     return Ok(false);
                 };
+                require_unboxed_save_context()?;
                 securerun_sandboxie_adapter::files::local_path(
                     path.to_str()
                         .ok_or_else(|| AppError::new(ErrorCode::PathUnsafe))?,

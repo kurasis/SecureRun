@@ -75,6 +75,11 @@ def check_target(folder, runner, commit):
             or any(c['status'] != 'PASSED' for c in cases)):
         raise ValueError('P11 required actual installed cases missing/failed/duplicated')
     by_name = {c['name']: c['evidence'] for c in cases}
+    setup = read(folder / 'setup-observations.json')
+    if (len(setup) != 8 or any(r['private_log_retained'] for r in setup)
+            or not any('P11_WEBVIEW_INSTALL_REQUIRED' in r['events'] for r in setup)
+            or any('P11_GUARD_EXACT_BYTES_VERIFIED' not in r['events'] for r in setup if r['exit_code'] == 0)):
+        raise ValueError('P11 actual prerequisite/embedded-guard execution proof missing')
     runtime = by_name['clean_runtime_prerequisite_uses_original_microsoft_installer']
     if not runtime['runtime_absent_before_install'] or runtime['security_settings_modified']:
         raise ValueError('P11 clean-machine prerequisite branch not executed')
@@ -171,7 +176,8 @@ def validate(root=ROOT):
             raise ValueError('P11 unsafe target directory')
         check_target(folder, target['runner'], manifest['tested_commit'])
         required = {'run-summary.json', 'package-manifest.json', 'build.json', 'dependency-inventory.json',
-                    'boxed-policy.json', 'migration-unit-tests.json', 'scope.json', 'packaging-cases.json'}
+                    'boxed-policy.json', 'migration-unit-tests.json', 'scope.json', 'packaging-cases.json',
+                    'setup-observations.json'}
         for mode in ('seed', 'upgrade', 'reinstall'):
             required.update({mode + '-summary.json', mode + '-cases.json'})
         if not {target['directory'] + '/' + name for name in required}.issubset(bound_files):

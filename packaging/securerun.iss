@@ -57,11 +57,13 @@ begin
   for I := 1 to Length(Data) do Data[I] := Chr(StrToInt('$' + Copy(Hex, I*2-1, 2)));
   FileName := ExpandConstant('{tmp}\securerun-trusted-install-guard.exe');
   Result := False;
-  if GetSHA256OfString(Data) <> '{#GuardSHA256}' then exit;
-  if not SaveStringToFile(FileName, Data, False) then exit;
-  if GetSHA256OfFile(FileName) <> '{#GuardSHA256}' then exit;
+  if GetSHA256OfString(Data) <> '{#GuardSHA256}' then begin Log('P11_GUARD_EMBEDDED_HASH_INVALID'); exit; end;
+  if not SaveStringToFile(FileName, Data, False) then begin Log('P11_GUARD_EXTRACTION_FAILED'); exit; end;
+  if GetSHA256OfFile(FileName) <> '{#GuardSHA256}' then begin Log('P11_GUARD_EXTRACTED_HASH_INVALID'); exit; end;
+  Log('P11_GUARD_EXACT_BYTES_VERIFIED');
   Result := Exec(FileName, 'preflight',
     ExpandConstant('{sys}'), SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
+  Log(Format('P11_GUARD_EXIT_%d', [Code]));
 end;
 function InitializeSetup(): Boolean;
 begin
@@ -87,13 +89,15 @@ end;
 function EnsureCRT(Architecture: String; var NeedsRestart: Boolean): String;
 var Code: Integer; FileName: String;
 begin
-  Result := ''; if RuntimeAvailable(Architecture) then exit;
+  Result := ''; if RuntimeAvailable(Architecture) then begin Log('P11_CRT_AVAILABLE_' + Uppercase(Architecture)); exit; end;
+  Log('P11_CRT_INSTALL_REQUIRED_' + Uppercase(Architecture));
   FileName := 'vc_redist.' + Architecture + '.exe'; ExtractTemporaryFile(FileName);
   if not Exec(ExpandConstant('{tmp}\') + FileName, '/install /quiet /norestart',
      ExpandConstant('{sys}'), SW_HIDE, ewWaitUntilTerminated, Code) then begin
     Result := 'Official Microsoft C++ runtime installation could not start.'; exit;
   end;
   if ((Code <> 0) and (Code <> 3010)) or (not RuntimeAvailable(Architecture)) then begin
+    Log(Format('P11_CRT_FAILED_EXIT_%d', [Code]));
     Result := 'Suitable Microsoft C++ runtime is unavailable; manager installation refused.'; exit;
   end;
   if Code = 3010 then NeedsRestart := True;
@@ -106,6 +110,7 @@ begin
     Result := 'SecureRun requires its fixed administrator-controlled Program Files directory.'; exit;
   end;
   if not Guard() then begin
+    Log('P11_SETUP_GUARD_REFUSED');
     Result := 'Installation refused: unsafe code directory, owner, ACL or reparse path.'; exit;
   end;
   if RegQueryStringValue(HKLM64, 'Software\SecureRun Development', 'PackageVersion', Version) then
@@ -123,12 +128,14 @@ begin
   if RegQueryStringValue(HKLM32, 'SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version) then
     Installed := StrToIntDef(Copy(Version, 1, Pos('.', Version)-1), 0);
   if Installed < 120 then begin
+    Log('P11_WEBVIEW_INSTALL_REQUIRED');
     ExtractTemporaryFile('MicrosoftEdgeWebview2Setup.exe');
     if not Exec(ExpandConstant('{tmp}\MicrosoftEdgeWebview2Setup.exe'), '/silent /install',
        ExpandConstant('{sys}'), SW_HIDE, ewWaitUntilTerminated, ExitCode) then begin
       Result := 'Official Microsoft WebView2 installation could not start.'; exit;
     end;
     if (ExitCode <> 0) and (ExitCode <> 3010) then begin
+      Log(Format('P11_WEBVIEW_FAILED_EXIT_%d', [ExitCode]));
       Result := 'Official WebView2 prerequisite installation failed. No manager files were installed.'; exit;
     end;
     if (not RegQueryStringValue(HKLM32, 'SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version)) or

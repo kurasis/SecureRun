@@ -5,6 +5,7 @@ if($env:GITHUB_ACTIONS -ne 'true'){throw 'P11_DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path;$out=Join-Path $repo 'artifacts/p11';$packages=Join-Path $repo 'artifacts/p11-packages'
 $installRoot=Join-Path $env:ProgramFiles 'SecureRun Development';$engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus'
 $cases=[Collections.Generic.List[object]]::new();$password=$null;$shareCreated=$false;$bridge=$null
+$script:setupObservations=[Collections.Generic.List[object]]::new()
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
 function Case([string]$id,[string]$name,[scriptblock]$body){
  $c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c)
@@ -12,8 +13,15 @@ function Case([string]$id,[string]$name,[scriptblock]$body){
  finally{ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 12|Set-Content (Join-Path $out 'packaging-cases.json') -Encoding utf8}
 }
 function Setup([string]$File,[switch]$Fail){
- $p=Start-Process -FilePath $File -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-') -PassThru
- try{Require ($p.WaitForExit(300000)) 'P11_SETUP_TIMEOUT';if($Fail){Require ($p.ExitCode -ne 0) 'P11_SETUP_UNEXPECTEDLY_SUCCEEDED'}else{Require ($p.ExitCode -eq 0) 'P11_SETUP_FAILED'};return $p.ExitCode}finally{$p.Dispose()}
+ $log=Join-Path $fixture ('setup-private-'+$script:setupObservations.Count+'.log')
+ $p=Start-Process -FilePath $File -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/LOG="'+$log+'"')) -PassThru
+ try{
+  Require ($p.WaitForExit(300000)) 'P11_SETUP_TIMEOUT'
+  $events=@();if((Test-Path $log) -and (Get-Item $log).Length -le 4194304){$events=@([regex]::Matches([IO.File]::ReadAllText($log),'\bP11_[A-Z0-9_]+(?:-[0-9]+)?\b')|ForEach-Object Value|Sort-Object -Unique)}
+  $script:setupObservations.Add(@{file=[IO.Path]::GetFileName($File);exit_code=$p.ExitCode;expected_failure=[bool]$Fail;events=$events;private_log_retained=$false})
+  ConvertTo-Json -InputObject @($script:setupObservations.ToArray()) -Depth 8|Set-Content (Join-Path $out 'setup-observations.json') -Encoding utf8
+  if($Fail){Require ($p.ExitCode -ne 0) 'P11_SETUP_UNEXPECTEDLY_SUCCEEDED'}else{Require ($p.ExitCode -eq 0) 'P11_SETUP_FAILED'};return $p.ExitCode
+ }finally{$p.Dispose()}
 }
 function Payload-Matches {
  $m=Get-Content (Join-Path $packages 'payload/package-manifest.json') -Raw|ConvertFrom-Json

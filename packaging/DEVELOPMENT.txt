@@ -9,7 +9,8 @@ this development artifact does not grant a new redistribution license.
 
 Sandboxie is separately installed from its official publisher. This package does
 not include or update its engine, driver, SandMan, applications or certificates.
-Microsoft WebView2, if needed, is installed by the unmodified Microsoft-signed
+Microsoft C++ v14 shared runtimes, if needed, use the unmodified Microsoft-signed
+redistributables under separate Microsoft terms. Microsoft WebView2, if needed, is installed by the unmodified Microsoft-signed
 official Evergreen bootstrapper under Microsoft's separate terms. The prerequisite
 download requires a network connection and may request a Windows restart.
 

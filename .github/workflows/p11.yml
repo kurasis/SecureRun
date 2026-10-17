@@ -27,7 +27,8 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: '24.19.0'
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - id: cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: |
             ~/.cargo/registry
@@ -36,6 +37,7 @@ jobs:
           key: p11-${{ matrix.runner }}-${{ hashFiles('Cargo.lock', 'Cargo.toml', 'crates/**/*.rs', 'src-tauri/**/*.rs', 'packaging/**') }}
           restore-keys: |
             p11-${{ matrix.runner }}-
+            p10-09-${{ matrix.runner }}-
             p09-${{ matrix.runner }}-
             p09-build-${{ matrix.runner }}-
       - name: Exercise installed development candidate, original prerequisites and retention
@@ -58,6 +60,15 @@ jobs:
           path: artifacts/p11/*.json
           if-no-files-found: error
           retention-days: 14
+      - name: Preserve compiled dependencies after a failed installed check
+        if: failure() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p11-${{ matrix.runner }}-${{ hashFiles('Cargo.lock', 'Cargo.toml', 'crates/**/*.rs', 'src-tauri/**/*.rs', 'packaging/**') }}
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: p11-development-installers-${{ matrix.runner }}-${{ github.sha }}

@@ -33,6 +33,11 @@ InfoAfterFile={#Payload}\RETENTION.txt
 Source: "{#Payload}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#Guard}"; Flags: dontcopy
 Source: "{#Bootstrapper}"; Flags: dontcopy
+Source: "{#CRTDirectory}\vc_redist.x86.exe"; Flags: dontcopy
+Source: "{#CRTDirectory}\vc_redist.x64.exe"; Flags: dontcopy
+#if Architecture == "arm64"
+Source: "{#CRTDirectory}\vc_redist.arm64.exe"; Flags: dontcopy
+#endif
 [Icons]
 Name: "{commonprograms}\SecureRun Development"; Filename: "{app}\securerun.exe"; WorkingDir: "{app}"
 [Code]
@@ -61,6 +66,37 @@ function InitializeSetup(): Boolean;
 begin
   Result := GetModuleHandle('SbieDll.dll') = 0;
 end;
+function RuntimeAvailable(Architecture: String): Boolean;
+var Version, Key: String; Installed: Cardinal; View: Integer;
+begin
+  Result := False; Key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\' + Architecture;
+  for View := 0 to 1 do begin
+    if View = 0 then begin
+      if not RegQueryDWordValue(HKLM32, Key, 'Installed', Installed) then continue;
+      if not RegQueryStringValue(HKLM32, Key, 'Version', Version) then continue;
+    end else begin
+      if not RegQueryDWordValue(HKLM64, Key, 'Installed', Installed) then continue;
+      if not RegQueryStringValue(HKLM64, Key, 'Version', Version) then continue;
+    end;
+    if (Installed = 1) and (not NewerVersion('{#MinimumCRT}', Copy(Version,2,Length(Version)-1))) then begin
+      Result := True; exit;
+    end;
+  end;
+end;
+function EnsureCRT(Architecture: String; var NeedsRestart: Boolean): String;
+var Code: Integer; FileName: String;
+begin
+  Result := ''; if RuntimeAvailable(Architecture) then exit;
+  FileName := 'vc_redist.' + Architecture + '.exe'; ExtractTemporaryFile(FileName);
+  if not Exec(ExpandConstant('{tmp}\') + FileName, '/install /quiet /norestart',
+     ExpandConstant('{sys}'), SW_HIDE, ewWaitUntilTerminated, Code) then begin
+    Result := 'Official Microsoft C++ runtime installation could not start.'; exit;
+  end;
+  if ((Code <> 0) and (Code <> 3010)) or (not RuntimeAvailable(Architecture)) then begin
+    Result := 'Suitable Microsoft C++ runtime is unavailable; manager installation refused.'; exit;
+  end;
+  if Code = 3010 then NeedsRestart := True;
+end;
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var Installed, ExitCode: Integer; Version: String;
 begin
@@ -75,6 +111,11 @@ begin
     if NewerVersion(Version, '{#PackageVersion}') then begin
       Result := 'Package downgrade refused. Retained database schemas must never be blindly downgraded.'; exit;
     end;
+  Result := EnsureCRT('x86', NeedsRestart); if Result <> '' then exit;
+  Result := EnsureCRT('x64', NeedsRestart); if Result <> '' then exit;
+#if Architecture == "arm64"
+  Result := EnsureCRT('arm64', NeedsRestart); if Result <> '' then exit;
+#endif
   { Only an administrator-controlled machine runtime satisfies this prerequisite.
     The application independently checks actual WebView2 availability on startup. }
   Installed := 0;

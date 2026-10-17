@@ -3,7 +3,7 @@ as your ordinary user. Review the development and compatibility limits first.
 
 Uninstall removes only the installed manager code and its Start menu entry.
 It retains all user profiles, ownership/journals, archives and environment data,
-the independently installed Sandboxie engine and Microsoft WebView2 runtime.
+the independently installed Sandboxie engine and Microsoft WebView2/C++ shared runtimes.
 It does not stop running isolated applications, reset environments, execute engine
 cleanup, remove engine definitions, or claim secure erasure.
 

@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param()
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
+foreach($name in @('RUSTFLAGS','CARGO_ENCODED_RUSTFLAGS','VITE_FOUNDATION_CI','TAURI_CONFIG')){
+ if([Environment]::GetEnvironmentVariable($name)){throw 'P11_UNREVIEWED_BUILD_OVERRIDE_PRESENT'}
+}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $out=Join-Path $repo 'artifacts/p11';$packages=Join-Path $repo 'artifacts/p11-packages'
 foreach($p in @($out,$packages)){ $null=New-Item -ItemType Directory -Path $p -Force }
@@ -10,16 +13,19 @@ $innoArch=if($native -eq 'arm64'){'arm64'}else{'x64os'}
 $pin=Get-Content (Join-Path $PSScriptRoot 'toolchain.json') -Raw|ConvertFrom-Json
 $downloads=Join-Path $packages 'downloads';$null=New-Item -ItemType Directory -Path $downloads -Force
 $trust=@()
-foreach($item in @(@{kind='inno';file='inno.exe'},@{kind='webview2';file='MicrosoftEdgeWebview2Setup.exe'})){
- $entry=$pin.($item.kind);$path=Join-Path $downloads $item.file
+$items=@(@{kind='inno';file='inno.exe'},@{kind='webview2';file='MicrosoftEdgeWebview2Setup.exe'})
+$crtArchitectures=@('x86','x64');if($native -eq 'arm64'){$crtArchitectures+='arm64'}
+foreach($arch in $crtArchitectures){$items+=@{kind='vcredist';architecture=$arch;file=('vc_redist.'+$arch+'.exe')}}
+foreach($item in $items){
+ $entry=if($item.kind -eq 'vcredist'){$pin.vcredist.($item.architecture)}else{$pin.($item.kind)};$path=Join-Path $downloads $item.file
  Invoke-WebRequest -Uri $entry.url -OutFile $path
  $hash=(Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant()
  if($hash -ne $entry.sha256){throw 'P11_TOOL_DOWNLOAD_HASH_MISMATCH'}
  $sig=Get-AuthenticodeSignature -LiteralPath $path
  if($sig.Status -ne 'Valid'){throw 'P11_TOOL_SIGNATURE_INVALID'}
- if($item.kind -eq 'webview2' -and $sig.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation'){throw 'P11_MICROSOFT_PUBLISHER_REQUIRED'}
- if($item.kind -eq 'webview2' -and (Get-Item $path).Length -ne $entry.size){throw 'P11_WEBVIEW_SIZE_MISMATCH'}
- $trust+=@{kind=$item.kind;sha256=$hash;signature=$sig.Status.ToString();publisher=$sig.SignerCertificate.Subject;size=(Get-Item $path).Length}
+ if($item.kind -ne 'inno' -and $sig.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation'){throw 'P11_MICROSOFT_PUBLISHER_REQUIRED'}
+ if($item.kind -ne 'inno' -and (Get-Item $path).Length -ne $entry.size){throw 'P11_PREREQUISITE_SIZE_MISMATCH'}
+ $trust+=@{kind=$item.kind;sha256=$hash;signature=$sig.Status.ToString();publisher=$sig.SignerCertificate.Subject;size=(Get-Item $path).Length;file_version=(Get-Item $path).VersionInfo.FileVersion}
 }
 $compilerHome=Join-Path $packages 'inno'
 $p=Start-Process -FilePath (Join-Path $downloads 'inno.exe') -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/DIR="'+$compilerHome+'"')) -PassThru -Wait
@@ -57,6 +63,7 @@ try{
  if($LASTEXITCODE -ne 0){throw 'P11_LICENSE_INVENTORY_FAILED'}
  Copy-Item (Join-Path $compilerHome 'License.txt') (Join-Path $payload 'INNO_LICENSE.txt')
  Copy-Item (Join-Path $PSScriptRoot 'DEVELOPMENT.txt'),(Join-Path $PSScriptRoot 'RETENTION.txt') $payload
+ Copy-Item (Join-Path $PSScriptRoot 'notices/*.txt') $payload
  Copy-Item (Join-Path $PSScriptRoot 'compatibility.json') $payload
  Copy-Item (Join-Path $repo 'crates/sandboxie-adapter/compatibility-v1.json'),(Join-Path $repo 'crates/sandboxie-adapter/cleanup-compatibility-v1.json') $payload
  $files=@(Get-ChildItem $payload -File|Sort-Object Name|ForEach-Object {
@@ -65,15 +72,22 @@ try{
   $record
  })
  $source=(& git rev-parse HEAD).Trim()
- @{schema=1;phase='P11';source_commit=$source;target=$target;product_version='0.3.0';package_revision='0.3.0.11';signing_status='UNSIGNED_DEVELOPMENT_ONLY';features=@();engine_bundled=$false;files=$files;prerequisite_trust=$trust}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $payload 'package-manifest.json') -Encoding utf8
+ @{schema=1;phase='P11';source_commit=$source;target=$target;product_version='0.3.0';payload_revision='P11_SOURCE_BOUND_RUNTIME_SCHEMA_1';signing_status='UNSIGNED_DEVELOPMENT_ONLY';features=@();engine_bundled=$false;files=$files;prerequisite_trust=$trust}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $payload 'package-manifest.json') -Encoding utf8
  $compiled=@()
+ $imports=@{}
+ foreach($file in Get-ChildItem $payload -Filter '*.exe'){
+  $dump=& dumpbin.exe /dependents $file.FullName
+  if($LASTEXITCODE -ne 0){throw 'P11_IMPORT_INSPECTION_FAILED'}
+  $imports[$file.Name]=@($dump|ForEach-Object {if($_ -match '^\s+([A-Za-z0-9_.-]+\.dll)\s*$'){$Matches[1].ToLowerInvariant()}}|Sort-Object -Unique)
+ }
+ $versions=@{rust=(& rustc --version);node=(& node --version);npm=(& npm --version);msvc_toolset=$env:VCToolsVersion;windows_sdk=$env:WindowsSDKVersion.TrimEnd('\')}
  foreach($version in @('0.3.0.10','0.3.0.11')){
-  & (Join-Path $compilerHome 'ISCC.exe') ("/DPayload=$payload") ("/DOutput=$packages") ("/DArchitecture=$innoArch") ("/DPackageVersion=$version") ("/DGuard="+(Join-Path $payload 'install-guard.exe')) ("/DBootstrapper="+(Join-Path $downloads 'MicrosoftEdgeWebview2Setup.exe')) (Join-Path $PSScriptRoot 'securerun.iss')
+  & (Join-Path $compilerHome 'ISCC.exe') ("/DPayload=$payload") ("/DOutput=$packages") ("/DArchitecture=$innoArch") ("/DNativeArchitecture=$native") ("/DMinimumCRT="+$env:VCToolsVersion.TrimEnd('\')+'.0') ("/DPackageVersion=$version") ("/DGuard="+(Join-Path $payload 'install-guard.exe')) ("/DBootstrapper="+(Join-Path $downloads 'MicrosoftEdgeWebview2Setup.exe')) ("/DCRTDirectory=$downloads") (Join-Path $PSScriptRoot 'securerun.iss')
   if($LASTEXITCODE -ne 0){throw 'P11_INSTALLER_COMPILE_FAILED'}
   $name="SecureRun-Development-$version-$innoArch.exe";$path=Join-Path $packages $name
   $compiled+=@{name=$name;package_version=$version;sha256=(Get-FileHash $path).Hash.ToLowerInvariant();size=(Get-Item $path).Length;signature=(Get-AuthenticodeSignature $path).Status.ToString()}
  }
  Copy-Item (Join-Path $payload 'package-manifest.json'),(Join-Path $payload 'dependency-inventory.json') $out
- @{phase='P11';source_commit=$source;target=$target;signing_status='UNSIGNED_DEVELOPMENT_ONLY';packages=$compiled;prerequisite_trust=$trust;engine_bundled=$false;baseline='SAME_REVIEWED_RUNTIME_SCHEMA_1_PACKAGING_REVISION_10';candidate='PACKAGING_REVISION_11'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'build.json') -Encoding utf8
+ @{phase='P11';source_commit=$source;target=$target;signing_status='UNSIGNED_DEVELOPMENT_ONLY';packages=$compiled;prerequisite_trust=$trust;tool_versions=$versions;pe_dll_imports=$imports;engine_bundled=$false;baseline='SAME_REVIEWED_RUNTIME_SCHEMA_1_PACKAGING_REVISION_10';candidate='PACKAGING_REVISION_11'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'build.json') -Encoding utf8
  $compiled|ForEach-Object {($_.sha256+'  '+$_.name)}|Set-Content (Join-Path $packages 'SHA256SUMS') -Encoding ascii
 }finally{Pop-Location}

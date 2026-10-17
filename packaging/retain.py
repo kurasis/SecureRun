@@ -138,8 +138,21 @@ def validate(root=ROOT):
     if manifest['phase'] != 'P11' or manifest['final_acceptance_scenarios_passed'] != 0:
         raise ValueError('P11 cannot close P12 installed acceptance')
     p10 = read(root / 'docs/evidence/p10/manifest.json')
-    if p10['result'] != 'DONE' or p10['tested_commit'] != manifest['tested_commit']:
-        raise ValueError('P11 needs matching completed integrated regression evidence')
+    if p10['result'] != 'DONE':
+        raise ValueError('P11 needs completed integrated regression evidence')
+    dependency = record(root / 'docs/evidence/p10/manifest.json', 'docs/evidence/p10/manifest.json')
+    if manifest['integration_dependency'] != dependency:
+        raise ValueError('P11 integrated dependency changed after packaging review')
+    # A packaging-only descendant can preserve the full P10 source identity.
+    # Never remove protected inputs or relabel an earlier run as a new commit.
+    spec = importlib.util.spec_from_file_location('p10_identity', root / 'tools/lab/retain_p10_evidence.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if {s['path'] for s in p10['tested_sources']} != set(module.source_paths(root)):
+        raise ValueError('P11 integration source inventory is incomplete')
+    for entry in p10['tested_sources']:
+        if record(root / entry['path'], entry['path']) != entry:
+            raise ValueError('P11 runtime/workflow differs from completed P10 source')
     if {r['runner'] for r in manifest['targets']} != set(RUNNERS) or len(manifest['targets']) != 2:
         raise ValueError('P11 requires both installed Windows laboratories')
     for target in manifest['targets']:
@@ -185,6 +198,7 @@ def retain(download, commit, run_id):
     manifest = {'phase': 'P11', 'result': 'DONE', 'tested_commit': commit, 'run_id': run_id,
                 'url': f'https://github.com/kurasis/SecureRun/actions/runs/{run_id}',
                 'targets': targets, 'files': entries, 'tested_sources': bound,
+                'integration_dependency': record(ROOT / 'docs/evidence/p10/manifest.json', 'docs/evidence/p10/manifest.json'),
                 'signing': 'UNSIGNED_DEVELOPMENT_ONLY', 'manager_license': 'NOT_SELECTED_BY_OWNER',
                 'final_acceptance_scenarios_passed': 0,
                 'next_phase': 'P12', 'development_limitations': [

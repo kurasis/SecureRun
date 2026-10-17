@@ -61,6 +61,22 @@ def generate(root, target, output):
                           'source_archive': f"https://static.crates.io/crates/{package['name']}/{package['name']}-{package['version']}.crate",
                           'source_archive_sha256': cargo_checksums[(package['name'], package['version'])],
                           'scope': 'WINDOWS_RUNTIME_OR_BUILD_DEPENDENCY', 'notices': records})
+    sdk = json.loads((root / 'packaging/microsoft-sdk.json').read_text())
+    binding = next(p for p in metadata['packages'] if p['name'] == 'webview2-com-sys')
+    binding_home = Path(binding['manifest_path']).parent
+    for loader in sdk['loaders']:
+        if digest((binding_home / loader['architecture'] / loader['name']).read_bytes()) != loader['sha256']:
+            raise ValueError('Microsoft WebView2 static loader changed from reviewed official SDK')
+    for entry in sdk['notices']:
+        data = (root / 'packaging/notices' / entry['name']).read_bytes()
+        if digest(data) != entry['sha256']:
+            raise ValueError('Microsoft SDK notice changed')
+        notices.append('\n===== Microsoft WebView2 SDK ' + sdk['version'] + ' / ' + entry['name'] + ' =====\n'
+                       + data.decode('utf-8-sig'))
+    inventory.append({'ecosystem': 'microsoft-sdk', 'name': sdk['name'], 'version': sdk['version'],
+                      'license': sdk['license'], 'scope': 'STATICALLY_LINKED_WEBVIEW2_LOADER',
+                      'source_package': sdk['url'], 'source_package_sha256': sdk['sha256'],
+                      'notices': sdk['notices'], 'loader_bytes_match_official_sdk': True})
     lock = json.loads((root / 'package-lock.json').read_text())
     for location, locked in sorted(lock['packages'].items()):
         if not location:
@@ -107,6 +123,11 @@ def generate(root, target, output):
                                       'license': 'Inno Setup License (modified BSD)',
                                       'notice': 'INNO_LICENSE.txt'},
                 'microsoft_bootstrapper': 'Unmodified Microsoft-signed prerequisite; separate Microsoft terms'}
+    pins = json.loads((root / 'packaging/toolchain.json').read_text())
+    architectures = ['x86', 'x64'] + (['arm64'] if target.startswith('aarch64') else [])
+    document['microsoft_crt_prerequisites'] = [dict(pins['vcredist'][arch], architecture=arch)
+                                            for arch in architectures]
+    document['microsoft_crt_terms'] = 'https://visualstudio.microsoft.com/license-terms/vs2022-cruntime/'
     (output / 'dependency-inventory.json').write_text(json.dumps(document, indent=2) + '\n')
     return document
 

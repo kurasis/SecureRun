@@ -1,4 +1,14 @@
-# P01 test report
+# Test reports
+
+Current work: [P10 integrated production-path test report](P10_TEST_REPORT.md),
+[security review](SECURITY_REVIEW.md) and
+[requirement traceability](REQUIREMENT_TRACEABILITY.md). P10 native closure is
+pending. The historical phase results below retain their original scope/source;
+the current formal manifests must be revalidated after protected source changes.
+
+Installed T01–T66 acceptance remains NOT_STARTED until P12.
+
+## Historical P01 test report
 
 Run: [38536438262](https://github.com/kurasis/SecureRun/actions/runs/38536438262),
 2026-10-14 UTC. Source head: 3529b11d7657fb4520c1aa3b17aaa23f2ff33dfb.

@@ -110,6 +110,13 @@ def check_target(folder, runner, commit):
         if f['pe_machine'] != expected_machine or not re.fullmatch('[0-9a-f]{64}', f['sha256']):
             raise ValueError('P11 payload architecture or hash mismatch')
     build = read(folder / 'build.json')
+    if (build['source_commit'], build['target']) != (commit, target):
+        raise ValueError('P11 installer build provenance mismatch')
+    for mode in ('seed', 'upgrade', 'reinstall'):
+        actor = read(folder / (mode + '-summary.json'))
+        if (actor['status'] != 'PASSED' or not actor['standard_user']
+                or actor['installed_manager_sha256'] != binaries['securerun.exe']['sha256']):
+            raise ValueError('P11 actor did not test the packaged installed manager')
     if {p['package_version'] for p in build['packages']} != {'0.3.0.10', '0.3.0.11'}:
         raise ValueError('P11 actual baseline/candidate installer missing')
     for p in build['packages']:
@@ -155,8 +162,20 @@ def validate(root=ROOT):
             raise ValueError('P11 runtime/workflow differs from completed P10 source')
     if {r['runner'] for r in manifest['targets']} != set(RUNNERS) or len(manifest['targets']) != 2:
         raise ValueError('P11 requires both installed Windows laboratories')
+    bound_files = [entry['path'] for entry in manifest['files']]
+    if len(bound_files) != len(set(bound_files)):
+        raise ValueError('P11 duplicated evidence entry')
     for target in manifest['targets']:
-        check_target(root / 'docs/evidence/p11' / target['directory'], target['runner'], manifest['tested_commit'])
+        folder = (root / 'docs/evidence/p11' / target['directory']).resolve()
+        if not folder.is_relative_to((root / 'docs/evidence/p11').resolve()):
+            raise ValueError('P11 unsafe target directory')
+        check_target(folder, target['runner'], manifest['tested_commit'])
+        required = {'run-summary.json', 'package-manifest.json', 'build.json', 'dependency-inventory.json',
+                    'boxed-policy.json', 'migration-unit-tests.json', 'scope.json', 'packaging-cases.json'}
+        for mode in ('seed', 'upgrade', 'reinstall'):
+            required.update({mode + '-summary.json', mode + '-cases.json'})
+        if not {target['directory'] + '/' + name for name in required}.issubset(bound_files):
+            raise ValueError('P11 required native proof is not hash-bound')
     for entry in manifest['files']:
         path = (root / 'docs/evidence/p11' / entry['path']).resolve()
         if not path.is_relative_to((root / 'docs/evidence/p11').resolve()) or record(path, entry['path']) != entry:

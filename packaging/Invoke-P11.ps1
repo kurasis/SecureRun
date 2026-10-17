@@ -106,11 +106,11 @@ try{
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $labCode 'engine_bridge.cs')))
   $shell=(Get-Command pwsh -CommandType Application).Source;$app=Join-Path $installRoot 'securerun.exe';$bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($shell,$app));$box='SRP02_P11_CTL_'+$run.Substring(0,12);$bridge.Register($box)
   foreach($pair in @(@('Enabled','y'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$bridge.Set($box,$pair[0],$pair[1])};$bridge.Set($box,'FileRootPath',(Join-Path $fixture "boxes/$box"));$root=$bridge.Root($box);$null=New-Item -ItemType Directory -Path $root -Force;$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'results') -Force;$null=$bridge.CaptureRoot($box)
-  $birth=[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc());$savedPath=$env:PATH;$savedModules=$env:PSModulePath;[P02Bridge]::MinimizeProcessEnvironment($engine)
+  $birth=[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc());$savedPath=$env:PATH;$savedModules=$env:PSModulePath;$savedExtensions=$env:PATHEXT;[P02Bridge]::MinimizeProcessEnvironment($engine)
   $receipt=$bridge.Launch($box,$shell,[string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $labCode 'p05_boxed.ps1'),'-Manager',$app,'-Fixture',$fixture,'-HostPid',[string]$PID,'-HostBirth',$birth))
   try{Require ([P02Bridge]::Completed($receipt,90000) -and [P02Bridge]::ExitCode($receipt) -eq 43) 'P11_BOXED_WORKERS_ACCEPTED';$reports=@(Get-ChildItem $root -Recurse -File -Filter 'boxed-policy.json');Require ($reports.Count -eq 1) 'P11_BOXED_PROOF_MISSING';Copy-Item $reports[0].FullName (Join-Path $out 'boxed-policy.json')}finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($receipt)}
   $receipt=$bridge.Launch($box,$app,[string[]]@())
-  try{Require ([P02Bridge]::Completed($receipt,60000) -and [P02Bridge]::ExitCode($receipt) -eq 78) 'P11_BOXED_GUI_ACCEPTED'}finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($receipt);$env:PATH=$savedPath;$env:PSModulePath=$savedModules}
+  try{Require ([P02Bridge]::Completed($receipt,60000) -and [P02Bridge]::ExitCode($receipt) -eq 78) 'P11_BOXED_GUI_ACCEPTED'}finally{$null=$bridge.StopHeld($box);[P02Bridge]::CloseReceipt($receipt);$env:PATH=$savedPath;$env:PSModulePath=$savedModules;$env:PATHEXT=$savedExtensions}
   @{actual_boxed_manager_exit=78;all_worker_families_refused=$true;unboxed_parent_claim_accepted=$false;product_helper=$false}
  }
  Case 'T48' 'uninstall_removes_only_code_and_retains_profile_engine_runtime' {

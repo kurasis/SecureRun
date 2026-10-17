@@ -81,8 +81,17 @@ try{
   $imports[$file.Name]=@($dump|ForEach-Object {if($_ -match '^\s+([A-Za-z0-9_.-]+\.dll)\s*$'){$Matches[1].ToLowerInvariant()}}|Sort-Object -Unique)
  }
  $versions=@{rust=(& rustc --version);node=(& node --version);npm=(& npm --version);msvc_toolset=$env:VCToolsVersion;windows_sdk=$env:WindowsSDKVersion.TrimEnd('\')}
+ # Compile the exact guard into BOTH setup and uninstaller script bytecode.
+ # Uninstall must not execute a directory-resident guard before trusting it.
+ $guardBytes=[IO.File]::ReadAllBytes((Join-Path $payload 'install-guard.exe'))
+ if($guardBytes.Length -gt 2097152){throw 'P11_EMBEDDED_GUARD_SIZE_BOUND'}
+ $hex=[Convert]::ToHexString($guardBytes);$lines=[Collections.Generic.List[string]]::new()
+ $lines.Add('function EmbeddedGuardHex(): String;');$lines.Add('begin');$lines.Add('  Result := '''';')
+ for($i=0;$i -lt $hex.Length;$i+=2048){$lines.Add('  Result := Result + '''+$hex.Substring($i,[Math]::Min(2048,$hex.Length-$i))+''';')}
+ $lines.Add('end;');$guardData=Join-Path $packages 'guard-data.iss';[IO.File]::WriteAllLines($guardData,$lines,[Text.UTF8Encoding]::new($false))
+ $guardHash=(Get-FileHash (Join-Path $payload 'install-guard.exe')).Hash.ToLowerInvariant()
  foreach($version in @('0.3.0.10','0.3.0.11')){
-  & (Join-Path $compilerHome 'ISCC.exe') ("/DPayload=$payload") ("/DOutput=$packages") ("/DArchitecture=$innoArch") ("/DNativeArchitecture=$native") ("/DMinimumCRT="+$env:VCToolsVersion.TrimEnd('\')+'.0') ("/DPackageVersion=$version") ("/DGuard="+(Join-Path $payload 'install-guard.exe')) ("/DBootstrapper="+(Join-Path $downloads 'MicrosoftEdgeWebview2Setup.exe')) ("/DCRTDirectory=$downloads") (Join-Path $PSScriptRoot 'securerun.iss')
+  & (Join-Path $compilerHome 'ISCC.exe') ("/DPayload=$payload") ("/DOutput=$packages") ("/DArchitecture=$innoArch") ("/DMinimumCRT="+$env:VCToolsVersion.TrimEnd('\')+'.0') ("/DPackageVersion=$version") ("/DGuardDataFile=$guardData") ("/DGuardSHA256=$guardHash") ("/DBootstrapper="+(Join-Path $downloads 'MicrosoftEdgeWebview2Setup.exe')) ("/DCRTDirectory=$downloads") (Join-Path $PSScriptRoot 'securerun.iss')
   if($LASTEXITCODE -ne 0){throw 'P11_INSTALLER_COMPILE_FAILED'}
   $name="SecureRun-Development-$version-$innoArch.exe";$path=Join-Path $packages $name
   $compiled+=@{name=$name;package_version=$version;sha256=(Get-FileHash $path).Hash.ToLowerInvariant();size=(Get-Item $path).Length;signature=(Get-AuthenticodeSignature $path).Status.ToString()}

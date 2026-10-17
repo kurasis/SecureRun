@@ -31,7 +31,6 @@ InfoBeforeFile={#Payload}\DEVELOPMENT.txt
 InfoAfterFile={#Payload}\RETENTION.txt
 [Files]
 Source: "{#Payload}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#Guard}"; Flags: dontcopy
 Source: "{#Bootstrapper}"; Flags: dontcopy
 Source: "{#CRTDirectory}\vc_redist.x86.exe"; Flags: dontcopy
 Source: "{#CRTDirectory}\vc_redist.x64.exe"; Flags: dontcopy
@@ -41,6 +40,7 @@ Source: "{#CRTDirectory}\vc_redist.arm64.exe"; Flags: dontcopy
 [Icons]
 Name: "{commonprograms}\SecureRun Development"; Filename: "{app}\securerun.exe"; WorkingDir: "{app}"
 [Code]
+#include GuardDataFile
 function NewerVersion(Existing, Candidate: String): Boolean;
 var A, B: TArrayOfString; I, X, Y: Integer;
 begin
@@ -56,10 +56,16 @@ end;
 function GetModuleHandle(Name: String): THandle;
   external 'GetModuleHandleW@kernel32.dll stdcall';
 function Guard(): Boolean;
-var Code: Integer;
+var Code, I: Integer; Hex: String; Data: AnsiString; FileName: String;
 begin
-  ExtractTemporaryFile('install-guard.exe');
-  Result := Exec(ExpandConstant('{tmp}\install-guard.exe'), 'preflight',
+  Hex := EmbeddedGuardHex(); SetLength(Data, Length(Hex) div 2);
+  for I := 1 to Length(Data) do Data[I] := Chr(StrToInt('$' + Copy(Hex, I*2-1, 2)));
+  FileName := ExpandConstant('{tmp}\securerun-trusted-install-guard.exe');
+  Result := False;
+  if GetSHA256OfString(Data) <> '{#GuardSHA256}' then exit;
+  if not SaveStringToFile(FileName, Data, False) then exit;
+  if GetSHA256OfFile(FileName) <> '{#GuardSHA256}' then exit;
+  Result := Exec(FileName, 'preflight',
     ExpandConstant('{sys}'), SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
 end;
 function InitializeSetup(): Boolean;
@@ -137,11 +143,8 @@ begin
   end;
 end;
 function InitializeUninstall(): Boolean;
-var Code: Integer;
 begin
-  Result := (GetModuleHandle('SbieDll.dll') = 0) and
-    Exec(ExpandConstant('{app}\install-guard.exe'), 'preflight', ExpandConstant('{sys}'),
-      SW_HIDE, ewWaitUntilTerminated, Code) and (Code = 0);
+  Result := (GetModuleHandle('SbieDll.dll') = 0) and Guard();
 end;
 [Registry]
 Root: HKLM64; Subkey: "Software\SecureRun Development"; ValueType: string; ValueName: "PackageVersion"; ValueData: "{#PackageVersion}"; Flags: uninsdeletekey

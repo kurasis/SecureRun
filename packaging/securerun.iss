@@ -42,16 +42,11 @@ Name: "{commonprograms}\SecureRun Development"; Filename: "{app}\securerun.exe";
 [Code]
 #include GuardDataFile
 function NewerVersion(Existing, Candidate: String): Boolean;
-var A, B: TArrayOfString; I, X, Y: Integer;
+var A, B: Int64;
 begin
-  Result := True; A := SplitString(Existing, '.'); B := SplitString(Candidate, '.');
-  if (GetArrayLength(A) <> 4) or (GetArrayLength(B) <> 4) then exit;
-  for I := 0 to 3 do begin
-    X := StrToIntDef(A[I], -1); Y := StrToIntDef(B[I], -1);
-    if (X < 0) or (Y < 0) then exit;
-    if X <> Y then begin Result := X > Y; exit; end;
-  end;
-  Result := False;
+  Result := True;
+  if StrToVersion(Existing, A) and StrToVersion(Candidate, B) then
+    Result := ComparePackedVersion(A, B) > 0;
 end;
 function GetModuleHandle(Name: String): THandle;
   external 'GetModuleHandleW@kernel32.dll stdcall';

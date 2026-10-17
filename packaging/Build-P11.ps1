@@ -73,6 +73,7 @@ try{
  })
  $source=(& git rev-parse HEAD).Trim()
  @{schema=1;phase='P11';source_commit=$source;target=$target;product_version='0.3.0';payload_revision='P11_SOURCE_BOUND_RUNTIME_SCHEMA_1';signing_status='UNSIGNED_DEVELOPMENT_ONLY';features=@();engine_bundled=$false;files=$files;prerequisite_trust=$trust}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $payload 'package-manifest.json') -Encoding utf8
+ Copy-Item (Join-Path $payload 'package-manifest.json'),(Join-Path $payload 'dependency-inventory.json') $out
  $compiled=@()
  $imports=@{}
  foreach($file in Get-ChildItem $payload -Filter '*.exe'){
@@ -96,7 +97,6 @@ try{
   $name="SecureRun-Development-$version-$innoArch.exe";$path=Join-Path $packages $name
   $compiled+=@{name=$name;package_version=$version;sha256=(Get-FileHash $path).Hash.ToLowerInvariant();size=(Get-Item $path).Length;signature=(Get-AuthenticodeSignature $path).Status.ToString()}
  }
- Copy-Item (Join-Path $payload 'package-manifest.json'),(Join-Path $payload 'dependency-inventory.json') $out
  @{phase='P11';source_commit=$source;target=$target;signing_status='UNSIGNED_DEVELOPMENT_ONLY';packages=$compiled;prerequisite_trust=$trust;tool_versions=$versions;pe_dll_imports=$imports;engine_bundled=$false;baseline='SAME_REVIEWED_RUNTIME_SCHEMA_1_PACKAGING_REVISION_10';candidate='PACKAGING_REVISION_11'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'build.json') -Encoding utf8
  $compiled|ForEach-Object {($_.sha256+'  '+$_.name)}|Set-Content (Join-Path $packages 'SHA256SUMS') -Encoding ascii
 }finally{Pop-Location}

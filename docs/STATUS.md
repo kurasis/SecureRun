@@ -8,11 +8,11 @@ Specification: 1.3. Updated: 2026-10-17 UTC. Completed scope: full P10.
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
 | P03 | DONE | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | DONE | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | DONE | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | DONE | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
-| P09 | DONE | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
+| P05 | BLOCKED | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | BLOCKED | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | BLOCKED | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | BLOCKED | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P09 | BLOCKED | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10 | BLOCKED | [Report](phases/P10_REPORT.md), [manifest](evidence/p10/manifest.json) |
 | P11 | IN_PROGRESS | Protected development installer and installed Windows checks in progress |
 | P12 | NOT_STARTED | Final installed acceptance |

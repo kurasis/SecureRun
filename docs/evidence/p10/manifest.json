@@ -817,5 +817,6 @@
     "P11 packaging/install/upgrade/uninstall",
     "P12 installed-candidate T01-T66 acceptance",
     "P11 packaging workflow/source additions require a fresh integrated regression run; old native evidence is historical until refreshed."
-  ]
+  ],
+  "blocked_reason": "P11 packaging workflow and repository-validator inputs changed; previous raw results retained as historical. Fresh exact-source P03-P10 regressions are required."
 }

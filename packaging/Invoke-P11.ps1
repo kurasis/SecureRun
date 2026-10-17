@@ -3,7 +3,7 @@ param()
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'P11_DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path;$out=Join-Path $repo 'artifacts/p11';$packages=Join-Path $repo 'artifacts/p11-packages'
-$home=Join-Path $env:ProgramFiles 'SecureRun Development';$engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus'
+$installRoot=Join-Path $env:ProgramFiles 'SecureRun Development';$engine=Join-Path $env:ProgramFiles 'Sandboxie-Plus'
 $cases=[Collections.Generic.List[object]]::new();$password=$null;$shareCreated=$false;$bridge=$null
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
 function Case([string]$id,[string]$name,[scriptblock]$body){
@@ -17,8 +17,8 @@ function Setup([string]$File,[switch]$Fail){
 }
 function Payload-Matches {
  $m=Get-Content (Join-Path $packages 'payload/package-manifest.json') -Raw|ConvertFrom-Json
- foreach($f in $m.files){Require ((Get-FileHash -LiteralPath (Join-Path $home $f.name)).Hash.ToLowerInvariant() -eq $f.sha256) 'P11_INSTALLED_PAYLOAD_HASH_MISMATCH'}
- Require ((Get-FileHash (Join-Path $home 'package-manifest.json')).Hash -eq (Get-FileHash (Join-Path $packages 'payload/package-manifest.json')).Hash) 'P11_INSTALLED_MANIFEST_CHANGED'
+ foreach($f in $m.files){Require ((Get-FileHash -LiteralPath (Join-Path $installRoot $f.name)).Hash.ToLowerInvariant() -eq $f.sha256) 'P11_INSTALLED_PAYLOAD_HASH_MISMATCH'}
+ Require ((Get-FileHash (Join-Path $installRoot 'package-manifest.json')).Hash -eq (Get-FileHash (Join-Path $packages 'payload/package-manifest.json')).Hash) 'P11_INSTALLED_MANIFEST_CHANGED'
 }
 function Snapshot($state){
  # Hash private synthetic paths locally; publish only role-labelled digests/counts.
@@ -30,7 +30,7 @@ function Snapshot($state){
 function Standard([string]$Mode){
  $s=[Diagnostics.ProcessStartInfo]::new((Get-Command pwsh -CommandType Application).Source);$s.UseShellExecute=$false;$s.WorkingDirectory=$engine;$s.UserName=$user.Name;$s.Domain=[Environment]::MachineName;$s.Password=$password;$s.LoadUserProfile=$true
  $s.Environment.Clear();foreach($key in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramFiles(x86)','ProgramW6432','ProgramData')){$v=[Environment]::GetEnvironmentVariable($key);if($null -ne $v){$s.Environment[$key]=$v}};$s.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$s.Environment['GITHUB_ACTIONS']='true';$s.Environment['TEMP']=Join-Path $owned 'temp';$s.Environment['TMP']=$s.Environment['TEMP']
- foreach($a in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $labCode 'standard.ps1'),'-Manager',(Join-Path $home 'securerun.exe'),'-EngineHome',$engine,'-Fixture',$owned,'-Mode',$Mode)){$s.ArgumentList.Add($a)}
+ foreach($a in @('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $labCode 'standard.ps1'),'-Manager',(Join-Path $installRoot 'securerun.exe'),'-EngineHome',$engine,'-Fixture',$owned,'-Mode',$Mode)){$s.ArgumentList.Add($a)}
  $p=[Diagnostics.Process]::Start($s)
  try{Require ($p.WaitForExit(1200000)) 'P11_STANDARD_ACTOR_TIMEOUT';Get-ChildItem (Join-Path $owned 'results') -Filter '*.json'|Copy-Item -Destination $out;Require ($p.ExitCode -eq 0) 'P11_STANDARD_ACTOR_FAILED'}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
@@ -39,21 +39,21 @@ try{
  $build=Get-Content (Join-Path $out 'build.json') -Raw|ConvertFrom-Json
  $baseline=Join-Path $packages (@($build.packages|Where-Object package_version -eq '0.3.0.10')[0].name)
  $candidate=Join-Path $packages (@($build.packages|Where-Object package_version -eq '0.3.0.11')[0].name)
- Require (-not(Test-Path $home)) 'P11_PREEXISTING_MANAGER_NOT_CHANGED'
+ Require (-not(Test-Path $installRoot)) 'P11_PREEXISTING_MANAGER_NOT_CHANGED'
  $run=[Guid]::NewGuid().ToString('N');$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p11-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
  $labCode=Join-Path $env:ProgramFiles "SecureRun-P11-Lab-$run";$null=New-Item -ItemType Directory -Path $labCode
  foreach($f in @('standard.ps1','lab_native.cs')){Copy-Item (Join-Path $PSScriptRoot $f) $labCode}
  foreach($f in @('p05_lab.cs','p05_boxed.ps1','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$f") $labCode}
  Case 'T02' 'installer_rejects_user_writable_existing_code_directory' {
-  $null=New-Item -ItemType Directory -Path $home
-  $acl=Get-Acl $home;$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545'),'Modify','ContainerInherit,ObjectInherit','None','Allow'));Set-Acl $home $acl
-  $code=Setup $baseline -Fail;Require (-not(Test-Path (Join-Path $home 'securerun.exe'))) 'P11_UNSAFE_CODE_INSTALLED';[IO.Directory]::Delete($home)
+  $null=New-Item -ItemType Directory -Path $installRoot
+  $acl=Get-Acl $installRoot;$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new('S-1-5-32-545'),'Modify','ContainerInherit,ObjectInherit','None','Allow'));Set-Acl $installRoot $acl
+  $code=Setup $baseline -Fail;Require (-not(Test-Path (Join-Path $installRoot 'securerun.exe'))) 'P11_UNSAFE_CODE_INSTALLED';[IO.Directory]::Delete($installRoot)
   @{exit_code=$code;user_writable_install_refused=$true;manager_not_installed=$true}
  }
  Case 'T02' 'installer_rejects_junction_without_touching_destination' {
   $outside=Join-Path $fixture 'junction-destination';$null=New-Item -ItemType Directory -Path $outside;[IO.File]::WriteAllText((Join-Path $outside 'canary.txt'),'P11_JUNCTION_UNCHANGED')
-  $null=New-Item -ItemType Junction -Path $home -Target $outside
-  try{$code=Setup $baseline -Fail;Require ([IO.File]::ReadAllText((Join-Path $outside 'canary.txt')) -eq 'P11_JUNCTION_UNCHANGED') 'P11_JUNCTION_DESTINATION_CHANGED';Require (@(Get-ChildItem $outside -File).Count -eq 1) 'P11_JUNCTION_PAYLOAD_WRITTEN'}finally{[IO.Directory]::Delete($home)}
+  $null=New-Item -ItemType Junction -Path $installRoot -Target $outside
+  try{$code=Setup $baseline -Fail;Require ([IO.File]::ReadAllText((Join-Path $outside 'canary.txt')) -eq 'P11_JUNCTION_UNCHANGED') 'P11_JUNCTION_DESTINATION_CHANGED';Require (@(Get-ChildItem $outside -File).Count -eq 1) 'P11_JUNCTION_PAYLOAD_WRITTEN'}finally{[IO.Directory]::Delete($installRoot)}
   @{exit_code=$code;junction_refused=$true;destination_unchanged=$true}
  }
  Case 'T01' 'clean_runtime_prerequisite_uses_original_microsoft_installer' {
@@ -89,7 +89,7 @@ try{
  Standard 'seed'
  Case 'T29' 'failed_upgrade_rolls_back_files_and_retains_profile' {
   $state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state
-  $held=[IO.File]::Open((Join-Path $home 'securerun.exe'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  $held=[IO.File]::Open((Join-Path $installRoot 'securerun.exe'),[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
   try{$code=Setup $candidate -Fail}finally{$held.Dispose()}
   Payload-Matches;$after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_FAILED_UPGRADE_CHANGED_DATA'
   Require ((Get-ItemProperty 'HKLM:/Software/SecureRun Development').PackageVersion -eq '0.3.0.10') 'P11_FAILED_UPGRADE_CHANGED_VERSION'
@@ -104,7 +104,7 @@ try{
  Case 'T29' 'older_package_is_refused_without_database_downgrade' {$code=Setup $baseline -Fail;Payload-Matches;Require ((Get-ItemProperty 'HKLM:/Software/SecureRun Development').PackageVersion -eq '0.3.0.11') 'P11_DOWNGRADE_CHANGED_VERSION';@{exit_code=$code;older_package_refused=$true;automatic_schema_downgrade=$false}}
  Case 'T58' 'installed_boxed_manager_and_all_workers_refuse_unboxed_parent_claim' {
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $labCode 'engine_bridge.cs')))
-  $shell=(Get-Command pwsh -CommandType Application).Source;$app=Join-Path $home 'securerun.exe';$bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($shell,$app));$box='SRP02_P11_CTL_'+$run.Substring(0,12);$bridge.Register($box)
+  $shell=(Get-Command pwsh -CommandType Application).Source;$app=Join-Path $installRoot 'securerun.exe';$bridge=[P02Bridge]::new($engine,$fixture,[string[]]@($shell,$app));$box='SRP02_P11_CTL_'+$run.Substring(0,12);$bridge.Register($box)
   foreach($pair in @(@('Enabled','y'),@('DropAdminRights','y'),@('AutoRecover','n'),@('AutoDelete','n'),@('UseFileImage','n'))){$bridge.Set($box,$pair[0],$pair[1])};$bridge.Set($box,'FileRootPath',(Join-Path $fixture "boxes/$box"));$root=$bridge.Root($box);$null=New-Item -ItemType Directory -Path $root -Force;$null=New-Item -ItemType Directory -Path (Join-Path $fixture 'results') -Force;$null=$bridge.CaptureRoot($box)
   $birth=[string]([Diagnostics.Process]::GetCurrentProcess().StartTime.ToFileTimeUtc());$savedPath=$env:PATH;$savedModules=$env:PSModulePath;[P02Bridge]::MinimizeProcessEnvironment($engine)
   $receipt=$bridge.Launch($box,$shell,[string[]]@('-NoLogo','-NoProfile','-NonInteractive','-File',(Join-Path $labCode 'p05_boxed.ps1'),'-Manager',$app,'-Fixture',$fixture,'-HostPid',[string]$PID,'-HostBirth',$birth))
@@ -115,8 +115,8 @@ try{
  }
  Case 'T48' 'uninstall_removes_only_code_and_retains_profile_engine_runtime' {
   $state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state
-  $engineHash=(Get-FileHash (Join-Path $engine 'SbieDrv.sys')).Hash;$code=Setup (Join-Path $home 'unins000.exe')
-  Require (-not(Test-Path (Join-Path $home 'securerun.exe'))) 'P11_CODE_REMAINS_AFTER_UNINSTALL'
+  $engineHash=(Get-FileHash (Join-Path $engine 'SbieDrv.sys')).Hash;$code=Setup (Join-Path $installRoot 'unins000.exe')
+  Require (-not(Test-Path (Join-Path $installRoot 'securerun.exe'))) 'P11_CODE_REMAINS_AFTER_UNINSTALL'
   $after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_UNINSTALL_CHANGED_RETAINED_DATA'
   Require ((Get-Service SbieSvc).Status -eq 'Running' -and (Get-FileHash (Join-Path $engine 'SbieDrv.sys')).Hash -eq $engineHash) 'P11_UNINSTALL_CHANGED_ENGINE'
   $runtime=Get-ItemProperty 'HKLM:/SOFTWARE/WOW6432Node/Microsoft/EdgeUpdate/Clients/{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}';Require ([int]($runtime.pv.Split('.')[0]) -ge 120) 'P11_UNINSTALL_REMOVED_RUNTIME'

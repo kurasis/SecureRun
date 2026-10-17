@@ -129,7 +129,11 @@ def check_target(folder, runner, commit):
 
 def validate(root=ROOT):
     manifest = read(root / 'docs/evidence/p11/manifest.json')
-    if manifest['result'] != 'DONE':
+    if manifest['phase'] != 'P11' or manifest['result'] not in {'DONE', 'BLOCKED'}:
+        raise ValueError('Invalid P11 phase result')
+    if manifest['result'] == 'BLOCKED':
+        if not manifest.get('blocked_reason'):
+            raise ValueError('P11 blocked gate needs an explicit reason')
         return
     if manifest['phase'] != 'P11' or manifest['final_acceptance_scenarios_passed'] != 0:
         raise ValueError('P11 cannot close P12 installed acceptance')

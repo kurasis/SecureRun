@@ -42,4 +42,5 @@ forged requests, root/metadata ACL isolation and forged database checks remain
 applicable and require actual verification; absence of a helper is not a passing
 substitute for those checks. Any future helper requires a new independently
 authorized resource protocol and its own tests before a product route depends on
-it. Production target launch remains disabled.
+it. The P05 phase itself does not dispatch registered user targets. P06 implements
+production launch through the same ordinary-user trust boundary; no helper was added.

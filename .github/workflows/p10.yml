@@ -1,0 +1,74 @@
+name: P10 adversarial integration
+on:
+  push:
+    branches: ['p10/**']
+    paths: ['Cargo.*', 'crates/**', 'src-tauri/**', 'ui/**', 'tools/**', 'tests/**', '.github/workflows/p10.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - run: rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+      - run: npm ci --ignore-scripts
+      - run: npm run build && npm test && npm run test:product
+      - run: cargo test --locked
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/lab/validate_repository.py
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, windows-11-arm]
+        phase: ['03', '04', '05', '06', '07', '08', '09']
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - id: cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p10-${{ matrix.phase }}-${{ matrix.runner }}-${{ hashFiles('Cargo.lock', 'crates/**/*.rs', 'src-tauri/src/**/*.rs') }}
+          restore-keys: |
+            p10-${{ matrix.phase }}-${{ matrix.runner }}-
+            p09-${{ matrix.runner }}-rust190-
+            p08-${{ matrix.runner }}-rust190-
+            p05-${{ matrix.runner }}-rust190-
+            p03-${{ matrix.runner }}-rust190-
+      - name: Run full production regression P${{ matrix.phase }}
+        shell: pwsh
+        run: ./tools/lab/Invoke-P${{ matrix.phase }}.ps1
+      - name: Retain original structured proof and synthetic screenshots
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: p${{ matrix.phase }}-${{ matrix.runner }}-${{ github.sha }}
+          path: |
+            artifacts/p${{ matrix.phase }}/*.json
+            artifacts/p${{ matrix.phase }}/*.png
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve compiled dependencies after failure
+        if: failure() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p10-${{ matrix.phase }}-${{ matrix.runner }}-${{ hashFiles('Cargo.lock', 'crates/**/*.rs', 'src-tauri/src/**/*.rs') }}

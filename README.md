@@ -3,20 +3,24 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01–P09 are complete on the owner-selected laboratories. P09 adds the original
-English/Russian native interface, onboarding, keyboard/accessibility and scaling,
-real file/policy/retention workflows and explicitly reviewed minimized diagnostics.
-Official editor/archive/browser workflows passed on Server 2025 x64 and Windows
-11 ARM64: 22 native scenarios and 101 UI assertions on each, with complete ten-
-environment/10000-file resource samples. All P03–P09 gates use the same verified
-runtime source `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`.
+P01–P10 are complete on the owner-selected laboratories. P10 closes the internal
+adversarial integration review: native diagnostic writes require fresh unboxed
+context, all 17 commands are tested from forbidden origins, and boxed worker
+families reject claimed host authority. The entire P03–P09 suite passed again on
+Server 2025 x64 and Windows 11 ARM64 at the same verified runtime/lab source
+`75b6c0bab24e7ea0edd86a3be2adea6648456a6b`.
 
-See [STATUS](docs/STATUS.md), [P09 report](docs/phases/P09_REPORT.md),
-[UX/accessibility](docs/PRODUCT_UX.md), [application compatibility](docs/APPLICATION_COMPATIBILITY.md)
-and [measured budgets](docs/PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). Startup/CPU
-and ARM average-memory deviations are recorded with user impact; original targets
-are unchanged. Packaging and installed acceptance remain P11/P12, and P10 has not
-started. These laboratories do not certify a Windows 11 x64 installed release.
+Both full product runs passed 22 native scenarios and 101 UI assertions, including
+actual diagnostic Save, file/policy/retention workflows, editor/archive/browser
+compatibility and complete ten-environment/10000-file resource samples.
+
+See [STATUS](docs/STATUS.md), [P10 report](docs/phases/P10_REPORT.md),
+[internal security review](docs/SECURITY_REVIEW.md), [scoped T01–T66 results](docs/P10_TEST_REPORT.md),
+[requirement traceability](docs/REQUIREMENT_TRACEABILITY.md) and
+[measured budgets](docs/PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). Server startup/CPU
+and ARM CPU deviations retain their original targets and user-impact explanations.
+Packaging and installed acceptance remain P11/P12. These laboratories do not
+certify a Windows 11 x64 installed release or an independent security audit.
 
 The interface builds on [lifecycle/recovery](docs/LIFECYCLE_AND_RECOVERY.md),
 [safe files](docs/SAFE_FILE_WORKFLOWS.md), [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md)

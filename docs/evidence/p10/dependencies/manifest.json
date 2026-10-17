@@ -1,0 +1,76 @@
+{
+  "review_kind": "LOCAL_READ_ONLY_ADVISORY_SCAN_NOT_CONTAINMENT_EVIDENCE",
+  "source_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
+  "cargo_audit_version": "0.22.2",
+  "rustsec_database_commit": "999ec89d5d3f10f20be14750ec8c2d8b44e0ac9b",
+  "rustsec_advisories": 1338,
+  "cargo_lock_packages": 484,
+  "known_vulnerabilities": 0,
+  "unfiltered_lockfile_warnings": [
+    {
+      "kind": "unmaintained",
+      "package": "proc-macro-error",
+      "version": "1.0.4",
+      "advisory": "RUSTSEC-2024-0370"
+    },
+    {
+      "kind": "unmaintained",
+      "package": "zbus_names",
+      "version": "4.3.4",
+      "advisory": "RUSTSEC-2026-0371"
+    },
+    {
+      "kind": "unmaintained",
+      "package": "zvariant",
+      "version": "5.15.0",
+      "advisory": "RUSTSEC-2026-0370"
+    },
+    {
+      "kind": "unmaintained",
+      "package": "zvariant_derive",
+      "version": "5.15.0",
+      "advisory": "RUSTSEC-2026-0372"
+    },
+    {
+      "kind": "unsound",
+      "package": "glib",
+      "version": "0.18.5",
+      "advisory": "RUSTSEC-2024-0429"
+    }
+  ],
+  "warning_packages_in_either_production_windows_graph": [],
+  "npm_known_vulnerabilities": 0,
+  "ignored_advisories": [],
+  "lockfiles": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "de6ba5bc7d3f563f34beb11308bc12dc28d5a76f75101065005c6932c998f501"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "f888a9fbae983bbc7cc6b7b763defb0bba4df554d9ad4e22a8b4ed74df34afa7"
+    }
+  ],
+  "files": [
+    {
+      "path": "cargo-audit.json",
+      "size": 10936,
+      "sha256": "17a76ddd1e7bf331ad900f2c8459c4ad34181a750037e35e05886912b7a55710"
+    },
+    {
+      "path": "npm-audit.json",
+      "size": 361,
+      "sha256": "cc218930f22500629b54b811e7bb4dd1208fc37e5531293ecb168e37bc1d35c8"
+    },
+    {
+      "path": "npm-production-audit.json",
+      "size": 361,
+      "sha256": "cc218930f22500629b54b811e7bb4dd1208fc37e5531293ecb168e37bc1d35c8"
+    },
+    {
+      "path": "windows-dependency-graphs.json",
+      "size": 32784,
+      "sha256": "a94af5a9a85d52a6dd29e1ff7b58c7d1b6fc43851deb1d8bafdf2e7e82ecb886"
+    }
+  ]
+}

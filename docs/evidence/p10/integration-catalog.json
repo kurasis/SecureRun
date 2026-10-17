@@ -1,0 +1,2266 @@
+[
+  {
+    "id": "T01",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "missing_engine_fail_closed",
+          "stopped_service_is_not_ready",
+          "unavailable_driver_never_reports_idle"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "missing_engine_production_launch_is_refused",
+          "unloaded_original_driver_refuses_production_launch",
+          "stopped_engine_service_never_dispatches_target"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "missing_engine_fail_closed",
+          "stopped_service_is_not_ready",
+          "unavailable_driver_never_reports_idle"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "missing_engine_production_launch_is_refused",
+          "unloaded_original_driver_refuses_production_launch",
+          "stopped_engine_service_never_dispatches_target"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T02",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "trusted_installed_components",
+          "changed_component_rejected_before_loading",
+          "optional_paid_capabilities_do_not_invent_entitlement",
+          "user_writable_installation_refused",
+          "false_service_installation_metadata_refused",
+          "unowned_configuration_roots_remain_read_only"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "changed_original_component_refuses_launch"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "trusted_installed_components",
+          "changed_component_rejected_before_loading",
+          "optional_paid_capabilities_do_not_invent_entitlement",
+          "user_writable_installation_refused",
+          "false_service_installation_metadata_refused",
+          "unowned_configuration_roots_remain_read_only"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "changed_original_component_refuses_launch"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T03",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "registered_target_replacement_is_refused",
+          "invalid_exe_and_control_characters_are_refused"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "registered_target_replacement_is_refused",
+          "invalid_exe_and_control_characters_are_refused"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T04",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "exact_arguments_securerun-launch-probe-x64",
+          "exact_arguments_securerun-launch-probe-x86",
+          "exact_arguments_securerun-launch-probe"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "exact_arguments_securerun-launch-probe-x86",
+          "exact_arguments_securerun-launch-probe"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T05",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "production_child_and_grandchild_membership"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "production_child_and_grandchild_membership"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T06",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "background_child_keeps_environment_running"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "disposable_waits_for_background_descendants_and_survives_manager_crash"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "background_child_keeps_environment_running"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "disposable_waits_for_background_descendants_and_survives_manager_crash"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T07",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "live_process_wrong_birth_cannot_be_attributed",
+          "exited_process_identity_is_not_reused"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "exited_retained_object_does_not_retarget_unrelated_process"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "live_process_wrong_birth_cannot_be_attributed",
+          "exited_process_identity_is_not_reused"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "exited_retained_object_does_not_retarget_unrelated_process"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T08",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "baseline_effective_file_registry_network_evidence"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "baseline_effective_file_registry_network_evidence"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T09",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t09"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t09"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T10",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t10"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t10"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T11",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t11"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t11"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T12",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t12",
+          "unsolicited_incoming_ipv4_ipv6_tcp_udp_denied"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t12",
+          "unsolicited_incoming_ipv4_ipv6_tcp_udp_denied"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T13",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "online_policy_keeps_file_and_sibling_protection"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "online_policy_keeps_file_and_sibling_protection"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T14",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "paid_presets_rejected_without_entitlement"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "paid_presets_rejected_without_entitlement"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T15",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "accepted_writes_without_independent_enforcement_remain_conflicted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "accepted_writes_without_independent_enforcement_remain_conflicted"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T16",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "running_policy_mutation_is_deferred",
+          "actual_other_session_prevents_policy_and_sibling_mutation"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "running_policy_mutation_is_deferred",
+          "actual_other_session_prevents_policy_and_sibling_mutation"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T17",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "idempotent_create_does_not_dispatch_and_payload_replay_is_refused",
+          "stale_revision_cannot_modify_policy",
+          "external_owned_setting_requires_reviewed_repair",
+          "global_template_changes_block_without_overwrite"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "idempotent_create_does_not_dispatch_and_payload_replay_is_refused",
+          "stale_revision_cannot_modify_policy",
+          "external_owned_setting_requires_reviewed_repair",
+          "global_template_changes_block_without_overwrite"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T18",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_worker_interruption_intent",
+          "actual_worker_interruption_fenced",
+          "actual_worker_interruption_writing",
+          "actual_worker_interruption_readback",
+          "actual_worker_interruption_pendingroot",
+          "actual_worker_interruption_rootbound",
+          "actual_worker_interruption_verifying"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted",
+          "real_remove_interruption_SnapshotCaptured",
+          "real_remove_interruption_Fenced",
+          "real_remove_interruption_Sealed",
+          "real_remove_interruption_DispatchReserved",
+          "real_remove_interruption_NativeReturned",
+          "real_remove_interruption_Cleared",
+          "real_remove_interruption_DefinitionRemoved",
+          "real_remove_interruption_MetadataCommitted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_worker_interruption_intent",
+          "actual_worker_interruption_fenced",
+          "actual_worker_interruption_writing",
+          "actual_worker_interruption_readback",
+          "actual_worker_interruption_pendingroot",
+          "actual_worker_interruption_rootbound",
+          "actual_worker_interruption_verifying"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted",
+          "real_remove_interruption_SnapshotCaptured",
+          "real_remove_interruption_Fenced",
+          "real_remove_interruption_Sealed",
+          "real_remove_interruption_DispatchReserved",
+          "real_remove_interruption_NativeReturned",
+          "real_remove_interruption_Cleared",
+          "real_remove_interruption_DefinitionRemoved",
+          "real_remove_interruption_MetadataCommitted"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T19",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "stop_managed_preserves_unmanaged_box_and_host_process"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "stop_managed_preserves_unmanaged_box_and_host_process"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T20",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "import_collision_duplicate_operation_and_regular_file_only",
+          "actual_transfer_cancel_retains_marked_partial"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "import_collision_duplicate_operation_and_regular_file_only",
+          "actual_transfer_cancel_retains_marked_partial"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T21",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "production_export_correct_bytes_and_motw"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "production_export_correct_bytes_and_motw"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T22",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "hardlinks_streams_reparse_and_sensitive_destinations_rejected",
+          "source_and_destination_replacement_denied_while_copy_handles_held"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "hardlinks_streams_reparse_and_sensitive_destinations_rejected",
+          "source_and_destination_replacement_denied_while_copy_handles_held"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T23",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "inert_metadata_for_html_svg_shortcut_and_executable"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "inert_metadata_for_html_svg_shortcut_and_executable"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T24",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "reset_preserves_definition_applications_and_retained_root_identity",
+          "native_confirmation_names_environment_and_cancel_consumes_plan",
+          "hardlinks_and_reparse_traversal_rejected_before_native_dispatch",
+          "locked_file_cleanup_is_refused_or_visible_and_recovers_without_replay",
+          "remove_clears_before_definition_deletion_and_keeps_audit_tombstone"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "reset_preserves_definition_applications_and_retained_root_identity",
+          "native_confirmation_names_environment_and_cancel_consumes_plan",
+          "hardlinks_and_reparse_traversal_rejected_before_native_dispatch",
+          "locked_file_cleanup_is_refused_or_visible_and_recovers_without_replay",
+          "remove_clears_before_definition_deletion_and_keeps_audit_tombstone"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T25",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "persistent_workload_survives_actual_normal_window_close",
+          "disposable_import_and_independent_activity_remain_visible_after_restart"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "persistent_workload_survives_actual_normal_window_close",
+          "disposable_import_and_independent_activity_remain_visible_after_restart"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T26",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "rapid_launch_stop_serializes_and_duplicate_scope_conflicts"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "forged_confirmation_and_stale_generation_refused_without_mutation",
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "rapid_launch_stop_serializes_and_duplicate_scope_conflicts"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "forged_confirmation_and_stale_generation_refused_without_mutation",
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T27",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Applicable boxed-client, ownership and forged-metadata checks passed; privileged-helper subcases are N/A because no helper exists.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "boxed_ipc_client_has_no_privileged_route"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "boxed_ipc_client_has_no_privileged_route"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T28",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "typed_metadata_draft_never_claims_ready"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "missing_ownership_database_cannot_adopt_or_remove_existing_box"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "typed_metadata_draft_never_claims_ready"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "missing_ownership_database_cannot_adopt_or_remove_existing_box"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T29",
+    "status": "ASSIGNED_P11",
+    "scope": "Installer upgrade/uninstall is outside P10; no packaging pass claimed.",
+    "evidence": [],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T30",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-11-arm/product-cases.json",
+        "cases": [
+          "official_editor_saves_boxed_document_without_host_write",
+          "official_archive_gui_and_create_extract_round_trip",
+          "browser_own_content_sandbox_remains_enabled"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-2025/product-cases.json",
+        "cases": [
+          "official_editor_saves_boxed_document_without_host_write",
+          "official_archive_gui_and_create_extract_round_trip",
+          "browser_own_content_sandbox_remains_enabled"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T31",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t31"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t31"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T32",
+    "status": "NOT_APPLICABLE_NOT_ADVERTISED",
+    "scope": "No clipboard/device restriction is advertised or enabled; generic P09 case tags do not prove these controls.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-11-arm/product-cases.json",
+        "cases": [
+          "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+          "ten_real_idle_environments_and_populated_box",
+          "normal_manager_startup_and_complete_process_group_idle_measurement",
+          "actual_normal_webview_environment_navigation",
+          "metadata_rename_preserves_identity_and_never_replays",
+          "real_keyboard_and_windows_screen_reader_provider",
+          "english_russian_themes_and_native_webview_scaling",
+          "actual_windows_display_dpi_and_bilingual_product_layouts",
+          "real_process_activity_update_latency",
+          "running_policy_diff_queue_requires_explicit_stopped_apply",
+          "actual_ui_import_export_collision_archive_and_reset_workflow",
+          "launch_overhead_observed_against_same_fixed_original_dispatch"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-2025/product-cases.json",
+        "cases": [
+          "completed_private_diagnostics_retire_definitions_and_keep_bounded_evidence",
+          "ten_real_idle_environments_and_populated_box",
+          "normal_manager_startup_and_complete_process_group_idle_measurement",
+          "actual_normal_webview_environment_navigation",
+          "metadata_rename_preserves_identity_and_never_replays",
+          "real_keyboard_and_windows_screen_reader_provider",
+          "english_russian_themes_and_native_webview_scaling",
+          "actual_windows_display_dpi_and_bilingual_product_layouts",
+          "real_process_activity_update_latency",
+          "running_policy_diff_queue_requires_explicit_stopped_apply",
+          "actual_ui_import_export_collision_archive_and_reset_workflow",
+          "launch_overhead_observed_against_same_fixed_original_dispatch"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T33",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair",
+          "missing_service_and_changed_original_cleanup_component_fail_closed"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "current_automation_and_auto_delete_drift_block_cleanup_without_silent_repair",
+          "missing_service_and_changed_original_cleanup_component_fail_closed"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T34",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "root_substitution_and_unsupported_image_configuration_never_authorize_cleanup",
+          "normal_binary_cannot_activate_lifecycle_fault_checkpoints"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "root_substitution_and_unsupported_image_configuration_never_authorize_cleanup",
+          "normal_binary_cannot_activate_lifecycle_fault_checkpoints"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T35",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "production_provisioning_as_actual_standard_user",
+          "second_standard_user_cannot_read_root_or_metadata"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "production_provisioning_as_actual_standard_user",
+          "second_standard_user_cannot_read_root_or_metadata"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T36",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "native_and_x86_process_identities_observed",
+          "standard_user_same_sid_in_two_actual_sessions"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "production_stop_covers_two_actual_windows_sessions"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "cleanup_requires_complete_idle_across_actual_windows_sessions"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "native_and_x86_process_identities_observed",
+          "standard_user_same_sid_in_two_actual_sessions"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "production_stop_covers_two_actual_windows_sessions"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "cleanup_requires_complete_idle_across_actual_windows_sessions"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T37",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "literal_grammar_and_root_grants_rejected",
+          "configuration_password_refused_without_secret_transport"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "literal_grammar_and_root_grants_rejected",
+          "configuration_password_refused_without_secret_transport"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T38",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "populated_readonly_view_change_preserves_overlay_and_restores_it"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "populated_readonly_view_change_preserves_overlay_and_restores_it"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T39",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "explicit_lab_wfp_prerequisite",
+          "wfp_loss_invalidates_offline_policy"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "explicit_lab_wfp_prerequisite",
+          "wfp_loss_invalidates_offline_policy"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T40",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t40",
+          "bits_com_activation_is_explicitly_denied"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "actual_baseline_report_t40",
+          "bits_com_activation_is_explicitly_denied"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T41",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-11-arm/product-cases.json",
+        "cases": [
+          "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+          "browser_own_child_request_stays_boxed",
+          "browser_reachable_protocol_handler_does_not_escape"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-2025/product-cases.json",
+        "cases": [
+          "official_browser_existing_host_instance_no_url_or_cookie_handoff",
+          "browser_own_child_request_stays_boxed",
+          "browser_reachable_protocol_handler_does_not_escape"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T42",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "running_environment_blocks_file_mutation",
+          "original_sandman_open_does_not_recover_or_delete_managed_data",
+          "external_engine_launch_mid_export_aborts_without_publication"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "original_sandman_coexists_without_automatic_recovery_or_deletion"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "running_environment_blocks_file_mutation",
+          "original_sandman_open_does_not_recover_or_delete_managed_data",
+          "external_engine_launch_mid_export_aborts_without_publication"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "original_sandman_coexists_without_automatic_recovery_or_deletion"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T43",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "imported_boxed_exe_securerun-launch-probe-x64",
+          "imported_boxed_exe_securerun-launch-probe-x86",
+          "imported_boxed_exe_securerun-launch-probe"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "reset_invalidates_imported_executable_and_old_transfer_references"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "imported_boxed_exe_securerun-launch-probe-x86",
+          "imported_boxed_exe_securerun-launch-probe"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "reset_invalidates_imported_executable_and_old_transfer_references"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T44",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "existing_destination_and_restricted_zone_preserved",
+          "actual_collision_inserted_before_no_replace_rename",
+          "marker_failure_before_any_payload"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "existing_destination_and_restricted_zone_preserved",
+          "actual_collision_inserted_before_no_replace_rename",
+          "marker_failure_before_any_payload"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T45",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "greater_than_four_gib_streamed_with_bounded_memory",
+          "actual_ntfs_disk_full_during_streaming_copy"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "greater_than_four_gib_streamed_with_bounded_memory",
+          "actual_ntfs_disk_full_during_streaming_copy"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T46",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "fresh_observation_after_service_restart",
+          "production_generation_changes_across_actual_restart"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "fresh_observation_after_service_restart",
+          "production_generation_changes_across_actual_restart"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T47",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Applicable boxed-client, ownership and forged-metadata checks passed; privileged-helper subcases are N/A because no helper exists.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "boxed_same_sid_client_cannot_claim_unboxed_authority"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "boxed_same_sid_client_cannot_claim_unboxed_authority"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T48",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Archive/unarchive passed; uninstall retention and installed migration/rollback remain P11/P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "archive_retains_data_blocks_manager_launch_and_unarchive_revalidates"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "archive_retains_data_blocks_manager_launch_and_unarchive_revalidates"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T49",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "trusted_main_scoped_boundary",
+          "renderer_cannot_emit_authoritative_state",
+          "launch_renderer_paths_cannot_bypass_registration",
+          "application_selection_token_required",
+          "queued_policy_capability_cannot_be_forged",
+          "lifecycle_renderer_confirmation_is_not_authority",
+          "lifecycle_backend_plan_is_not_a_renderer_command",
+          "file_transfer_raw_paths_rejected",
+          "file_transfer_selection_token_required",
+          "forged_path_and_confirmation_rejected",
+          "forged_environment_id_rejected",
+          "unbound_selection_rejected",
+          "real_backend_native_picker_bound",
+          "raw_path_cannot_replace_selection_authority",
+          "engine_file_execution_still_unavailable",
+          "selection_consumed_once",
+          "standard_user_token_observed",
+          "local_ungranted_webview_denied",
+          "remote_origin_commands_denied",
+          "all_17_commands_attempted_from_ungranted_local_webview",
+          "all_17_commands_attempted_from_remote_origin"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "normal_binary_cannot_activate_transfer_fault_checkpoints",
+          "boxed_stage_refuses_unboxed_execution",
+          "forged_file_and_raw_path_fields_rejected"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "trusted_main_scoped_boundary",
+          "renderer_cannot_emit_authoritative_state",
+          "launch_renderer_paths_cannot_bypass_registration",
+          "application_selection_token_required",
+          "queued_policy_capability_cannot_be_forged",
+          "lifecycle_renderer_confirmation_is_not_authority",
+          "lifecycle_backend_plan_is_not_a_renderer_command",
+          "file_transfer_raw_paths_rejected",
+          "file_transfer_selection_token_required",
+          "forged_path_and_confirmation_rejected",
+          "forged_environment_id_rejected",
+          "unbound_selection_rejected",
+          "real_backend_native_picker_bound",
+          "raw_path_cannot_replace_selection_authority",
+          "engine_file_execution_still_unavailable",
+          "selection_consumed_once",
+          "standard_user_token_observed",
+          "local_ungranted_webview_denied",
+          "remote_origin_commands_denied",
+          "all_17_commands_attempted_from_ungranted_local_webview",
+          "all_17_commands_attempted_from_remote_origin"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "normal_binary_cannot_activate_transfer_fault_checkpoints",
+          "boxed_stage_refuses_unboxed_execution",
+          "forged_file_and_raw_path_fields_rejected"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T50",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "hostile_cwd_path_and_dll_are_not_loaded"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "target_cwd_is_separate_from_host_worker_cwd"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "hostile_cwd_path_and_dll_are_not_loaded"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "target_cwd_is_separate_from_host_worker_cwd"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T51",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "polluted_existing_box_does_not_host_diagnostic"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "polluted_existing_box_does_not_host_diagnostic"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T52",
+    "status": "NOT_APPLICABLE_NO_HELPER",
+    "scope": "No product elevation or different-administrator UAC route exists.",
+    "evidence": [],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T53",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "policy_selection_token_required"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "new_supported_path_grant_keeps_tested_family"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "policy_selection_token_required"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "new_supported_path_grant_keeps_tested_family"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T54",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Scoped Stop under launch-policy ineligibility passed; no paid preset/certificate path is enabled.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "stop_survives_launch_policy_ineligibility_without_entitlement"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "stop_survives_launch_policy_ineligibility_without_entitlement"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T55",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "native_pending_root_and_verified_policy",
+          "same_path_root_replacement_is_not_adopted"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "root_substitution_and_unsupported_image_configuration_never_authorize_cleanup"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "native_pending_root_and_verified_policy",
+          "same_path_root_replacement_is_not_adopted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "root_substitution_and_unsupported_image_configuration_never_authorize_cleanup"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T56",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "backend_event_has_independent_generations_and_sequence",
+          "stale_generation_rejected_at_boundary"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "bounded_typed_protocol_and_generation_tests"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "stale_application_revision_cannot_dispatch_after_policy_change"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "old_confirmation_and_import_operation_cannot_mutate_reset_generation"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "backend_event_has_independent_generations_and_sequence",
+          "stale_generation_rejected_at_boundary"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "bounded_typed_protocol_and_generation_tests"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "stale_application_revision_cannot_dispatch_after_policy_change"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "old_confirmation_and_import_operation_cannot_mutate_reset_generation"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T57",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Applicable boxed-client, ownership and forged-metadata checks passed; privileged-helper subcases are N/A because no helper exists.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "forged_metadata_cannot_authorize_foreign_root_or_drop_mandatory_rules"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T58",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "valid_diagnostic_preview_cannot_save_in_unknown_native_context",
+          "refused_diagnostic_save_consumes_preview_without_picker"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-11-arm/observation-cases.json",
+        "cases": [
+          "boxed_actual_manager_and_bridge_refuse_controls",
+          "boxed_normal_desktop_startup_exits_before_metadata"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "missing_context_cannot_open_control_plane",
+          "boxed_production_manager_and_worker_refuse_forged_parent"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "valid_diagnostic_preview_cannot_save_in_unknown_native_context",
+          "refused_diagnostic_save_consumes_preview_without_picker"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P04",
+        "path": "docs/evidence/p04/completion-75b6c0b/windows-2025/observation-cases.json",
+        "cases": [
+          "boxed_actual_manager_and_bridge_refuse_controls",
+          "boxed_normal_desktop_startup_exits_before_metadata"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "missing_context_cannot_open_control_plane",
+          "boxed_production_manager_and_worker_refuse_forged_parent"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T59",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "policy_renderer_paths_cannot_bypass_picker"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "reparse_and_dos_alias_grants_rejected",
+          "actual_subst_namespace_is_rejected_before_mutation"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "policy_renderer_paths_cannot_bypass_picker"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "reparse_and_dos_alias_grants_rejected",
+          "actual_subst_namespace_is_rejected_before_mutation"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T60",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-11-arm/policy-cases.json",
+        "cases": [
+          "running_sibling_prevents_any_new_storage",
+          "future_sibling_denials_verified_before_root_creation"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P05",
+        "path": "docs/evidence/p05/completion-75b6c0b/windows-2025/policy-cases.json",
+        "cases": [
+          "running_sibling_prevents_any_new_storage",
+          "future_sibling_denials_verified_before_root_creation"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T61",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "launch_command_surface_unavailable",
+          "duplicate_ipc_reservation_same_operation"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "duplicate_completed_launch_is_never_dispatched_twice",
+          "actual_dispatch_interruption_reserved",
+          "actual_dispatch_interruption_accepted"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "reset_reconciles_uncertain_launch_without_replay_Reserved",
+          "reset_reconciles_uncertain_launch_without_replay_Accepted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "launch_command_surface_unavailable",
+          "duplicate_ipc_reservation_same_operation"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "duplicate_completed_launch_is_never_dispatched_twice",
+          "actual_dispatch_interruption_reserved",
+          "actual_dispatch_interruption_accepted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "reset_reconciles_uncertain_launch_without_replay_Reserved",
+          "reset_reconciles_uncertain_launch_without_replay_Accepted"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T62",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-11-arm/control-cases.json",
+        "cases": [
+          "actual_scope_change_after_process_handles_retained"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P06",
+        "path": "docs/evidence/p06/completion-75b6c0b/windows-2025/control-cases.json",
+        "cases": [
+          "actual_scope_change_after_process_handles_retained"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T63",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "unsafe_names_and_extensions"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-11-arm/product-cases.json",
+        "cases": [
+          "ten_thousand_files_bounded_ui_and_complete_pagination"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "unsafe_names_and_extensions"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-2025/product-cases.json",
+        "cases": [
+          "ten_thousand_files_bounded_ui_and_complete_pagination"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T64",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "real_crash_BeforeMark",
+          "real_crash_AfterMark",
+          "real_crash_MidCopy",
+          "real_crash_BeforeRename",
+          "real_crash_AfterRename"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "reset_refuses_stale_export_recovery_AfterRename"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "real_crash_BeforeMark",
+          "real_crash_AfterMark",
+          "real_crash_MidCopy",
+          "real_crash_BeforeRename",
+          "real_crash_AfterRename"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "reset_refuses_stale_export_recovery_AfterRename"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T65",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "actual_replaced_windows_artifact_retained"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-11-arm/file-cases.json",
+        "cases": [
+          "replaced_staging_file_never_deleted_or_adopted",
+          "discard_only_verified_staging_identity",
+          "old_generation_transfer_never_mutates_recreated_root"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-11-arm/lifecycle-cases.json",
+        "cases": [
+          "reset_refuses_stale_export_recovery_MidCopy",
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "actual_replaced_windows_artifact_retained"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P07",
+        "path": "docs/evidence/p07/completion-75b6c0b/windows-2025/file-cases.json",
+        "cases": [
+          "replaced_staging_file_never_deleted_or_adopted",
+          "discard_only_verified_staging_identity",
+          "old_generation_transfer_never_mutates_recreated_root"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P08",
+        "path": "docs/evidence/p08/completion-75b6c0b/windows-2025/lifecycle-cases.json",
+        "cases": [
+          "reset_refuses_stale_export_recovery_MidCopy",
+          "real_cleanup_executor_interruption_SnapshotCaptured",
+          "real_cleanup_executor_interruption_Fenced",
+          "real_cleanup_executor_interruption_Sealed",
+          "real_cleanup_executor_interruption_DispatchReserved",
+          "real_cleanup_executor_interruption_NativeReturned",
+          "real_cleanup_executor_interruption_Cleared",
+          "real_cleanup_executor_interruption_MetadataCommitted"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  },
+  {
+    "id": "T66",
+    "status": "PASSED_APPLICABLE_FEATURE_SCOPE",
+    "scope": "Production-path phase checks; final installed-candidate acceptance remains P12.",
+    "evidence": [
+      {
+        "runner": "windows-11-arm",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-11-arm/command-boundary.json",
+        "cases": [
+          "diagnostic_renderer_cannot_supply_bundle_or_output_path",
+          "diagnostic_preview_capability_cannot_be_forged",
+          "control_character_label_rejected",
+          "shared_diagnostics_exclude_secret_canaries",
+          "local_log_and_shared_bundle_minimized"
+        ]
+      },
+      {
+        "runner": "windows-11-arm",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-11-arm/product-cases.json",
+        "cases": [
+          "synthetic_argv_and_environment_do_not_enter_manager_logs",
+          "native_diagnostic_save_matches_reviewed_minimized_bytes",
+          "local_history_and_debug_error_capture_remain_minimized"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P03",
+        "path": "docs/evidence/p03/completion-75b6c0b/windows-2025/command-boundary.json",
+        "cases": [
+          "diagnostic_renderer_cannot_supply_bundle_or_output_path",
+          "diagnostic_preview_capability_cannot_be_forged",
+          "control_character_label_rejected",
+          "shared_diagnostics_exclude_secret_canaries",
+          "local_log_and_shared_bundle_minimized"
+        ]
+      },
+      {
+        "runner": "windows-2025",
+        "phase": "P09",
+        "path": "docs/evidence/p09/completion-75b6c0b/windows-2025/product-cases.json",
+        "cases": [
+          "synthetic_argv_and_environment_do_not_enter_manager_logs",
+          "native_diagnostic_save_matches_reviewed_minimized_bytes",
+          "local_history_and_debug_error_capture_remain_minimized"
+        ]
+      }
+    ],
+    "installed_acceptance": "NOT_STARTED"
+  }
+]

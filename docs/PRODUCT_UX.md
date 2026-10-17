@@ -1,8 +1,8 @@
 # Product UX and accessibility
 
 P09 is DONE for the owner-selected native laboratories at
-`f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
-[full run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).
+`75b6c0bab24e7ea0edd86a3be2adea6648456a6b`,
+[full run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002).
 Both targets passed all 22 native scenarios and 101 UI assertions.
 
 The original interface uses neutral surfaces, a single accent, text status labels,

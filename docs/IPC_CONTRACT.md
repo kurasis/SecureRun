@@ -172,8 +172,8 @@ failure never converts an unknown action into success. Session-only or unconfirm
 history persistence is explicitly identified in the product UI.
 
 See [product UX](PRODUCT_UX.md) and
-[minimized diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). P09 native proof
-remains pending until its evidence gate and matching regressions pass.
+[minimized diagnostics](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). P09 native proof and matching regressions passed again in P10; see the
+[P10 integration report](P10_TEST_REPORT.md).
 
 
 `get_engine_health` accepts an optional unsigned `afterSequence` argument. With
@@ -196,3 +196,8 @@ owned collection (`null` scope). The parent verifies scope and row IDs before
 returning a successful response. This limits response-only availability work;
 namespace, policy, ownership, target identity and actual dispatch/Stop guards
 still run in full. A scoped response never claims another environment is absent.
+
+P10 diagnostic Save repeats trusted native manager/bridge self-context checks
+before opening the picker and after selection, before create-new file output.
+Unknown/boxed/service-failed context refuses the write and consumes the preview;
+minimized session Preview is not host-write authority.

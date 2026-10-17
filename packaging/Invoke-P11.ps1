@@ -101,7 +101,7 @@ try{
   try{$code=Setup $candidate -Fail}finally{$held.Dispose()}
   Payload-Matches;$after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_FAILED_UPGRADE_CHANGED_DATA'
   Require ((Get-ItemProperty 'HKLM:/Software/SecureRun Development').PackageVersion -eq '0.3.0.10') 'P11_FAILED_UPGRADE_CHANGED_VERSION'
-  @{exit_code=$code;actual_file_lock_failure=$true;old_payload_restored=$true;profile_before=$before;profile_after=$after;schema_migration_by_installer=$false}
+  @{exit_code=$code;actual_file_lock_failure=$true;old_payload_unchanged=$true;profile_before=$before;profile_after=$after;schema_migration_by_installer=$false}
  }
  Case 'T29' 'upgrade_installs_candidate_without_elevated_profile_migration' {
   $state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state;$code=Setup $candidate;Payload-Matches;$after=Snapshot $state

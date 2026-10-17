@@ -61,7 +61,8 @@ try{
   $op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$e.id;expected_revision=$e.revision;application_id=$app.id;operation_id=$op} 'control';$receipt=$r.receipts|Where-Object operation_id -eq $op;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason
   $root=$e.compiled.section.FileRootPath[0];$clock=[Diagnostics.Stopwatch]::StartNew();do{$reports=@(Get-ChildItem $root -Recurse -File -Filter $leaf);if($reports.Count -eq 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
   Require ($reports.Count -eq 1 -and -not(Test-Path $hostOutput)) 'P11_LAUNCH_ESCAPED_OR_OUTPUT_MISSING';$data=Get-Content $reports[0].FullName -Raw|ConvertFrom-Json;Require $data.boxed 'P11_TARGET_UNBOXED'
-  $null=Native @{action='STOP';environment_id=$e.id;operation_id=[Guid]::NewGuid().ToString()} 'control'
+  $stopId=[Guid]::NewGuid().ToString();$stopped=Native @{action='STOP';environment_id=$e.id;operation_id=$stopId} 'control'
+  Require ((@($stopped.receipts|Where-Object operation_id -eq $stopId)[0]).state -eq 'STOPPED') 'P11_SCOPED_STOP_NOT_COMPLETE'
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,(Split-Path $Manager));$lab.FenceFixture(('SR_'+$e.id.Replace('-','')))
   @{real_target_boxed=$true;host_output_absent=$true;installed_launcher_used=$true;scoped_stop=$true}
  }

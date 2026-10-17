@@ -1,7 +1,7 @@
 # P10 internal security and integration review
 
-Review source: the P10 candidate, followed by exact-source native regression.
-Status: implementation review completed; Windows exit-gate evidence pending.
+Review source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`.
+Status: DONE; [all exact-source native gates passed](https://github.com/kurasis/SecureRun/actions/runs/39068949002).
 This is an internal implementation review, not an independent audit, driver
 audit, penetration-test certification or guarantee against every attack.
 
@@ -35,9 +35,9 @@ Review steps:
 
 | ID | Severity | Finding | Resolution and verification |
 |---|---|---|---|
-| P10-F01 | Medium; SEC-15/T58 context requirement | Diagnostic Save consumed an authentic preview but could write its minimized JSON while the ordinary setup context was Unknown. History's session-only fallback was not write authority. No elevated operation, arbitrary renderer path, secret contents or host target execution was demonstrated. | Require a fresh trusted native unboxed manager and bridge before the native picker and again after selection, before file creation. Consume the preview on refusal. P03 exercises a real valid preview in an engine-absent native fixture and its refused reuse; the portable context test checks boxed/unknown/service/restart states; P09 repeats successful native Save. Native closure pending. |
-| P10-F02 | Assurance gap; T49 | The forbidden-window probes omitted six registered application commands. The remote fixture could also appear denied if no internal invocation API existed, without attempting a command. | Both forbidden windows attempt all 17 registered commands. The native harness requires 17 actual attempts and ACL-specific denials per window. A missing invocation API cannot pass. P10's gate checks coverage against the build manifest. Native closure pending. |
-| P10-F03 | Assurance gap; T47/T58 | Same-SID boxed policy-worker evidence did not directly exercise every later worker family with a claimed unboxed parent. Shared authorization code alone was insufficient new integration evidence. | The actual boxed process invokes policy, control StopManaged, file Cancel, lifecycle Commit and product Record workers. All must return MANAGER_CONTEXT_UNSAFE before metadata or effects. The claimed host PID/birth is deliberately valid; it cannot establish the worker's own context. Native closure pending. |
+| P10-F01 | Medium; SEC-15/T58 context requirement | Diagnostic Save consumed an authentic preview but could write its minimized JSON while the ordinary setup context was Unknown. History's session-only fallback was not write authority. No elevated operation, arbitrary renderer path, secret contents or host target execution was demonstrated. | Require a fresh trusted native unboxed manager and bridge before the native picker and again after selection, before file creation. Consume the preview on refusal. P03 exercises a real valid preview in an engine-absent native fixture and its refused reuse; the portable context test checks boxed/unknown/service/restart states; P09 repeats successful native Save. Closed by matching native evidence on both laboratories. |
+| P10-F02 | Assurance gap; T49 | The forbidden-window probes omitted six registered application commands. The remote fixture could also appear denied if no internal invocation API existed, without attempting a command. | Both forbidden windows attempt all 17 registered commands. The native harness requires 17 actual attempts and ACL-specific denials per window. A missing invocation API cannot pass. P10's gate checks coverage against the build manifest. Closed by matching native evidence on both laboratories. |
+| P10-F03 | Assurance gap; T47/T58 | Same-SID boxed policy-worker evidence did not directly exercise every later worker family with a claimed unboxed parent. Shared authorization code alone was insufficient new integration evidence. | The actual boxed process invokes policy, control StopManaged, file Cancel, lifecycle Commit and product Record workers. All must return MANAGER_CONTEXT_UNSAFE before metadata or effects. The claimed host PID/birth is deliberately valid; it cannot establish the worker's own context. Closed by matching native evidence on both laboratories. |
 
 The changes add no helper, target launch path, permission exception or retry.
 Unknown-context diagnostic Preview may still show minimized session information;
@@ -114,7 +114,7 @@ dependency security certification.
 
 The review inspected actual caps: 16 KiB worker requests (2 KiB history), 2 MiB
 worker replies, complete bounded enumeration (128 boxes/1024 process capacity),
-128 file entries/page, 1 MiB streaming buffer, 1 TiB transfer ceiling, 64 transfer
+128 file entries/page with a 16384 offset limit, 1 MiB streaming buffer, 1 TiB transfer ceiling, 64 transfer
 receipts/reply, 512 history rows/30 days, 64 shared rows/32 KiB bundle, four queued
 product requests/previews, four subscriptions and 32 foundation selections.
 Worker jobs/deadlines and current single-operation/namespace locks bound execution;
@@ -146,10 +146,11 @@ under every hostile workload.
   read protection and direct write grants remain distinct. Export is user-approved
   transfer of untrusted content and does not assert safety.
 - Performance targets remain unchanged. Actual full-job deviations and user
-  impact must be recorded from the final P10 sample; no workload/security waiver.
+  impact are recorded in the final P10 measurements; no workload/security waiver.
 - P11 must close packaging, dependency/license inventory, reproducible installed
   build, upgrade/uninstall/retention and signing status. P12 must run the complete
   installed acceptance matrix. Neither is silently completed by this review.
 
-P10 release-blocking containment findings: pending native verification of the
-changes above. No claim of zero unresolved findings is made until those runs pass.
+P10 unresolved mandatory containment findings: **0** in the reviewed implemented
+scope on the selected tuples. All applicable native gates passed. P11/P12 remain
+release prerequisites; this closure is not an independent security certification.

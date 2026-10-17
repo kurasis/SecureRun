@@ -8,7 +8,37 @@ never becomes a claim that the numerical target was met. Missing measurements,
 focused/inspected workloads, incomplete process groups or missing mandatory
 application/file/accessibility proof still prevent phase completion.
 
-## Final full reference measurement
+## Current P10 full reference measurement
+
+Status: DONE at `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`,
+[full integration run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002). Both targets passed 22 native cases and
+101 UI assertions using the normal release build and complete ten-environment/
+10000-file workload, with no inspector and complete kernel-job CPU including
+exited workers/WebViews. Engine and target processes are excluded.
+
+| Metric | Unchanged target | Server x64 | Windows 11 ARM64 |
+|---|---:|---:|---:|
+| Interactive startup ms | ≤3000 | 6120.0595 — DEVIATION | 2350.5837 — MET |
+| Complete-job idle CPU % | <1 | 1.20385222183 — DEVIATION | 1.09853284926 — DEVIATION |
+| Average working set bytes | <250000000 | 232934286 — MET | 244505374 — MET |
+| Process update ms | ≤2000 | 684.6 — MET | 1281.3 — MET |
+| Added launch ms | <1000 | 441 — MET | 504 — MET |
+
+Server: 60028 ms/234 samples, peak working set 381493248 bytes.
+ARM: 60094 ms/223 samples, peak working set 416952320 bytes.
+The memory target applies to the average, not the peak.
+
+Server takes longer before interactive controls are available. Idle CPU on both
+targets exceeds the original target and may increase power use. Average memory,
+process update and added-launch targets were met on both. Original target flags
+and user impact are preserved in the current assessments; both are
+MEASURED_DEVIATION with mandatory_checks_waived=false. No functional/security
+check or reference-workload condition was waived.
+
+- [Server exact assessment](evidence/p09/completion-75b6c0b/windows-2025/performance-budget-assessment.json)
+- [ARM exact assessment](evidence/p09/completion-75b6c0b/windows-11-arm/performance-budget-assessment.json)
+
+## Historical P09 completion measurement
 
 Status: DONE at `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`,
 [run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).

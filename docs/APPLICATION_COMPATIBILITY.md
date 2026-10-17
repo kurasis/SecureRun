@@ -1,8 +1,8 @@
 # P09 application compatibility
 
 Status: PASSED for the workflows and owner-selected laboratory tuples below.
-Verified source: `f9a9755a4e32bac27ef65ad9e4b5fdca32f7a67f`;
-[full run 38894071449](https://github.com/kurasis/SecureRun/actions/runs/38894071449).
+Verified source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`;
+[full run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002).
 Both targets passed all 22 native cases and 101 UI assertions. The
 [formal manifest](evidence/p09/manifest.json) binds original evidence and current
 sources; independent P03–P08 regressions passed on the same exact commit.

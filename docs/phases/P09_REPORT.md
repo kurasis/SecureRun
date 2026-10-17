@@ -1,3 +1,20 @@
+# P09 phase report — current P10 regression
+
+Status: DONE at `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`,
+[full P10 run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002).
+
+Server: 22 native + 101 UI; FULL release workload.
+ARM: 22 native + 101 UI; FULL release workload.
+Both actual target architectures passed with the applicable native production paths.
+The [formal manifest](../evidence/p09/manifest.json) binds original proof and
+matching protected source. All P03–P10 gates now use this same runtime/lab source.
+See [P10 report](P10_REPORT.md) for review closure, full scoped traceability and limitations.
+
+## Historical completion and regression reports
+
+Everything below retains its original date/source and is superseded as current
+proof by the matching P10 run above. Historical failures remain failures.
+
 # P09 — Product UX and application compatibility
 
 Status: DONE. The [formal manifest](../evidence/p09/manifest.json) retains successful

@@ -1,21 +1,23 @@
 # Release blockers and remaining prerequisites
 
-P10 status: IN_PROGRESS; exact-source Windows validation is pending.
+P10: DONE. **Zero unresolved mandatory containment findings** remain in the
+reviewed implemented scope on the two owner-selected laboratories.
 
-| Item | Classification | State and closure requirement |
+| Item | Classification | State / requirement |
 |---|---|---|
-| P10-F01 diagnostic Save context | Mandatory security verification | Code corrected; require native Unknown-context refusal and successful unboxed Save on both targets. |
-| P10-F02 complete IPC probing | Mandatory security verification | Harness corrected; require all 17 actual ACL denials from each forbidden window on both targets. |
-| P10-F03 boxed worker families | Mandatory security verification | Harness extended; require actual boxed worker refusal despite a valid claimed host parent. |
-| Exact-source P03–P09 integration | Mandatory P10 exit gate | Current manifests temporarily BLOCKED; old successful source is historical. Repeat all affected native gates and retain original proof. |
-| P11 installed artifacts | Remaining release prerequisite | Installer, reproducibility, upgrade/uninstall/retention, licensing and signing status; no installed packaging pass claimed in P10. |
-| P12 installed candidate | Remaining release prerequisite | Complete final T01–T66 acceptance on the declared release tuple. Current catalog remains NOT_STARTED. |
+| P10-F01 native diagnostic Save context | Mandatory security finding | CLOSED: real Unknown-context refusal, consumed preview and successful unboxed native Save on both targets |
+| P10-F02 every custom command / denied origin | Mandatory assurance finding | CLOSED: all 17 commands actually attempted and ACL-denied from both forbidden windows on both targets |
+| P10-F03 boxed worker families | Mandatory assurance finding | CLOSED: actual boxed policy/control/file/lifecycle/history routes refuse a valid claimed host parent |
+| Exact-source P03–P09 integration | P10 exit gate | CLOSED: all 14 native jobs and portable CI passed, with matching source and original proof |
+| P11 installed artifacts | Remaining release prerequisite | NOT_STARTED: installer, reproducibility, licensing/signing status, upgrade/uninstall/retention |
+| P12 installed candidate | Remaining release prerequisite | NOT_STARTED: final installed T01–T66 acceptance on the declared release tuple |
 
-Optional exclusions: no elevated product helper, paid privacy presets or advertised
-clipboard/device restriction. A helper-only N/A does not exempt applicable boxed
-client, metadata, ownership, context or root checks. Native laboratory limitations
-and measured performance deviations are recorded explicitly in
-[the security review](SECURITY_REVIEW.md); no mandatory failure is waived.
+No mandatory failure is waived. Helper-only cases are N/A because no product
+helper/elevation route exists; applicable ownership/boxed-client tests passed.
+Unadvertised clipboard/device controls and unlicensed paid presets stay unavailable.
 
-This list must show zero unresolved mandatory containment findings before P10 is
-marked DONE. Release prerequisites P11/P12 remain visible after that closure.
+The application is not declared ready for first release. Laboratory coverage,
+shared-kernel/desktop limitations, dependency warnings and measured performance
+deviations remain documented in [the internal review](SECURITY_REVIEW.md),
+[dependency review](DEPENDENCY_SECURITY_REVIEW.md) and
+[performance report](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md).

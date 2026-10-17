@@ -4,7 +4,7 @@
     "scenario": "Engine missing, service stopped, driver unhealthy",
     "expected": "Target never launches on host",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -12,7 +12,7 @@
     "scenario": "Fake Start.exe in PATH/current directory or changed engine binary",
     "expected": "Rejected without executing impostor",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -20,7 +20,7 @@
     "scenario": "Valid engine, invalid EXE and unusual arguments",
     "expected": "Clear failure; no shell or injected command executes",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -28,7 +28,7 @@
     "scenario": "Unicode, spaces, quotes, trailing backslashes, option-like arguments",
     "expected": "Exact intended target arguments; no extra upstream flags",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -36,7 +36,7 @@
     "scenario": "Normal target and child/grandchild processes",
     "expected": "Confirmed engine membership in the intended box",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -44,7 +44,7 @@
     "scenario": "Target spawns background child and exits",
     "expected": "Environment remains Running; no early cleanup",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -52,7 +52,7 @@
     "scenario": "PID exits and is reused",
     "expected": "Unrelated process never terminated or attributed to box",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -60,7 +60,7 @@
     "scenario": "Write/modify/delete synthetic host file under isolated-change policy",
     "expected": "Host canary unchanged; intended boxed state observable",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -68,7 +68,7 @@
     "scenario": "Read selected blocked host files and enumerate protected folder",
     "expected": "Expected access denied; verify aliases and descendants",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -76,7 +76,7 @@
     "scenario": "Read-only path write attempt",
     "expected": "Reads work; forbidden writes fail with documented semantics",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -84,7 +84,7 @@
     "scenario": "Registry canary reads/writes under each preset",
     "expected": "Effective policy matches expected host visibility; host values unchanged",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -92,7 +92,7 @@
     "scenario": "Network blocked",
     "expected": "No target-caused egress on controlled socket/DNS/loopback/LAN paths; cached DNS answers handled separately",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -100,7 +100,7 @@
     "scenario": "Network allowed",
     "expected": "Positive controls succeed without silently widening file policy",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -108,7 +108,7 @@
     "scenario": "Required certificate missing/expired or feature unknown",
     "expected": "Dependent launch blocked; Standard remains honestly labeled",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -116,7 +116,7 @@
     "scenario": "Config write accepted but enforcement absent",
     "expected": "Verification fails; no protected/active status",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -124,7 +124,7 @@
     "scenario": "Policy changed while processes run",
     "expected": "New policy not falsely reported active; restart required",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -132,7 +132,7 @@
     "scenario": "External INI/template edits, duplicate rules and stale revisions",
     "expected": "Drift detected; no unrelated settings overwritten",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -140,7 +140,7 @@
     "scenario": "Crash after each configuration mutation phase",
     "expected": "Reconciliation yields correct or blocked state",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -148,7 +148,7 @@
     "scenario": "Stop selected/all managed environments",
     "expected": "Unmanaged box remains running",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -156,7 +156,7 @@
     "scenario": "Import collision, cancellation, disk full and missing root",
     "expected": "No partial file presented as complete; no host grant",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -164,7 +164,7 @@
     "scenario": "Export normal file",
     "expected": "Correct bytes, explicit destination, no auto-open",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -172,7 +172,7 @@
     "scenario": "Export reparse traversal, hard-link escape, alternate stream, path swap",
     "expected": "Rejected or safely contained; no secret host file copied",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -180,7 +180,7 @@
     "scenario": "Export malicious HTML/SVG/shortcut/executable filename/content",
     "expected": "Host UI executes no payload or preview handler",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -188,7 +188,7 @@
     "scenario": "Cleanup with junctions, locked files and stale engine state",
     "expected": "Host canaries survive; incomplete deletion visible",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -196,7 +196,7 @@
     "scenario": "Manager crashes with persistent/disposable boxes active",
     "expected": "Persistent workload survives; disposable leftovers recoverable",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -204,7 +204,7 @@
     "scenario": "Repeated rapid launch/stop/export/reset and two manager instances",
     "expected": "Serialization and single-instance control prevent conflicting actions",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -212,7 +212,7 @@
     "scenario": "UAC denied, spoofed helper request or sandboxed IPC caller",
     "expected": "No unauthorized privileged operation",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -220,7 +220,7 @@
     "scenario": "Database migration failure, corrupted record, metadata missing",
     "expected": "No accidental adoption/deletion of unrelated box",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -228,7 +228,7 @@
     "scenario": "Manager upgrade/uninstall",
     "expected": "Retention decisions honored; engine independently preserved",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -236,7 +236,7 @@
     "scenario": "Supported browser/editor/archive utility",
     "expected": "Documented usability with engine and application protections retained",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -244,7 +244,7 @@
     "scenario": "Standard mode reads a non-blocked canary",
     "expected": "UI limitation accurately reflects remaining visibility",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -252,7 +252,7 @@
     "scenario": "Clipboard/device controls advertised by adapter",
     "expected": "Each advertised restriction verified; unavailable controls disabled",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -260,7 +260,7 @@
     "scenario": "Custom/inherited DeleteCommand and SandMan event triggers",
     "expected": "Managed operations blocked; no host marker command executes",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -268,7 +268,7 @@
     "scenario": "Root moved, replaced, overlapped or same-name box recreated",
     "expected": "No automatic adoption, launch or deletion of new/old unrelated roots",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -276,7 +276,7 @@
     "scenario": "Second standard Windows user and another managed box probe storage",
     "expected": "No unauthorized root or metadata access; legitimate engine access retained",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -284,7 +284,7 @@
     "scenario": "Same user in another Windows session; incomplete enumeration",
     "expected": "No premature Idle state, cleanup or broad termination",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -292,7 +292,7 @@
     "scenario": "Configuration contains literal percent/comma/CRLF or protected password",
     "expected": "No directive injection or secret command-line exposure; unsupported case blocked",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -300,7 +300,7 @@
     "scenario": "Existing boxed copy then ReadFilePath policy change",
     "expected": "Correct host view, explicit disclosure, retained boxed data after reversal",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -308,7 +308,7 @@
     "scenario": "WFP disabled/fails after a previously valid setup",
     "expected": "Offline launch blocked; no hooks-only fallback",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -316,7 +316,7 @@
     "scenario": "DNS broker, SMB/mapped drive and unprivileged raw/ICMP tests",
     "expected": "Offline egress checked at controlled endpoints; no share access in managed presets",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -324,7 +324,7 @@
     "scenario": "Browser already running on host; protocol/COM/helper request",
     "expected": "No URL/document handoff to unboxed instance in supported workflow",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -332,7 +332,7 @@
     "scenario": "SandMan open with lifecycle events; external launch during export",
     "expected": "No upstream auto-recovery/deletion; transfer stays stable or aborts safely",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -340,7 +340,7 @@
     "scenario": "Boxed EXE import, launch, reset",
     "expected": "Correct logical boxed executable; reset invalidates it without host fallback",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -348,7 +348,7 @@
     "scenario": "Export collision, no-replace race, provenance stream failure",
     "expected": "Existing destination preserved; no complete unlabeled output",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -356,7 +356,7 @@
     "scenario": "Files larger than 4 GiB, sparse growth, disk full, noisy diagnostics",
     "expected": "Bounded memory/queues; cancellable transfer and explicit partial-operation recovery",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -364,7 +364,7 @@
     "scenario": "Service restart, sleep/resume, outdated observations",
     "expected": "Reconciliation; Running/Unknown activity remains distinct from Blocked eligibility",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -372,7 +372,7 @@
     "scenario": "Same-SID boxed helper client and forged caller identity",
     "expected": "Peer identity obtained from OS; no privileged command or metadata tampering",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -380,7 +380,7 @@
     "scenario": "Archive/unarchive, uninstall with retained data and failed migration rollback",
     "expected": "Definition/data recoverable; no orphaning or silent deletion",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -388,7 +388,7 @@
     "scenario": "Unauthorized WebView/origin, forged IDs and frontend path/confirmation payload",
     "expected": "Custom-command ACL and Rust authorization reject request; no arbitrary host operation",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -396,7 +396,7 @@
     "scenario": "Host utility launched with hostile target CWD/PATH/DLL fixtures",
     "expected": "Only trusted host dependencies execute; target CWD transmitted safely or rejected",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -404,7 +404,7 @@
     "scenario": "Diagnostic requested for box containing malicious shadow files/registry entries",
     "expected": "Diagnostic runs in fresh test box; no untrusted probe dependency or false per-box proof",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -412,7 +412,7 @@
     "scenario": "UAC completed using a different administrator account",
     "expected": "Original owner/session preserved; no target launch or accidental admin-profile storage",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -420,7 +420,7 @@
     "scenario": "New user path grant inside supported policy family",
     "expected": "Validated applied fingerprint without requiring a new release; unsafe interactions rejected",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -428,7 +428,7 @@
     "scenario": "Optional certificate expires while workload is running",
     "expected": "Safe scoped Stop remains available when its own prerequisites hold; no host fallback",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -436,7 +436,7 @@
     "scenario": "Fresh box without root and root substituted during provisioning",
     "expected": "PendingRoot cannot launch target; only journaled verified creation binds identity",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -444,7 +444,7 @@
     "scenario": "Delayed events/operation results from old engine generation",
     "expected": "New runtime and eligibility state cannot be overwritten by stale results",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -452,7 +452,7 @@
     "scenario": "Forged user database/ownership marker, helper enrollment replay and privileged path swap",
     "expected": "No privileged write, ACL change or deletion outside independently authorized resources; helper absence explicitly recorded",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -460,7 +460,7 @@
     "scenario": "Manager, bridge or helper starts boxed; self-context query fails",
     "expected": "Control operations and elevation refused; no self-relaunch or host escape; minimal diagnostics only",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -468,7 +468,7 @@
     "scenario": "User grant or inherited rule overlaps mandatory manager/sibling exclusions; alias changes",
     "expected": "Required isolation cannot be removed through editable policy; unsupported paths rejected",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -476,7 +476,7 @@
     "scenario": "Create a new sibling while an existing managed box runs",
     "expected": "Existing box cannot read/write the new storage; unsafe rollout waits before materializing private data",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -484,7 +484,7 @@
     "scenario": "Launch accepted but receipt lost; duplicate request; restart after dispatch reservation",
     "expected": "Same operation is never automatically dispatched twice; uncertainty retained even when no target PID remains",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -492,7 +492,7 @@
     "scenario": "Target exits or scope changes between observation and termination dispatch",
     "expected": "Stop remains bound to authorized environment/process objects; no numeric-PID fallback or premature completion",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -500,7 +500,7 @@
     "scenario": "Reserved/ambiguous output names, case/short aliases, deceptive suffix and bidi controls",
     "expected": "Safe Rename/Skip; no namespace escape, overwrite or concealed extension; normal Unicode names still work",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -508,7 +508,7 @@
     "scenario": "Export crash before provenance, mid-copy, before rename and after rename/before journal commit",
     "expected": "No payload copied before marker; partial files remain incomplete; final output reconciled without replacement",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -516,7 +516,7 @@
     "scenario": "Temporary artifact replaced; stale import/export/cleanup journal after reset/recreation",
     "expected": "No path-only rollback deletion or old-generation mutation; identity mismatch stays unresolved",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   },
   {
@@ -524,7 +524,7 @@
     "scenario": "Secret canaries in argv/environment/errors and control characters in diagnostics",
     "expected": "Canary secrets absent from local logs and shared bundles; untrusted text cannot forge structured events",
     "status": "NOT_STARTED",
-    "actual": "No product implementation or Windows containment execution in P01",
+    "actual": "Installed-candidate acceptance has not started. P10 phase/integration evidence is recorded separately in docs/P10_TEST_REPORT.md.",
     "evidence": null
   }
 ]

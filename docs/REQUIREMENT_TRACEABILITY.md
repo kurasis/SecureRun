@@ -1,7 +1,7 @@
 # Implementation and integration traceability
 
-P10 internal review. Exact source and current passing native runs will be bound
-by the P10 manifest after validation. Original specification documents remain
+P10 internal review: DONE at `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`.
+The [formal manifest](evidence/p10/manifest.json) binds the complete passing native run. Original specification documents remain
 unchanged. The installed acceptance catalog stays NOT_STARTED until P12.
 
 | Requirement | Production implementation | Integrated scenario evidence and remaining scope |
@@ -45,6 +45,6 @@ unchanged. The installed acceptance catalog stays NOT_STARTED until P12.
 | SEC-16 | Persistent reservation/Unknown plus identity-bound inspect-only recovery; no automatic replay/replacement. P03/P06/P07/P08 T61/T64/T65. |
 
 R26–R35 are individually traced in [the security review](SECURITY_REVIEW.md).
-The final P10 scenario report must enumerate all T01–T66 with actual evidence,
+The [complete P10 scenario report](P10_TEST_REPORT.md) enumerates T01–T66 with actual evidence,
 explicit helper/optional exclusions and P11/P12 portions, rather than converting
 phase test tags into complete installed-acceptance passes.

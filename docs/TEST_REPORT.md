@@ -3,8 +3,8 @@
 Current work: [P10 integrated production-path test report](P10_TEST_REPORT.md),
 [security review](SECURITY_REVIEW.md) and
 [requirement traceability](REQUIREMENT_TRACEABILITY.md). P10 native closure is
-pending. The historical phase results below retain their original scope/source;
-the current formal manifests must be revalidated after protected source changes.
+DONE on both selected laboratories. The historical phase results below retain their original scope/source;
+the current formal manifests are revalidated on the exact P10 source.
 
 Installed T01–T66 acceptance remains NOT_STARTED until P12.
 

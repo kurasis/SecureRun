@@ -18,11 +18,11 @@ def generate(root, target, output):
         ['cargo', 'metadata', '--locked', '--format-version', '1'], cwd=root))
     graph = subprocess.check_output(['cargo', 'tree', '--locked', '--workspace', '--target', target,
                                     '-e', 'normal,build', '--prefix', 'none', '--format', '{p}'],
-                                   cwd=root, text=True)
+                                   cwd=root, text=True, encoding='utf-8')
     selected = set(re.findall(r'^([\w-]+) v([^\s]+)', graph, re.M))
-    supplements = json.loads((root / 'packaging/license-supplements.json').read_text())
+    supplements = json.loads((root / 'packaging/license-supplements.json').read_text(encoding='utf-8'))
     cargo_checksums = {(p['name'], p['version']): p.get('checksum')
-                       for p in tomllib.loads((root / 'Cargo.lock').read_text())['package']}
+                       for p in tomllib.loads((root / 'Cargo.lock').read_text(encoding='utf-8'))['package']}
     inventory, notices = [], []
     for package in sorted(metadata['packages'], key=lambda p: (p['name'], p['version'])):
         if (package['name'], package['version']) not in selected:
@@ -41,7 +41,7 @@ def generate(root, target, output):
         if not texts:
             supplement = next((s for s in supplements if (s['name'], s['version']) ==
                                (package['name'], package['version'])), None)
-            vcs = json.loads((home / '.cargo_vcs_info.json').read_text())
+            vcs = json.loads((home / '.cargo_vcs_info.json').read_text(encoding='utf-8'))
             if not supplement or vcs['git']['sha1'] != supplement['commit']:
                 raise ValueError(f"Missing pinned license text: {package['name']}")
             data = urllib.request.urlopen(supplement['url'], timeout=60).read()
@@ -61,7 +61,7 @@ def generate(root, target, output):
                           'source_archive': f"https://static.crates.io/crates/{package['name']}/{package['name']}-{package['version']}.crate",
                           'source_archive_sha256': cargo_checksums[(package['name'], package['version'])],
                           'scope': 'WINDOWS_RUNTIME_OR_BUILD_DEPENDENCY', 'notices': records})
-    sdk = json.loads((root / 'packaging/microsoft-sdk.json').read_text())
+    sdk = json.loads((root / 'packaging/microsoft-sdk.json').read_text(encoding='utf-8'))
     binding = next(p for p in metadata['packages'] if p['name'] == 'webview2-com-sys')
     binding_home = Path(binding['manifest_path']).parent
     for loader in sdk['loaders']:
@@ -77,14 +77,14 @@ def generate(root, target, output):
                       'license': sdk['license'], 'scope': 'STATICALLY_LINKED_WEBVIEW2_LOADER',
                       'source_package': sdk['url'], 'source_package_sha256': sdk['sha256'],
                       'notices': sdk['notices'], 'loader_bytes_match_official_sdk': True})
-    lock = json.loads((root / 'package-lock.json').read_text())
+    lock = json.loads((root / 'package-lock.json').read_text(encoding='utf-8'))
     for location, locked in sorted(lock['packages'].items()):
         if not location:
             continue
         home = root / location
         if not (home / 'package.json').is_file():
             continue  # Optional binaries for a different build host are not copied.
-        package = json.loads((home / 'package.json').read_text())
+        package = json.loads((home / 'package.json').read_text(encoding='utf-8'))
         texts = sorted(p for p in home.iterdir() if p.is_file() and
                        re.match(r'(?i)^(licen[sc]e|copying|notice|copyright)', p.name))
         notice_origin = package['name']
@@ -92,7 +92,7 @@ def generate(root, target, output):
                                            ('@tauri-apps/cli-', '@tauri-apps/cli')):
             if not texts and package['name'].startswith(binary_prefix):
                 parent = root / 'node_modules' / parent_name
-                parent_meta = json.loads((parent / 'package.json').read_text())
+                parent_meta = json.loads((parent / 'package.json').read_text(encoding='utf-8'))
                 if (parent_meta['version'], parent_meta['license']) != (package['version'], package['license']):
                     raise ValueError('Native npm binding notice version/license mismatch')
                 texts = sorted(p for p in parent.iterdir() if p.is_file() and
@@ -123,7 +123,7 @@ def generate(root, target, output):
                                       'license': 'Inno Setup License (modified BSD)',
                                       'notice': 'INNO_LICENSE.txt'},
                 'microsoft_bootstrapper': 'Unmodified Microsoft-signed prerequisite; separate Microsoft terms'}
-    pins = json.loads((root / 'packaging/toolchain.json').read_text())
+    pins = json.loads((root / 'packaging/toolchain.json').read_text(encoding='utf-8'))
     architectures = ['x86', 'x64'] + (['arm64'] if target.startswith('aarch64') else [])
     document['microsoft_crt_prerequisites'] = [dict(pins['vcredist'][arch], architecture=arch)
                                             for arch in architectures]

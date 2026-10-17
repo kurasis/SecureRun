@@ -105,6 +105,13 @@ An optional exclusion never waives an applicable mandatory boundary.
 
 ## Bounds and denial-of-service limits
 
+[Dependency advisory review](DEPENDENCY_SECURITY_REVIEW.md) found zero known
+vulnerabilities in npm's full/production graphs and the full Cargo.lock scan.
+Five Rust informational warnings remain preserved; none of their package/version
+pairs occurs in either actual production Windows graph. No advisory is ignored.
+The recorded database commit and exact JSON are review evidence, not a source or
+dependency security certification.
+
 The review inspected actual caps: 16 KiB worker requests (2 KiB history), 2 MiB
 worker replies, complete bounded enumeration (128 boxes/1024 process capacity),
 128 file entries/page, 1 MiB streaming buffer, 1 TiB transfer ceiling, 64 transfer

@@ -77,6 +77,7 @@ def check_target(folder, runner, commit):
     by_name = {c['name']: c['evidence'] for c in cases}
     setup = read(folder / 'setup-observations.json')
     if (len(setup) != 8 or any(r['private_log_retained'] for r in setup)
+            or not all(r['final_log_closed'] for r in setup)
             or not any('P11_WEBVIEW_INSTALL_REQUIRED' in r['events'] for r in setup)
             or any('P11_GUARD_EXACT_BYTES_VERIFIED' not in r['events'] for r in setup if r['exit_code'] == 0)):
         raise ValueError('P11 actual prerequisite/embedded-guard execution proof missing')
@@ -90,6 +91,9 @@ def check_target(folder, runner, commit):
         event = by_name[name]
         if event['profile_before'] != event['profile_after'] or event['profile_before']['files'] < 4:
             raise ValueError('P11 retained profile changed across installer operation')
+    uninstall = by_name['uninstall_removes_only_code_and_retains_profile_engine_runtime']
+    if not uninstall['all_owned_payload_removed'] or not uninstall['registration_removed']:
+        raise ValueError('P11 uninstaller did not finish removing its own payload/registration')
     boxed = read(folder / 'boxed-policy.json')
     if (boxed['status'] != 'PASSED' or not boxed['actual_boxed_worker_executed']
             or boxed['claimed_unboxed_parent_accepted'] or boxed['control_dispatched']

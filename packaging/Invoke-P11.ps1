@@ -14,11 +14,24 @@ function Case([string]$id,[string]$name,[scriptblock]$body){
 }
 function Setup([string]$File,[switch]$Fail){
  $log=Join-Path $fixture ('setup-private-'+$script:setupObservations.Count+'.log')
+ $clock=[Diagnostics.Stopwatch]::StartNew()
  $p=Start-Process -FilePath $File -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',('/LOG="'+$log+'"')) -PassThru
  try{
   Require ($p.WaitForExit(300000)) 'P11_SETUP_TIMEOUT'
-  $events=@();if((Test-Path $log) -and (Get-Item $log).Length -le 4194304){$events=@([regex]::Matches([IO.File]::ReadAllText($log),'\bP11_[A-Z0-9_]+(?:-[0-9]+)?\b')|ForEach-Object Value|Sort-Object -Unique)}
-  $script:setupObservations.Add(@{file=[IO.Path]::GetFileName($File);exit_code=$p.ExitCode;expected_failure=[bool]$Fail;events=$events;private_log_retained=$false})
+  # Inno's uninstaller can continue in its temporary cloned process after the
+  # initial process exits. Wait for final log closure and then test postconditions;
+  # do not replay the uninstall, read a partial log, or terminate unknown processes.
+  $text=$null;$closed=$false;$lockWaits=0
+  do{
+   if(Test-Path $log){
+    Require ((Get-Item $log).Length -le 4194304) 'P11_PRIVATE_LOG_SIZE_BOUND'
+    try{$text=[IO.File]::ReadAllText($log);$closed=$true}catch [IO.IOException]{$lockWaits++}
+   }
+   if(-not $closed){Start-Sleep -Milliseconds 50}
+  }while(-not $closed -and $clock.ElapsedMilliseconds -lt 300000)
+  Require $closed 'P11_INSTALLER_COMPLETION_NOT_OBSERVED'
+  $events=@([regex]::Matches($text,'\bP11_[A-Z0-9_]+(?:-[0-9]+)?\b')|ForEach-Object Value|Sort-Object -Unique)
+  $script:setupObservations.Add(@{file=[IO.Path]::GetFileName($File);exit_code=$p.ExitCode;expected_failure=[bool]$Fail;events=$events;private_log_retained=$false;final_log_closed=$closed;log_close_waits=$lockWaits})
   ConvertTo-Json -InputObject @($script:setupObservations.ToArray()) -Depth 8|Set-Content (Join-Path $out 'setup-observations.json') -Encoding utf8
   if($Fail){Require ($p.ExitCode -ne 0) 'P11_SETUP_UNEXPECTEDLY_SUCCEEDED'}else{Require ($p.ExitCode -eq 0) 'P11_SETUP_FAILED'};return $p.ExitCode
  }finally{$p.Dispose()}
@@ -125,10 +138,13 @@ try{
   $state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state
   $engineHash=(Get-FileHash (Join-Path $engine 'SbieDrv.sys')).Hash;$code=Setup (Join-Path $installRoot 'unins000.exe')
   Require (-not(Test-Path (Join-Path $installRoot 'securerun.exe'))) 'P11_CODE_REMAINS_AFTER_UNINSTALL'
+  $payload=Get-Content (Join-Path $packages 'payload/package-manifest.json') -Raw|ConvertFrom-Json
+  foreach($file in @($payload.files.name)+@('package-manifest.json')){Require (-not(Test-Path (Join-Path $installRoot $file))) 'P11_OWNED_PAYLOAD_REMAINS_AFTER_UNINSTALL'}
+  Require (-not(Test-Path 'HKLM:/Software/SecureRun Development')) 'P11_REGISTRATION_REMAINS_AFTER_UNINSTALL'
   $after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_UNINSTALL_CHANGED_RETAINED_DATA'
   Require ((Get-Service SbieSvc).Status -eq 'Running' -and (Get-FileHash (Join-Path $engine 'SbieDrv.sys')).Hash -eq $engineHash) 'P11_UNINSTALL_CHANGED_ENGINE'
   $runtime=Get-ItemProperty 'HKLM:/SOFTWARE/WOW6432Node/Microsoft/EdgeUpdate/Clients/{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}';Require ([int]($runtime.pv.Split('.')[0]) -ge 120) 'P11_UNINSTALL_REMOVED_RUNTIME'
-  @{exit_code=$code;code_removed=$true;profile_before=$before;profile_after=$after;engine_unchanged=$true;webview_runtime_retained=$true;environment_cleanup_dispatched=$false}
+  @{exit_code=$code;code_removed=$true;all_owned_payload_removed=$true;registration_removed=$true;profile_before=$before;profile_after=$after;engine_unchanged=$true;webview_runtime_retained=$true;environment_cleanup_dispatched=$false}
  }
  Case 'T48' 'reinstall_preserves_data_before_owner_reconciliation' {$state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state;$code=Setup $candidate;Payload-Matches;$after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_REINSTALL_CHANGED_DATA';@{exit_code=$code;profile_before=$before;profile_after=$after;automatic_cleanup=$false}}
  Standard 'reinstall'

@@ -77,6 +77,30 @@ def generate(root, target, output):
                       'license': sdk['license'], 'scope': 'STATICALLY_LINKED_WEBVIEW2_LOADER',
                       'source_package': sdk['url'], 'source_package_sha256': sdk['sha256'],
                       'notices': sdk['notices'], 'loader_bytes_match_official_sdk': True})
+    sysroot = Path(subprocess.check_output(['rustc', '--print', 'sysroot'], cwd=root,
+                                          text=True, encoding='utf-8').strip())
+    rust_version = subprocess.check_output(['rustc', '--version'], cwd=root,
+                                           text=True, encoding='utf-8').strip()
+    rust_notice = (sysroot / 'share/doc/rust/COPYRIGHT-library.html').read_bytes()
+    notices.append('\n===== Rust standard library original notices =====\n' + rust_notice.decode('utf-8'))
+    inventory.append({'ecosystem': 'rust-toolchain', 'name': 'Rust standard library',
+                      'version': rust_version, 'license': 'Apache-2.0 OR MIT, with original incorporated-code notices',
+                      'scope': 'LINKED_STANDARD_LIBRARY',
+                      'notices': [{'name': 'COPYRIGHT-library.html', 'sha256': digest(rust_notice)}]})
+    sqlite_package = next(p for p in metadata['packages'] if p['name'] == 'libsqlite3-sys')
+    sqlite_home = Path(sqlite_package['manifest_path']).parent / 'sqlite3'
+    sqlite_source = (sqlite_home / 'sqlite3.c').read_bytes()
+    sqlite_header = (sqlite_home / 'sqlite3.h').read_text(encoding='utf-8')
+    sqlite_version = re.search(r'#define SQLITE_VERSION\s+"([^"]+)"', sqlite_header).group(1)
+    at = sqlite_source.index(b'The author disclaims copyright')
+    license_header = sqlite_source[sqlite_source.rfind(b'/*', 0, at):sqlite_source.index(b'*/', at) + 2]
+    notices.append('\n===== Bundled SQLite ' + sqlite_version + ' original public-domain statement =====\n'
+                   + license_header.decode('utf-8'))
+    inventory.append({'ecosystem': 'bundled-c', 'name': 'SQLite', 'version': sqlite_version,
+                      'license': 'PUBLIC_DOMAIN_UPSTREAM_STATEMENT', 'scope': 'BUNDLED_SQLITE_CORE',
+                      'wrapper': 'libsqlite3-sys ' + sqlite_package['version'],
+                      'amalgamation_sha256': digest(sqlite_source),
+                      'notices': [{'name': 'sqlite3.c public-domain header', 'sha256': digest(license_header)}]})
     lock = json.loads((root / 'package-lock.json').read_text(encoding='utf-8'))
     for location, locked in sorted(lock['packages'].items()):
         if not location:

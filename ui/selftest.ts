@@ -1,11 +1,13 @@
 import { Channel, invoke } from '@tauri-apps/api/core';
 import type { Environment, Operation, Snapshot, StateEvent } from './contracts';
-declare global { interface Window { __foundationAclDenied?: boolean; __foundationTestsStarted?: boolean; __foundationPickerWaiting?: boolean; __foundationReportStarted?: boolean } }
+declare global { interface Window { __foundationAclDenied?: boolean; __foundationAclAttempted?: number; __foundationTestsStarted?: boolean; __foundationPickerWaiting?: boolean; __foundationReportStarted?: boolean } }
 export async function run(unauthorized: boolean) {
   if (window.__foundationTestsStarted) return; window.__foundationTestsStarted = true;
   if (unauthorized) {
     let denied = true;
+    window.__foundationAclAttempted = 0;
     for (const command of ['get_snapshot', 'get_engine_health', 'subscribe_state', 'unsubscribe_state', 'create_draft', 'reserve_operation', 'select_file', 'prepare_transfer', 'get_operation', 'diagnostic_summary', 'ci_report', 'policy_request', 'select_policy_path', 'control_request', 'files_request', 'lifecycle_request', 'product_request']) {
+      window.__foundationAclAttempted++;
       try { await invoke(command, { request: { display_name: 'UNAUTHORIZED' }, cases: [] }); denied = false; } catch (error) { denied &&= typeof error === 'string' && /not allowed|permission|capability|scope/i.test(error); }
     }
     window.__foundationAclDenied = denied; return;

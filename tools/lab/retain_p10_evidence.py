@@ -64,7 +64,9 @@ def check_integrated(root, commit):
         names = {c['name'] for c in cases if c['passed']}
         if not {'valid_diagnostic_preview_cannot_save_in_unknown_native_context',
                 'refused_diagnostic_save_consumes_preview_without_picker',
-                'local_ungranted_webview_denied', 'remote_origin_commands_denied'}.issubset(names):
+                'local_ungranted_webview_denied', 'remote_origin_commands_denied',
+                'all_17_commands_attempted_from_ungranted_local_webview',
+                'all_17_commands_attempted_from_remote_origin'}.issubset(names):
             raise ValueError('P10 unknown-context diagnostic and IPC regressions missing')
         required = commands(root)
         if len(required) != 17:

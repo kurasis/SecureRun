@@ -39,8 +39,8 @@ pub fn profile() -> Result<(PathBuf, File)> {
     Ok((profile, writer))
 }
 const REMOTE: &str = r#"<!doctype html><title>Unauthorized origin fixture</title><script>
-(async()=>{window.__foundationRemoteStarted=true;let denied=true;for(const command of ['get_snapshot','get_engine_health','subscribe_state','unsubscribe_state','create_draft','reserve_operation','select_file','prepare_transfer','get_operation','diagnostic_summary','ci_report','policy_request','select_policy_path','control_request','files_request','lifecycle_request','product_request']){
-if(window.__TAURI_INTERNALS__){try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false;window.__foundationRemoteCommandAccepted=true}catch(error){const acl=typeof error==='string' && /not allowed|permission|capability|scope/i.test(error);denied &&= acl;if(!acl)window.__foundationRemoteUnexpectedDenial=true}}}
+(async()=>{window.__foundationRemoteStarted=true;window.__foundationAclAttempted=0;let denied=Boolean(window.__TAURI_INTERNALS__);for(const command of ['get_snapshot','get_engine_health','subscribe_state','unsubscribe_state','create_draft','reserve_operation','select_file','prepare_transfer','get_operation','diagnostic_summary','ci_report','policy_request','select_policy_path','control_request','files_request','lifecycle_request','product_request']){
+if(window.__TAURI_INTERNALS__){window.__foundationAclAttempted++;try{await window.__TAURI_INTERNALS__.invoke(command,{request:{display_name:'UNAUTHORIZED'},cases:[]});denied=false;window.__foundationRemoteCommandAccepted=true}catch(error){const acl=typeof error==='string' && /not allowed|permission|capability|scope/i.test(error);denied &&= acl;if(!acl)window.__foundationRemoteUnexpectedDenial=true}}}
 window.__foundationAclDenied=denied;})();</script>"#;
 pub fn start(
     app: AppHandle,
@@ -196,6 +196,26 @@ pub fn finish(app: &AppHandle, profile: &Path, mut cases: Vec<CiCase>) -> Result
         name: "remote_origin_commands_denied".into(),
         passed: wait_denied(app, "unauthorized-remote"),
     });
+    for (label, name) in [
+        (
+            "unauthorized-local",
+            "all_17_commands_attempted_from_ungranted_local_webview",
+        ),
+        (
+            "unauthorized-remote",
+            "all_17_commands_attempted_from_remote_origin",
+        ),
+    ] {
+        cases.push(CiCase {
+            id: "T49".into(),
+            name: name.into(),
+            passed: script_bool(
+                app,
+                label,
+                "window.__foundationAclAttempted === 17 && window.__foundationAclDenied === true",
+            ),
+        });
+    }
     let remote_started = script_bool(
         app,
         "unauthorized-remote",

@@ -1,0 +1,15 @@
+{
+  "inno": {
+    "version": "6.7.3",
+    "url": "https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe",
+    "sha256": "9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732"
+  },
+  "webview2": {
+    "official_entry": "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+    "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/f48acb06-f389-4472-84b9-5ab957c31436/MicrosoftEdgeWebview2Setup.exe",
+    "sha256": "c90f9cdcec5e1997e581127dd1cb4526c239551908e9adbfe63ad14671bdcc94",
+    "size": 1867984,
+    "kind": "OFFICIAL_EVERGREEN_BOOTSTRAPPER",
+    "minimum_major": 120
+  }
+}

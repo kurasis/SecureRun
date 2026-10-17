@@ -1,0 +1,15 @@
+Installation complete. Start SecureRun Development from the Windows Start menu
+as your ordinary user. Review the development and compatibility limits first.
+
+Uninstall removes only the installed manager code and its Start menu entry.
+It retains all user profiles, ownership/journals, archives and environment data,
+the independently installed Sandboxie engine and Microsoft WebView2 runtime.
+It does not stop running isolated applications, reset environments, execute engine
+cleanup, remove engine definitions, or claim secure erasure.
+
+Close the manager and its operations before upgrading or uninstalling. Export
+needed files through the manager and explicitly remove unwanted environments
+there before uninstalling. Reinstalling the same development build under the same
+Windows account reopens retained metadata and revalidates engine/root identities.
+Never restore an old metadata backup over changed environments or blindly downgrade
+a database schema. A backup alone cannot roll back engine state or user data.

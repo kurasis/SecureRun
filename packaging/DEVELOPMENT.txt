@@ -1,0 +1,17 @@
+SecureRun 0.3.0 — DEVELOPMENT BUILD — UNSIGNED
+
+This installer and the original manager components have no production code-signing
+certificate. Verify the published source commit and SHA-256 before a development
+installation. Do not interpret a locally generated or self-signed certificate as a
+trusted production publisher. Production distribution and final acceptance are
+not complete. No license for the original manager has been selected by its owner;
+this development artifact does not grant a new redistribution license.
+
+Sandboxie is separately installed from its official publisher. This package does
+not include or update its engine, driver, SandMan, applications or certificates.
+Microsoft WebView2, if needed, is installed by the unmodified Microsoft-signed
+official Evergreen bootstrapper under Microsoft's separate terms. The prerequisite
+download requires a network connection and may request a Windows restart.
+
+The manager runs as the interactive standard user. Only installation requires
+administrator elevation. No persistent elevated manager helper is installed.

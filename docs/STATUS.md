@@ -46,11 +46,16 @@ The next experiment uses the original source-backed in-process crash filter in
 separate disposable original-engine scopes. Production correctly rejects the
 `EnableMiniDump` setting; that allowlist and all manager assertions stay intact.
 A native synthetic exception control must prove the original filter and dump
-parser before a bounded 120 fresh-scope ARM64/x86/emulated-x64 parent/child test.
+parser before a bounded 24 fresh-scope ARM64/x86/emulated-x64 parent/child test.
 It is an isolated reproduction experiment, not full P09 or phase proof. No
 debugger, WER/security change, global Sandboxie setting or original binary patch
 is involved. Only reviewed exception/module metadata may be uploaded. Native
-control and reproduction results are pending.
+control at 264d96f/run 39135251485 passed: the exact synthetic `e0424242` exception
+and KERNELBASE module/RVA were read from an actual original-filter ARM64 dump;
+the prior LogFile value was restored. Reproduction is pending. At the owner's
+request, dispatch uses one VM with calibration first, eight rounds across all
+three architectures, no automatic repeat and no duplicate full UI run. This
+smaller diagnostic sample changes no mandatory phase workload or exit gate.
 
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are

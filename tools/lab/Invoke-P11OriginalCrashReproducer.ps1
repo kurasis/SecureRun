@@ -39,9 +39,13 @@ function New-PrivateDirectory([string]$Path,[switch]$Executable){
  Set-Acl -LiteralPath $Path -AclObject $acl
 }
 $out=Join-Path $repo 'artifacts/p11-diagnostics';$null=New-Item -ItemType Directory -Path $out -Force
-$report=@{classification='ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE';result='IN_PROGRESS';production_policy_changed=$false;global_sandbox_settings_changed=$false;windows_security_or_wer_settings_changed=$false;debugger_attachment_requested=$false;original_filter_changes_fault_delivery=$true;raw_dump_upload_allowed=$false;calibration_only=[bool]$CalibrationOnly;synthetic_exception_confirmed=$false;completed_parent_child_pairs=0;planned_parent_child_pairs=$(if($CalibrationOnly){0}else{120});cases=[Collections.Generic.List[object]]::new();dumps=[Collections.Generic.List[object]]::new()}
+$report=@{classification='ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE';result='IN_PROGRESS';production_policy_changed=$false;global_sandbox_settings_changed=$false;windows_security_or_wer_settings_changed=$false;debugger_attachment_requested=$false;original_filter_changes_fault_delivery=$true;raw_dump_upload_allowed=$false;calibration_only=[bool]$CalibrationOnly;synthetic_exception_confirmed=$false;completed_parent_child_pairs=0;planned_parent_child_pairs=$(if($CalibrationOnly){0}else{24});cases=[Collections.Generic.List[object]]::new();dumps=[Collections.Generic.List[object]]::new()}
 $logger=$null;$leases=[Collections.Generic.List[object]]::new();$activeBox=$null;$lab=$null;$root=$null;$caseRoots=[Collections.Generic.List[string]]::new()
 try{
+ $report.tested_source_commit=(& git -C $repo rev-parse HEAD).Trim()
+ $report.engine_source_commit=(Get-Content (Join-Path $repo 'docs/engine-candidate.json') -Raw|ConvertFrom-Json).source_commit
+ $report.synthetic_source_sha256=(Get-FileHash (Join-Path $PSScriptRoot 'p11-original-crash-probe.c')).Hash.ToLowerInvariant()
+ $report.probe_builds=[Collections.Generic.List[object]]::new()
  $logger=New-P11OriginalServiceLog $PrivateDirectory $repo;Update-P11OriginalServiceLog $logger
  if(-not $logger.ready -or $logger.failed){throw 'DIAGNOSTIC_REPRO_LOG_CALIBRATION_FAILED'}
  $engineHome=Join-Path $env:ProgramFiles 'Sandboxie-Plus'
@@ -61,7 +65,8 @@ try{
   $exe=Join-Path $code ('p11-original-crash-probe-'+$arch+'.exe');Push-Location $code
   try{& (Join-Path $vc "bin/Hostarm64/$arch/cl.exe") /nologo /W4 /WX /wd4204 /O2 /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'p11-original-crash-probe.c') "/Fe:$exe" /link "/MACHINE:$($arch.ToUpperInvariant())";if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_BUILD_FAILED'}}finally{Pop-Location}
   $bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,0x3c);if([BitConverter]::ToUInt16($bytes,$pe+4) -ne @{arm64=0xaa64;x64=0x8664;x86=0x014c}[$arch]){throw 'DIAGNOSTIC_REPRO_PE_MISMATCH'}
-  $leases.Add((Open-P11PinnedFile $exe))
+  $binary=Open-P11PinnedFile $exe;$leases.Add($binary)
+  $report.probe_builds.Add(@{architecture=$arch;pe_machine=([BitConverter]::ToUInt16($bytes,$pe+4)).ToString('x4');sha256=(Get-P11StreamHash $binary)})
  }
  $api=[P11OriginalCrashEngine]::new((Join-Path $engineHome 'SbieDll.dll'),$code);$lab=[P05Lab]::new($engineHome,$root,$code)
  # The positive control must reach the original in-process filter without any debugger.
@@ -76,7 +81,7 @@ try{
  $lab.FenceFixture($activeBox);$activeBox=$null;Update-P11OriginalServiceLog $logger
  if($logger.reader.crash_report_counts.Keys -match '^SandboxieRpcSs.exe/'){$report.result='RPCSS_CRASH_REPRODUCED'}
  if(-not $CalibrationOnly -and $report.result -ne 'RPCSS_CRASH_REPRODUCED'){
-  for($index=0;$index -lt 40;$index++){
+  for($index=0;$index -lt 8;$index++){
    foreach($arch in @('arm64','x64','x86')){
     $caseRoot=Join-Path $root ('case-'+$index+'-'+$arch);$caseRoots.Add($caseRoot);$activeBox=$api.Fresh($caseRoot,$false);$lab.Register($activeBox)
     $pidValue=[uint32]0;$exitCode=$api.Execute($activeBox,$arch,$false,[ref]$pidValue)

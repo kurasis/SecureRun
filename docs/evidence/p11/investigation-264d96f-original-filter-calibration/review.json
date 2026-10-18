@@ -1,0 +1,10 @@
+{
+  "classification": "SYNTHETIC_ORIGINAL_FILTER_NATIVE_CALIBRATION_NO_PHASE_GATE",
+  "tested_commit": "264d96f0b8ade64dbef7d959cc5de5668da93ced",
+  "run_id": 39135251485,
+  "job_id": 117698342344,
+  "artifact_id": 12139955308,
+  "conclusion": "success",
+  "original_bytes_unchanged": true,
+  "facts": "Actual ARM64 synthetic own-process exception e0424242 reached the original Sandboxie in-process handler without a debugger. The private75551-byte dump matched the exact dispatch receipt PID; its exception code and KERNELBASE.dll RVA0000000000124464 were parsed successfully. The source-backed original service log was calibrated and its prior registry value restored. No original RpcSs crash was observed in this control, no full manager workload ran and no phase completion is claimed. Raw dumps/logs/IDs/paths remain private. Subsequent reproduction uses one VM and24pairs at the owner CPU constraint; cancelled duplicate PR P09run39135254358 is not passing evidence."
+}

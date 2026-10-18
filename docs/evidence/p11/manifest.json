@@ -573,6 +573,21 @@
       "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
     },
     {
+      "path": "investigation-264d96f-original-filter-calibration/original-crash-reproducer.json",
+      "size": 1164,
+      "sha256": "fb42ab1d52f16cc2a9ac0fcf500ce62649dbb80fbbe33d0fa13291c51995a8ba"
+    },
+    {
+      "path": "investigation-264d96f-original-filter-calibration/original-service-log.json",
+      "size": 1075,
+      "sha256": "0fbb41315a47002cc0f4686d40adf99137a666ba6a66e9e631a796c2331685b0"
+    },
+    {
+      "path": "investigation-264d96f-original-filter-calibration/review.json",
+      "size": 976,
+      "sha256": "fc68f0b85067521b84c86bbe81a12a358a765bdde9a1d99220271d11ff928030"
+    },
+    {
       "path": "investigation-484e496-pr-p05/review.json",
       "size": 1350,
       "sha256": "4c9e0f1f6f8a74edf83d03ecef26738b09272b51e88a4a874ec6db7e0f14739f"
@@ -4288,7 +4303,7 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "cff58d4afd7313d2dcc0df62f79e3a3ef70f66b5",
+  "active_fix_source": "264d96f0b8ade64dbef7d959cc5de5668da93ced",
   "active_fix_validation": {
     "result": "PARTIAL_FIXES_VALIDATED_RUNTIME_FAULT_UNRESOLVED",
     "native_feasibility_run": 39119550715,
@@ -4307,7 +4322,7 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "NO_BLIND_REPEAT_ROOT_CORRECTION_REQUIRED",
+    "next_diagnostic": "BOUNDED_ISOLATED_ORIGINAL_ENGINE_REPRODUCTION_WITH_ORIGINAL_FILTER",
     "live_metadata_run": 39113908733,
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
@@ -4342,6 +4357,10 @@
     "previous_original_service_log_failed_run": 39126844625,
     "public_ffs_function_counts": {
       "NtCreateLowBoxToken": 112
-    }
+    },
+    "isolated_original_filter_calibration_run": 39135251485,
+    "isolated_original_filter_calibration_result": "PASSED_REAL_ARM64_SYNTHETIC_EXCEPTION_AND_PID_BOUND_DUMP",
+    "isolated_reproducer_scope": "ONE_VM_24_PAIRS_NO_PHASE_GATE_OWNER_CPU_LIMIT",
+    "cancelled_duplicate_pr_p09_run": 39135254358
   }
 }

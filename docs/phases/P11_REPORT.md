@@ -58,14 +58,19 @@ Production's strict inheritance allowlist rejects `EnableMiniDump`, so it is
 unchanged. The experiment uses separate fresh original-engine boxes and an
 image-scoped original filter; no manager policy/assertion is relaxed. Its own
 ARM64 synthetic exception must first produce the expected PID-bound dump and
-`e0424242` code. Only then does a separately dispatched VM run 120 fresh-box
-parent/child pairs across ARM64, x86 and emulated x64. This is not the full P09
+`e0424242` code. Native control 264d96f/run 39135251485 passed with an actual
+75,551-byte original-filter dump and KERNELBASE module/RVA, without a debugger.
+The owner requested lower CPU use: a single dispatched VM calibrates first,
+then runs at most 24 fresh-box parent/child pairs across ARM64, x86 and emulated
+x64. There is no separate duplicate calibration VM or automatic repeat. This is not the full P09
 workload and cannot replace it. A publisher-written RpcSs dump without a live
 receipt is explicitly marked as internally consistent but independently
 unauthenticated; parsing never grants process action authority. All raw dumps,
 box roots and private logs stay on the disposable VM. Existing guarded fixture
 cleanup refuses reporters, and the original service LogFile value is restored.
-Native controls and reproduction results are pending.
+Reproduction results are pending. The redundant ordinary PR P09 run 39135254358
+was cancelled to avoid spending a full UI workload without a runtime correction;
+cancellation is not success. Mandatory phase workload sizes remain unchanged.
 
 | Source/run | Actual result | Scope |
 |---|---|---|

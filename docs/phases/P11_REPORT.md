@@ -87,6 +87,12 @@ passed calibration and completed all 600 scopes with exit 0 and RpcSs alive afte
 each probe; the service log recorded no RpcSs crash and no RpcSs dump was written.
 Because every retained fault occurred in a product-compiled scope, the minimal
 original-engine box is now considered an insufficient trigger, by inference only.
+The owner then authorized one follow-up dispatch in production-compiled offline
+scopes: the section comes from the production `compile` function (including
+`ClosedIpcPath`, `BlockLocalLoop` and the lab WFP prerequisite), only the
+image-scoped original crash filter is added, and each round alternates the COM
+probe with the actual release policy canary for ARM64, x64 and x86 within the same
+40-minute budget. It remains diagnostic only.
 
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust

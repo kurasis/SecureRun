@@ -4,6 +4,11 @@ on:
     branches: ['p11/**']
     paths: ['.github/workflows/p11-original-crash-reproducer.yml', 'tools/lab/Invoke-P11OriginalCrashReproducer.ps1', 'tools/lab/p11-original-crash-probe.c']
   workflow_dispatch:
+    inputs:
+      product_policy:
+        description: Use production-compiled offline scopes and the actual policy canary
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -33,7 +38,7 @@ jobs:
   reproduce:
     if: github.event_name == 'workflow_dispatch'
     runs-on: windows-11-arm
-    timeout-minutes: 75
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create private original-service log directory
@@ -43,9 +48,11 @@ jobs:
       - name: Install independently authenticated original engine
         shell: pwsh
         run: ./tools/lab/Initialize-P02.ps1
-      - name: Calibrate then stress up to 600 fresh original-engine scopes across all three architectures
+      - name: Calibrate then stress fresh original-engine scopes across all three architectures
         shell: pwsh
-        run: ./tools/lab/Invoke-P11OriginalCrashReproducer.ps1 -PrivateDirectory '${{ steps.private.outputs.home }}'
+        env:
+          PRODUCT_POLICY: ${{ inputs.product_policy }}
+        run: ./tools/lab/Invoke-P11OriginalCrashReproducer.ps1 -PrivateDirectory '${{ steps.private.outputs.home }}' -ProductPolicy:($env:PRODUCT_POLICY -eq 'true')
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         if: always()
         with:

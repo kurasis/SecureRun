@@ -75,6 +75,12 @@ alive, and no RpcSs crash or dump occurred (only the synthetic control). Zero in
 an emulated caller is unlikely to be the sole trigger. All retained faults ran in
 product-compiled scopes; the next discriminating step is the same stress inside
 such scopes. Exception and module remain unknown; no gate is promoted.
+The owner then authorized one follow-up dispatch in production-compiled offline
+scopes: the section comes from the production `compile` function (including
+`ClosedIpcPath`, `BlockLocalLoop` and the lab WFP prerequisite), only the
+image-scoped original crash filter is added, and each round alternates the COM
+probe with the actual release policy canary for ARM64, x64 and x86 within the same
+40-minute budget. It remains diagnostic only.
 
 [Static ARM source review](P11_ARM_SOURCE_REVIEW.md) confirms the known 1.15.5 ARM
 fixes remain in pinned 1.18.8. No newer core fix was found at checked upstream

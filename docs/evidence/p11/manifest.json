@@ -1,7 +1,7 @@
 {
   "phase": "P11",
   "result": "BLOCKED",
-  "blocked_reason": "Save, session-readiness and retained-object fixture fixes have native successful snapshots. Ordinary ARM full P09 still failed in environments06 and08 at runs39119547942 and39120204559 with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. Original-service diagnosis39126844625 also failed environment04; subsequent39129208572 passed22native+101UI without a reporter but is diagnostic-only and cannot establish root correction or phase closure. Original exception/module remain undetermined. Current full exact-source P10 and matching installed P11 proof are missing; historical installed28+81 per target does not waive this dependency. P12 remains NOT_STARTED.",
+  "blocked_reason": "Save, session-readiness and retained-object fixture fixes have native successful snapshots. Ordinary ARM full P09 still failed in environments06 and08 at runs39119547942 and39120204559 with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. Original-service diagnosis39126844625 also failed environment04; subsequent39129208572 passed22native+101UI without a reporter but is diagnostic-only and cannot establish root correction or phase closure. Original exception/module remain undetermined. Current full exact-source P10 and matching installed P11 proof are missing; historical installed28+81 per target does not waive this dependency. P12 remains NOT_STARTED. Owner authorized a larger multi-VM reproduction (decision card option C, 2026-10-18): 8 parallel ARM VMs plus the earlier single VM ran ~8544 fresh product-policy scopes with zero RpcSs faults and no dump, while calibration still captured the synthetic e0424242 control; retained diagnostic-only, no phase gate changed. See investigation-069ac7d-arm-8vm-product-policy-not-reproduced.",
   "installed_tested_commit": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
   "installed_run_id": 39089078904,
   "installed_cases_passed_per_target": 28,
@@ -3456,6 +3456,21 @@
       "path": "investigation-08594d4-arm-stress-not-reproduced/review.json",
       "size": 1723,
       "sha256": "d90eb31404c494d44a6d619fc97012d815865d249b74f6ced92268a5fed951d8"
+    },
+    {
+      "path": "investigation-069ac7d-arm-8vm-product-policy-not-reproduced/review.json",
+      "size": 5260,
+      "sha256": "fb742e0d7064520567b003199c8bc93bc69d1a594cca3e3143c7a22a0338ef17"
+    },
+    {
+      "path": "investigation-069ac7d-arm-8vm-product-policy-not-reproduced/original-crash-reproducer.json",
+      "size": 160995,
+      "sha256": "73d4ec6f11b13a4026359cef006174bf48ab58ba044a43b66ca1244bf33a143d"
+    },
+    {
+      "path": "investigation-069ac7d-arm-8vm-product-policy-not-reproduced/original-service-log.json",
+      "size": 1135,
+      "sha256": "8b857d5ed49859cc918e7b777c8b1939f43601c77277f819dd38f367ed755afc"
     }
   ],
   "next_action": "CONTINUE_P11_DEPENDENCY_DIAGNOSIS_NOT_P12",

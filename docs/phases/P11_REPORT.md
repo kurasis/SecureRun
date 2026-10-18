@@ -92,7 +92,17 @@ scopes: the section comes from the production `compile` function (including
 `ClosedIpcPath`, `BlockLocalLoop` and the lab WFP prerequisite), only the
 image-scoped original crash filter is added, and each round alternates the COM
 probe with the actual release policy canary for ARM64, x64 and x86 within the same
-40-minute budget. It remains diagnostic only.
+40-minute budget. It remains diagnostic only. The first product-policy VM did not
+reproduce the fault (948 scopes), so on 2026-10-18 the owner authorized a larger
+multi-VM attempt (decision card option C). [Eight parallel ARM VMs](../evidence/p11/investigation-069ac7d-arm-8vm-product-policy-not-reproduced/review.json)
+ran 7596 more fresh product-policy scopes; with the first VM that is about 8544
+scopes (arm64, emulated x64 and x86) with zero RpcSs faults and no dump, while
+every VM calibration still captured the synthetic e0424242 KERNELBASE control.
+The bounded in-box COM/canary stress does not reach the real trigger path, so the
+original exception and module stay undetermined from controlled reproduction; no
+gate is promoted. The remaining options are to tolerate the known transient in the
+integration harness (bounded retry that fails only if the box does not recover) or
+to keep the intermittent failure as a watched condition; this is for the owner.
 
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust

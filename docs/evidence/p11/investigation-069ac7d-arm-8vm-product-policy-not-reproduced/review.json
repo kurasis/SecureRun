@@ -1,0 +1,119 @@
+{
+  "classification": "ORIGINAL_ENGINE_STRESS_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "tested_commit": "069ac7d9d3f33394a02592d5d1febaf09d8d43f9",
+  "engine_source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+  "owner_authorization": "Decision card option C (more reproduction) on 2026-10-18: a larger multi-VM attempt with the higher CI cost explicitly accepted.",
+  "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+  "product_policy": true,
+  "parallel_vms": 8,
+  "runs": [
+    {
+      "run_number": 6,
+      "run_id": 39161822021,
+      "artifact_id": 12149919542,
+      "artifact_zip_sha256": "a2a44bd5ea743fdf0057d9eff027239ae8aaac2f8df37b4e053aea4e3e56d84d",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 948,
+      "rpcss_alive_after_probe_cases": 948,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 7,
+      "run_id": 39161824034,
+      "artifact_id": 12150875065,
+      "artifact_zip_sha256": "04c6086a264b45d9148572b85b8914b943473c55f52c55f65b57cf87d19c8785",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 954,
+      "rpcss_alive_after_probe_cases": 954,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 8,
+      "run_id": 39161826154,
+      "artifact_id": 12150800029,
+      "artifact_zip_sha256": "88d65d341ea104062a6ed66de53d370c0cbc7cf8841f559e7908bf29ebcb84ed",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 942,
+      "rpcss_alive_after_probe_cases": 942,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 9,
+      "run_id": 39161828230,
+      "artifact_id": 12149758509,
+      "artifact_zip_sha256": "1c5d5373e7a69d789a549d19f8e4b630e0a67ed0f01791bfbfaa6e3b34367314",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 966,
+      "rpcss_alive_after_probe_cases": 966,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 10,
+      "run_id": 39161830584,
+      "artifact_id": 12150316767,
+      "artifact_zip_sha256": "62709a4b0dd2871e74eaa419f37ce58fbd162bdd6a05a5a34867bbd3d2ba8401",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 942,
+      "rpcss_alive_after_probe_cases": 942,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 11,
+      "run_id": 39161832419,
+      "artifact_id": 12150471124,
+      "artifact_zip_sha256": "548788cd5cdccee8407225e31667c85c6cd9a498d1baca9e2469663ae2f166d0",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 948,
+      "rpcss_alive_after_probe_cases": 948,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 12,
+      "run_id": 39161835314,
+      "artifact_id": 12150461815,
+      "artifact_zip_sha256": "f00056d5aed2728e968a75604dc0d178e5a6ee93ac871f7508e1de45349911d6",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 954,
+      "rpcss_alive_after_probe_cases": 954,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    },
+    {
+      "run_number": 13,
+      "run_id": 39161837478,
+      "artifact_id": 12150047865,
+      "artifact_zip_sha256": "d1e1df18bc52a8a784ad5f6fd07352a13df98cc07ffe872f5bf81cbfb3b68d02",
+      "conclusion": "success",
+      "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+      "completed_parent_child_pairs": 942,
+      "rpcss_alive_after_probe_cases": 942,
+      "rpcss_crash_cases": 0,
+      "dumps": 0
+    }
+  ],
+  "totals": {
+    "vms": 8,
+    "product_policy_scopes": 7596,
+    "dumps": 0,
+    "rpcss_crash_cases": 0,
+    "single_vm_run_39155512384_scopes": 948,
+    "combined_product_policy_scopes": 8544
+  },
+  "calibration": "Every VM's synthetic control captured exception e0424242 in KERNELBASE without a debugger, so a genuine RpcSs fault would have been recorded with its exception code and module.",
+  "representative_raw": "original-crash-reproducer.json and original-service-log.json are from run #6 (run_id 39161822021); runs #7-#13 are equivalent and bound by artifact_zip_sha256 above.",
+  "inference": "Across the combined product-policy sample (8 parallel ARM VMs plus the earlier single VM, ~8544 fresh arm64/emulated-x64/emulated-x86 scopes) the original SandboxieRpcSs startup fault did not reproduce and no minidump was written, while retained observer traces still show ~0.5-0.8% of emulated-caller starts faulting under natural workloads. The bounded in-box COM/canary stress does not exercise the real trigger path, so the fault requires conditions this harness does not create on demand. Inference only; the original exception code and module remain undetermined from controlled reproduction.",
+  "privacy_review": "All eight run artifacts and service logs parsed and scanned with the retention privacy pattern; no raw paths, SIDs, process IDs, arguments, dump bytes or log text retained. The representative raw files were re-scanned clean before retention."
+}

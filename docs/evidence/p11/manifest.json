@@ -1173,6 +1173,86 @@
       "sha256": "92b13785c9fe528f96b2f21adaf0888a134cfc0857f3e251b52ee658d691b968"
     },
     {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/control-cases.json",
+      "size": 7117,
+      "sha256": "7f6799d84f8eb7b95db03c8e01f66ae41a085e2b41e7dc5cdf55bb86fdbe1215"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/driver-unload.json",
+      "size": 120,
+      "sha256": "2c9c535d5d5d1016b61cca6b5352c7c028214c43ac44871a53ee6035578c1bf7"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/run-summary.json",
+      "size": 536,
+      "sha256": "49ed864f2c7ea2739c1c91794e9cf87a3b7bf7a460516e9284f093f6b6986b0a"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/stage.json",
+      "size": 112,
+      "sha256": "28bfffd174f41a641e3940f23060b568bbdc15e347c18e4f190aa267a9c49a2a"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/standard-accepted.json",
+      "size": 489,
+      "sha256": "71f8a7991d0da06948815ed0f5cf68cd8c9977d56910ad9e844b642cdfa05442"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/standard-normal.json",
+      "size": 5479,
+      "sha256": "93605e9e6a41098f0b5d70b7a65415bd7bb1fd1ecaca8fbbb95a2d86f2a0c625"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/standard-reserved.json",
+      "size": 374,
+      "sha256": "b14507aa4d1c914b3f357bacc0131e8bd5cf7a16a890efb1abb039c98836c7ec"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/standard-scope.json",
+      "size": 913,
+      "sha256": "ad2ee92100e0adcf2b261a3030671245c57cd3f85fa1224d809d973688ac3b14"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p06/standard-sessions.json",
+      "size": 549,
+      "sha256": "bd6478ec110b954de7c7d96f61980529b4e261b1860c4819fe652ade70bbab80"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/lifecycle-cases.json",
+      "size": 18707,
+      "sha256": "6f097e575c8af8567b4a131a23dcc140e961ab7455379dfcc805fb015d3b37da"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/run-summary.json",
+      "size": 653,
+      "sha256": "bd837475a76aab88fdb89a0c2e6a95c5cd26ec12e7fb0a8bec093cce728747fb"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/stage.json",
+      "size": 112,
+      "sha256": "26ff9847fa0674d7a47087d01b1c7448cabe45c4975c7b88cd5c2bee621ac0cc"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/standard-fault.json",
+      "size": 90,
+      "sha256": "afb8db3f8f425336adcb96f3e18c5910d2b7dbee549311c0aecd4ef4b690e7c7"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/standard-normal.json",
+      "size": 91,
+      "sha256": "f9ef6b709cfd2a76262a73abebea93e759af0b2df5aa21262e3476422a6141ca"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/p08/standard-sessions.json",
+      "size": 93,
+      "sha256": "b7c1cdd4ed18dcd4c7fb24d762fc3522a0456d43330a6df14287ad4e9ab35147"
+    },
+    {
+      "path": "investigation-f374409-pr-control-lifecycle/review.json",
+      "size": 1418,
+      "sha256": "0f2d2a2a05e38f657324dedc669cfa9cd5b049c0e46387de61591ddd92d51507"
+    },
+    {
       "path": "investigation-fa29a20-observer/review.json",
       "size": 3369,
       "sha256": "0e64ebce4b4902b1a4c7d2762adcc36a3f112fa4d2bb62462dbd683afff84973"
@@ -3673,16 +3753,16 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "f3744094cba77ddce156bd0d430a72a0fcab1af2",
+  "active_fix_source": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
   "active_fix_validation": {
     "result": "IN_PROGRESS",
-    "native_feasibility_run": 39110907921,
+    "native_feasibility_run": 39119550715,
     "native_policy_run": 39111146590,
     "full_product_run": 39109839082,
     "diagnostic_only_arm_run": 39109826510,
     "diagnostic_run_is_phase_gate": false,
-    "native_feasibility_snapshot_result": "DONE_BOTH_RUNNERS",
-    "new_fixture_source_requires_native_revalidation": true,
+    "native_feasibility_snapshot_result": "DONE_BOTH_RUNNERS_0d2600c",
+    "new_fixture_source_requires_native_revalidation": false,
     "previous_policy_run_result": "PASSED_BOTH_RUNNERS",
     "first_diagnostic_result": "FAILED_OBSERVER_CAPACITY_EXHAUSTED_CAUSE_UNDETERMINED",
     "diagnostic_capacity_fix_requires_new_run": true,
@@ -3697,7 +3777,9 @@
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
     "new_diagnostic_mode": "AUTHENTICATED_ORIGINAL_RPCSS_MICROSOFT_PROCDUMP_PRIVATE_ONLY",
-    "new_lab_reporter_cleanup_guards_require_fresh_p02": true,
-    "live_metadata_startup_failed_run": 39113580938
+    "new_lab_reporter_cleanup_guards_require_fresh_p02": false,
+    "live_metadata_startup_failed_run": 39113580938,
+    "current_diagnostic_only_arm_run": 39119544472,
+    "new_diagnostic_runs_explicit_dispatch_only": true
   }
 }

@@ -1,8 +1,5 @@
 name: P11 failure diagnosis only
 on:
-  push:
-    branches: ['p11/**']
-    paths: ['tools/lab/*P11*', 'tools/lab/p11-diagnostic-tools.json', '.github/workflows/p11-diagnostics.yml']
   workflow_dispatch:
 permissions:
   contents: read

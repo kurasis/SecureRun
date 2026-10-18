@@ -7,24 +7,24 @@ Checked native Save and atomic session readiness passed both full fa29a20 P09
 (45 native+62 adapter per target). Those successful source snapshots are retained.
 
 ARM diagnostics still report a live RpcSs-named target before cleanup. Latest
-f374409 diagnosis passed21 native+101 UI but archive exit timed out; four live WER
+f374409 diagnosis passed 21 native+101 UI but archive exit timed out; four live WER
 reads produced no exception/module. Target and reporter were eventually observed
-exit4f. New lab safeguards refuse cleanup while reporters are present and require
-fresh P02 proof. Next diagnosis uses authenticated original RpcSs and pinned,
+exit 4f. New lab safeguards refuse cleanup while reporters are present and require
+fresh P02 proof, now passed on both targets. Current diagnosis uses authenticated original RpcSs and pinned,
 Microsoft-signed ProcDump, with private dumps and minimized scalar output only.
 Debugger runs cannot close phases. Current complete matching P10/P11 remain pending.
 
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | BLOCKED revalidation | fdad6d7 passed49/62; new reporter-safety probes need fresh native proof |
+| P02 | DONE | 0d2600c/run 39119550715: Server 49, ARM 62 passed; two N/A each |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
-| P05 | BLOCKED revalidation | fdad6d7/run39111146590 passed45+62 per target; matching full integration pending |
+| P05 | BLOCKED revalidation | fdad6d7/run 39111146590 passed 45+62 per target; matching full integration pending |
 | P06 | BLOCKED revalidation | Full-matrix jobs passed; separate PR rapid-cycle failure retained |
 | P07 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P08 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
-| P09 | BLOCKED revalidation | fa29a20/run39109839082 passed22+101 per target; intermittent ARM reporter fault remains |
+| P09 | BLOCKED revalidation | fa29a20/run 39109839082 passed 22+101 per target; intermittent ARM reporter fault remains |
 | P10 | BLOCKED | Full current exact-source integration did not pass |
 | P11 | BLOCKED by P10 | 28 installed+81 production tests passed per target; [report](phases/P11_REPORT.md) |
 | P12 | NOT_STARTED | All 66 final installed T01–T66 acceptance entries remain unrun |
@@ -43,7 +43,7 @@ reports are retained; four downloaded baseline/candidate EXEs match original
 size/SHA256 reports. See [test matrix](P11_TEST_REPORT.md) and
 [development artifacts/checksums](DEVELOPMENT_ARTIFACTS.md).
 
-Current integration source: `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
+Historical integration source: `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
 [run 39087328157](https://github.com/kurasis/SecureRun/actions/runs/39087328157).
 All 155 protected runtime/workflow/lab files are byte-identical at the packaging-only
 descendant. Portable and all 12 P03–P08 native jobs passed; their 218 original JSON
@@ -53,8 +53,7 @@ Attempt 1 ARM P09 refused DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED during environment 
 unknown WerFault remained alive after the unchanged 60000 ms natural wait. One controlled
 unchanged-source repeat reproduced it at environment 05. Read-only diagnostics found
 no surviving target or fixed-component WER report/event; cause remains undetermined.
-No third blind repeat is planned. No reporter was trusted/terminated, no unknown
-window hidden, no scenario/workload/assertion/timeout or source list reduced.
+No third blind repeat is planned. Diagnostic cleanup granted no stop authority to reporters; no unknown window was hidden and no scenario, workload, assertion, timeout or source list was reduced.
 
 Server attempt 1 passed 21/22 native and 101 UI checks, but actual Firefox about:support
 observation failed clipboard-busy. Its controlled repeat passed 20 native and 93 UI

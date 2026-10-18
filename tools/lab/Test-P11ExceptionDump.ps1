@@ -28,3 +28,7 @@ Require ($codes.ContainsKey('PRIVATE_DUMP_PROCESS_BINDING_FAILED'))
 Add-P11CaptureCode $codes 'C:\PRIVATE_CANARY\bad.dmp' 'DIAGNOSTIC_DUMP_COLLECTION_FAILED'
 Require ($codes.ContainsKey('DIAGNOSTIC_DUMP_COLLECTION_FAILED') -and ($codes|ConvertTo-Json) -notmatch 'PRIVATE_CANARY')
 Write-Output 'PASS: synthetic exception/module/RVA, target binding, bounds and private-field suppression'
+
+# Tool pipes are drained with constant storage; raw output is never returned.
+$privateReader=[IO.StringReader]::new(('x'*100000));try{$drain=[P11DebugScope]::DrainPrivateOutput($privateReader);if($drain.GetAwaiter().GetResult() -ne 65537){throw 'PRIVATE_OUTPUT_DRAIN_BOUND_FAILED'}}finally{$privateReader.Dispose()}
+Write-Host 'PASS: constant-storage private tool output drain'

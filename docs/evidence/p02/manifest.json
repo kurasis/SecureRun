@@ -1,6 +1,6 @@
 {
   "phase": "P02",
-  "result": "BLOCKED",
+  "result": "DONE",
   "runs": [
     {
       "id": 38550922299,
@@ -220,7 +220,7 @@
       "id": 39110907921,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/39110907921",
       "tested_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
-      "role": "current",
+      "role": "historical",
       "job_collection_conclusion": "success",
       "targets": [
         {
@@ -245,6 +245,51 @@
           "runner": "windows-11-arm",
           "tested_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
           "evidence_directory": "completion-fdad6d7/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39119550715,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39119550715",
+      "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+      "role": "current",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+          "evidence_directory": "completion-0d2600c/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+          "evidence_directory": "completion-0d2600c/windows-11-arm",
           "gate_result": "DONE",
           "smoke_counts": {
             "PASSED": 62,
@@ -351,6 +396,96 @@
     {
       "path": "completion-0cf59a6/windows-2025/standard-user-result.json",
       "sha256": "95c8c61490f8edb7e5c56c630b94ac088597fac290538ce1d79d2b61d5de4cba",
+      "size": 3677
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/bootstrap-result.json",
+      "sha256": "54d4862d7cf4e0ac778dedcafde4882e918c40cbf03e0b7649a775f1c05a6b16",
+      "size": 123
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/bootstrap-stage.json",
+      "sha256": "c4995b316f1b3fee289923284426abbca213a94600ee9f16105f0f7a2304d0be",
+      "size": 149
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/feasibility-cases.json",
+      "sha256": "9b0f5f65597dbfe4abd6d10475ac81164a51b0d21b87c477914d96b2dd632248",
+      "size": 33558
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/installation.json",
+      "sha256": "f7915f748a34d4084969797cd77f5ee5cfcdb09b73042208b0a2f5329ed44287",
+      "size": 11146
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "e7b42b2d903744a6b0aab6a7ff6e46d5de30d9c287819ec801a01b1494fe1737",
+      "size": 277
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/phase-result.json",
+      "sha256": "cc8f256436803910aaaa4be23dccb1a81ff3094188e88d59a860893863eb712e",
+      "size": 702
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/probe-builds.json",
+      "sha256": "0f645842406d395f37d12b51fe8719e897c640cbc49641cbbd4ef35741b707a0",
+      "size": 980
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/standard-user-result.json",
+      "sha256": "40ed5b9db8bac67911acd47338a3358ec73e0faf933697c47befab5872a6be83",
+      "size": 3678
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/bootstrap-result.json",
+      "sha256": "f6b879b27c79fabe852f5d41ec55619179d80d9a8efb9c670c7539108addd91d",
+      "size": 123
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/bootstrap-stage.json",
+      "sha256": "fa388d9e42001d96313a52aaaae3a0f117c16102ee58c3e7e2cc9b13da23998d",
+      "size": 149
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/feasibility-cases.json",
+      "sha256": "a83ef9d59c876ed619c743510979e14552fe0613255c73ada58dfce3ab8a745c",
+      "size": 27737
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/installation.json",
+      "sha256": "8628e6bbfcf8bff6b17ed85054b1b0e753aecd5c3df935926c54ca8dbbe1932c",
+      "size": 10893
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/native-cleanup-discovery.json",
+      "sha256": "3e3c1adadd2bc59d5fc3a962228a25ed28de4a5467162fb2b7a331fc879b70a3",
+      "size": 277
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/phase-result.json",
+      "sha256": "9007ce3e50956d10003400920ba6bb5b178aa4594d7251532b659bbe0145c1fd",
+      "size": 702
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/probe-builds.json",
+      "sha256": "609750d28360d2cd147bb7ee5410a2d30588b1552af96b68c9b912a60beef3d5",
+      "size": 730
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/standard-user-result.json",
+      "sha256": "58e64cd7ea771d9643630997a13b047d9b55a23b8b10bc68dd1cf4f607a56023",
       "size": 3677
     },
     {
@@ -705,7 +840,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Completed fdad6d7 feasibility and authenticated original inventories remain retained. Subsequent lab-only reporter cleanup refusal changes protected p05_lab.cs/p09_standard.ps1; fresh native feasibility is required. No source inventory, signed component pin or mandatory phase assertion is reduced.",
+  "note": "Completed representative P02 feasibility only. Historical blocked evidence is preserved; no production acceptance or supported release tuple.",
   "tested_sources": [
     {
       "path": "docs/engine-candidate.json",
@@ -779,8 +914,8 @@
     },
     {
       "path": "tools/probe/p05_lab.cs",
-      "sha256": "f4be80b03ce74e2b454b5c6997d423a075b9b43dbc9cc3ff659b3c19e20ae6f0",
-      "size": 18303
+      "sha256": "85c04a9e1df2b56c5b94f97053fedf323a98205d2599c87236d669da6e62df91",
+      "size": 19562
     },
     {
       "path": "tools/probe/p05_metadata.ps1",
@@ -879,8 +1014,8 @@
     },
     {
       "path": "tools/probe/p09_standard.ps1",
-      "sha256": "8025668f78f93788bf5319d15a1d5a2df68964e1badeeddfb67e66a465c36fd7",
-      "size": 57017
+      "sha256": "12dec518dbafc44c2971ebf5efc8598c2ab9cb41212f7c72455855dbae6d007d",
+      "size": 58366
     },
     {
       "path": "tools/probe/standard_user_probe.ps1",

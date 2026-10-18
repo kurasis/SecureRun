@@ -1,6 +1,6 @@
 # P11 — Packaging, upgrades, signing and retention
 
-Status: **Fixes IN_PROGRESS; gate BLOCKED**. P12 and all66 final installed
+Status: **Fixes IN_PROGRESS; gate BLOCKED**. P12 and all 66 final installed
 acceptance entries remain **NOT_STARTED**.
 
 Native Save uses checked foreground/owner-bound SendInput with unchanged exact
@@ -11,22 +11,25 @@ live ownership/birth/session/critical mismatches remain refused.
 
 | Source/run | Actual result | Scope |
 |---|---|---|
-| fdad6d7 /39110907921 | Server49, ARM62 passed; two explicit N/A each | Original P02 inventories retained; new probe safety changes require revalidation |
-| fdad6d7 /39111146590 | 45 native+62 adapter passed per target | [Actual session and teardown fixes](../evidence/p11/investigation-fdad6d7-policy-passed/review.json) |
-| fa29a20 /39109839082 | 22 native+101 UI passed per target | [Full uninstrumented snapshot](../evidence/p11/investigation-fa29a20-product-passed/review.json); real Save passed |
-| 96483f3 /39111501581 | Failed environment01; live RpcSs-named target birth matched | [Early reporter association](../evidence/p11/investigation-96483f3-observer/review.json), no original exception/module |
-| 96483f3 PR /39111504301 | ARM failed environment10; Server job succeeded | [Separate original failure](../evidence/p11/investigation-96483f3-pr-p09/review.json) |
-| f374409 /39113908733 | 21 native+101 UI passed; archive exit timed out | [Live metadata diagnosis](../evidence/p11/investigation-f374409-observer/review.json), no capacity/query failure |
+| 0d2600c / 39119550715 | Server 49, ARM 62 passed; two explicit N/A each | Current P02 includes lab reporter safeguards |
+| fdad6d7 / 39110907921 | Server 49, ARM 62 passed; two explicit N/A each | Historical original P02 inventories retained |
+| fdad6d7 / 39111146590 | 45 native+62 adapter passed per target | [Actual session and teardown fixes](../evidence/p11/investigation-fdad6d7-policy-passed/review.json) |
+| fa29a20 / 39109839082 | 22 native+101 UI passed per target | [Full uninstrumented snapshot](../evidence/p11/investigation-fa29a20-product-passed/review.json); real Save passed |
+| 96483f3 / 39111501581 | Failed environment01; live RpcSs-named target birth matched | [Early reporter association](../evidence/p11/investigation-96483f3-observer/review.json), no original exception/module |
+| 96483f3 PR / 39111504301 | ARM failed environment10; Server job succeeded | [Separate original failure](../evidence/p11/investigation-96483f3-pr-p09/review.json) |
+| f374409 / 39113908733 | 21 native+101 UI passed; archive exit timed out | [Live metadata diagnosis](../evidence/p11/investigation-f374409-observer/review.json), no capacity/query failure |
 
-Server startup3477.3973ms exceeded3000ms and ARM idle CPU1.2673191570845006%
-exceeded<1% in the successful fa29a20 sample; other budgets met. Original
+Separately, [f374409 PR control/lifecycle originals](../evidence/p11/investigation-f374409-pr-control-lifecycle/review.json) retain ARM P06 (21 passed, one failed) and P08 (32 passed, six failed). Both first refusals were `DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED`; the later P08 refusals were `OWNERSHIP_NOT_FOUND`. Both Server jobs succeeded. This is additional failed proof, with no source-equivalence or root-exception claim.
+
+Server startup of 3477.3973 ms exceeded 3000 ms and ARM idle CPU of 1.2673191570845006%
+exceeded <1% in the successful fa29a20 sample; other budgets met. Original
 measurements and user-impact explanations remain unchanged. Successful snapshots
 do not erase same-source failures or establish reporter-fault resolution.
 
-The f374409 observer recorded1028 known lifetimes and1 reporter. Four live reads
-found4 plain roots and0 candidate WER files;1existing channel was enabled but no
+The f374409 observer recorded 1028 known lifetimes and 1 reporter. Four live reads
+found 4 plain roots and 0 candidate WER files; 1 existing channel was enabled but no
 matching exception/module was obtained. Both RpcSs-named target and reporter were
-eventually observed exit4f; this is not the original exception and alone does not
+eventually observed exit 4f; this is not the original exception and alone does not
 identify the termination dispatcher. Reporter presence now causes a conservative
 lab refusal before cleanup. Such refusal fails the case/run, preserves an earlier
 failure, and never becomes successful Stop evidence. The product's normal Stop
@@ -42,6 +45,8 @@ kernel object, matching retained birth, original-driver owner/box/session and
 managed marker, and the dedicated current synthetic account. No reporter or
 unknown image is debugged or terminated; no target launch is replayed.
 
+The diagnostic workflow is dispatched explicitly so routine source/evidence pushes do not repeat the instrumented full workload. Required phase workflows retain their existing triggers. Tool pipes are drained with constant storage and only bounded character counts are kept; raw tool output is never returned.
+
 Debugger mode explicitly changes fault delivery/timing and **cannot close any
 phase or certify performance**. Raw dumps and tool output stay private inside the
 disposable VM and are never uploaded. The bounded dump parser verifies target ID
@@ -51,17 +56,16 @@ and unknown names. Tool monitors receive only scoped graceful console cancellati
 no debugger/debuggee is killed for cleanup. Windows security, TLS, signatures,
 checksums, browser sandbox and WER configuration remain enabled/unchanged.
 
-Local validation: repository validator,31 Python tests, PowerShell/CSharp syntax,
+Local validation: repository validator, 31 Python tests, 63 Linux Rust tests (not native containment proof), PowerShell/CSharp syntax,
 XML privacy/UTF8+UTF16 DTD rejection, actual zero-sample Start-Job transport,
 synthetic filesystem traversal, dump bounds/target binding/privacy, and lab
 reporter-stop refusal/healthy dispatch checks passed. Synthetic checks are not
-Windows containment evidence. All original26 specification files are unchanged.
+Windows containment evidence. All original 26 specification files are unchanged.
 The [startup transport failure](../evidence/p11/investigation-9a98713-startup/review.json)
 and every previous failed snapshot remain retained without relabeling.
 
 Current protected inputs require fresh complete matching P10 and installed P11
-proof after the actual compatibility correction. P02 must be refreshed for the
-new probe-only reporter safeguards. Automatic normal merge remains conditional on
+proof after the actual compatibility correction. P02 was refreshed at 0d2600c/run 39119550715: Server 49 and ARM 62 passed, with two explicit N/A each; complete signed component inventories and OS tuples were unchanged. Automatic normal merge remains conditional on
 the real gates; no source inventory, assertion, workload or mandatory feature is
 removed. The separately successful older installed package below is historical.
 
@@ -127,7 +131,7 @@ Outputs: [BUILD](../BUILD.md), [INSTALL](../INSTALL.md),
 [compatibility manifest](../../packaging/compatibility.json) and
 [hash-bound evidence](../evidence/p11/manifest.json).
 
-## Runtime security refresh and blocked dependency
+## Historical security refresh and blocked integration
 
 Original Plus 1.18.8/core 5.73.8/ABI0x57230, source
 `bde0890108a563f5d72eb8e57085be2b37177218`, was manually authenticated after the
@@ -142,13 +146,12 @@ Runtime diagnostic cleanup now authenticates every remaining image, including
 same-owner tokens. Only the two exact protected signed original RPC companions
 may be stopped after driver/birth/box/owner/session checks; benign canaries are
 already completed. Unknown held objects receive only the original 60000 ms natural
-completion wait, after independently authorized stops. No WerFault/unknown image
-is trusted, terminated or hidden. Protected OS UBR is included in verification
+completion wait, after independently authorized stops. That diagnostic cleanup route grants no stop authority to WerFault or unknown images. Protected OS UBR is included in verification
 identity and the immutable compiled launch tuple; an OS revision change invalidates
 cached proof. The first new-tuple mismatch failed closed and was corrected without
 accepting an unreviewed OS. Both installed T05 paths passed with this correction.
 
-Current full integration source: `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
+Historical full integration source: `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
 [run 39087328157](https://github.com/kurasis/SecureRun/actions/runs/39087328157).
 All 155 protected runtime/workflow/lab inputs are byte-identical at the packaging-only
 descendant dd447fe. None was removed to reuse old proof. Portable and all 12 P03–P08
@@ -192,12 +195,10 @@ unknown-process refusals, the f26e6a3 strict-tuple mismatch and d73e352 lab fixt
 relative-path failure. Original statuses remain unchanged; later installed successes
 do not establish a fix for the reporter's fault cause. All are hash-bound by the manifest.
 
-## Validation and continuation
+## Historical validation and current continuation
 
 Actual commands: `packaging/Invoke-P11.ps1`, locked native Cargo production tests,
-full P10 Actions matrix, `python tools/lab/validate_repository.py`, existing 22 Python
-tooling tests and 7 packaging gate tests. Repository validation and all 29 Python tests
-passed. All 26 original specification files remain byte-for-byte unchanged. Reviewed
+full P10 Actions matrix and `python tools/lab/validate_repository.py`. The earlier 29 Python tests passed; the current expanded set of 31 tests also passed as recorded above. All 26 original specification files remain byte-for-byte unchanged. Reviewed
 original evidence is published without generated binaries, credentials, raw paths,
 arguments or private inventories. Development EXEs remain expiring Actions artifacts.
 

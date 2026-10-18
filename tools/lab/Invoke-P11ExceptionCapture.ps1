@@ -1,7 +1,8 @@
 # Privileged disposable diagnostics only. Never used by the shipped manager.
 if(-not('P11DebugScope' -as [type])){Add-Type @'
-using System;using System.Text;using System.Runtime.InteropServices;using System.Text.RegularExpressions;
+using System;using System.Text;using System.Runtime.InteropServices;using System.Text.RegularExpressions;using System.IO;using System.Threading.Tasks;
 public sealed class P11DebugScope {
+ public static async Task<long> DrainPrivateOutput(TextReader reader){char[] buffer=new char[1024];long count=0;int n;while((n=await reader.ReadAsync(buffer,0,buffer.Length).ConfigureAwait(false))!=0){count=Math.Min(65537,count+n);}return count;}
  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern IntPtr LoadLibraryExW(string file,IntPtr reserved,uint flags);
  [DllImport("kernel32.dll",CharSet=CharSet.Ansi)]static extern IntPtr GetProcAddress(IntPtr module,string name);
  [DllImport("kernel32.dll")]static extern bool ProcessIdToSessionId(uint id,out uint session);
@@ -94,7 +95,7 @@ function Update-P11ExceptionCapture($Context,[long]$Elapsed){
   if(-not $entry.process.HasExited){continue}
   try{
    $stdout=$entry.stdout.GetAwaiter().GetResult();$stderr=$entry.stderr.GetAwaiter().GetResult()
-   if($stdout.Length -gt 65536 -or $stderr.Length -gt 65536){throw 'DIAGNOSTIC_TOOL_OUTPUT_BOUND'}
+   if($stdout -gt 65536 -or $stderr -gt 65536){throw 'DIAGNOSTIC_TOOL_OUTPUT_BOUND'}
    $exitKey=[string]$entry.process.ExitCode;if(-not $Context.public.tool_exit_codes.ContainsKey($exitKey)){$Context.public.tool_exit_codes[$exitKey]=0};$Context.public.tool_exit_codes[$exitKey]++
    $dumps=@(Get-ChildItem -LiteralPath $entry.directory -Filter '*.dmp' -File)
    if($dumps.Count -eq 1){$parsed=[P11ExceptionDump]::Read($dumps[0].FullName,[uint32]$entry.id);$parsed['original_helper_image_authenticated']=$true;$parsed['driver_owner_birth_session_marker_confirmed']=$true;$Context.public.exceptions.Add($parsed)}
@@ -119,7 +120,7 @@ function Start-P11KnownHelperCapture($Context,[uint32]$Id,$Observed){
   $start=[Diagnostics.ProcessStartInfo]::new($Context.exe);$start.UseShellExecute=$false;$start.WorkingDirectory=$Context.home;$start.WindowStyle=[Diagnostics.ProcessWindowStyle]::Hidden;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
   $start.Environment.Clear();foreach($name in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramW6432','ProgramData','RUNNER_TRACKING_ID')){$value=[Environment]::GetEnvironmentVariable($name);if($null -ne $value){$start.Environment[$name]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['TEMP']=$directory;$start.Environment['TMP']=$directory
   foreach($argument in @('-accepteula','-e','-mm','-n','1',[string]$Id,($directory+[IO.Path]::DirectorySeparatorChar))){$start.ArgumentList.Add($argument)}
-  $tool=[Diagnostics.Process]::Start($start);$Context.public.attach_requests++;$Context.active.Add(@{id=$Id;hold=$hold;process=$tool;directory=$directory;stdout=$tool.StandardOutput.ReadToEndAsync();stderr=$tool.StandardError.ReadToEndAsync()});$hold=$null
+  $tool=[Diagnostics.Process]::Start($start);$Context.public.attach_requests++;$Context.active.Add(@{id=$Id;hold=$hold;process=$tool;directory=$directory;stdout=[P11DebugScope]::DrainPrivateOutput($tool.StandardOutput);stderr=[P11DebugScope]::DrainPrivateOutput($tool.StandardError)});$hold=$null
  }catch{$Context.public.scope_refusals++;Add-P11CaptureCode $Context.public.scope_refusal_codes $_.Exception.GetBaseException().Message 'DIAGNOSTIC_SCOPE_CHECK_FAILED'}finally{if($null -ne $hold){$hold.Dispose()}}
 }
 function Stop-P11ExceptionCapture($Context){

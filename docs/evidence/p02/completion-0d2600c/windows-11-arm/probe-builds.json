@@ -1,0 +1,30 @@
+[
+  {
+    "name": "engine_inspect.exe",
+    "architecture_verified": true,
+    "declared_architecture": "arm64",
+    "sha256": "00ed93b4fd39af52af0e286c70359152b7f67cc1583839b2c190236566d09860",
+    "observed_pe_machine": "aa64"
+  },
+  {
+    "name": "feasibility_probe_arm64.exe",
+    "architecture_verified": true,
+    "declared_architecture": "arm64",
+    "sha256": "37c09a2f953bfe92f63ec92e575498783c1de92b2b238b831504005e02e3a738",
+    "observed_pe_machine": "aa64"
+  },
+  {
+    "name": "feasibility_probe_x64.exe",
+    "architecture_verified": true,
+    "declared_architecture": "x64",
+    "sha256": "12899ae7fe5c2e7fd08f3431e4c477d73a83c30ed38d2eb19f01f55793f8abdc",
+    "observed_pe_machine": "8664"
+  },
+  {
+    "name": "feasibility_probe_x86.exe",
+    "architecture_verified": true,
+    "declared_architecture": "x86",
+    "sha256": "478dd8b68f1637be71e38477eb5fc01ff9d58d139d2b2781c97b1d21d443c6e5",
+    "observed_pe_machine": "014c"
+  }
+]

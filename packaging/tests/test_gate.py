@@ -42,9 +42,25 @@ class PackagingGate(unittest.TestCase):
 
     def test_required_cases_include_actual_missing_prerequisite_and_data_retention(self):
         self.assertEqual(len(gate.MANDATORY), 25)
-        self.assertIn('clean_runtime_prerequisite_uses_original_microsoft_installer', gate.MANDATORY)
+        self.assertIn('official_webview_prerequisite_matches_os_baseline', gate.MANDATORY)
         self.assertIn('uninstall_removes_only_code_and_retains_profile_engine_runtime', gate.MANDATORY)
         self.assertIn('future_schema_is_refused_without_downgrade', gate.MANDATORY)
+
+    def test_preinstalled_arm_runtime_cannot_replace_server_missing_runtime_proof(self):
+        evidence = {'tested_state': 'WINDOWS_11_PREINSTALLED_RUNTIME',
+                    'runtime_absent_before_install': False, 'runtime_signature': 'Valid',
+                    'runtime_version': '155.0.4283.62', 'security_settings_modified': False,
+                    'runtime_uninstall_dispatched': False, 'missing_runtime_arm_installation_tested': False}
+        self.assertFalse(gate.check_webview(evidence, 'windows-11-arm'))
+        with self.assertRaises(ValueError):
+            gate.check_webview(evidence, 'windows-2025')
+
+    def test_missing_runtime_label_requires_actual_absence(self):
+        with self.assertRaises(ValueError):
+            gate.check_webview({'tested_state': 'ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL',
+                               'runtime_absent_before_install': False, 'runtime_signature': 'Valid',
+                               'runtime_version': '155.0.4283.62', 'security_settings_modified': False},
+                              'windows-2025')
 
 
 if __name__ == '__main__':

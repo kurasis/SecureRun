@@ -14,7 +14,7 @@ RUNNERS = {'windows-2025': ('x86_64-pc-windows-msvc', '8664', 26100),
 MANDATORY = {
     'installer_rejects_user_writable_existing_code_directory',
     'installer_rejects_junction_without_touching_destination',
-    'clean_runtime_prerequisite_uses_original_microsoft_installer',
+    'official_webview_prerequisite_matches_os_baseline',
     'clean_install_has_exact_reviewed_payload_and_native_architecture',
     'failed_upgrade_rolls_back_files_and_retains_profile',
     'upgrade_installs_candidate_without_elevated_profile_migration',
@@ -45,6 +45,25 @@ def record(path, relative):
     return {'path': relative, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
 
 
+def check_webview(event, runner):
+    """Require absent-runtime installation on Server; preserve Windows 11's baseline."""
+    if (event['security_settings_modified'] or event['runtime_signature'] != 'Valid'
+            or not re.fullmatch(r'\d+\.\d+\.\d+\.\d+', event['runtime_version'])
+            or int(event['runtime_version'].split('.')[0]) < 120):
+        raise ValueError('P11 actual suitable Microsoft runtime was not verified')
+    missing = event['tested_state'] == 'ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL'
+    if runner == 'windows-2025' and not missing:
+        raise ValueError('P11 Server must exercise the missing-runtime prerequisite')
+    if missing:
+        if not event['runtime_absent_before_install']:
+            raise ValueError('P11 missing-runtime installation was not actually executed')
+    elif (runner != 'windows-11-arm' or event['tested_state'] != 'WINDOWS_11_PREINSTALLED_RUNTIME'
+          or event['runtime_absent_before_install'] or event['runtime_uninstall_dispatched']
+          or event['missing_runtime_arm_installation_tested']):
+        raise ValueError('P11 preinstalled-runtime scope was mislabeled')
+    return missing
+
+
 def sources(root=ROOT):
     spec = importlib.util.spec_from_file_location('p10_sources', root / 'tools/lab/retain_p10_evidence.py')
     module = importlib.util.module_from_spec(spec)
@@ -64,7 +83,7 @@ def check_target(folder, runner, commit):
     if (s['cases_failed'] or s['final_acceptance_scenarios_passed'] or s['engine_bundled']
             or s['elevated_product_helper'] or s['os_security_settings_modified']
             or s['signing'] != 'UNSIGNED_DEVELOPMENT_ONLY'
-            or not all(s[k] for k in ('clean_webview_prerequisite', 'installed_payload_verified',
+            or not all(s[k] for k in ('webview_prerequisite_verified', 'installed_payload_verified',
                                      'retention_verified', 'installed_smoke_after_reinstall'))):
         raise ValueError('P11 installed boundaries/retention/signing scope failed')
     cases = []
@@ -75,15 +94,14 @@ def check_target(folder, runner, commit):
             or any(c['status'] != 'PASSED' for c in cases)):
         raise ValueError('P11 required actual installed cases missing/failed/duplicated')
     by_name = {c['name']: c['evidence'] for c in cases}
+    runtime = by_name['official_webview_prerequisite_matches_os_baseline']
+    missing_runtime = check_webview(runtime, runner)
     setup = read(folder / 'setup-observations.json')
     if (len(setup) != 8 or any(r['private_log_retained'] for r in setup)
             or not all(r['final_log_closed'] for r in setup)
-            or not any('P11_WEBVIEW_INSTALL_REQUIRED' in r['events'] for r in setup)
+            or any('P11_WEBVIEW_INSTALL_REQUIRED' in r['events'] for r in setup) != missing_runtime
             or any('P11_GUARD_EXACT_BYTES_VERIFIED' not in r['events'] for r in setup if r['exit_code'] == 0)):
         raise ValueError('P11 actual prerequisite/embedded-guard execution proof missing')
-    runtime = by_name['clean_runtime_prerequisite_uses_original_microsoft_installer']
-    if not runtime['runtime_absent_before_install'] or runtime['security_settings_modified']:
-        raise ValueError('P11 clean-machine prerequisite branch not executed')
     for name in ('failed_upgrade_rolls_back_files_and_retains_profile',
                  'upgrade_installs_candidate_without_elevated_profile_migration',
                  'uninstall_removes_only_code_and_retains_profile_engine_runtime',
@@ -101,7 +119,9 @@ def check_target(folder, runner, commit):
             or any(r['reason'] != 'MANAGER_CONTEXT_UNSAFE' for r in boxed['worker_boundaries'])):
         raise ValueError('P11 installed boxed-context proof missing')
     unit = read(folder / 'migration-unit-tests.json')
-    if not unit['production_tests_passed'] or unit['source_commit'] != commit or unit['foundation_tests'] != 19 or unit['adapter_tests'] != 62:
+    if (not unit['production_tests_passed'] or unit['source_commit'] != commit
+            or unit['foundation_tests'] != 19 or unit['adapter_tests'] != 62
+            or unit['foundation_unit_tests'] != 1 or unit['foundation_integration_tests'] != 18):
         raise ValueError('P11 actual migration rollback tests not completed')
     package = read(folder / 'package-manifest.json')
     if (package['source_commit'] != commit or package['features'] or package['engine_bundled']
@@ -232,7 +252,10 @@ def retain(download, commit, run_id):
                 'final_acceptance_scenarios_passed': 0,
                 'next_phase': 'P12', 'development_limitations': [
                     'No production signing infrastructure', 'No selected original manager license',
-                    'Windows 11 x64 installed release not certified by owner-selected labs']}
+                    'Windows 11 x64 installed release not certified by owner-selected labs'],
+                'webview_coverage': {'windows-2025': 'Actual absent-runtime installation using the official bootstrapper',
+                                     'windows-11-arm': 'Windows 11 preinstalled runtime preserved and exercised; no claim of a stripped-OS missing-runtime test',
+                                     'reference': 'https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution'}}
     (evidence / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     validate()
     print(json.dumps(targets))

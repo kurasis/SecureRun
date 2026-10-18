@@ -47,12 +47,12 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $unit=& cargo test --locked 2>&1
+          $unit=& cargo test --locked --color never -- --color never 2>&1
           $unit|Out-Host
           if($LASTEXITCODE -ne 0){throw 'P11_PRODUCTION_UNIT_TESTS_FAILED'}
           $text=$unit -join "`n"
-          if($text -notmatch 't28_partial_migration_failure_rolls_back_schema_and_version .*ok' -or $text -notmatch 'test result: ok. 19 passed' -or $text -notmatch 'test result: ok. 62 passed'){throw 'P11_ACTUAL_SCHEMA_TEST_COUNTS_MISSING'}
-          @{production_tests_passed=$true;foundation_tests=19;adapter_tests=62;partial_transaction_rollback_test='foundation::store::migration_tests::t28_partial_migration_failure_rolls_back_schema_and_version';future_schema_tests='foundation and adapter production journal tests';source_commit='${{ github.sha }}'} | ConvertTo-Json | Set-Content artifacts/p11/migration-unit-tests.json -Encoding utf8
+          if($text -notmatch 't28_partial_migration_failure_rolls_back_schema_and_version .*ok' -or $text -notmatch 'test result: ok\. 1 passed; 0 failed; 0 ignored' -or $text -notmatch 'test result: ok\. 18 passed; 0 failed; 0 ignored' -or $text -notmatch 'test result: ok\. 62 passed; 0 failed; 0 ignored'){throw 'P11_ACTUAL_SCHEMA_TEST_COUNTS_MISSING'}
+          @{production_tests_passed=$true;foundation_unit_tests=1;foundation_integration_tests=18;foundation_tests=19;adapter_tests=62;partial_transaction_rollback_test='store::migration_tests::t28_partial_migration_failure_rolls_back_schema_and_version';future_schema_tests='foundation and adapter production journal tests';source_commit='${{ github.sha }}'} | ConvertTo-Json | Set-Content artifacts/p11/migration-unit-tests.json -Encoding utf8
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         if: always()
         with:

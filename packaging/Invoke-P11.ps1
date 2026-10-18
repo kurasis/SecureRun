@@ -77,22 +77,33 @@ try{
   try{$code=Setup $baseline -Fail;Require ([IO.File]::ReadAllText((Join-Path $outside 'canary.txt')) -eq 'P11_JUNCTION_UNCHANGED') 'P11_JUNCTION_DESTINATION_CHANGED';Require (@(Get-ChildItem $outside -File).Count -eq 1) 'P11_JUNCTION_PAYLOAD_WRITTEN'}finally{[IO.Directory]::Delete($installRoot)}
   @{exit_code=$code;junction_refused=$true;destination_unchanged=$true}
  }
- Case 'T01' 'clean_runtime_prerequisite_uses_original_microsoft_installer' {
+ Case 'T01' 'official_webview_prerequisite_matches_os_baseline' {
   $key='HKLM:/SOFTWARE/WOW6432Node/Microsoft/EdgeUpdate/Clients/{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
   $before=Get-ItemProperty $key -ErrorAction SilentlyContinue
-  $uninstallCode=$null
-  if($null -ne $before -and $before.pv -ne '0.0.0.0'){
+  $beforeVersion=if($null -ne $before){[string]$before.pv}else{$null}
+  $uninstallCode=$null;$isArm=($env:PROCESSOR_ARCHITECTURE -eq 'ARM64')
+  # Microsoft documents WebView2 as part of Windows 11. Preserve that baseline
+  # on ARM. The Server lab independently exercises actual runtime absence and
+  # the common official bootstrapper path; this is not a factorial certification
+  # of a manually stripped Windows 11 OS image.
+  if(-not $isArm -and $null -ne $before -and $before.pv -ne '0.0.0.0'){
    Require ($before.pv -match '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$') 'P11_RUNTIME_VERSION_UNSAFE'
    $runtimeSetup=Join-Path ${env:ProgramFiles(x86)} ('Microsoft/EdgeWebView/Application/'+$before.pv+'/Installer/setup.exe')
    $sig=Get-AuthenticodeSignature -LiteralPath $runtimeSetup;Require ($sig.Status -eq 'Valid' -and $sig.SignerCertificate.Subject -match 'O=Microsoft Corporation') 'P11_RUNTIME_UNINSTALLER_NOT_TRUSTED'
    $p=Start-Process -FilePath $runtimeSetup -ArgumentList @('--uninstall','--msedgewebview','--system-level','--force-uninstall','--verbose-logging') -PassThru
    try{Require ($p.WaitForExit(120000)) 'P11_RUNTIME_UNINSTALL_TIMEOUT';$uninstallCode=$p.ExitCode}finally{$p.Dispose()}
   }
-  $absent=Get-ItemProperty $key -ErrorAction SilentlyContinue
-  Require ($null -eq $absent -or $absent.pv -eq '0.0.0.0') 'P11_CLEAN_RUNTIME_NOT_ABSENT'
+  $clock=[Diagnostics.Stopwatch]::StartNew()
+  do{$state=Get-ItemProperty $key -ErrorAction SilentlyContinue;$absent=($null -eq $state -or $state.pv -eq '0.0.0.0');if($isArm -or $absent){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 120000)
+  if(-not $isArm){Require $absent 'P11_CLEAN_RUNTIME_NOT_ABSENT'}
+  if(-not $absent){Require ($state.pv -match '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' -and [int]($state.pv.Split('.')[0]) -ge 120) 'P11_PREINSTALLED_RUNTIME_UNSUITABLE'}
+  $mode=if($absent){'ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL'}else{'WINDOWS_11_PREINSTALLED_RUNTIME'}
   $code=Setup $baseline;Payload-Matches
-  $after=Get-ItemProperty $key;Require ([int]($after.pv.Split('.')[0]) -ge 120) 'P11_OFFICIAL_RUNTIME_NOT_INSTALLED'
-  @{runtime_absent_before_install=$true;previous_runtime_uninstall_exit=$uninstallCode;setup_exit=$code;runtime_version=$after.pv;prerequisite='MICROSOFT_SIGNED_HASH_PINNED_EVERGREEN_BOOTSTRAPPER';security_settings_modified=$false}
+  $after=Get-ItemProperty $key;Require ($after.pv -match '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' -and [int]($after.pv.Split('.')[0]) -ge 120) 'P11_OFFICIAL_RUNTIME_NOT_INSTALLED'
+  $candidates=@(@(${env:ProgramFiles(x86)},$env:ProgramFiles)|Select-Object -Unique|ForEach-Object {Join-Path $_ ('Microsoft/EdgeWebView/Application/'+$after.pv+'/msedgewebview2.exe')}|Where-Object {Test-Path -LiteralPath $_})
+  Require ($candidates.Count -eq 1) 'P11_RUNTIME_IMAGE_AMBIGUOUS'
+  $runtimeSignature=Get-AuthenticodeSignature -LiteralPath $candidates[0];Require ($runtimeSignature.Status -eq 'Valid' -and $runtimeSignature.SignerCertificate.Subject -match 'O=Microsoft Corporation') 'P11_INSTALLED_RUNTIME_SIGNATURE_INVALID'
+  @{tested_state=$mode;runtime_absent_before_install=$absent;previous_runtime_version=$beforeVersion;previous_runtime_uninstall_exit=$uninstallCode;runtime_uninstall_dispatched=(-not $isArm -and $null -ne $uninstallCode);setup_exit=$code;runtime_version=$after.pv;runtime_signature=$runtimeSignature.Status.ToString();runtime_sha256=(Get-FileHash -LiteralPath $candidates[0]).Hash.ToLowerInvariant();prerequisite='MICROSOFT_SIGNED_HASH_PINNED_EVERGREEN_BOOTSTRAPPER';os_inbox_runtime_preserved=$isArm;missing_runtime_arm_installation_tested=($isArm -and $absent);security_settings_modified=$false}
  }
  Case 'T29' 'clean_install_has_exact_reviewed_payload_and_native_architecture' {Payload-Matches;@{all_payload_hashes_match=$true;package='0.3.0.10';native_target=$build.target;signing='UNSIGNED_DEVELOPMENT_ONLY';engine_bundled=$false}}
  & (Join-Path $repo 'tools/lab/Initialize-P02.ps1')
@@ -152,7 +163,7 @@ try{
  # Record scoped N/A portions explicitly. No helper enrollment is manufactured.
  @{T27='APPLICABLE_BOXED_WORKER_BOUNDARY_PASSED_HELPER_SUBCASE_NA';T47='APPLICABLE_FORGED_PARENT_PASSED_HELPER_SUBCASE_NA';T52='NOT_APPLICABLE_NO_PRODUCT_HELPER';T57='NO_PRIVILEGED_METADATA_AUTHORITY_INSTALLED_MANAGER_CONTEXT_TESTED';different_account_uac='NOT_APPLICABLE_NO_PRODUCT_HELPER';all_66_final_acceptance='NOT_STARTED_P12'}|ConvertTo-Json|Set-Content (Join-Path $out 'scope.json') -Encoding utf8
  $all=@($cases.ToArray());foreach($f in @('seed','upgrade','reinstall')){$all+=@(Get-Content (Join-Path $out ($f+'-cases.json')) -Raw|ConvertFrom-Json)}
- $summary=@{phase='P11';result='PASSED';tested_commit=$build.source_commit;target=$build.target;os_build=[Environment]::OSVersion.Version.Build;cases_passed=@($all|Where-Object status -eq 'PASSED').Count;cases_failed=@($all|Where-Object status -ne 'PASSED').Count;signing='UNSIGNED_DEVELOPMENT_ONLY';clean_webview_prerequisite=$true;installed_payload_verified=$true;retention_verified=$true;installed_smoke_after_reinstall=$true;elevated_product_helper=$false;engine_bundled=$false;os_security_settings_modified=$false;final_acceptance_scenarios_passed=0;teardown='DISCARD_ACTIONS_VM'}
+ $summary=@{phase='P11';result='PASSED';tested_commit=$build.source_commit;target=$build.target;os_build=[Environment]::OSVersion.Version.Build;cases_passed=@($all|Where-Object status -eq 'PASSED').Count;cases_failed=@($all|Where-Object status -ne 'PASSED').Count;signing='UNSIGNED_DEVELOPMENT_ONLY';webview_prerequisite_verified=$true;installed_payload_verified=$true;retention_verified=$true;installed_smoke_after_reinstall=$true;elevated_product_helper=$false;engine_bundled=$false;os_security_settings_modified=$false;final_acceptance_scenarios_passed=0;teardown='DISCARD_ACTIONS_VM'}
  Require ($summary.cases_failed -eq 0) 'P11_CASE_FAILURES';$summary|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
 }finally{
  if($null -ne $password){$password.Dispose()}

@@ -60,3 +60,10 @@ See [signing decision](SIGNING.md), [build status](BUILD.md), [retention](UPGRAD
 [license inventory](LICENSE_INVENTORY.md). Actions artifacts expire after 14 days;
 the repository retains reviewed checksums/evidence and build instructions, not a
 permanent signed release download. Regenerate and revalidate expired artifacts.
+
+The P11 prerequisite matrix exercises actual runtime absence/bootstrapper installation
+on Server x64 and the OS-preinstalled runtime on Windows 11 ARM64. Microsoft documents
+WebView2 as part of Windows 11 in its [deployment guidance](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution).
+A manually stripped Windows 11 ARM64 missing-runtime installation is not claimed
+as tested. The common official bootstrapper flow remains enabled; the installed
+ARM64 application is exercised against its observed Microsoft-signed runtime.

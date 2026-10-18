@@ -61,7 +61,8 @@ python -m unittest discover -s packaging/tests -v
 
 The disposable Actions-only `packaging/Invoke-P11.ps1` additionally installs and
 tests the real package. It creates synthetic users/data, performs an official
-WebView2 uninstall/reinstall to test the missing prerequisite, and installs the
+WebView2 uninstall/reinstall on Server x64 to test the missing prerequisite,
+preserves the Windows 11 ARM64 preinstalled runtime, and installs the
 separately pinned Sandboxie engine for containment tests. Run it only on the
 owner-selected throwaway laboratories; discard the VM afterwards. It is not an
 end-user installation script. P12 owns final candidate acceptance.

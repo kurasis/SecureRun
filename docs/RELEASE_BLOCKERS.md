@@ -6,10 +6,12 @@ changed runtime/engine source. This is not a production release or independent a
 
 | Item | Actual state / requirement |
 |---|---|
-| Current full P10 integration | BLOCKED at ffdaeb6/run39087328157; ARM P09 failed both original and one controlled unchanged-source repeat |
-| Unknown-reporter cleanup | Reproducible live WerFault after unchanged 60000 ms natural wait; source/cause undetermined, original reports retained; no trust/termination/hiding workaround |
-| Server actual browser/Save observation | First P09 failed clipboard-busy; repeat observed effective sandbox level 9 but failed diagnostic Save filename readback before confirmation (20 native+93 UI passed); both failed reports retained |
-| Duplicate PR rapid Launch/Stop | P06 initial ENGINE_DISPATCH_REFUSED and later uncertain-state assertions retained; no actual dispatch inferred from assertion labels |
+| Current full P10 integration | No complete passing current-source matrix; historical ffdaeb6/run39087328157 failed. Current matching installed P11 proof is also pending |
+| Unknown-reporter cleanup | Ordinary ARM P09 still failed at environments 06/08 in runs 39119547942/39120204559. The original exception/module remain undetermined; reporter names grant no trust/termination/hiding authority |
+| Server actual browser/Save observation | Checked native Save input passed in full fa29a20/run39109839082 on both targets; later ordinary Server jobs also passed 22+101. Original clipboard/Save failures remain historical failures |
+| Session and fixture teardown races | Atomic session-ready JSON and retained-object completion handling passed actual P05 b1e2129/run39120204407 on both targets (45 native+62 adapter each); no engine-fault resolution inferred |
+| ARM original-service diagnosis | f6e1042/run39126844625 failed environment 04. cff58d4/run 39129208572 passed 22+101 with no reporter and 112 NtCreateLowBoxToken FFS warnings. Diagnostic success is excluded from phase closure and does not establish a cause/correction |
+| Duplicate PR rapid Launch/Stop | Later P06/P08 ARM jobs first refused DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; historical ENGINE_DISPATCH_REFUSED and uncertain-state assertions retained. No actual dispatch inferred from assertion labels |
 | P11 installed deployment/retention | 28/28 actual installed cases plus 81 production tests passed on each target; does not waive P10 dependency |
 | Production Authenticode infrastructure | Unavailable; all original artifacts explicitly UNSIGNED DEVELOPMENT ONLY; see signing policy |
 | Original manager license | Not selected by owner; production/commercial redistribution clearance not claimed |

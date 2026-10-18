@@ -10,11 +10,44 @@ Fixture teardown skips only confirmed completion of the same retained object;
 live ownership/birth/session/critical mismatches remain refused.
 
 
-Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](../evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](../evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
+The [b1e2129 P05 snapshot](../evidence/p11/investigation-b1e2129-policy-passed/review.json)
+passed 45 native+62 adapter tests on each target, with one explicit N/A. Its tested
+P05Lab source matches current, including reporter safeguards. Ordinary full P09
+runs 39119547942 and 39120204559 passed Server 22+101 but failed ARM during environment 06
+and 08 seeding with `DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED`. No original exception/module
+has been established; no safe correction for that remaining fault is claimed.
 
-The [b1e2129 P05 snapshot](../evidence/p11/investigation-b1e2129-policy-passed/review.json) passed 45 native+62 adapter tests on each target, with one explicit N/A. The actual tested P05Lab source is byte-identical to current and includes reporter safeguards. The [7d77cd4 native preflight failure](../evidence/p11/investigation-7d77cd4-preflight/review.json) occurred before monitor launch because of the reserved Home parameter. c594c8e corrects it and adds an actual invocation regression; its native synthetic debugger/expected exception-dump preflight passed. Full original-engine diagnosis run 39122053169 remains in progress. These are individual/diagnostic facts, not P10/P11 closure.
+The [latest original-service diagnostic, cff58d4/run 39129208572](../evidence/p11/investigation-cff58d4-service-log-passed/review.json)
+passed all 22 native+101 UI checks and the 10,000-file workload without an engine debugger or
+memory dump request. The separate native preflight passed. The passive observer
+recorded 1003 known lifetimes, no reporter and no observation errors/bound exhaustion.
+The original-service collector authenticated inputs before the actor, read 14,270 private
+bytes, completed without read/bound failure and restored the prior registry value/type.
+It recorded 112 public `NtCreateLowBoxToken` FFS warnings, two SBIE2312 messages and no
+crash/startup report. These warnings therefore occur in a successful sample too;
+their presence alone does not identify the earlier fault's cause. Original idle CPU
+was 1.1844013497178307% against <1%; the unchanged deviation is retained and diagnostic
+timing is not performance certification. This workflow is excluded from phase closure.
 
-The [c594c8e debugger-only run](../evidence/p11/investigation-c594c8e-debug-passed/review.json) passed 22 native+101 UI with 174 actually observed debugger connections, three owner-scope refusals, zero reporters and no original exception dump. This does not resolve the [separate ordinary b1e2129 ARM failure](../evidence/p11/investigation-b1e2129-pr-p09-arm/review.json) in environment 08. The next diagnostic uses the original SbieSvc private LogFile feature without attaching a debugger to the engine. A short independent native calibration must pass first. The signed-leader GetMessage restriction is preserved. Only the source-backed diagnostic LogFile registry value is temporarily changed and restored; Windows security, WER and containment policy are unchanged. Raw logs stay in an administrator/SYSTEM-only directory, and only fixed message IDs/source-shaped SXS status codes may be uploaded. Every such workflow remains excluded from phase closure.
+The [earlier original-service diagnostic f6e1042/run 39126844625](../evidence/p11/investigation-f6e1042-service-log-failed/review.json)
+failed in environment 04 with the same unknown-reporter refusal. It recorded 20 FFS
+warnings, one crash report and two service startup failures, with no original
+exception/module. The older parser did not retain public function/image/status
+fields; they cannot be reconstructed from its counts. Raw private logs were not uploaded.
+
+The [c594c8e debugger-only run](../evidence/p11/investigation-c594c8e-debug-passed/review.json)
+also passed 22+101 with 174 actually observed debugger connections and no original
+exception dump. Debugger timing/fault delivery differs and cannot resolve ordinary
+failures. The [0d2600c diagnostic](../evidence/p11/investigation-0d2600c-debug/review.json)
+failed in environment 09: 135 monitor exits without dumps were not proof of attachment.
+Subsequent native controls independently proved actual attachment, the exact synthetic
+exception dump, readable pinned-tool output and prior token-privilege restoration.
+The reserved Home parameter and unreadable-header control failures remain failed.
+
+Remaining work requires an actual compatibility correction supported by fault
+information, then complete matching P10 and installed P11 proof. Another unchanged
+full repeat cannot establish the correction. No phase is promoted from diagnostic
+success; P12 remains NOT_STARTED.
 
 | Source/run | Actual result | Scope |
 |---|---|---|
@@ -42,7 +75,7 @@ lab refusal before cleanup. Such refusal fails the case/run, preserves an earlie
 failure, and never becomes successful Stop evidence. The product's normal Stop
 ownership contract is unchanged; no name becomes process authority.
 
-The next diagnostic uses original Microsoft ARM64 ProcDump, pinned by HTTPS ZIP
+The optional debugger diagnostic uses original Microsoft ARM64 ProcDump, pinned by HTTPS ZIP
 and payload SHA256/size plus valid Microsoft Authenticode. Its code and private
 dump directories allow Administrators/SYSTEM only. Before the test actor exists,
 the observer leases and authenticates the pinned original engine installer,
@@ -233,12 +266,12 @@ The publisher source is fixed at `bde0890108a563f5d72eb8e57085be2b37177218`:
 - [Native logging API signature](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/core/dll/sbieapi.h#L87).
 - [Fixed RPCSS_SXS level/status formatter](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/apps/com/RpcSs/sxs.c#L144).
 
-Local parser, incremental UTF16/BOM/partial-line, private-field suppression and PowerShell/CSharp checks pass. Native original-service calibration and the subsequent full no-debugger diagnosis are pending; neither can close P09/P10/P11. The existing debugger workflow also has a preflight-only option and now requires recognizable control output after NUL-tolerant parsing, in addition to independently verified debugger presence and the exact expected synthetic exception dump.
+Local parser, incremental UTF16/BOM/partial-line, private-field suppression and PowerShell/CSharp checks pass. Native original-service calibration passed; full no-debugger diagnoses produced both the failed f6e1042 and successful cff58d4 samples described above. Neither can close P09/P10/P11. The existing debugger workflow also has a preflight-only option and now requires recognizable control output after NUL-tolerant parsing, in addition to independently verified debugger presence and the exact expected synthetic exception dump.
 
 
-Native follow-up: [original service calibration](../evidence/p11/investigation-f6e1042-service-calibration/review.json) passed, including pre-actor delivery and registry restoration. [f6e1042 debugger preflight](../evidence/p11/investigation-f6e1042-debug-preflight/review.json) failed only the stronger process-header check after successfully reading the expected exception from NUL-interleaved output. [fd5fdcd native control](../evidence/p11/investigation-fd5fdcd-debug-preflight/review.json) passed the corrected pinned-binary header, actual debugger connection, expected exception dump and token restoration. These controls ran no engine workload. Full original-service diagnosis run 39126844625 at f6e1042 is running after its separate preflight passed. No original RpcSs fault resolution is claimed.
+Native follow-up: [original service calibration](../evidence/p11/investigation-f6e1042-service-calibration/review.json) passed, including pre-actor delivery and registry restoration. [f6e1042 debugger preflight](../evidence/p11/investigation-f6e1042-debug-preflight/review.json) failed only the stronger process-header check after successfully reading the expected exception from NUL-interleaved output. [fd5fdcd native control](../evidence/p11/investigation-fd5fdcd-debug-preflight/review.json) passed the corrected pinned-binary header, actual debugger connection, expected exception dump and token restoration. These controls ran no engine workload. Full original-service diagnosis run 39126844625 at f6e1042 subsequently failed environment 04 after its separate preflight passed. No original RpcSs fault resolution is claimed.
 
 
 [Full original-service diagnosis f6e1042/run 39126844625](../evidence/p11/investigation-f6e1042-service-log-failed/review.json) failed at environment 04 with the original unknown-reporter refusal. The observer requested no engine debugger/dump; the calibrated collector completed and restored its prior registry value, reading 2986 private bytes. It recorded SBIE2329×20 (FFS sequence lookup warning/fallback), SBIE2224×1 (program crash report), and SBIE2204×2 (service startup failure). The catalog meaning and original source are known, but no causal relationship or original exception/module is inferred.
 
-The follow-up parser admits only exact hook identifiers extracted from the pinned public upstream hook call sites, with original source-file hashes and a matching source commit. It adds fixed known crash image kinds and optional exception codes only in the publisher's exact crash format, plus publisher startup-status tokens whose decimal/hex radix is not guessed. Names and box identifiers remain private; all such fields are explicitly diagnostic and unauthenticated as target identity. This changes no workload, assertion, authority or containment policy.
+The current parser admits only exact hook identifiers extracted from the pinned public upstream hook call sites, with original source-file hashes and a matching source commit. It adds fixed known crash image kinds and optional exception codes only in the publisher's exact crash format, plus publisher startup-status tokens whose decimal/hex radix is not guessed. Names and box identifiers remain private; all such fields are explicitly diagnostic and unauthenticated as target identity. This changes no workload, assertion, authority or containment policy.

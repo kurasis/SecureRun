@@ -1,0 +1,32 @@
+{
+  "bytes_read": 14270,
+  "collection_failures": 0,
+  "message_fields_are_not_exception_or_root_cause_proof": true,
+  "ffs_function_counts": {
+    "NtCreateLowBoxToken": 112
+  },
+  "windows_security_wer_or_containment_policy_modified": false,
+  "previous_registry_value_restored": true,
+  "failure_codes": {},
+  "startup_report_counts": {},
+  "sxs_statuses": [],
+  "raw_paths_ids_arguments_messages_and_times_retained": false,
+  "classification": "ORIGINAL_SERVICE_LOG_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "failed": false,
+  "original_service_log_registry_temporarily_configured": true,
+  "observer_engine_memory_dump_requested": false,
+  "startup_code_radix_not_guessed": true,
+  "raw_log_upload_allowed": false,
+  "observer_debugger_attachment_requested": false,
+  "message_names_do_not_authenticate_targets": true,
+  "calibration_confirmed": true,
+  "bound_reached": false,
+  "input_pins_ready": true,
+  "crash_report_counts": {},
+  "message_counts": {
+    "SBIE2329": 112,
+    "SBIE2312": 2
+  },
+  "calibration_confirmed_before_actor": true,
+  "overlong_lines": 0
+}

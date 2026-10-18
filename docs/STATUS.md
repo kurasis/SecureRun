@@ -30,9 +30,17 @@ private; only bounded fixed message IDs and source-shaped SXS status codes may b
 retained, explicitly without target authentication. Full diagnosis without an
 engine debugger failed at f6e1042/run 39126844625 in environment 04. The collector
 restored its setting and reported SBIE2329×20, SBIE2224×1 and SBIE2204×2. These
-messages do not establish the exception/module or a causal link. The next parser
-retains only pinned public hook identifiers and fixed source-shaped status fields.
-It cannot certify performance or close a phase.
+messages do not establish the exception/module or a causal link.
+
+The [cff58d4 follow-up/run 39129208572](evidence/p11/investigation-cff58d4-service-log-passed/review.json)
+passed the full 22 native+101 UI checks and 10,000-file workload. No reporter was
+observed; the collector completed and restored its prior registry value. It retained
+112 public `NtCreateLowBoxToken` FFS warnings, two SBIE2312 messages, and no crash or
+service-startup report. Thus the FFS warning alone does not establish the earlier
+failure's cause. The successful diagnostic sample does not prove a correction or
+close a phase. Its original 1.1844013497178307% idle CPU deviation is retained;
+diagnostic timing cannot certify performance. No blind repeat is planned without
+a concrete new finding or correction.
 
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are

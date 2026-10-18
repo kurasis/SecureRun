@@ -1,7 +1,7 @@
 {
   "phase": "P11",
   "result": "BLOCKED",
-  "blocked_reason": "Installed28+81 passed on both targets at dd447fe/run39089078904; required full P10ffdaeb6/run39087328157 ended failure (13successful jobs,2failed P09). ARM failed both attempts on live unreviewed WerFault after60000ms (environment09,then05), cause undetermined. Server attempt1 actual about:support clipboard observation failed; controlled attempt2 observed effective sandbox level9 but diagnostic Save filename readback failed before Save confirmation (20native+93UIpassed). Original failures retained; no third blind repeat, assertion/workload/timeout/source-inventory reduction or unknown-process trust/termination/hiding. P11 remains BLOCKED, P12 NOT_STARTED.",
+  "blocked_reason": "Save, session-readiness and retained-object fixture fixes have native successful snapshots. Ordinary ARM full P09 still failed in environments06 and08 at runs39119547942 and39120204559 with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. Original-service diagnosis39126844625 also failed environment04; subsequent39129208572 passed22native+101UI without a reporter but is diagnostic-only and cannot establish root correction or phase closure. Original exception/module remain undetermined. Current full exact-source P10 and matching installed P11 proof are missing; historical installed28+81 per target does not waive this dependency. P12 remains NOT_STARTED.",
   "installed_tested_commit": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
   "installed_run_id": 39089078904,
   "installed_cases_passed_per_target": 28,
@@ -1246,6 +1246,66 @@
       "path": "investigation-c594c8e-debug-passed/windows-11-arm/wer-metadata.json",
       "size": 280,
       "sha256": "680dba0da261c7403a62022430f25b7fbc4df19225fcf2690367c340c97e8fab"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/editor-save-observation.json",
+      "size": 118,
+      "sha256": "d46db0a571a7bdc9461c3adfc7194dcf64129a2d43fea48f63af2904cd35dddd"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/file-workload.json",
+      "size": 173,
+      "sha256": "e219fb4e67981c1d4df0a213135128ccd17cfb188dba84f2aa59910a3298cfe7"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/original-service-log-preflight.json",
+      "size": 1017,
+      "sha256": "c215f3e48bd3d96861d4d79df24711a799b221239d192d22976906df1df942e0"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/original-service-log.json",
+      "size": 1100,
+      "sha256": "a9ef0891506af97e4c5b18fca9f3a61dc4040d2f232e6fadbf8c22d9ec6a4014"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "6c49e72b7c72a843b025c1879b2e6b2e03612cbb81d2ca75cd512da5ffc32f6a"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/product-cases.json",
+      "size": 11373,
+      "sha256": "d6f768aaaf605908fc3d94e3ecd7e49d7486388ad2a126010b8c419d2437dcaa"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/reporter-lifecycle.json",
+      "size": 201961,
+      "sha256": "6854e45d80cded142f68d6a5e6da1fa1caddfb7f531e422ce316d9cc72f8a6c8"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/review.json",
+      "size": 1817,
+      "sha256": "b7b273655602602a157dc9e23b210854a5b9fea651916d723c95f1879413b55c"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/run-summary.json",
+      "size": 713,
+      "sha256": "73e78b126214570921bfae9ab713bf6fcc4fc73826835c4459f79a3e309919af"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/stage.json",
+      "size": 113,
+      "sha256": "7b01611a7698603c5a51ffd1c9e32ed0666b5ba7d2b728046058fa6050d64469"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/standard-product.json",
+      "size": 483,
+      "sha256": "ad6321793b6941aab914581c82ec4bc61e29c8e1d8aeb42d7c085b0a7897fd31"
+    },
+    {
+      "path": "investigation-cff58d4-service-log-passed/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
     },
     {
       "path": "investigation-ci-scheduling-90791c5/review.json",
@@ -4228,9 +4288,9 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "fd5fdcd454800b52788c1ade629f8373885c58be",
+  "active_fix_source": "cff58d4afd7313d2dcc0df62f79e3a3ef70f66b5",
   "active_fix_validation": {
-    "result": "IN_PROGRESS",
+    "result": "PARTIAL_FIXES_VALIDATED_RUNTIME_FAULT_UNRESOLVED",
     "native_feasibility_run": 39119550715,
     "native_policy_run": 39111146590,
     "full_product_run": 39109839082,
@@ -4247,7 +4307,7 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "SOURCE_BOUND_PUBLIC_HOOK_SYMBOLS_KNOWN_CRASH_IMAGE_KIND_AND_PUBLISHER_STARTUP_STATUS_TOKENS",
+    "next_diagnostic": "NO_BLIND_REPEAT_ROOT_CORRECTION_REQUIRED",
     "live_metadata_run": 39113908733,
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
@@ -4273,12 +4333,15 @@
     "native_original_service_log_preflight_result": "PASSED_INPUT_PINS_CALIBRATION_REGISTRY_RESTORATION_NO_PHASE_GATE",
     "native_readable_debugger_preflight_run": 39127011953,
     "native_readable_debugger_preflight_result": "PASSED_NO_ENGINE_WORKLOAD",
-    "current_original_service_log_full_run": 39126844625,
-    "current_original_service_log_full_result": "FAILED_ENV04_UNREVIEWED_REPORTER_COLLECTOR_COMPLETE_REGISTRY_RESTORED",
+    "current_original_service_log_full_run": 39129208572,
+    "current_original_service_log_full_result": "PASSED_DIAGNOSTIC_ONLY_22_NATIVE_101_UI_NO_REPORTER_NOT_PHASE_GATE",
     "original_service_message_counts": {
-      "SBIE2329": 20,
-      "SBIE2224": 1,
-      "SBIE2204": 2
+      "SBIE2329": 112,
+      "SBIE2312": 2
+    },
+    "previous_original_service_log_failed_run": 39126844625,
+    "public_ffs_function_counts": {
+      "NtCreateLowBoxToken": 112
     }
   }
 }

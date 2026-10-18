@@ -1,0 +1,34 @@
+{
+  "classification": "ORIGINAL_SERVICE_LOG_DIAGNOSTIC_SUCCESS_NO_PHASE_GATE",
+  "tested_commit": "cff58d4afd7313d2dcc0df62f79e3a3ef70f66b5",
+  "run_id": 39129208572,
+  "job_id": 117681379920,
+  "artifact_id": 12137414643,
+  "preflight_job_id": 117680711343,
+  "preflight_artifact_id": 12136873082,
+  "workload_step_conclusion": "success",
+  "native_cases_passed": 22,
+  "ui_cases_passed": 101,
+  "total_files": 10000,
+  "original_bytes_unchanged": true,
+  "phase_gate_eligible": false,
+  "original_service_collector_result": "COMPLETE_WITH_PRIOR_REGISTRY_VALUE_RESTORED",
+  "private_bytes_read": 14270,
+  "original_message_counts": {
+    "SBIE2329": 112,
+    "SBIE2312": 2
+  },
+  "public_ffs_function_counts": {
+    "NtCreateLowBoxToken": 112
+  },
+  "crash_report_counts": {},
+  "startup_report_counts": {},
+  "observed_reporters": 0,
+  "observed_known_lifetimes": 1003,
+  "observation_failures": 0,
+  "original_exception_and_module": "UNDETERMINED_NO_FAULT_REPRODUCED_IN_THIS_SAMPLE",
+  "engineering_budget_status": "MEASURED_DEVIATION",
+  "idle_cpu_percent": 1.1844013497178307,
+  "facts": "Separate native preflight passed. Full unchanged workload passed without observer engine debugger or memory dump. The calibrated bounded original-service collector authenticated its inputs before the actor, completed with no read/bound failure and restored the prior LogFile value/type. No reporter was observed. Public NtCreateLowBoxToken FFS warnings occurred during this successful sample; warning presence alone is not a failure/root-cause test. No crash/startup report was recorded. This does not identify the cause of earlier failed ordinary runs, prove an engine correction or close P09/P10/P11. Original performance deviation is retained; diagnostic timing cannot certify performance.",
+  "conclusion": "success"
+}

@@ -1,12 +1,16 @@
 # Development status
 
-Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 BLOCKED**.
-The native installed packaging implementation passed; required P10 revalidation did not.
+Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
+The earlier native installed packaging implementation passed; required P10 revalidation did not.
+Current work replaces asynchronous Save filename input with checked native keyboard
+input and observes reporter lifetimes during a diagnostic-only ARM workload. New
+lab/workflow inputs require fresh full integration and matching installed proof.
+The source-specific reports below remain historical snapshots, not proof for these fixes.
 
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | DONE | Fresh authenticated original 1.18.8 engine; [report](phases/P02_REPORT.md) |
+| P02 | BLOCKED revalidation | Protected lab scripts changed; fresh exact-source native feasibility required |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P05 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |

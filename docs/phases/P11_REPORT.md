@@ -1,6 +1,16 @@
 # P11 — Packaging, upgrades, signing and retention
 
-Status: **BLOCKED by current P10 revalidation**, 2026-10-18 UTC.
+Status: **Fixes IN_PROGRESS; gate BLOCKED**, 2026-10-18 UTC.
+
+Current changes use foreground/owner-checked native SendInput for Save filename
+selection/typing while retaining exact filename readback, one confirmation and
+actual output-byte assertions. A disposable diagnostic observer records known
+process lifetimes and early reporter associations using query/synchronize handles
+only, without terminate/debug/VM rights. Names are not authentication. Raw IDs,
+paths and arguments stay in memory. Its instrumented run cannot close a phase or
+certify performance. Fresh full uninstrumented gates remain mandatory.
+
+The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.
 

@@ -1,0 +1,59 @@
+name: P11 failure diagnosis only
+on:
+  push:
+    branches: ['p11/**']
+    paths: ['tools/lab/Observe-P11Reporter.ps1', '.github/workflows/p11-diagnostics.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: windows-11-arm
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p11-observer-${{ runner.arch }}-${{ hashFiles('Cargo.lock', 'crates/**/*.rs', 'src-tauri/src/**/*.rs') }}
+          restore-keys: |
+            p10-09-windows-11-arm-
+            p09-windows-11-arm-rust190-
+      - name: Observe actual failure without trusting or terminating reporters
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $PWD 'artifacts/p11-diagnostics'
+          $null=New-Item -ItemType Directory -Path $out -Force
+          $result=Join-Path $out 'reporter-lifecycle.json'
+          $stop=Join-Path $out 'observer.stop'
+          $observer=Start-Job -FilePath ./tools/lab/Observe-P11Reporter.ps1 -ArgumentList $result,$stop
+          try{
+            $clock=[Diagnostics.Stopwatch]::StartNew()
+            while(-not(Test-Path -LiteralPath $result)){
+              if($observer.State -eq 'Failed' -or $clock.ElapsedMilliseconds -gt 30000){throw 'P11_OBSERVER_START_FAILED'}
+              Start-Sleep -Milliseconds 100
+            }
+            # The observer affects timing; this run can never close a phase gate.
+            ./tools/lab/Invoke-P09.ps1
+          }finally{
+            [IO.File]::WriteAllText($stop,'STOP_OWN_OBSERVER')
+            $null=Wait-Job $observer -Timeout 10
+            if($observer.State -eq 'Running'){Stop-Job $observer}
+            Remove-Job $observer -Force
+          }
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p11-diagnostic-only-${{ github.sha }}
+          path: |
+            artifacts/p11-diagnostics/*.json
+            artifacts/p09/*.json
+          if-no-files-found: error
+          retention-days: 14

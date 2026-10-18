@@ -51,7 +51,7 @@ try {
     function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
     function Case([string]$id,[string]$name,[scriptblock]$body){
         $c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save
-        try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.exception_type=$_.Exception.GetBaseException().GetType().FullName;$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}};Save;Write-Host ("P05 "+$id+" "+$name+" "+$c.status+$(if($c.ContainsKey('code')){" "+$c.code}else{''}))
+        try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.exception_type=$_.Exception.GetBaseException().GetType().FullName;$c.line=$_.InvocationInfo.ScriptLineNumber;$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}};Save;Write-Host ("P05 "+$id+" "+$name+" "+$c.status+$(if($c.ContainsKey('code')){" "+$c.code}else{''}))
     }
     function Policy($request){
         $start=[Diagnostics.ProcessStartInfo]::new($app);$start.UseShellExecute=$false;$start.WorkingDirectory=$managerHome

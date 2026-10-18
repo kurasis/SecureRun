@@ -3,7 +3,11 @@
 Source: `dd447fec88de966fa839b03fc0fd4eb6b41776a4`. [Native run 39089078904](https://github.com/kurasis/SecureRun/actions/runs/39089078904).
 
 **Phase gate: BLOCKED pending P10 integration.** The installed checks below passed,
-but ARM P09 separately refused diagnostic cleanup in run 39087328157.
+but ARM P09 refused diagnostic cleanup in both attempts of run 39087328157
+(environment nine, then environment five). Server attempt 1 also failed actual
+Firefox sandbox observation on a busy clipboard.
+The Server repeat observed actual browser sandbox level 9 but failed diagnostic Save
+filename readback before Save confirmation. Full integration ended failure.
 This installed report does not close that dependency.
 
 Both owner-selected laboratories passed **28/28 installed cases**, plus the actual

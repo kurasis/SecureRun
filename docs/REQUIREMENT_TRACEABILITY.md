@@ -48,3 +48,12 @@ R26–R35 are individually traced in [the security review](SECURITY_REVIEW.md).
 The [complete P10 scenario report](P10_TEST_REPORT.md) enumerates T01–T66 with actual evidence,
 explicit helper/optional exclusions and P11/P12 portions, rather than converting
 phase test tags into complete installed-acceptance passes.
+
+## P11 provisional installed deployment proof
+
+PR-14 and applicable installed T01/T02/T05/T08/T12/T27–T29/T47/T48/T57/T58
+phase portions are mapped in the [28-case installed matrix](P11_TEST_REPORT.md),
+source dd447fe/run39089078904, 28 installed plus 81 production tests passed per target.
+Helper-only T52/enrollment/UAC subcases are N/A because no privileged product helper
+exists. This is provisional implementation proof: P11 remains BLOCKED by current
+P10 revalidation failures. No final T01–T66 acceptance is closed and P12 is not started.

@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "source_commit": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+  "run_id": 39087328157,
+  "run_attempt": 2,
+  "job_id": 117565430717,
+  "artifact_id": 12122004959,
+  "classification": "FAILED_CONTROLLED_REPEAT_NOT_COMPLETION_PROOF",
+  "facts": "Controlled unchanged-source Server repeat passed20 native and93 UI checks but failed native_diagnostic_save_matches_reviewed_minimized_bytes (T66), code P09_NATIVE_PICKER_FAILED. Original accessibility report stopped at VERIFYING_NATIVE_SAVE_FILENAME before confirming Save; no diagnostic-file equality or successful Save is inferred. Actual Firefox about:support native raw-copy observation now passed with effective content sandbox level9, without disabling browser security. Original first-attempt clipboard failure remains failed and separate. Current full P10 run is FAILED; neither this partial result nor separate successful installed28+81 closes P10/P11. No third blind retry, assertion/workload/timeout change, unknown-window hiding or reporter trust/termination. Selected original JSON only; screenshots not retained or visually certified for this supplementary failed run.",
+  "privacy_review": "All selected original JSON scanned and reviewed; no raw paths,SIDs,tokens,arguments or browser content retained.",
+  "files": [
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 712,
+      "sha256": "d54a8426096822381577d55bf65710b58b96055f6250aa904ee909c230573a2c"
+    },
+    {
+      "path": "windows-2025/standard-product.json",
+      "size": 482,
+      "sha256": "654486290649c2d1c6c95b3cd8a65f1ecf0e9712e64a93cd2e5debbb206bc8f8"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 112,
+      "sha256": "2d15ab71010ae664e183d3656a2616b5f489267998027dd64e635eca7e06ba66"
+    },
+    {
+      "path": "windows-2025/product-cases.json",
+      "size": 10725,
+      "sha256": "d3edc750954b8c31cf240972fc5bedb3c9eedd44773752a56d69a73ddecae719"
+    },
+    {
+      "path": "windows-2025/ui-cases.json",
+      "size": 9486,
+      "sha256": "13a105c496bec4f8c12399a100dc43618b98df995b248c31f880a829e6e659b9"
+    },
+    {
+      "path": "windows-2025/performance-budget-assessment.json",
+      "size": 1366,
+      "sha256": "1f37e69a30ad6a6256dadc87d453904d12bf17adfb4f331f94cbe89504e69682"
+    },
+    {
+      "path": "windows-2025/extended-fault-metadata.json",
+      "size": 386,
+      "sha256": "8eca74fc622c65aef1492fa3d084c3fd3f868ec3b748965a57d782dbafd61482"
+    },
+    {
+      "path": "windows-2025/access-picker-c81cc9d88a5c456280c2a4c888ae6d6a.json",
+      "size": 1478,
+      "sha256": "f86b72df9654c566635c14d806ed7184fe2e39c92228ae0f7fbff5c9defe3be8"
+    },
+    {
+      "path": "windows-2025/access-picker-67bad59db4ae43c4aca5c1d5b889ba0b.json",
+      "size": 1348,
+      "sha256": "3ba80c86daf47b45709aa55e9281941bca44f65d42c6415665ca6518ddfa5668"
+    },
+    {
+      "path": "windows-2025/access-picker-1186090f60af4d4cbbe66a56dc1f0024.json",
+      "size": 1348,
+      "sha256": "3ba80c86daf47b45709aa55e9281941bca44f65d42c6415665ca6518ddfa5668"
+    },
+    {
+      "path": "windows-2025/access-browser_sandbox-0f4ddd1e6a1e4d2d8118c8d2f9583bb4.json",
+      "size": 2391,
+      "sha256": "6be220308fd4edf6f186b5cadafa84a1bc026743c46b65e7744eb6a519629ffb"
+    }
+  ]
+}

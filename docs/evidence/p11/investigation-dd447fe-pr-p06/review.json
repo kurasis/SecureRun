@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "source_commit": "b5f425669b55c28a954f39796d1b14c702e29838",
+  "pr_head": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+  "run_id": 39089081258,
+  "job_id": 117561759613,
+  "artifact_id": 12122188033,
+  "classification": "FAILED_DUPLICATE_PR_P06_NOT_COMPLETION_PROOF",
+  "protected_source_comparison": {
+    "reference": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+    "files_compared": 155,
+    "different_files": 0
+  },
+  "facts": "Server18 native cases passed,3 failed. First failure rapid_launch_stop_serializes_and_duplicate_scope_conflicts reported ENGINE_DISPATCH_REFUSED. Later target_cwd_is_separate_from_host_worker_cwd reported UNCERTAIN_LAUNCH_RECONCILIATION_REQUIRED. stale_application_revision_cannot_dispatch_after_policy_change failed its expected REFUSED/REVISION_CONFLICT assertion and recorded OLD_REVISION_DISPATCHED as the assertion label; this label alone does not establish an actual target dispatch because the original report omits the actual receipt at that assertion. Applicable full P10 P06 passed separately on both runners at byte-identical protected source; this duplicate failure remains failed, not completion proof. ARM duplicate job was cancelled by matrix fail-fast after Server failure, not claimed successful. Cause of initial engine dispatch refusal remains undetermined.",
+  "privacy_review": "All9 original JSON files scanned and reviewed; no raw paths, SIDs, tokens or arguments retained.",
+  "files": [
+    {
+      "path": "windows-2025/standard-sessions.json",
+      "size": 549,
+      "sha256": "147dd194780ae3ca707c5675436a0f708013e99ebaff6dae745bcb9078e66eed"
+    },
+    {
+      "path": "windows-2025/standard-scope.json",
+      "size": 913,
+      "sha256": "4342d04a03ca8455e1414bc6d6b6669fce024334d6fa01f286cfcc259b6127fd"
+    },
+    {
+      "path": "windows-2025/standard-reserved.json",
+      "size": 489,
+      "sha256": "a266cf377245cdb2a7963097d3be5fddde9f5efbc716aacdc76d762730dcea39"
+    },
+    {
+      "path": "windows-2025/standard-normal.json",
+      "size": 5054,
+      "sha256": "b1da9dca8a61bc87b76b33e5b53c01888197f1b6a3c03dc3a1b63b42217441d3"
+    },
+    {
+      "path": "windows-2025/standard-accepted.json",
+      "size": 489,
+      "sha256": "d78c59f57385980989a3a72dabdad084626bf5ee3dd77e3943265f84ec53aa60"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 112,
+      "sha256": "b2c866c70a237dccfb7d8f03e68be56e3771dc3f2a708db30e8d830685704bc7"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 536,
+      "sha256": "fc09866042882f2e4a0087e177c39c5cf6921b6c5c632e37729b25a4311db7c4"
+    },
+    {
+      "path": "windows-2025/driver-unload.json",
+      "size": 120,
+      "sha256": "9773bea195183370cac9e97018b6edb8b8be843cdb41b45a7b302a3ef6688fc0"
+    },
+    {
+      "path": "windows-2025/control-cases.json",
+      "size": 6833,
+      "sha256": "6163b6cbe5d2275d46a89b470248138a7c32864d1fa866a6d04434cebb4fefe7"
+    }
+  ]
+}

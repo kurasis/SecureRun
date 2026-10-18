@@ -1,3 +1,15 @@
+<!-- P11-CURRENT -->
+Current P11 dependency revalidation: **BLOCKED** at source
+`ffdaeb60bd8c9d707959435b910c6a1027ecb770`, run 39087328157.
+P03–P08 individual jobs passed on both runners; P09 ARM failed both original and
+single controlled-repeat attempts. Server original browser observation failed
+on a busy clipboard. None of the historical successful results below certify
+this changed runtime/engine source. See [current phase report](phases/P11_REPORT.md).
+All final installed T01–T66 acceptance remains NOT_STARTED.
+
+Earlier source-specific content below is historical.
+
+<!-- P11-HISTORY -->
 # P10 integrated production-path test report
 
 Status: DONE for the implemented feature/security scope; final installed acceptance is separate.

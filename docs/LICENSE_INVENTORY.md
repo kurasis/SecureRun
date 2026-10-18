@@ -52,3 +52,15 @@ The [P10 advisory review](DEPENDENCY_SECURITY_REVIEW.md) remains separate from
 licensing: zero known vulnerabilities in that pinned scan does not decide license
 compatibility or clear future updates. See [build provenance](BUILD.md) and the
 [actual packaging gate](phases/P11_REPORT.md).
+
+## Actual P11 target inventories
+
+| Target | Components | Scope |
+|---|---:|---|
+| windows-2025 | 266 | Actual locked Windows build/runtime graph; installed tests passed, full integration blocked |
+| windows-11-arm | 266 | Actual locked Windows build/runtime graph; installed tests passed, full integration blocked |
+
+Original reports are in [installed proof](P11_TEST_REPORT.md); artifact identities and
+actual tool versions are in [development artifacts](DEVELOPMENT_ARTIFACTS.md).
+The inventories include Cargo/npm, Microsoft loader/SDK, Rust standard-library and
+bundled SQLite notices. These do not select a license for original manager code.

@@ -1,3 +1,17 @@
+<!-- P11-CURRENT -->
+Current P11 development tuple: original Plus 1.18.8/core 5.73.8/ABI 0x57230,
+upstream `bde0890108a563f5d72eb8e57085be2b37177218`.
+Authenticated P02 refresh run 39086050127/source fa9b89f passed Server 49 checks
+and ARM 62 checks, with two explicit N/A items per target: optional native engine
+access-event stream and elevated product helper. Both installed P11 laboratories
+passed 28 cases plus 81 production tests at dd447fe/run39089078904, but full P10
+integration is BLOCKED. The engine remains separately installed; no product engine
+updater is added. See [manual security refresh](P11_ENGINE_UPDATE.md),
+[current installed scope](P11_TEST_REPORT.md) and [status](STATUS.md).
+
+Earlier source-specific content below is historical.
+
+<!-- P11-HISTORY -->
 # Engine candidate matrix
 
 No final production-release tuple is declared. The P02 table below records

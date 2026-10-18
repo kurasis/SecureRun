@@ -1,0 +1,37 @@
+{
+  "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+  "actual_boxed_worker_executed": true,
+  "worker_reason": "MANAGER_CONTEXT_UNSAFE",
+  "control_dispatched": false,
+  "privileged_helper": false,
+  "worker_boundaries": [
+    {
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "mode": "control",
+      "actual_boxed_execution": true,
+      "claimed_unboxed_parent_accepted": false
+    },
+    {
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "mode": "files",
+      "actual_boxed_execution": true,
+      "claimed_unboxed_parent_accepted": false
+    },
+    {
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "mode": "lifecycle",
+      "actual_boxed_execution": true,
+      "claimed_unboxed_parent_accepted": false
+    },
+    {
+      "reason": "MANAGER_CONTEXT_UNSAFE",
+      "mode": "product",
+      "actual_boxed_execution": true,
+      "claimed_unboxed_parent_accepted": false
+    }
+  ],
+  "claimed_unboxed_parent_accepted": false,
+  "production_target_launches": 0,
+  "status": "PASSED",
+  "actual_boxed_manager_executed": true
+}

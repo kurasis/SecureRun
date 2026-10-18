@@ -1,0 +1,71 @@
+{
+  "documentation_commit": "90791c5f9bfd162c1165759aa55149af19037681",
+  "mandatory_p10_run": 39087328157,
+  "mandatory_p11_run": 39089078904,
+  "runs": [
+    {
+      "conclusion": "",
+      "databaseId": 39090403043,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P06 launch and scoped process control",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403033,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "pending",
+      "workflowName": "P09 product UX and application compatibility",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403021,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P05 policy and safe provisioning",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403037,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P03 foundation and IPC",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403017,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P08 lifecycle cleanup and recovery",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403065,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P04 trusted engine observation",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39090403079,
+      "headSha": "90791c5f9bfd162c1165759aa55149af19037681",
+      "status": "queued",
+      "workflowName": "P07 safe file transfers and boxed executables",
+      "reason": "Queued optional duplicate after documentation/evidence-only commit. All protected runtime/workflow and packaging source bytes remain identical to mandatory full P10 ffdaeb6 and successful P11 dd447fe runs. No required branch check, actual failure, scenario, workload or assertion removed.",
+      "cancel_requested": true
+    }
+  ],
+  "classification": "DUPLICATE_QUEUED_DOCUMENTATION_ONLY_WORKFLOWS_NOT_COMPLETION_PROOF"
+}

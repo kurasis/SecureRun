@@ -3,34 +3,31 @@
 An original Windows application isolation manager for a separately installed
 official Sandboxie engine. SecureRun is not affiliated with Sandboxie or Xanasoft.
 
-P01–P10 are complete on the owner-selected laboratories. P10 closes the internal
-adversarial integration review: native diagnostic writes require fresh unboxed
-context, all 17 commands are tested from forbidden origins, and boxed worker
-families reject claimed host authority. The entire P03–P09 suite passed again on
-Server 2025 x64 and Windows 11 ARM64 at the same verified runtime/lab source
-`75b6c0bab24e7ea0edd86a3be2adea6648456a6b`.
+P11 native development installers passed **28 installed cases and 81 production
+tests on each of Server 2025 x64 and Windows 11 ARM64**. Their exact source is
+`dd447fec88de966fa839b03fc0fd4eb6b41776a4` (run 39089078904).
+The artifacts are **UNSIGNED DEVELOPMENT ONLY**; original-manager licensing has
+not been selected. No engine or persistent elevated product helper is bundled.
 
-Both full product runs passed 22 native scenarios and 101 UI assertions, including
-actual diagnostic Save, file/policy/retention workflows, editor/archive/browser
-compatibility and complete ten-environment/10000-file resource samples.
+**The P11 phase gate remains BLOCKED by current full P10 integration.** At source
+`ffdaeb60bd8c9d707959435b910c6a1027ecb770`, run 39087328157 attempt 1 passed
+P03–P08 on both runners but failed both P09 jobs: ARM refused an unreviewed live
+WerFault during diagnostic cleanup; Server could not read actual Firefox
+about:support sandbox state because the clipboard remained busy. Both original
+failures are retained. One unchanged-source repeat reproduced the ARM refusal at
+environment five; Server's repeat failed diagnostic Save filename readback before
+Save confirmation (actual Firefox sandbox level 9 was observed). Full integration
+finished with 13 successful jobs and 2 failed P09 jobs. No third blind repeat is planned. No final acceptance or successful dependency is inferred.
 
-See [STATUS](docs/STATUS.md), [P10 report](docs/phases/P10_REPORT.md),
-[internal security review](docs/SECURITY_REVIEW.md), [scoped T01–T66 results](docs/P10_TEST_REPORT.md),
-[requirement traceability](docs/REQUIREMENT_TRACEABILITY.md) and
-[measured budgets](docs/PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md). Server startup/CPU
-and ARM CPU deviations retain their original targets and user-impact explanations.
-Packaging and installed acceptance remain P11/P12. These laboratories do not
-certify a Windows 11 x64 installed release or an independent security audit.
-
-The interface builds on [lifecycle/recovery](docs/LIFECYCLE_AND_RECOVERY.md),
-[safe files](docs/SAFE_FILE_WORKFLOWS.md), [launch/control](docs/LAUNCH_AND_PROCESS_CONTROL.md)
-and [policy/provisioning](docs/POLICY_PROVISIONING.md). Archive/Unarchive,
-confirmed Reset/Remove and inspect-only journal recovery preserve explicit user
-intent and never resume work automatically.
+See [status](docs/STATUS.md), [installed test matrix](docs/P11_TEST_REPORT.md),
+[development downloads/checksums](docs/DEVELOPMENT_ARTIFACTS.md),
+[phase report](docs/phases/P11_REPORT.md), [build](docs/BUILD.md),
+[install](docs/INSTALL.md), [retention](docs/UPGRADE_AND_UNINSTALL.md) and
+[signing](docs/SIGNING.md). P12 and all final installed T01–T66 acceptance remain
+NOT_STARTED. The laboratories do not certify a Windows 11 x64 installed release.
 
 The complete, unchanged specification is in
 [docs/specification/00_README.md](docs/specification/00_README.md).
-Development follows P01–P12. Production target launch is forbidden before P05 passes.
 
 ## Validate the repository
 

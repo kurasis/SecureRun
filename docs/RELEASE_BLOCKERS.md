@@ -1,23 +1,25 @@
 # Release blockers and remaining prerequisites
 
-P10: DONE. **Zero unresolved mandatory containment findings** remain in the
-reviewed implemented scope on the two owner-selected laboratories.
+The current P11 implementation passed its native installed gate but the phase is
+**BLOCKED by required P10 revalidation**. Historical successes do not certify the
+changed runtime/engine source. This is not a production release or independent audit.
 
-| Item | Classification | State / requirement |
-|---|---|---|
-| P10-F01 native diagnostic Save context | Mandatory security finding | CLOSED: real Unknown-context refusal, consumed preview and successful unboxed native Save on both targets |
-| P10-F02 every custom command / denied origin | Mandatory assurance finding | CLOSED: all 17 commands actually attempted and ACL-denied from both forbidden windows on both targets |
-| P10-F03 boxed worker families | Mandatory assurance finding | CLOSED: actual boxed policy/control/file/lifecycle/history routes refuse a valid claimed host parent |
-| Exact-source P03–P09 integration | P10 exit gate | CLOSED: all 14 native jobs and portable CI passed, with matching source and original proof |
-| P11 installed artifacts | Remaining release prerequisite | NOT_STARTED: installer, reproducibility, licensing/signing status, upgrade/uninstall/retention |
-| P12 installed candidate | Remaining release prerequisite | NOT_STARTED: final installed T01–T66 acceptance on the declared release tuple |
+| Item | Actual state / requirement |
+|---|---|
+| Current full P10 integration | BLOCKED at ffdaeb6/run39087328157; ARM P09 failed both original and one controlled unchanged-source repeat |
+| Unknown-reporter cleanup | Reproducible live WerFault after unchanged 60000 ms natural wait; source/cause undetermined, original reports retained; no trust/termination/hiding workaround |
+| Server actual browser/Save observation | First P09 failed clipboard-busy; repeat observed effective sandbox level 9 but failed diagnostic Save filename readback before confirmation (20 native+93 UI passed); both failed reports retained |
+| Duplicate PR rapid Launch/Stop | P06 initial ENGINE_DISPATCH_REFUSED and later uncertain-state assertions retained; no actual dispatch inferred from assertion labels |
+| P11 installed deployment/retention | 28/28 actual installed cases plus 81 production tests passed on each target; does not waive P10 dependency |
+| Production Authenticode infrastructure | Unavailable; all original artifacts explicitly UNSIGNED DEVELOPMENT ONLY; see signing policy |
+| Original manager license | Not selected by owner; production/commercial redistribution clearance not claimed |
+| P12 final installed acceptance | NOT_STARTED; all 66 T01–T66 entries remain unrun |
+| Windows 11 x64 installed release tuple | Not certified by owner-selected Server x64/Windows 11 ARM64 laboratories |
+| Stripped-OS missing-runtime ARM variant | Not claimed; actual missing runtime tested on Server, Windows 11 preinstalled runtime preserved on ARM |
 
-No mandatory failure is waived. Helper-only cases are N/A because no product
-helper/elevation route exists; applicable ownership/boxed-client tests passed.
-Unadvertised clipboard/device controls and unlicensed paid presets stay unavailable.
-
-The application is not declared ready for first release. Laboratory coverage,
-shared-kernel/desktop limitations, dependency warnings and measured performance
-deviations remain documented in [the internal review](SECURITY_REVIEW.md),
-[dependency review](DEPENDENCY_SECURITY_REVIEW.md) and
-[performance report](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md).
+No mandatory check, workload or original performance target is waived. Historical
+performance reports remain source-specific; failed-attempt samples are not completion
+proof. No engine, persistent elevated helper or silent updater is bundled.
+Windows TLS/signatures/hashes, certificate policy and browser sandbox remain active.
+See [P11 phase report](phases/P11_REPORT.md), [installed checks](P11_TEST_REPORT.md),
+[artifact status](DEVELOPMENT_ARTIFACTS.md), [signing](SIGNING.md) and [status](STATUS.md).

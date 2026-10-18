@@ -1,3 +1,13 @@
+<!-- P11-CURRENT -->
+Current P11 revalidation: **BLOCKED**, source `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
+[run 39087328157](https://github.com/kurasis/SecureRun/actions/runs/39087328157).
+
+The current integration failed. ARM P09 refused live unknown-reporter cleanup in attempts 1 and 2; Server attempt 1 failed actual browser sandbox observation on a busy clipboard. The controlled Server repeat failed diagnostic Save filename readback before Save confirmation; actual browser sandbox level 9 was observed. Full run finished failure. No failed report, assertion, workload or source inventory was changed.
+See [current P11 gate](P11_REPORT.md) and [status](../STATUS.md). P12 remains NOT_STARTED.
+
+Earlier source-specific content below is historical.
+
+<!-- P11-HISTORY -->
 # P09 phase report — current P10 regression
 
 Status: DONE at `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`,

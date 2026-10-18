@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "source_commit": "91294e4edd879ae27fa05a8bb5fe7d0ea5b34b86",
+  "pr_head": "d73e352d810ace95ab0ec3358bbf775c44ee6b15",
+  "run_id": 39088658566,
+  "classification": "DUPLICATE_PR_RESULTS_NOT_PHASE_COMPLETION",
+  "artifact_ids": {
+    "windows-2025": 12121454861,
+    "windows-11-arm": 12122720792
+  },
+  "protected_source_comparison": {
+    "reference": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+    "files_compared": 155,
+    "different_files": 0
+  },
+  "facts": "Server actual22 native+101 UI checks passed, including browser own sandbox readback; ARM failed SEEDING_ENVIRONMENT_08 with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. An unreviewed WerFault remained live after the original60000ms bound, after reviewed helper stops. Read-only metadata found no surviving target, WER report or fixed-component event. Cause remains undetermined. Same complete protected source as current mandatory full P10; no failed report relabeled or assertion/workload/timeout changed. Selected JSON only; PNGs and EXEs are not retained for this supplementary run and no visual or EXE download-byte verification is claimed.",
+  "privacy_review": "All selected original JSON scanned and reviewed; no raw paths,SIDs,tokens,arguments or raw browser/diagnostic content retained.",
+  "files": [
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "3d0447142a86de578abda000f4a641a72b5b64141dad9df902a7f2ceb7c1197d"
+    },
+    {
+      "path": "windows-11-arm/image-status-908c33df5cb9420cab1d78ade31d826e-a135c0ffc9364a6e8b72555c963e79c0.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "a205d93b3f888c9f1579b8872e45bedd639ea62d1122edeb3e4bc30848dff38e"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "2243d9e54820c8270bc865791494e97edb03122b4680e8be0c6318b5ccd9e470"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "bbe15d21185f6d392b83e598fdbab8f67c01fb95e80d1c82683b11892d06fda4"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "1ceddb48fd200105eeac2dd733b48d7941726eb5eff947bb51d9c840ffabdb89"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-2025/extended-fault-metadata.json",
+      "size": 386,
+      "sha256": "2a746109d7a406e091eb0becddba4367d37a99040500f984eb210f7926c46791"
+    },
+    {
+      "path": "windows-2025/last-native-refusal.json",
+      "size": 170,
+      "sha256": "486ceb9080c7c791aae48bf1bbbf379380a9ee3febf689d9a02bb524d756d9b5"
+    },
+    {
+      "path": "windows-2025/performance-budget-assessment.json",
+      "size": 1366,
+      "sha256": "c1daacde08812ccf5c2d0cc09c8fd8b65561b6f0a465e7f551f63fedca8307c4"
+    },
+    {
+      "path": "windows-2025/product-cases.json",
+      "size": 11387,
+      "sha256": "41d9f18c98a9f991b13751f2778aa9ca361225b950b2de22763827b04dd7fb30"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 713,
+      "sha256": "196858951c4d0c46348633ad73c0aacd20e2938787d7b2aeed2d5710f218588e"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 113,
+      "sha256": "bb974000052b3d30c71fdb387e8e190b1933d6dfd47e85470cbc89c3b7c45e31"
+    },
+    {
+      "path": "windows-2025/standard-product.json",
+      "size": 483,
+      "sha256": "7daf7bfc743f1b549e19eff1caff33833cf5f09e8384c563435690d3e7eea8ff"
+    },
+    {
+      "path": "windows-2025/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    }
+  ]
+}

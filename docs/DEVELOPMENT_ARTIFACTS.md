@@ -2,6 +2,9 @@
 
 Package source: `dd447fec88de966fa839b03fc0fd4eb6b41776a4`. [Actions run 39089078904](https://github.com/kurasis/SecureRun/actions/runs/39089078904).
 
+**Phase status: BLOCKED by P10 integration.** Installed tests passed on both targets;
+these artifacts are not a completed release gate.
+
 Product 0.3.0; candidate packaging revision 0.3.0.11. Status: **UNSIGNED DEVELOPMENT ONLY**.
 No original-manager license has been selected by the owner. No engine is bundled.
 

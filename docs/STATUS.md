@@ -14,6 +14,9 @@ fresh P02 proof, now passed on both targets. Current diagnosis uses authenticate
 Microsoft-signed ProcDump, with private dumps and minimized scalar output only.
 Debugger runs cannot close phases. Current complete matching P10/P11 remain pending.
 
+
+Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
+
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |

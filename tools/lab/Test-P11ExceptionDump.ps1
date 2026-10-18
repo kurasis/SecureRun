@@ -30,5 +30,22 @@ Require ($codes.ContainsKey('DIAGNOSTIC_DUMP_COLLECTION_FAILED') -and ($codes|Co
 Write-Output 'PASS: synthetic exception/module/RVA, target binding, bounds and private-field suppression'
 
 # Tool pipes are drained with constant storage; raw output is never returned.
-$privateReader=[IO.StringReader]::new(('x'*100000));try{$drain=[P11DebugScope]::DrainPrivateOutput($privateReader);if($drain.GetAwaiter().GetResult() -ne 65537){throw 'PRIVATE_OUTPUT_DRAIN_BOUND_FAILED'}}finally{$privateReader.Dispose()}
+$privateReader=[IO.StringReader]::new(('x'*100000));try{$drain=[P11PrivateToolOutput]::Read($privateReader,4242);if($drain.GetAwaiter().GetResult().character_count -ne 65537){throw 'PRIVATE_OUTPUT_DRAIN_BOUND_FAILED'}}finally{$privateReader.Dispose()}
 Write-Host 'PASS: constant-storage private tool output drain'
+
+$privateReader=[IO.StringReader]::new("Monitoring PID: 98765`n[12:34:56] Exception: C0000005.PRIVATE_CANARY`nUnhandled: E0424242.PRIVATE_CANARY`nError debugging process:`nAccess is denied.`nC:\PRIVATE_CANARY\secret`n")
+try{$parsed=[P11PrivateToolOutput]::Read($privateReader,98765).GetAwaiter().GetResult();Require ($parsed.monitoring_target_matched -and $parsed.statuses['ACCESS_DENIED'] -eq 1 -and $parsed.exception_codes['OBSERVED_c0000005'] -eq 1 -and $parsed.exception_codes['UNHANDLED_e0424242'] -eq 1);Require (($parsed|ConvertTo-Json -Depth 5) -notmatch 'PRIVATE_CANARY|98765|12:34:56')}finally{$privateReader.Dispose()}
+Write-Host 'PASS: fixed tool states and exception codes only; private output suppressed'
+
+# A zero exit code with a recognized debugger error is still a tool failure.
+$privateDirectory=Join-Path ([IO.Path]::GetTempPath()) ('p11-tool-state-'+[Guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $privateDirectory
+try{
+ $fakeProcess=[pscustomobject]@{HasExited=$true;ExitCode=0};$fakeProcess|Add-Member -MemberType ScriptMethod -Name Dispose -Value {}
+ $fakeHold=[pscustomobject]@{HasExited=$true};$fakeHold|Add-Member -MemberType ScriptMethod -Name Dispose -Value {}
+ $empty=[P11PrivateToolOutput]::Read([IO.StringReader]::new(''),98765).GetAwaiter().GetResult()
+ $active=[Collections.Generic.List[object]]::new();$active.Add(@{process=$fakeProcess;hold=$fakeHold;debugger_seen=$false;id=98765;directory=$privateDirectory;stdout=[Threading.Tasks.Task]::FromResult($parsed);stderr=[Threading.Tasks.Task]::FromResult($empty)})
+ $context=@{next_refresh_ms=[long]::MaxValue;active=$active;public=@{tool_status_counts=@{};tool_observed_exception_codes=@{};completed_with_live_undebugged_target=0;tool_failures=0;tool_exit_codes=@{};completed_without_exception_dump=0;dump_parser_failure_codes=@{}}}
+ Update-P11ExceptionCapture $context 0
+ Require ($context.active.Count -eq 0 -and $context.public.tool_failures -eq 1 -and $context.public.tool_status_counts['DEBUG_ERROR'] -eq 1 -and $context.public.dump_parser_failure_codes.Count -eq 0)
+}finally{Remove-Item -LiteralPath $privateDirectory -Force -Recurse}
+Write-Host 'PASS: zero tool exit cannot erase a recognized debugger failure'

@@ -107,7 +107,7 @@ try{
   Start-Sleep -Milliseconds 100
  }
 }finally{
- Stop-P11ExceptionCapture $capture
+ try{Stop-P11ExceptionCapture $capture}catch{if($null -ne $capture){$capture.public.capture_cleanup_failed=$true;Add-P11CaptureCode $capture.public.dump_parser_failure_codes $_.Exception.GetBaseException().Message 'DIAGNOSTIC_CLEANUP_FAILED'}}
  foreach($entry in $held.Values){$entry.process.Dispose()}
  Save-Observer
 }

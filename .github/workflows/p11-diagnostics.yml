@@ -32,6 +32,10 @@ jobs:
         id: debug-tools
         shell: pwsh
         run: ./tools/lab/Prepare-P11ExceptionCapture.ps1
+      - name: Verify actual debugger attachment and synthetic exception capture
+        timeout-minutes: 3
+        shell: pwsh
+        run: ./tools/lab/Test-P11NativeExceptionCapture.ps1 -ToolHome '${{ steps.debug-tools.outputs.home }}'
       - name: Observe actual failure without trusting or terminating reporters
         shell: pwsh
         run: |
@@ -65,8 +69,9 @@ jobs:
             Remove-Job $observer -Force
           }
           $observed=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json
-          if(-not $observed.exception_capture.engine_payload_pins_ready -or $observed.exception_capture.attach_requests -eq 0){throw 'P11_EXCEPTION_CAPTURE_UNAVAILABLE'}
+          if(-not $observed.exception_capture.engine_payload_pins_ready -or $observed.exception_capture.attach_requests -eq 0 -or $observed.exception_capture.debugger_present_target_count -eq 0){throw 'P11_EXCEPTION_CAPTURE_UNAVAILABLE'}
           if(@($observed.exception_capture.exceptions).Count -gt 0){throw 'P11_ORIGINAL_HELPER_EXCEPTION_CAPTURED_DIAGNOSTIC_ONLY'}
+          if($observed.exception_capture.capture_cleanup_failed -or $observed.exception_capture.tool_failures -gt 0 -or $observed.exception_capture.attachment_bound_reached -or $observed.exception_capture.active_monitors_left_for_vm_cleanup -gt 0){throw 'P11_EXCEPTION_CAPTURE_INCOMPLETE'}
           if($observed.exception_capture.completed_without_exception_dump -eq 0){throw 'P11_EXCEPTION_MONITORING_NOT_CONFIRMED'}
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         if: always()

@@ -9,6 +9,9 @@ published only after complete JSON is written and atomically moved into place.
 Fixture teardown skips only confirmed completion of the same retained object;
 live ownership/birth/session/critical mismatches remain refused.
 
+
+Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](../evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](../evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
+
 | Source/run | Actual result | Scope |
 |---|---|---|
 | 0d2600c / 39119550715 | Server 49, ARM 62 passed; two explicit N/A each | Current P02 includes lab reporter safeguards |
@@ -44,6 +47,8 @@ Debug requests additionally require the exact protected image, noncritical live
 kernel object, matching retained birth, original-driver owner/box/session and
 managed marker, and the dedicated current synthetic account. No reporter or
 unknown image is debugged or terminated; no target launch is replayed.
+
+The observer temporarily enables only its already granted SeDebugPrivilege in its own disposable token for authenticated-target read-only debugger queries, then restores the prior state. This grants no new privilege and edits no machine policy. The synthetic preflight records restoration; failure aborts the engine workload.
 
 The diagnostic workflow is dispatched explicitly so routine source/evidence pushes do not repeat the instrumented full workload. Required phase workflows retain their existing triggers. Tool pipes are drained with constant storage and only bounded character counts are kept; raw tool output is never returned.
 

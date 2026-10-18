@@ -82,3 +82,18 @@ comparison now derives the matching tuple from the immutable compiled pin;
 base version, update revision and product type are independently checked against
 current authenticated P02 observations. The test also rejects a self-declared
 revision change even when source hash records are edited consistently.
+
+Installed smoke traceability was expanded before phase closure. The original
+25-case suite opened the real GUI but lacked an explicit stopped-engine refusal.
+The current 28-case suite additionally launches a real registered target with
+the original service stopped and with a changed original Start.exe byte; both
+must refuse before receipts or host output. Lab fixtures restore the original
+service and exact authenticated component bytes/signature. Each ordinary launch
+also faces a working native fake Start.exe in PATH/CWD, with an unboxed positive
+canary control and no host or boxed impostor execution. That fixture is never
+shipped. The separate installed T12 case binds original native/x86/emulated-x64
+parent/child/server reports to the installed probe hashes. Import/export is tagged
+T21 rather than being mislabeled as the T12 network scenario. These additions are
+packaging-only and preserve all 155 protected P10 inputs byte-for-byte. Full
+installed T01 missing-engine/driver-unhealthy variants remain final P12 scope;
+P11's installed T01 smoke is the stopped-service variant.

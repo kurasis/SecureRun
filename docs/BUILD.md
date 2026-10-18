@@ -72,3 +72,9 @@ The setup guard also checks every code-directory ancestor, including the volume
 root, for privileged ownership and unsafe mutation/deletion rights. Parent
 FILE_DELETE_CHILD cannot bypass a protected child DACL. Ordinary creation of new
 subdirectories at a volume root is allowed; replacing existing code ancestry is not.
+
+The installed lab compiles a fixed native `lab_impostor.c` canary outside the
+payload to exercise fake Start.exe resolution. It is never included in either
+installer. P11 additionally tests stopped/changed original engine fixtures against
+a real registered target, restores them, and retains original network probe
+observations. The shipping executable allowlist remains unchanged.

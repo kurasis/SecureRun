@@ -26,6 +26,9 @@ MANDATORY = {
     'installed_import_export_preserves_bytes_and_provenance',
     'future_schema_is_refused_without_downgrade',
     'failed_initial_migration_is_refused_without_destroying_existing_data',
+    'installed_offline_baseline_has_parent_child_and_server_observations',
+    'installed_stopped_engine_refuses_registered_target_without_host_fallback',
+    'installed_changed_engine_binary_refuses_registered_target_without_host_fallback',
 }
 for mode in ('seed', 'upgrade', 'reinstall'):
     for case in ('ordinary_user_cannot_modify_installed_code',
@@ -64,6 +67,33 @@ def check_webview(event, runner):
     return missing
 
 
+def check_offline_reports(folder, event, expected_hashes):
+    """Actor labels cannot replace original installed parent/child/server observations."""
+    names = event['original_probe_reports']
+    if (event['actual_installed_verifier'] is not True
+            or event['parent_child_and_live_server_controls'] is not True
+            or event['network_egress_observed'] is not False
+            or len(names) != len(expected_hashes) or len(set(names)) != len(names)):
+        raise ValueError('P11 installed network probe coverage missing')
+    hashes = set()
+    for name in names:
+        if not re.fullmatch(r'seed-probe-evidence-[0-9a-f]{32}\.json', name):
+            raise ValueError('P11 unsafe installed probe report name')
+        data = read(folder / name)
+        hashes.add(data['probe_sha256'])
+        if (data['dns_server_observed'] or any(data['server_observed'])
+                or any(data['incoming_host_observed'])
+                or len(data['endpoint_control_counts']) != 6
+                or any(n < 1 for n in data['endpoint_control_counts'])
+                or not data['host_file_unchanged'] or not data['host_registry_unchanged']):
+            raise ValueError('P11 installed live server/host controls failed')
+        for report in (data['report'], data['report']['child_network']):
+            if report['dns_network'] or len(report['sockets']) != 6 or any(report['sockets']):
+                raise ValueError('P11 installed parent/child network egress observed')
+    if hashes != expected_hashes:
+        raise ValueError('P11 network observations do not match installed probe hashes')
+
+
 def sources(root=ROOT):
     spec = importlib.util.spec_from_file_location('p10_sources', root / 'tools/lab/retain_p10_evidence.py')
     module = importlib.util.module_from_spec(spec)
@@ -74,7 +104,7 @@ def sources(root=ROOT):
     })
 
 
-def check_target(folder, runner, commit):
+def check_target(folder, runner, commit, source_root=ROOT):
     target, machine, build_number = RUNNERS[runner]
     s = read(folder / 'run-summary.json')
     if (s['phase'], s['result'], s['tested_commit'], s['target'], s['os_build']) != (
@@ -87,13 +117,21 @@ def check_target(folder, runner, commit):
                                      'retention_verified', 'installed_smoke_after_reinstall'))):
         raise ValueError('P11 installed boundaries/retention/signing scope failed')
     cases = []
-    for name in ('packaging', 'seed', 'upgrade', 'reinstall'):
+    for name in ('packaging', 'seed', 'upgrade', 'reinstall', 'engine_stopped', 'engine_changed'):
         cases += read(folder / (name + '-cases.json'))
     if (len(cases) != len(MANDATORY) or s['cases_passed'] != len(cases)
             or {c['name'] for c in cases} != MANDATORY
             or any(c['status'] != 'PASSED' for c in cases)):
         raise ValueError('P11 required actual installed cases missing/failed/duplicated')
     by_name = {c['name']: c['evidence'] for c in cases}
+    for name, fixture in (
+            ('installed_stopped_engine_refuses_registered_target_without_host_fallback', 'engine_stopped'),
+            ('installed_changed_engine_binary_refuses_registered_target_without_host_fallback', 'engine_changed')):
+        refusal = by_name[name]
+        if (refusal['fixture'] != fixture or refusal['refusal'] != 'MANAGER_CONTEXT_UNSAFE'
+                or not all(refusal[k] is True for k in ('actual_registered_target', 'actual_installed_worker',
+                                                       'receipts_absent', 'host_output_absent', 'ordinary_user'))):
+            raise ValueError('P11 actual installed unavailable/tampered engine refusal missing')
     runtime = by_name['official_webview_prerequisite_matches_os_baseline']
     missing_runtime = check_webview(runtime, runner)
     setup = read(folder / 'setup-observations.json')
@@ -138,10 +176,39 @@ def check_target(folder, runner, commit):
         expected_machine = '014c' if '-x86.exe' in name else '8664' if '-x64.exe' in name else machine
         if f['pe_machine'] != expected_machine or not re.fullmatch('[0-9a-f]{64}', f['sha256']):
             raise ValueError('P11 payload architecture or hash mismatch')
+    fixture = read(folder / 'lab-fixture.json')
+    if (fixture['source_commit'] != commit or fixture['shipped_in_payload'] is not False
+            or fixture['pe_machine'] != machine
+            or fixture['source_sha256'] != hashlib.sha256((source_root / 'packaging/lab_impostor.c').read_bytes()).hexdigest()):
+        raise ValueError('P11 impostor canary source/architecture isolation missing')
+    engine_fixture = read(folder / 'engine-fixtures.json')
+    engine_pin = read(source_root / 'crates/sandboxie-adapter/compatibility-v1.json')
+    engine_target = next(t for t in engine_pin['targets']
+                         if t['architecture'] == ('aarch64' if machine == 'aa64' else 'x86_64'))
+    original_start = next(c['sha256'] for c in engine_target['components'] if c['name'] == 'Start.exe')
+    if (engine_fixture['service_stopped_by_lab'] is not True
+            or engine_fixture['service_restored_running'] is not True
+            or engine_fixture['changed_component'] != 'Start.exe'
+            or engine_fixture['original_sha256'] != original_start
+            or engine_fixture['restored_sha256'] != original_start
+            or engine_fixture['changed_sha256'] == original_start
+            or engine_fixture['restored_signature'] != 'Valid'
+            or engine_fixture['product_engine_update_or_uninstall'] is not False):
+        raise ValueError('P11 original engine fixture was not independently restored')
+    for mode in ('seed', 'upgrade', 'reinstall'):
+        attack = by_name[mode + '_installed_production_launcher_stays_boxed']
+        if (not all(attack[k] is True for k in ('fake_start_path_and_cwd', 'impostor_positive_control',
+                                              'real_target_boxed', 'host_output_absent', 'scoped_stop'))
+                or attack['impostor_executed'] is not False
+                or attack['impostor_sha256'] != fixture['fixture_sha256']):
+            raise ValueError('P11 actual installed fake Start PATH/CWD attack missing')
+    expected_probe_hashes = {f['sha256'] for name, f in binaries.items()
+                            if re.fullmatch(r'securerun-policy-probe(?:-x86|-x64)?\.exe', name)}
+    check_offline_reports(folder, by_name['installed_offline_baseline_has_parent_child_and_server_observations'], expected_probe_hashes)
     build = read(folder / 'build.json')
     if (build['source_commit'], build['target']) != (commit, target):
         raise ValueError('P11 installer build provenance mismatch')
-    for mode in ('seed', 'upgrade', 'reinstall'):
+    for mode in ('seed', 'upgrade', 'reinstall', 'engine_stopped', 'engine_changed'):
         actor = read(folder / (mode + '-summary.json'))
         if (actor['status'] != 'PASSED' or not actor['standard_user']
                 or actor['installed_manager_sha256'] != binaries['securerun.exe']['sha256']):
@@ -198,12 +265,15 @@ def validate(root=ROOT):
         folder = (root / 'docs/evidence/p11' / target['directory']).resolve()
         if not folder.is_relative_to((root / 'docs/evidence/p11').resolve()):
             raise ValueError('P11 unsafe target directory')
-        check_target(folder, target['runner'], manifest['tested_commit'])
+        check_target(folder, target['runner'], manifest['tested_commit'], source_root=root)
         required = {'run-summary.json', 'package-manifest.json', 'build.json', 'dependency-inventory.json',
                     'boxed-policy.json', 'migration-unit-tests.json', 'scope.json', 'packaging-cases.json',
-                    'setup-observations.json'}
-        for mode in ('seed', 'upgrade', 'reinstall'):
+                    'setup-observations.json', 'lab-fixture.json', 'engine-fixtures.json'}
+        for mode in ('seed', 'upgrade', 'reinstall', 'engine_stopped', 'engine_changed'):
             required.update({mode + '-summary.json', mode + '-cases.json'})
+        probe_case = next(c for c in read(folder / 'seed-cases.json')
+                          if c['name'] == 'installed_offline_baseline_has_parent_child_and_server_observations')
+        required.update(probe_case['evidence']['original_probe_reports'])
         if not {target['directory'] + '/' + name for name in required}.issubset(bound_files):
             raise ValueError('P11 required native proof is not hash-bound')
     for entry in manifest['files']:

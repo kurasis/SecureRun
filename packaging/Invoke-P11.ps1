@@ -63,6 +63,22 @@ try{
  Require (-not(Test-Path $installRoot)) 'P11_PREEXISTING_MANAGER_NOT_CHANGED'
  $run=[Guid]::NewGuid().ToString('N');$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p11-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
  $labCode=Join-Path $env:ProgramFiles "SecureRun-P11-Lab-$run";$null=New-Item -ItemType Directory -Path $labCode
+ # Compile a fixed native canary that always records its own execution. It is
+ # laboratory code outside the payload; no fixture is installed with the app.
+ $labBuild=Join-Path $packages 'lab';$null=New-Item -ItemType Directory -Path $labBuild
+ $fixtureArch=if($build.target -eq 'aarch64-pc-windows-msvc'){'arm64'}else{'x64'}
+ $fixtureCompiler=Join-Path $env:VCToolsInstallDir "bin/Host$fixtureArch/$fixtureArch/cl.exe"
+ $fixtureSdk=$env:WindowsSDKVersion.TrimEnd('\','/')
+ $env:LIB=@((Join-Path $env:VCToolsInstallDir "lib/$fixtureArch"),(Join-Path $env:WindowsSdkDir "Lib/$fixtureSdk/ucrt/$fixtureArch"),(Join-Path $env:WindowsSdkDir "Lib/$fixtureSdk/um/$fixtureArch")) -join ';'
+ Push-Location $labBuild
+ try{
+  & $fixtureCompiler /nologo /O2 /MT /W4 /WX /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'lab_impostor.c') /Fe:p11-impostor.exe
+  Require ($LASTEXITCODE -eq 0) 'P11_IMPOSTOR_FIXTURE_BUILD_FAILED'
+  Copy-Item 'p11-impostor.exe' $labCode
+  $fixtureBytes=[IO.File]::ReadAllBytes('p11-impostor.exe');$pe=[BitConverter]::ToInt32($fixtureBytes,0x3c);$machine=('{0:x4}' -f [BitConverter]::ToUInt16($fixtureBytes,$pe+4))
+  $expectedMachine=if($build.target -eq 'aarch64-pc-windows-msvc'){'aa64'}else{'8664'};Require ($machine -eq $expectedMachine) 'P11_IMPOSTOR_FIXTURE_ARCHITECTURE_WRONG'
+  @{source_commit=$build.source_commit;source_sha256=(Get-FileHash (Join-Path $PSScriptRoot 'lab_impostor.c')).Hash.ToLowerInvariant();fixture_sha256=(Get-FileHash 'p11-impostor.exe').Hash.ToLowerInvariant();pe_machine=$machine;shipped_in_payload=$false}|ConvertTo-Json|Set-Content (Join-Path $out 'lab-fixture.json') -Encoding utf8
+ }finally{Pop-Location}
  foreach($f in @('standard.ps1','lab_native.cs')){Copy-Item (Join-Path $PSScriptRoot $f) $labCode}
  Copy-Item (Join-Path $repo 'tools/lab/Read-DiagnosticFailureMetadata.ps1') $labCode
  foreach($f in @('p05_lab.cs','p05_boxed.ps1','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$f") $labCode}
@@ -160,10 +176,27 @@ try{
  }
  Case 'T48' 'reinstall_preserves_data_before_owner_reconciliation' {$state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json;$before=Snapshot $state;$code=Setup $candidate;Payload-Matches;$after=Snapshot $state;Require ($before.sha256 -eq $after.sha256) 'P11_REINSTALL_CHANGED_DATA';@{exit_code=$code;profile_before=$before;profile_after=$after;automatic_cleanup=$false}}
  Standard 'reinstall'
+ # Installed-candidate T01/T02 refusals use the real registered target from the
+ # same ordinary account. Restore the separately installed original engine.
+ Stop-Service -Name SbieSvc -ErrorAction Stop
+ try{
+  (Get-Service SbieSvc).WaitForStatus([ServiceProcess.ServiceControllerStatus]::Stopped,[TimeSpan]::FromSeconds(30))
+  Standard 'engine_stopped'
+ }finally{Start-Service SbieSvc;(Get-Service SbieSvc).WaitForStatus([ServiceProcess.ServiceControllerStatus]::Running,[TimeSpan]::FromSeconds(30))}
+ $engineTool=Join-Path $engine 'Start.exe';$originalBytes=[IO.File]::ReadAllBytes($engineTool);$originalHash=(Get-FileHash $engineTool).Hash
+ try{
+  $changed=[byte[]]$originalBytes.Clone();$changed[$changed.Length-1]=$changed[$changed.Length-1] -bxor 1;[IO.File]::WriteAllBytes($engineTool,$changed)
+  $tamperedHash=(Get-FileHash $engineTool).Hash;Require ($tamperedHash -ne $originalHash) 'P11_ENGINE_TAMPER_CONTROL_FAILED'
+  Standard 'engine_changed'
+ }finally{
+  [IO.File]::WriteAllBytes($engineTool,$originalBytes)
+  Require ((Get-FileHash $engineTool).Hash -eq $originalHash -and (Get-AuthenticodeSignature $engineTool).Status -eq 'Valid') 'P11_ORIGINAL_ENGINE_NOT_RESTORED'
+ }
+ @{service_stopped_by_lab=$true;service_restored_running=((Get-Service SbieSvc).Status -eq 'Running');changed_component='Start.exe';original_sha256=$originalHash.ToLowerInvariant();changed_sha256=$tamperedHash.ToLowerInvariant();restored_sha256=(Get-FileHash $engineTool).Hash.ToLowerInvariant();restored_signature=(Get-AuthenticodeSignature $engineTool).Status.ToString();product_engine_update_or_uninstall=$false}|ConvertTo-Json|Set-Content (Join-Path $out 'engine-fixtures.json') -Encoding utf8
  $state=Get-Content (Join-Path $owned 'private-state.json') -Raw|ConvertFrom-Json
  # Record scoped N/A portions explicitly. No helper enrollment is manufactured.
  @{T27='APPLICABLE_BOXED_WORKER_BOUNDARY_PASSED_HELPER_SUBCASE_NA';T47='APPLICABLE_FORGED_PARENT_PASSED_HELPER_SUBCASE_NA';T52='NOT_APPLICABLE_NO_PRODUCT_HELPER';T57='NO_PRIVILEGED_METADATA_AUTHORITY_INSTALLED_MANAGER_CONTEXT_TESTED';different_account_uac='NOT_APPLICABLE_NO_PRODUCT_HELPER';all_66_final_acceptance='NOT_STARTED_P12'}|ConvertTo-Json|Set-Content (Join-Path $out 'scope.json') -Encoding utf8
- $all=@($cases.ToArray());foreach($f in @('seed','upgrade','reinstall')){$all+=@(Get-Content (Join-Path $out ($f+'-cases.json')) -Raw|ConvertFrom-Json)}
+ $all=@($cases.ToArray());foreach($f in @('seed','upgrade','reinstall','engine_stopped','engine_changed')){$all+=@(Get-Content (Join-Path $out ($f+'-cases.json')) -Raw|ConvertFrom-Json)}
  $summary=@{phase='P11';result='PASSED';tested_commit=$build.source_commit;target=$build.target;os_build=[Environment]::OSVersion.Version.Build;cases_passed=@($all|Where-Object status -eq 'PASSED').Count;cases_failed=@($all|Where-Object status -ne 'PASSED').Count;signing='UNSIGNED_DEVELOPMENT_ONLY';webview_prerequisite_verified=$true;installed_payload_verified=$true;retention_verified=$true;installed_smoke_after_reinstall=$true;elevated_product_helper=$false;engine_bundled=$false;os_security_settings_modified=$false;final_acceptance_scenarios_passed=0;teardown='DISCARD_ACTIONS_VM'}
  Require ($summary.cases_failed -eq 0) 'P11_CASE_FAILURES';$summary|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'run-summary.json') -Encoding utf8
 }finally{

@@ -1,9 +1,10 @@
-param([string]$Manager,[string]$EngineHome,[string]$Fixture,[ValidateSet('seed','upgrade','reinstall')][string]$Mode)
+param([string]$Manager,[string]$EngineHome,[string]$Fixture,[ValidateSet('seed','upgrade','reinstall','engine_stopped','engine_changed')][string]$Mode)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'P11_DISPOSABLE_VM_REQUIRED'}
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
 $cases=[Collections.Generic.List[object]]::new()
 $labStarted=[datetime]::UtcNow
+$script:NativeWorkingDirectory=$EngineHome;$script:NativeSearchPath=$null
 $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData')
 $env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
@@ -13,7 +14,7 @@ function Case([string]$id,[string]$name,[scriptblock]$body){
  finally{ConvertTo-Json -InputObject @($cases.ToArray()) -Depth 10|Set-Content (Join-Path $results ($Mode+'-cases.json')) -Encoding utf8}
 }
 function Native($request,[string]$kind='policy',[switch]$AllowFailure){
- $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$EngineHome;$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once");$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false)
+ $s=[Diagnostics.ProcessStartInfo]::new($Manager);$s.UseShellExecute=$false;$s.WorkingDirectory=$script:NativeWorkingDirectory;if($null -ne $script:NativeSearchPath){$s.Environment['PATH']=$script:NativeSearchPath};$s.RedirectStandardInput=$true;$s.RedirectStandardOutput=$true;$s.RedirectStandardError=$true;$s.ArgumentList.Add("--$kind-once");$s.StandardInputEncoding=[Text.UTF8Encoding]::new($false);$s.StandardOutputEncoding=[Text.UTF8Encoding]::new($false)
  $p=[Diagnostics.Process]::Start($s)
  try{$text=$p.StandardOutput.ReadToEndAsync();$errors=$p.StandardError.ReadToEndAsync();$p.StandardInput.Write((ConvertTo-Json -InputObject $request -Depth 12 -Compress));$p.StandardInput.Close();Require ($p.WaitForExit(660000)) 'P11_NATIVE_TIMEOUT';Require ($p.ExitCode -eq 0 -and $text.Result.Length -le 2097152) 'P11_NATIVE_RESPONSE_INVALID';$r=$text.Result|ConvertFrom-Json -Depth 40;if(-not $AllowFailure){Require ($r.reason -eq 'OBSERVED') $r.reason};return $r}finally{if(-not $p.HasExited){$p.Kill($true)};$p.Dispose()}
 }
@@ -22,6 +23,19 @@ function Workspace($e){$q=@{action='LIST';environment_id=$e.id;expected_revision
 try{
  $identity=[Security.Principal.WindowsIdentity]::GetCurrent();Require (-not [Security.Principal.WindowsPrincipal]::new($identity).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) 'P11_STANDARD_USER_REQUIRED'
  Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'lab_native.cs')))
+ if($Mode -in @('engine_stopped','engine_changed')){
+  $id=if($Mode -eq 'engine_stopped'){'T01'}else{'T02'}
+  $name=if($Mode -eq 'engine_stopped'){'installed_stopped_engine_refuses_registered_target_without_host_fallback'}else{'installed_changed_engine_binary_refuses_registered_target_without_host_fallback'}
+  Case $id $name {
+   $state=Get-Content (Join-Path $Fixture 'private-state.json') -Raw|ConvertFrom-Json
+   Require (-not(Test-Path -LiteralPath $state.smoke_host_output)) 'P11_HOST_CONTROL_NOT_CLEAN'
+   $r=Native @{action='LAUNCH';environment_id=$state.environment_id;expected_revision=$state.smoke_revision;application_id=$state.smoke_application_id;operation_id=[Guid]::NewGuid().ToString()} 'control' -AllowFailure
+   Require ($r.reason -eq 'MANAGER_CONTEXT_UNSAFE' -and @($r.receipts).Count -eq 0 -and -not(Test-Path -LiteralPath $state.smoke_host_output)) 'P11_UNHEALTHY_ENGINE_DISPATCHED'
+   @{actual_registered_target=$true;actual_installed_worker=$true;fixture=$Mode;refusal=$r.reason;receipts_absent=$true;host_output_absent=$true;ordinary_user=$true}
+  }
+  @{status='PASSED';mode=$Mode;cases_passed=$cases.Count;standard_user=$true;installed_manager_sha256=(Get-FileHash $Manager).Hash.ToLowerInvariant()}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8
+  exit 0
+ }
  Case 'T02' ($Mode+'_ordinary_user_cannot_modify_installed_code') {
   $denied=$false;try{$f=[IO.File]::Open($Manager,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$f.Dispose()}catch [UnauthorizedAccessException]{$denied=$true};Require $denied 'P11_CODE_WRITABLE'
   $createDenied=$false;try{[IO.File]::WriteAllText((Join-Path (Split-Path $Manager) 'actor-must-not-create.txt'),'SYNTHETIC')}catch [UnauthorizedAccessException]{$createDenied=$true};Require $createDenied 'P11_CODE_DIRECTORY_WRITABLE'
@@ -38,7 +52,18 @@ try{
    $e=Environment-View;Require ($e.stage -eq 'VERIFIED' -and $null -ne $e.enforcement_evidence -and $null -ne $e.root_identity -and $e.owner_sid -eq $identity.User.Value) 'P11_INSTALLED_POLICY_UNVERIFIED'
    @{native_policy_verifier=$true;standard_offline=$true;root_identity_bound=$true;enforcement_evidence_bound=$true;owner_from_os=$true}
   }
-  Case 'T12' 'installed_import_export_preserves_bytes_and_provenance' {
+  Case 'T12' 'installed_offline_baseline_has_parent_child_and_server_observations' {
+   $metadata=Join-Path $env:LOCALAPPDATA 'SecureRun/metadata';$proof=@(Get-ChildItem $metadata -File -Filter 'probe-evidence-*.json'|Where-Object CreationTimeUtc -GE $labStarted)
+   $expected=if([Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture -eq 'Arm64'){3}else{2};Require ($proof.Count -eq $expected) 'P11_INSTALLED_NETWORK_ARCHITECTURES_MISSING'
+   $files=@();foreach($file in $proof){
+    $data=Get-Content $file.FullName -Raw|ConvertFrom-Json
+    Require (-not $data.dns_server_observed -and -not($data.server_observed -contains $true) -and -not($data.incoming_host_observed -contains $true) -and @($data.endpoint_control_counts|Where-Object {$_ -lt 1}).Count -eq 0) 'P11_INSTALLED_NETWORK_SERVER_OBSERVATION_FAILED'
+    foreach($report in @($data.report,$data.report.child_network)){Require (-not $report.dns_network -and -not($report.sockets -contains $true)) 'P11_INSTALLED_NETWORK_EGRESS_OBSERVED'}
+    $name='seed-'+$file.Name;Copy-Item $file.FullName (Join-Path $results $name);$files+=$name
+   }
+   @{original_probe_reports=$files;actual_installed_verifier=$true;parent_child_and_live_server_controls=$true;network_egress_observed=$false}
+  }
+  Case 'T21' 'installed_import_export_preserves_bytes_and_provenance' {
    $e=Environment-View;$source=Join-Path $Fixture 'retained-source.txt';[IO.File]::WriteAllText($source,'P11_SYNTHETIC_RETAINED_DATA_Привет')
    $null=Native @{action='IMPORT';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();source=$source;name='retained.txt'} 'files'
    $entry=(Workspace $e).entries|Where-Object name -eq 'retained.txt';Require ($null -ne $entry) 'P11_IMPORTED_FILE_MISSING'
@@ -59,13 +84,21 @@ try{
   $e=Environment-View;$leaf='p11-'+$Mode+'-launch.jsonl';$hostOutput=Join-Path $Fixture $leaf
   $q=@{action='REGISTER';environment_id=$e.id;expected_revision=$e.revision;operation_id=[Guid]::NewGuid().ToString();display_name=('P11 '+$Mode);executable=(Join-Path (Split-Path $Manager) 'securerun-launch-probe.exe');arguments=@('short',$hostOutput);working_directory=$null}
   $r=Native $q 'control';$app=@($r.applications|Where-Object {$_.environment_id -eq $e.id -and $_.display_name -eq ('P11 '+$Mode)})[0]
-  $op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$e.id;expected_revision=$e.revision;application_id=$app.id;operation_id=$op} 'control';$receipt=$r.receipts|Where-Object operation_id -eq $op;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason
+  $fake=Join-Path $Fixture ('impostor-'+$Mode);$null=New-Item -ItemType Directory -Path $fake -Force;$impostor=Join-Path $fake 'Start.exe';Copy-Item (Join-Path $PSScriptRoot 'p11-impostor.exe') $impostor;$sentinel=Join-Path $fake 'impostor-executed.txt'
+  $positive=[Diagnostics.ProcessStartInfo]::new($impostor);$positive.UseShellExecute=$false;$positive.CreateNoWindow=$true;$positive.WorkingDirectory=$fake;$p=[Diagnostics.Process]::Start($positive)
+  try{Require ($p.WaitForExit(10000) -and $p.ExitCode -eq 0 -and (Test-Path -LiteralPath $sentinel)) 'P11_IMPOSTOR_POSITIVE_CONTROL_FAILED'}finally{$p.Dispose()}
+  Require ([IO.File]::ReadAllText($sentinel) -eq 'P11_SYNTHETIC_IMPOSTOR_EXECUTED') 'P11_IMPOSTOR_CONTROL_BYTES_CHANGED';Remove-Item -LiteralPath $sentinel
+  $script:NativeWorkingDirectory=$fake;$script:NativeSearchPath=$fake+';'+(Join-Path $env:SystemRoot 'System32')
+  try{$op=[Guid]::NewGuid().ToString();$r=Native @{action='LAUNCH';environment_id=$e.id;expected_revision=$e.revision;application_id=$app.id;operation_id=$op} 'control';$receipt=$r.receipts|Where-Object operation_id -eq $op;Require ($receipt.state -in @('RUNNING_BOXED','PRIMARY_EXITED_BOXED')) $receipt.reason}
+  finally{$script:NativeWorkingDirectory=$EngineHome;$script:NativeSearchPath=$null}
   $root=$e.compiled.section.FileRootPath[0];$clock=[Diagnostics.Stopwatch]::StartNew();do{$reports=@(Get-ChildItem $root -Recurse -File -Filter $leaf);if($reports.Count -eq 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 15000)
   Require ($reports.Count -eq 1 -and -not(Test-Path $hostOutput)) 'P11_LAUNCH_ESCAPED_OR_OUTPUT_MISSING';$data=Get-Content $reports[0].FullName -Raw|ConvertFrom-Json;Require $data.boxed 'P11_TARGET_UNBOXED'
+  Require (-not(Test-Path -LiteralPath $sentinel) -and @(Get-ChildItem $root -Recurse -File -Filter 'impostor-executed.txt').Count -eq 0) 'P11_IMPOSTOR_EXECUTED'
   $stopId=[Guid]::NewGuid().ToString();$stopped=Native @{action='STOP';environment_id=$e.id;operation_id=$stopId} 'control'
   Require ((@($stopped.receipts|Where-Object operation_id -eq $stopId)[0]).state -eq 'STOPPED') 'P11_SCOPED_STOP_NOT_COMPLETE'
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')));$lab=[P05Lab]::new($EngineHome,$Fixture,(Split-Path $Manager));$lab.FenceFixture(('SR_'+$e.id.Replace('-','')))
-  @{real_target_boxed=$true;host_output_absent=$true;installed_launcher_used=$true;scoped_stop=$true}
+  $script:smokeApplicationId=$app.id;$script:smokeHostOutput=$hostOutput
+  @{real_target_boxed=$true;host_output_absent=$true;installed_launcher_used=$true;scoped_stop=$true;also_ids=@('T02');fake_start_path_and_cwd=$true;impostor_positive_control=$true;impostor_executed=$false;impostor_sha256=(Get-FileHash $impostor).Hash.ToLowerInvariant()}
  }
  if($Mode -eq 'upgrade'){
   foreach($future in @($true,$false)){
@@ -81,7 +114,7 @@ try{
   }
  }
  # Private controller handoff; paths/SIDs/database bytes are never published.
- $e=Environment-View;@{profile=(Join-Path $env:LOCALAPPDATA 'SecureRun');root=$e.compiled.section.FileRootPath[0];environment_id=$e.id;root_identity=$e.root_identity;owner=$identity.User.Value;engine_box=('SR_'+$e.id.Replace('-',''))}|ConvertTo-Json|Set-Content (Join-Path $Fixture 'private-state.json') -Encoding utf8
+ $e=Environment-View;@{profile=(Join-Path $env:LOCALAPPDATA 'SecureRun');root=$e.compiled.section.FileRootPath[0];environment_id=$e.id;root_identity=$e.root_identity;owner=$identity.User.Value;engine_box=('SR_'+$e.id.Replace('-',''));smoke_application_id=$script:smokeApplicationId;smoke_revision=$e.revision;smoke_host_output=$script:smokeHostOutput}|ConvertTo-Json|Set-Content (Join-Path $Fixture 'private-state.json') -Encoding utf8
  @{status='PASSED';mode=$Mode;cases_passed=$cases.Count;standard_user=$true;installed_manager_sha256=(Get-FileHash $Manager).Hash.ToLowerInvariant()}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8
 }catch{
  $failure=$_

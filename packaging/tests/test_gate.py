@@ -41,10 +41,32 @@ class PackagingGate(unittest.TestCase):
                 gate.validate(root)
 
     def test_required_cases_include_actual_missing_prerequisite_and_data_retention(self):
-        self.assertEqual(len(gate.MANDATORY), 25)
+        self.assertEqual(len(gate.MANDATORY), 28)
         self.assertIn('official_webview_prerequisite_matches_os_baseline', gate.MANDATORY)
         self.assertIn('uninstall_removes_only_code_and_retains_profile_engine_runtime', gate.MANDATORY)
         self.assertIn('future_schema_is_refused_without_downgrade', gate.MANDATORY)
+        self.assertIn('installed_stopped_engine_refuses_registered_target_without_host_fallback', gate.MANDATORY)
+        self.assertIn('installed_changed_engine_binary_refuses_registered_target_without_host_fallback', gate.MANDATORY)
+        self.assertIn('installed_offline_baseline_has_parent_child_and_server_observations', gate.MANDATORY)
+
+    def test_claimed_network_pass_cannot_hide_actual_server_egress(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            name = 'seed-probe-evidence-' + 'a' * 32 + '.json'
+            data = {'probe_sha256': 'b' * 64, 'dns_server_observed': False,
+                    'server_observed': [False] * 6, 'incoming_host_observed': [False] * 4,
+                    'endpoint_control_counts': [1] * 6, 'host_file_unchanged': True,
+                    'host_registry_unchanged': True,
+                    'report': {'dns_network': False, 'sockets': [False] * 6,
+                               'child_network': {'dns_network': False, 'sockets': [False] * 6}}}
+            event = {'original_probe_reports': [name], 'actual_installed_verifier': True,
+                     'parent_child_and_live_server_controls': True, 'network_egress_observed': False}
+            (folder / name).write_text(json.dumps(data))
+            gate.check_offline_reports(folder, event, {'b' * 64})
+            data['server_observed'][0] = True
+            (folder / name).write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, 'server/host controls failed'):
+                gate.check_offline_reports(folder, event, {'b' * 64})
 
     def test_preinstalled_arm_runtime_cannot_replace_server_missing_runtime_proof(self):
         evidence = {'tested_state': 'WINDOWS_11_PREINSTALLED_RUNTIME',

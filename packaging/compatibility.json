@@ -53,7 +53,8 @@
     "unreviewed engine/component hashes",
     "different OS base builds",
     "paid privacy preset",
-    "advertised clipboard/device restrictions"
+    "advertised clipboard/device restrictions",
+    "different OS update revisions or product types until explicitly reviewed"
   ],
   "updates_require": "Explicit compatibility and enforcement revalidation; no automatic fallback or engine downgrade",
   "missing_runtime_windows_11_arm_test": "NOT_CLAIMED; preinstalled Windows 11 baseline is preserved"

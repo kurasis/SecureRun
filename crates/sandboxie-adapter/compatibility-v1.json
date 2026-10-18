@@ -64,7 +64,9 @@
           "sha256": "a440aeef8604b2283e4c7b404780a1d49713c2cc72fb005b9bdcb354387735e3",
           "machine": "014c"
         }
-      ]
+      ],
+      "os_product_type": 3,
+      "os_update_build_revision": 33438
     },
     {
       "architecture": "aarch64",
@@ -125,7 +127,9 @@
           "sha256": "561858c13b8a57b456337e8a09a4b887cc073704fc69e1a29c025c72134cc153",
           "machine": "8664"
         }
-      ]
+      ],
+      "os_product_type": 1,
+      "os_update_build_revision": 9457
     }
   ],
   "policy_inheritance": {

@@ -73,3 +73,12 @@ mandatory. The substitution test also rejects identical inventory bytes at an
 unbound path. The complete P10 source inventory adds the installer pin and shared
 read-only metadata module. OS enforcement identity now includes the protected UBR
 for cumulative-update cache invalidation. See [manual engine review](../P11_ENGINE_UPDATE.md).
+
+Source f26e6a3 Server installed seed passed provisioning/import-export but its
+launcher failed closed with RELEASE_TUPLE_UNTESTED: UBR had been added to the
+actual OS identity while launch still compared the old tuple format. Original
+failed JSON is retained under investigation-f26e6a3-server-tuple. The launch
+comparison now derives the matching tuple from the immutable compiled pin;
+base version, update revision and product type are independently checked against
+current authenticated P02 observations. The test also rejects a self-declared
+revision change even when source hash records are edited consistently.

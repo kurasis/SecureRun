@@ -179,6 +179,24 @@ class IntegrityTests(unittest.TestCase):
                 evidence.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ValueError, 'P08 cleanup source inventory is not independently hash-bound'):
                 validator.validate(copy)
+            # The launcher must not accept a self-declared OS update revision;
+            # it must remain the independently observed current P02 tuple.
+            path.write_text(original)
+            release = copy / 'crates/sandboxie-adapter/compatibility-v1.json'
+            release_pin = json.loads(release.read_text())
+            release_pin['targets'][0]['os_update_build_revision'] += 1
+            release.write_text(json.dumps(release_pin))
+            for changed in (path, release):
+                data = changed.read_bytes()
+                for phase in range(3, 9):
+                    evidence = copy / f'docs/evidence/p{phase:02}/manifest.json'
+                    manifest = json.loads(evidence.read_text())
+                    for source in manifest.get('tested_sources', []):
+                        if source['path'] == changed.relative_to(copy).as_posix():
+                            source.update(sha256=hashlib.sha256(data).hexdigest(), size=len(data))
+                    evidence.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, 'Release OS tuple differs from authenticated P02 observations'):
+                validator.validate(copy)
 
     def test_p09_cannot_close_without_current_lifecycle_regression(self):
         with tempfile.TemporaryDirectory() as tmp:

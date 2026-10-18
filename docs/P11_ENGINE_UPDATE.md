@@ -44,7 +44,11 @@ Observed P02 OS tuples: Server 2025 build 26100/UBR 33438; Windows 11 ARM64 buil
 26200/UBR 9457. The runtime's OS enforcement identity includes the protected machine
 update revision as well as kernel/base build and architecture, so a cumulative
 update invalidates retained verification even when the base build stays unchanged.
-No registry value or OS security setting is modified to obtain that identity.
+The launch gate derives the same tuple format from the immutable compiled
+compatibility pin. Validation binds its base version, update revision and product
+type to the independent current P02 observations. An unreviewed OS tuple still
+refuses launch. No registry value or OS security setting is modified to obtain
+that identity.
 
 SecureRun still requires a separate original engine installation and independent
 updates by its owner. No engine binary, SandMan code, automatic engine update,

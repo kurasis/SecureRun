@@ -349,6 +349,11 @@ def validate(root: Path) -> None:
                 or any(not c.get('authenticated_payload_match') for c in inventory['components'])
                 or not discovery['component_present'] or cleanup['native_export'] not in discovery['exports']):
             raise ValueError('P08 cleanup inventory is not authenticated')
+        os_pin = next(t for t in compatibility['targets'] if t['architecture'] == architecture)
+        if (os_pin['os_base'] != inventory['os']['Version']
+                or os_pin['os_product_type'] != inventory['os']['ProductType']
+                or os_pin['os_update_build_revision'] != inventory['os_update_build_revision']):
+            raise ValueError('Release OS tuple differs from authenticated P02 observations')
         components = [{key: component[key] for key in ('name', 'sha256', 'signature')}
                       for component in inventory['components']
                       if component['name'].lower().endswith('.dll') and '/' not in component['name'] and '\\' not in component['name']]

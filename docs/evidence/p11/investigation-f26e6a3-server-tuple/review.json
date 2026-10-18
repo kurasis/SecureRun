@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "source_commit": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+  "run_id": 39086660704,
+  "runner": "windows-2025",
+  "classification": "FAILED_INVESTIGATION_NOT_COMPLETION_PROOF",
+  "code": "RELEASE_TUPLE_UNTESTED",
+  "case": "seed_installed_production_launcher_stays_boxed",
+  "facts": "Setup and installed offline provisioning/import-export passed on engine1.18.8. UBR was added to actual OS enforcement identity while independent launch comparison still used old five-field tuple. Launch failed closed. Corrected launcher derives six-field tuple from immutable compiled compatibility pin, independently cross-checked against current P02 OS build/UBR/product observations; no unknown OS acceptance or authority bypass.",
+  "files": [
+    {
+      "path": "seed-summary.json",
+      "size": 98,
+      "sha256": "8b57cc6290f0ea877b9cfabbe20d48649d03d3eb8f0bc9a66f6b70aa9867401b"
+    },
+    {
+      "path": "seed-cases.json",
+      "size": 1385,
+      "sha256": "4ea27fc3c6064bdeb345dd7e5d375bde02106e6016ca7a1f8674d2825f645b5d"
+    },
+    {
+      "path": "seed-fault-metadata.json",
+      "size": 386,
+      "sha256": "3401ce36c14c7ddcfaf490be4156d3d5455982361c5c39eedc04ab577004d2fc"
+    },
+    {
+      "path": "packaging-cases.json",
+      "size": 1685,
+      "sha256": "3c3ca045e696ccd86c2903a07a46cc9e00d8a8dc435f9ce04d0032d90c2e1efb"
+    },
+    {
+      "path": "setup-observations.json",
+      "size": 1094,
+      "sha256": "d560a96f8267bc9e182475f64d9c80dc7ffb230c1bbeec1d8c7c9899910790c4"
+    }
+  ]
+}

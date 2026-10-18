@@ -156,8 +156,8 @@ function Update-P11ExceptionCapture($Context,[long]$Elapsed){
   }catch{$Context.public.tool_failures++;Add-P11CaptureCode $Context.public.dump_parser_failure_codes $_.Exception.GetBaseException().Message 'DIAGNOSTIC_DUMP_COLLECTION_FAILED'}finally{$entry.hold.Dispose();$entry.process.Dispose();$null=$Context.active.Remove($entry)}
  }
 }
-function New-P11PrivateMonitorStartInfo([string]$Exe,[string]$Home,[string]$Directory,[uint32]$Id){
- $start=[Diagnostics.ProcessStartInfo]::new($Exe);$start.UseShellExecute=$false;$start.WorkingDirectory=$Home;$start.WindowStyle=[Diagnostics.ProcessWindowStyle]::Hidden;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
+function New-P11PrivateMonitorStartInfo([string]$Exe,[string]$MonitorHome,[string]$Directory,[uint32]$Id){
+ $start=[Diagnostics.ProcessStartInfo]::new($Exe);$start.UseShellExecute=$false;$start.WorkingDirectory=$MonitorHome;$start.WindowStyle=[Diagnostics.ProcessWindowStyle]::Hidden;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
  $start.Environment.Clear();foreach($name in @('SystemRoot','WINDIR','SystemDrive','ProgramFiles','ProgramW6432','ProgramData','RUNNER_TRACKING_ID')){$value=[Environment]::GetEnvironmentVariable($name);if($null -ne $value){$start.Environment[$name]=$value}};$start.Environment['PATH']=Join-Path $env:SystemRoot 'System32';$start.Environment['TEMP']=$Directory;$start.Environment['TMP']=$Directory
  foreach($argument in @('-accepteula','-e','-mm','-n','1',[string]$Id,($Directory+[IO.Path]::DirectorySeparatorChar))){$start.ArgumentList.Add($argument)}
  return $start

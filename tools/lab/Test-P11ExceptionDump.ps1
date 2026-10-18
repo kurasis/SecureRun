@@ -49,3 +49,15 @@ try{
  Require ($context.active.Count -eq 0 -and $context.public.tool_failures -eq 1 -and $context.public.tool_status_counts['DEBUG_ERROR'] -eq 1 -and $context.public.dump_parser_failure_codes.Count -eq 0)
 }finally{Remove-Item -LiteralPath $privateDirectory -Force -Recurse}
 Write-Host 'PASS: zero tool exit cannot erase a recognized debugger failure'
+# Exercise the actual start-info builder, including reserved-variable binding.
+$priorSystemRoot=$env:SystemRoot;$privateEnvironmentName='SECURERUN_P11_PRIVATE_CANARY'
+try{
+ if(-not $env:SystemRoot){$env:SystemRoot=[IO.Path]::GetTempPath()}
+ [Environment]::SetEnvironmentVariable($privateEnvironmentName,'DO_NOT_PROPAGATE')
+ $syntheticHome=Join-Path ([IO.Path]::GetTempPath()) 'p11-synthetic-monitor-home'
+ $syntheticOutput=Join-Path $syntheticHome 'private-output'
+ $start=New-P11PrivateMonitorStartInfo (Join-Path $syntheticHome 'fixed-tool.exe') $syntheticHome $syntheticOutput 98765
+ Require ($start.ArgumentList.Count -eq 7 -and $start.ArgumentList[5] -ceq '98765' -and $start.ArgumentList[6] -ceq ($syntheticOutput+[IO.Path]::DirectorySeparatorChar))
+ Require ($start.WorkingDirectory -ceq $syntheticHome -and -not $start.Environment.ContainsKey($privateEnvironmentName))
+}finally{$env:SystemRoot=$priorSystemRoot;[Environment]::SetEnvironmentVariable($privateEnvironmentName,$null)}
+Write-Host 'PASS: actual monitor start-info binding, separate arguments and environment scrubbing'

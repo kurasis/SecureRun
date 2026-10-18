@@ -1,9 +1,11 @@
 # Disposable diagnostic observer only. Names/associations never grant authority.
-param([Parameter(Mandatory)][string]$ResultFile,[Parameter(Mandatory)][string]$StopFile)
+param([Parameter(Mandatory)][string]$ResultFile,[Parameter(Mandatory)][string]$StopFile,[Parameter(Mandatory)][string]$MetadataScript)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
 $sinceUtc=[DateTime]::UtcNow
-. (Join-Path $PSScriptRoot 'Read-P11LiveFaultMetadata.ps1')
+# Start-Job -FilePath transports the script body without its source directory.
+# Resolve this trusted repository support path in the caller before transport.
+. $MetadataScript
 Add-Type @'
 using System;using System.Runtime.InteropServices;
 public sealed class P11ObservedProcess : IDisposable {

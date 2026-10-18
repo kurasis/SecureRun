@@ -823,6 +823,11 @@
       "sha256": "22815f0e43332b90765477e3dcf7e4da619ff937f64c7ce7e17e10ae0fbba0fb"
     },
     {
+      "path": "investigation-9a98713-startup/review.json",
+      "size": 1195,
+      "sha256": "b1fbe996ec5ec8ff6fa1393adeda36507bc43bfee3fe18b64f8ac5f70995cdfe"
+    },
+    {
       "path": "investigation-ci-scheduling-90791c5/review.json",
       "size": 4150,
       "sha256": "45fc9e1866ee1e553e1a76382eb2e31c37f43599f97cb6891fb8c9eaf0bee493"
@@ -3533,7 +3538,7 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "96483f3e03da4d32a777949c87410d49926fd0c9",
+  "active_fix_source": "9a98713584cd526c013c23a940958f07572d8c87",
   "active_fix_validation": {
     "result": "IN_PROGRESS",
     "native_feasibility_run": 39110907921,
@@ -3552,6 +3557,9 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "READ_ONLY_LIVE_WER_METADATA"
+    "next_diagnostic": "READ_ONLY_LIVE_WER_METADATA",
+    "live_metadata_run": 39113580938,
+    "live_metadata_result": "PARSER_PASSED_OBSERVER_STARTUP_FAILED_NO_WORKLOAD",
+    "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION"
   }
 }

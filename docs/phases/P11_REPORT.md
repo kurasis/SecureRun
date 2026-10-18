@@ -81,6 +81,15 @@ fields suppress paths, IDs, unknown module names and report text. Read metadata 
 name-matched diagnostic material, never process authentication or gate proof.
 Synthetic parser/privacy, event-layout and UTF8/UTF16 entity rejection checks pass.
 
+Live metadata run39113580938 at `9a98713` passed native parser/privacy checks
+but [failed observer startup](../evidence/p11/investigation-9a98713-startup/review.json)
+before any engine workload. Start-Job transports the script without PSScriptRoot;
+this was reproduced locally. The caller now passes its resolved support path.
+The regression exercises actual background startup and clean zero-sample shutdown,
+using a preexisting private stop marker; it is not Windows proof. Startup errors
+retain bounded type/category/line only. The failed run has no result artifact and
+is not relabeled as a backend failure or pass. New full diagnosis is required.
+
 The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.

@@ -36,11 +36,20 @@ jobs:
           $null=New-Item -ItemType Directory -Path $out -Force
           $result=Join-Path $out 'reporter-lifecycle.json'
           $stop=Join-Path $out 'observer.stop'
-          $observer=Start-Job -FilePath ./tools/lab/Observe-P11Reporter.ps1 -ArgumentList $result,$stop
+          $support=(Resolve-Path ./tools/lab/Read-P11LiveFaultMetadata.ps1).Path
+          $observer=Start-Job -FilePath ./tools/lab/Observe-P11Reporter.ps1 -ArgumentList $result,$stop,$support
           try{
             $clock=[Diagnostics.Stopwatch]::StartNew()
             while(-not(Test-Path -LiteralPath $result)){
-              if($observer.State -eq 'Failed' -or $clock.ElapsedMilliseconds -gt 30000){throw 'P11_OBSERVER_START_FAILED'}
+              if($observer.State -eq 'Failed' -or $clock.ElapsedMilliseconds -gt 30000){
+                $state=@{classification='OBSERVER_STARTUP_FAILED_NO_WORKLOAD';background_state=$observer.State.ToString();raw_error_text_retained=$false}
+                if($observer.ChildJobs.Count -eq 1 -and $observer.ChildJobs[0].Error.Count -gt 0){
+                  $errorRecord=$observer.ChildJobs[0].Error[0];$state.exception_type=$errorRecord.Exception.GetType().FullName;$state.error_category=[int]$errorRecord.CategoryInfo.Category
+                  if($null -ne $errorRecord.InvocationInfo){$state.script_line=$errorRecord.InvocationInfo.ScriptLineNumber}
+                }
+                $state|ConvertTo-Json|Set-Content (Join-Path $out 'observer-startup-failure.json') -Encoding utf8
+                throw 'P11_OBSERVER_START_FAILED'
+              }
               Start-Sleep -Milliseconds 100
             }
             # The observer affects timing; this run can never close a phase gate.

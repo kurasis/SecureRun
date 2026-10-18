@@ -87,9 +87,9 @@ function Get-P11LiveFaultMetadata([datetime]$Since){
     $read++;$stream=$null
     try{
      $stream=[IO.File]::Open($item.FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete))
-     $buffer=[byte[]]::new(262145);$count=0
+     $buffer=[byte[]]::new([Math]::Min(262145,4194304-$bytes));$count=0
      do{$received=$stream.Read($buffer,$count,$buffer.Length-$count);$count+=$received}while($received -gt 0 -and $count -lt $buffer.Length)
-     $bytes+=$count;if($count -gt 262144){continue};$data=[byte[]]::new($count);[Array]::Copy($buffer,$data,$count)
+     $bytes+=$count;if($count -eq $buffer.Length -and $buffer.Length -lt 262145){$bounded=$true;continue};if($count -gt 262144){continue};$data=[byte[]]::new($count);[Array]::Copy($buffer,$data,$count)
     }finally{if($null -ne $stream){$stream.Dispose()}}
     try{$parsed=if($item.Extension -ieq '.wer'){[P11LiveWer]::ParseWer($data)}else{[P11LiveWer]::ParseXml($data)}}catch{$failures++;continue}
     if($null -ne $parsed -and -not $seen.ContainsKey($parsed['private_source_sha256'])){$seen[$parsed['private_source_sha256']]=$true;$reports.Add($parsed);if($reports.Count -ge 8){break}}

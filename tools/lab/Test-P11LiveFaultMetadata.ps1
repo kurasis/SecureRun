@@ -13,4 +13,19 @@ foreach($encoding in @([Text.Encoding]::UTF8,[Text.Encoding]::Unicode)){
 }
 $wer="AppName=SandboxieRpcSs.exe`nEventType=APPCRASH`nSig[3].Name=Fault Module Name`nSig[3].Value=ntdll.dll`nSig[6].Name=Exception Code`nSig[6].Value=c0000409"
 $report=[P11LiveWer]::ParseWer([Text.Encoding]::UTF8.GetBytes($wer));Require ($report['fault_module_kind'] -ceq 'ntdll.dll' -and $report['exception_code_hex'] -ceq 'c0000409')
-Write-Output 'PASS: live WER parsing, private-field suppression, unknown names, event layout and UTF8/UTF16 DTD rejection'
+# Exercise actual Start-Job transport with a preexisting stop marker. No process
+# enumeration/native calls occur; this is a startup unit check, never Windows proof.
+$temporary=Join-Path ([IO.Path]::GetTempPath()) ('securerun-observer-startup-'+[Guid]::NewGuid().ToString('N'));$job=$null;$priorActions=$env:GITHUB_ACTIONS
+try{
+ $env:GITHUB_ACTIONS='true';$null=New-Item -ItemType Directory -Path $temporary
+ $stop=Join-Path $temporary 'stop';$result=Join-Path $temporary 'result.json';[IO.File]::WriteAllText($stop,'STOP_OWN_STARTUP_TEST')
+ $support=(Get-Item -LiteralPath (Join-Path $PSScriptRoot 'Read-P11LiveFaultMetadata.ps1')).FullName
+ $job=Start-Job -FilePath (Join-Path $PSScriptRoot 'Observe-P11Reporter.ps1') -ArgumentList $result,$stop,$support
+ $null=Wait-Job $job -Timeout 20;Require ($job.State -eq 'Completed' -and (Test-Path -LiteralPath $result))
+ $state=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json;Require ($state.samples -eq 0 -and $state.classification -ceq 'DIAGNOSTIC_ONLY_NO_PHASE_GATE')
+}finally{
+ if($null -ne $job){if($job.State -eq 'Running'){Stop-Job $job};Remove-Job $job -Force}
+ $env:GITHUB_ACTIONS=$priorActions
+ if(Test-Path -LiteralPath $temporary){Remove-Item -LiteralPath $temporary -Recurse -Force}
+}
+Write-Output 'PASS: live WER privacy/parser/DTD checks and actual background startup transport'

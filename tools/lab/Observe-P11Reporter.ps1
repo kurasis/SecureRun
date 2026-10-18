@@ -24,9 +24,13 @@ public sealed class P11ObservedProcess : IDisposable {
 }
 '@
 $known=@('SandboxieRpcSs','SandboxieDcomLaunch','SandboxieCrypto','SandboxieBITS','SbieSvc','WerFault','securerun-policy-probe','securerun-policy-probe-x86','securerun-policy-probe-x64')
-$held=@{};$history=@{};$events=[Collections.Generic.List[object]]::new();$reporters=[Collections.Generic.List[object]]::new();$clock=[Diagnostics.Stopwatch]::StartNew();$samples=0;$failures=0;$bounded=$false
+$held=@{};$history=@{};$events=[Collections.Generic.List[object]]::new();$reporters=[Collections.Generic.List[object]]::new();$clock=[Diagnostics.Stopwatch]::StartNew();$samples=0;$failures=0;$bounded=$false;$firstBoundMs=$null
+# Ten environments reverify earlier siblings (55 environment verifications),
+# each with native/x86/emulated-x64 parent/child probes and RPC companions.
+# Reporter capacity is independent: normal workload events cannot starve it.
+$knownEventLimit=2048;$reporterEventLimit=128;$knownEventCount=0;$reporterEventCount=0
 function Save-Observer {
- @{schema=1;classification='DIAGNOSTIC_ONLY_NO_PHASE_GATE';observer_active_during_workload=$true;name_observations_are_not_authentication=$true;termination_dispatched=$false;debugger_attached=$false;windows_security_or_wer_settings_modified=$false;raw_paths_arguments_ids_and_absolute_times_retained=$false;samples=$samples;observation_failures=$failures;record_bound_reached=$bounded;process_events=@($events.ToArray());reporters=@($reporters.ToArray())}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $ResultFile -Encoding utf8
+ @{schema=1;classification='DIAGNOSTIC_ONLY_NO_PHASE_GATE';observer_active_during_workload=$true;name_observations_are_not_authentication=$true;termination_dispatched=$false;debugger_attached=$false;windows_security_or_wer_settings_modified=$false;raw_paths_arguments_ids_and_absolute_times_retained=$false;samples=$samples;observation_failures=$failures;record_bound_reached=$bounded;record_bound_first_reached_ms=$firstBoundMs;known_process_event_limit=$knownEventLimit;reporter_event_limit=$reporterEventLimit;known_process_event_count=$knownEventCount;reporter_event_count=$reporterEventCount;process_events=@($events.ToArray());reporters=@($reporters.ToArray())}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $ResultFile -Encoding utf8
 }
 try{
  Save-Observer
@@ -38,7 +42,11 @@ try{
     $kind=$process.ProcessName;if($kind -notin $known){continue};$id=[int]$process.Id
     if($held.ContainsKey($id)){continue}
     $watched=[P11ObservedProcess]::Open([uint32]$id);if($null -eq $watched -or $watched.HasExited){continue};$birth=$watched.Birth
-    if($events.Count -ge 512){$bounded=$true;continue}
+    $isReporter=$kind -ieq 'WerFault'
+    if(($isReporter -and $reporterEventCount -ge $reporterEventLimit) -or (-not $isReporter -and $knownEventCount -ge $knownEventLimit)){
+     $bounded=$true;if($null -eq $firstBoundMs){$firstBoundMs=[long]$clock.ElapsedMilliseconds};continue
+    }
+    if($isReporter){$reporterEventCount++}else{$knownEventCount++}
     $event=@{kind=$kind+'.exe';started_observation_ms=[long]$clock.ElapsedMilliseconds;completed=$false;exit_code_hex=$null}
     $events.Add($event);$entry=@{process=$watched;birth=$birth;kind=$event.kind;event=$event};$held[$id]=$entry;$history[$id]=$entry;$keep=$true
     if($kind -ieq 'WerFault'){

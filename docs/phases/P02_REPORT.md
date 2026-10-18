@@ -1,12 +1,7 @@
-Current-source revalidation: **BLOCKED** after the subsequent P05 fixture teardown
-correction. The exact fa29a20 snapshot below passed both native laboratories;
-its original inventories remain authenticated and retained. No source list or
-component pin is reduced.
-
 Current P11 security refresh: **P02 DONE** on original Plus 1.18.8/core 5.73.8,
 source `bde0890108a563f5d72eb8e57085be2b37177218`.
-[Run 39109835521](https://github.com/kurasis/SecureRun/actions/runs/39109835521),
-manager/lab source `fa29a20ac9397f1f3222ce8bc2460f18954ed73c`: Server 49 passed/2 N/A,
+[Run 39110907921](https://github.com/kurasis/SecureRun/actions/runs/39110907921),
+manager/lab source `fdad6d74998029ba244e7e41345a7c66a9837fc4`: Server 49 passed/2 N/A,
 ARM 62 passed/2 N/A, zero failed/blocked. See [the current manifest](../evidence/p02/manifest.json)
 and [engine security review](../P11_ENGINE_UPDATE.md). This is feasibility, not
 final installed acceptance. The complete signed component inventories and observed

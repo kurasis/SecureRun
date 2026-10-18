@@ -37,6 +37,22 @@ protected probe change requires another native P02/P05 validation; fa29a20 remai
 a successful historical P02 snapshot. The C# fixture compiles and PowerShell
 syntax checks pass locally.
 
+Current P02 revalidation at `fdad6d7`, run39110907921, passed49/62 with two
+explicit N/A each and unchanged authenticated inventories/OS tuples. The earlier
+[complete P05 snapshot](../evidence/p11/investigation-fa29a20-policy-passed/review.json)
+passed45 native+62 adapter tests on each target; the subsequent fixture correction
+is being checked separately in run39111146590.
+
+The [first observer failure](../evidence/p11/investigation-fa29a20-observer/review.json)
+reproduced ARM environment08 refusal, but exhausted512 lifetime slots before
+WerFault appeared. Zero observer query errors do not compensate for incomplete
+coverage; the reporter cause remains undetermined. Normal workload capacity is
+now2048 events with an independent128-event reporter reserve, preserving the full
+workload and all process/security boundaries. The P09 retainer now rejects any
+workflow except actual P09/P10 gates, even if an instrumented full workload passes;
+two provenance tests verify diagnostic-path and failed/different-source rejection.
+Fresh uninstrumented integration and matching installed proof remain required.
+
 The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.

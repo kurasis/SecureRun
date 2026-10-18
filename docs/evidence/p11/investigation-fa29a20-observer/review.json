@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "source_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+  "run_id": 39109826510,
+  "job_id": 117623344966,
+  "artifact_id": 12130002954,
+  "classification": "FAILED_DIAGNOSTIC_ONLY_INCOMPLETE_OBSERVATION_NOT_GATE_PROOF",
+  "facts": "Full unmodified workload reproduced DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED at SEEDING_ENVIRONMENT_08. Observer had zero query failures but exhausted its512 process-event capacity before the reporter appeared; no reporter association was retained. Recorded fixed-name lifetimes include163 SbieSvc,87 RpcSs,87 DcomLaunch and175 native/x86/emulated-x64 probe events. The last retained event started at1234067ms. These names are not authentication. Absence of recorded crashes/reporters after capacity exhaustion proves nothing about the cause. Existing post-failure metadata again found a live reporter with no surviving CIM target. Next observer gives normal lifetimes2048 slots and reporters an independent128-slot reserve, without modifying workload, authority or Windows settings.",
+  "files": [
+    {
+      "path": "windows-11-arm/reporter-lifecycle.json",
+      "size": 103052,
+      "sha256": "2d77e39f3ad06e661dc8aab9a6b3469df246cd8e437f90bbf58995289c56bfc7"
+    },
+    {
+      "path": "windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "cc2d6ba6f3b870ff725b56fea109deec1eea99179d1f92603bec3f5a9a79d95d"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "cc23419315fefc24bb170b2c526d4acd5dbfce5ddc09e60bb91d70315acc73c1"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "fa12fada767f9c4d76e633165df30bc6ecc6e972999ea3a59dc1c3148f1d0f3c"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "cde206cc8b0192d0957a26156af14f798243f180d4b839c02fe59b2f3dc06292"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "9e61623d1d6802ab9618ce69fd3a4f112442117f9fd384970e8d849b78cad0ee"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "71c8614dd75e7b1d31385e9d8c78652103a9d2d80c08b5f855124969833bb2ff"
+    },
+    {
+      "path": "windows-11-arm/image-status-00ef45d8687b4f69b354f59c6902e536-8b3c3856a6384c26978576702529adc1.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "76673994c7a3ad7dfb14da1d0a890a649b7eb77cf5966e0f113701baf2f5ff8e"
+    },
+    {
+      "path": "windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "d94fdf81aa8eef979d71ddf0d7b1b3615cb7b93a8caf190070d72396985830b2"
+    }
+  ],
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw paths, numeric process IDs, SIDs, credential values or target arguments retained. Fixed process names are observations, not authentication. Original bytes preserved."
+}

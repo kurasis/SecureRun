@@ -228,12 +228,20 @@ def source_paths(root=ROOT):
     return paths
 
 
+def check_run(run, commit):
+    """An observer changes timings even when the original full workload passes."""
+    if (run.get('head_sha') != commit or run.get('status') != 'completed'
+            or run.get('conclusion') != 'success'
+            or run.get('path') not in {'.github/workflows/p09.yml', '.github/workflows/p10.yml'}):
+        raise ValueError('P09 requires a successful exact-source uninstrumented gate workflow')
+
+
 def retain(download, commit, run_id):
     if not re.fullmatch('[0-9a-f]{40}', commit) or run_id <= 0:
         raise ValueError('P09 exact full source and run required')
-    run = json.loads(subprocess.check_output(['gh', 'run', 'view', str(run_id), '--json', 'headSha,status,conclusion'], cwd=ROOT))
-    if run != {'headSha': commit, 'status': 'completed', 'conclusion': 'success'}:
-        raise ValueError('P09 exact source did not complete successfully')
+    run = json.loads(subprocess.check_output(
+        ['gh', 'api', f'repos/kurasis/SecureRun/actions/runs/{run_id}'], cwd=ROOT))
+    check_run(run, commit)
     for phase in range(3, 9):
         dep = read(ROOT / f'docs/evidence/p{phase:02}/manifest.json')
         if dep['result'] != 'DONE' or dep['tested_commit'] != commit:

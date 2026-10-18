@@ -1,0 +1,68 @@
+{
+  "source_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
+  "run_id": 39111146590,
+  "artifact_ids": {
+    "windows-2025": 12130463779,
+    "windows-11-arm": 12130877043
+  },
+  "job_ids": {
+    "windows-2025": 117627369142,
+    "windows-11-arm": 117627369245
+  },
+  "facts": "Exact-branch P05 completed successfully on both targets:45 native cases and62 adapter tests each, zero failed. The previously failed running-sibling/storage case and the actual other-session case both passed with the corrected held-object fixture cleanup. Live unknown/mismatched membership remains a refusal. Later gate/observer source changes still require the complete matching integration run; historical failed evidence is preserved.",
+  "schema": 1,
+  "classification": "SUCCESSFUL_SOURCE_SNAPSHOT_NOT_CURRENT_INTEGRATION_GATE",
+  "privacy_review": "Selected originals parsed, scalar/private-key patterns scanned and reviewed; no raw machine paths, process IDs, SIDs, credentials or target arguments retained. Screenshots are not copied in this partial review. Original JSON bytes preserved.",
+  "files": [
+    {
+      "path": "windows-2025/stage.json",
+      "size": 152,
+      "sha256": "adf1fb394e2d1d5a6f873b40c201f9b7ba68b12fdc78132de591d044e5c2a9f2"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "15445ebd3d74d06cae18fce06d5486ef43cd4cad7edf50a4e3aa580eb1044bc2"
+    },
+    {
+      "path": "windows-2025/policy-cases.json",
+      "size": 78786,
+      "sha256": "aac9763422fee2b8a74e80178edd555aa05c1a679b35bfa045ae84dc394bc0c3"
+    },
+    {
+      "path": "windows-2025/cross-session.json",
+      "size": 446,
+      "sha256": "8e9192421788cdba516297579f04eddb1e99bbc39e3c9bb095978902a91b7cdd"
+    },
+    {
+      "path": "windows-2025/standard-user.json",
+      "size": 279,
+      "sha256": "127e6192960caf88ec1d3a5c67ee43632cf578d5b04a0792634093cd82dafd0d"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "042f9a054b2d917a188e66b130bc8a3c51da51ca7ebebf825ffe5e4db2a29e5a"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 702,
+      "sha256": "931eb6dc63dce743511fc852f601946b620d669391b17007b78e26b0aa6b380b"
+    },
+    {
+      "path": "windows-11-arm/policy-cases.json",
+      "size": 109219,
+      "sha256": "e057a91367e9ec523a88cb44b503b9d5cc940b866ded730783fed7f5727b2553"
+    },
+    {
+      "path": "windows-11-arm/cross-session.json",
+      "size": 446,
+      "sha256": "2776aad2a7a1f78b4ad61054f765e91680629c0818250dc35a8b4fd5ae248a77"
+    },
+    {
+      "path": "windows-11-arm/standard-user.json",
+      "size": 279,
+      "sha256": "1ebd7ae5e8271c2ebac38d67fbd9d60f1d7a55a9e882a94da3e21ccafa3c3024"
+    }
+  ]
+}

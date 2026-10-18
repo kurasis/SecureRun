@@ -2,10 +2,17 @@
 
 Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
 The earlier native installed packaging implementation passed; required P10 revalidation did not.
-Current work replaces asynchronous Save filename input with checked native keyboard
-input and observes reporter lifetimes during a diagnostic-only ARM workload. New
-lab/workflow inputs require fresh full integration and matching installed proof.
-The source-specific reports below remain historical snapshots, not proof for these fixes.
+Checked native Save input and atomic session readiness passed full fa29a20 P09
+(22 native+101 UI) and P05 (45 native+62 adapter) on both targets. Subsequent held-object
+fixture teardown passed P05 at fdad6d7 on both targets. P02 at fdad6d7 is retained DONE.
+The capacity-corrected observer at96483f3/run39111501581 reproduced an ARM reporter
+refusal at environment01 without exhaustion/query errors. It associated a live
+RpcSs-named target by birth during x86 verification, before canary completion and
+cleanup. Subsequent exit4f is cleanup, not the original fault code. Exception/module
+remain unknown; bounded live WER metadata collection is being added. Names and
+metadata do not grant trust. Successful snapshots do not establish fault resolution.
+Current complete matching P10/P11 gates remain required.
+The source-specific reports below remain historical snapshots.
 
 | Phase | Current source validation | Evidence |
 |---|---|---|
@@ -13,11 +20,11 @@ The source-specific reports below remain historical snapshots, not proof for the
 | P02 | DONE | Exact fdad6d7/run39110907921: Server49/ARM62 passed, two explicit N/A each |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
-| P05 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
+| P05 | BLOCKED revalidation | fdad6d7/run39111146590 passed45+62 per target; matching full integration pending |
 | P06 | BLOCKED revalidation | Full-matrix jobs passed; separate PR rapid-cycle failure retained |
 | P07 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P08 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
-| P09 | BLOCKED | ARM diagnostic cleanup failed both attempts; Server first browser observation failed |
+| P09 | BLOCKED revalidation | fa29a20/run39109839082 passed22+101 per target; intermittent ARM reporter fault remains |
 | P10 | BLOCKED | Full current exact-source integration did not pass |
 | P11 | BLOCKED by P10 | 28 installed+81 production tests passed per target; [report](phases/P11_REPORT.md) |
 | P12 | NOT_STARTED | All 66 final installed T01–T66 acceptance entries remain unrun |
@@ -72,7 +79,7 @@ missing-WebView2 installation; ARM preserves its OS-preinstalled signed runtime.
 All 26 original specification files remain byte-for-byte unchanged; Windows security,
 TLS, original signatures/hashes and browser sandbox settings remain enabled.
 
-Repository validator and all 29 Python tooling/gate tests passed. Generated binaries,
+Repository validator and all 31 Python tooling/gate tests passed. Generated binaries,
 credentials, raw paths, arguments and private inventories remain excluded from Git.
 All project Markdown and reviewed structured evidence are published as authorized.
 PR #12 remains draft; normal merge requires completing the actual gate, not bypassing it.

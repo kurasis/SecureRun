@@ -568,6 +568,71 @@
       "sha256": "8f61f1b3017dc04206e36be734a132170a4db71ff1ef5d059834173620fa7dc5"
     },
     {
+      "path": "investigation-96483f3-observer/review.json",
+      "size": 3766,
+      "sha256": "9538d1c51ba6e7196eb0a0f033900403cce56001a9fb78bca6b6a667f6a2c35e"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "04b67d8dbafa3620e379f7044b65ac7ef0cdafd9b216e07f924ecb29903ebd2e"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "b0f028794a4cfeb69d5800b3e028f4611efb4215014cdf8d9dc1548b00dec3a3"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/image-status-1a1eb4920f234cacb36d533558556297-de2ee586e58940708a853bf51223a045.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "1631910c564ae2ba4ec90a5514da8b198888b7dc02bfd528687c1821cbd11051"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "4148f3092ede9c71acf08c0526eefbeb07c0d1bd0f3e9812df6f643550729353"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/reporter-lifecycle.json",
+      "size": 3681,
+      "sha256": "7d03f52a5778e0cfa4ff66f3912e0395f426312cdbeee1abe540e032d5f70308"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "af44bcc2b89080c97449a82886e97c5b799325931a3be6d4a87ed3de9dc1b5f4"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "01f970c6435aacf3a956c8c7188a37d3f221890037e6c3bebfd8b349b264a4df"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "92b03aa8e213bfee47974d6da798fdf474031095b94f5a6ef3d46486bd660b57"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-96483f3-observer/windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "54e020ecad0e764fd4c466079d9e74af83c92cff695a54c973c243d0ed4ca7f8"
+    },
+    {
       "path": "investigation-97855fd-arm-p09/component-faults.json",
       "size": 178,
       "sha256": "8b0cabd10734523dcd498f6fef8c5717001e2b4de547411ff592ba87d4e1d1d2"
@@ -1111,6 +1176,146 @@
       "path": "investigation-fa29a20-pr-p05/windows-2025/stage.json",
       "size": 152,
       "sha256": "5a8247cec94344636b7c1bdda8aaad187a18a5b80045b34cdc9d760f2900548a"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/review.json",
+      "size": 4165,
+      "sha256": "9d94ea550e44b40d4fcbb80f8946bfd7539612648aa22a062862a400946bc504"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/access-editor-d7dd439938234c089dc09d0f0923e03a.json",
+      "size": 2367,
+      "sha256": "dca529fcc2275d471ba8d3cdd94f9d36f5dced2b1f770f03b68f2b0e9ee43e77"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/access-picker-f47355b00b654b71a185edc9c7ea6af1.json",
+      "size": 1633,
+      "sha256": "2e63cea106c10250b0d67d1aa070fb1accf4f84286aa34aeb1a28047a6d5345b"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "5d11d86ae1e1e5483536c3d3fe21d45ce4cd06fc066c9ad75776fe7056136de9"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/product-cases.json",
+      "size": 11381,
+      "sha256": "e9049ec2d93ac219620c284dcf03338d007527050efb42853d3c3f343ffa9f07"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/run-summary.json",
+      "size": 713,
+      "sha256": "8e7a49182d98be8d4b4eb0c45da927e9539b1e1c3f0aa08150b3e464a97a8c76"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/stage.json",
+      "size": 113,
+      "sha256": "aa53ec7565a95d9a395d5c65684cc88ba71fe038a6c6b880391718b4c10ab641"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/standard-product.json",
+      "size": 483,
+      "sha256": "f3e0b36eb2939b9ff78e230c59d2b5ded3074d59376fe76890b6564ea12183ff"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-11-arm/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/access-editor-2212b7f1de9645aeb334ec43d8ff8c0e.json",
+      "size": 2367,
+      "sha256": "d7b7f4442de853bcc0e3143345ff7050a35ec96481b67ae3b7e1c1f38875c178"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/access-picker-61941a682c0444898b382ba3a653d556.json",
+      "size": 1633,
+      "sha256": "6a0c48d669865644ea6861f2214d58bb70ad3ef2c6f8749fbcbe7c4fbbcbc1db"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "6934be1db85555e7ef87f3f22556288609e5d93d648b5fb9f3bbc08838c817e0"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/product-cases.json",
+      "size": 11374,
+      "sha256": "95b4bd9835a033c60819abffa855460077fdf18a330b4f4171f2b7953b504a78"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/run-summary.json",
+      "size": 713,
+      "sha256": "47d26674070b7740be8a53c7cdc57e56a909b78c39bb8b48c61a815ebc72ac61"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/stage.json",
+      "size": 113,
+      "sha256": "104135979ddc829c48dc006d32938891edf791a9c1c3deb54ae8c4e9c7eb8a79"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/standard-product.json",
+      "size": 483,
+      "sha256": "584cc829a854ed48d3b4a441f9504feaa76b5e68a56a41f64ebd954de36fd51c"
+    },
+    {
+      "path": "investigation-fa29a20-product-passed/windows-2025/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/review.json",
+      "size": 2734,
+      "sha256": "b9fb1d249e8474c2e7f96fd78454cfb7a4666e0324b1c19605140cd36468690c"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-11-arm/cross-session.json",
+      "size": 446,
+      "sha256": "2776aad2a7a1f78b4ad61054f765e91680629c0818250dc35a8b4fd5ae248a77"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-11-arm/policy-cases.json",
+      "size": 109219,
+      "sha256": "e057a91367e9ec523a88cb44b503b9d5cc940b866ded730783fed7f5727b2553"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-11-arm/run-summary.json",
+      "size": 702,
+      "sha256": "931eb6dc63dce743511fc852f601946b620d669391b17007b78e26b0aa6b380b"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "042f9a054b2d917a188e66b130bc8a3c51da51ca7ebebf825ffe5e4db2a29e5a"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-11-arm/standard-user.json",
+      "size": 279,
+      "sha256": "1ebd7ae5e8271c2ebac38d67fbd9d60f1d7a55a9e882a94da3e21ccafa3c3024"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-2025/cross-session.json",
+      "size": 446,
+      "sha256": "8e9192421788cdba516297579f04eddb1e99bbc39e3c9bb095978902a91b7cdd"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-2025/policy-cases.json",
+      "size": 78786,
+      "sha256": "aac9763422fee2b8a74e80178edd555aa05c1a679b35bfa045ae84dc394bc0c3"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "15445ebd3d74d06cae18fce06d5486ef43cd4cad7edf50a4e3aa580eb1044bc2"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-2025/stage.json",
+      "size": 152,
+      "sha256": "adf1fb394e2d1d5a6f873b40c201f9b7ba68b12fdc78132de591d044e5c2a9f2"
+    },
+    {
+      "path": "investigation-fdad6d7-policy-passed/windows-2025/standard-user.json",
+      "size": 279,
+      "sha256": "127e6192960caf88ec1d3a5c67ee43632cf578d5b04a0792634093cd82dafd0d"
     },
     {
       "path": "investigation-ff41537-arm-attempt-1/packaging-cases.json",
@@ -3328,7 +3533,7 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
+  "active_fix_source": "96483f3e03da4d32a777949c87410d49926fd0c9",
   "active_fix_validation": {
     "result": "IN_PROGRESS",
     "native_feasibility_run": 39110907921,
@@ -3340,6 +3545,13 @@
     "new_fixture_source_requires_native_revalidation": true,
     "previous_policy_run_result": "PASSED_BOTH_RUNNERS",
     "first_diagnostic_result": "FAILED_OBSERVER_CAPACITY_EXHAUSTED_CAUSE_UNDETERMINED",
-    "diagnostic_capacity_fix_requires_new_run": true
+    "diagnostic_capacity_fix_requires_new_run": true,
+    "native_policy_snapshot_result": "PASSED_BOTH_45_NATIVE_62_ADAPTER",
+    "full_product_snapshot_result": "PASSED_BOTH_22_NATIVE_101_UI",
+    "second_diagnostic_only_arm_run": 39111501581,
+    "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
+    "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
+    "second_diagnostic_capacity_exhausted": false,
+    "next_diagnostic": "READ_ONLY_LIVE_WER_METADATA"
   }
 }

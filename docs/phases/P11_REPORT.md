@@ -53,6 +53,34 @@ workflow except actual P09/P10 gates, even if an instrumented full workload pass
 two provenance tests verify diagnostic-path and failed/different-source rejection.
 Fresh uninstrumented integration and matching installed proof remain required.
 
+The exact [fdad6d7 P05 snapshot](../evidence/p11/investigation-fdad6d7-policy-passed/review.json),
+run39111146590, passed45 native+62 adapter tests on each system, including both
+the running-sibling/storage and real second-session cases. Full uninstrumented
+[fa29a20 P09](../evidence/p11/investigation-fa29a20-product-passed/review.json),
+run39109839082, passed22 native+101 UI checks per target. Real native Save and
+reviewed-byte equality passed on both. Complete original downloaded folders also
+passed all independent retainer target assertions. Server startup3477.3973ms
+exceeded3000ms; ARM idle CPU1.2673191570845006% exceeded<1%; other budgets met.
+Original deviations/user-impact explanations remain unchanged.
+
+These are successful source-specific snapshots, not proof that the intermittent
+ARM reporter fault is corrected: the failed observer on fa29a20 is retained too.
+The capacity-corrected observer is running at `96483f3`, run39111501581. Current
+complete matching P10/P11 gates remain pending; P12 is not started.
+
+The [capacity-corrected observer](../evidence/p11/investigation-96483f3-observer/review.json),
+run39111501581, failed at environment01 with zero observation errors and no
+capacity exhaustion. Its reporter target was a still-live, birth-revalidated
+SandboxieRpcSs.exe-named lifetime during x86 verification. Reporting was observed
+before the canary completed and before scoped cleanup; subsequent exit4f is the
+cleanup code, not the original exception. Names/birth matching are not image
+authentication. No exception/module is established and no teardown-order fix is
+claimed. The next observer reads only bounded live WER temporary XML/reports and
+already enabled channels. XML DTD/external entities are prohibited; fixed scalar
+fields suppress paths, IDs, unknown module names and report text. Read metadata is
+name-matched diagnostic material, never process authentication or gate proof.
+Synthetic parser/privacy, event-layout and UTF8/UTF16 entity rejection checks pass.
+
 The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.

@@ -2,7 +2,7 @@ name: P11 failure diagnosis only
 on:
   push:
     branches: ['p11/**']
-    paths: ['tools/lab/Observe-P11Reporter.ps1', '.github/workflows/p11-diagnostics.yml']
+    paths: ['tools/lab/Observe-P11Reporter.ps1', 'tools/lab/*P11LiveFaultMetadata.ps1', '.github/workflows/p11-diagnostics.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +25,9 @@ jobs:
           restore-keys: |
             p10-09-windows-11-arm-
             p09-windows-11-arm-rust190-
+      - name: Verify live metadata parsing and privacy bounds
+        shell: pwsh
+        run: ./tools/lab/Test-P11LiveFaultMetadata.ps1
       - name: Observe actual failure without trusting or terminating reporters
         shell: pwsh
         run: |

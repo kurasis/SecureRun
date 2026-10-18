@@ -2,6 +2,8 @@
 param([Parameter(Mandatory)][string]$ResultFile,[Parameter(Mandatory)][string]$StopFile)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'DISPOSABLE_ACTIONS_VM_REQUIRED'}
+$sinceUtc=[DateTime]::UtcNow
+. (Join-Path $PSScriptRoot 'Read-P11LiveFaultMetadata.ps1')
 Add-Type @'
 using System;using System.Runtime.InteropServices;
 public sealed class P11ObservedProcess : IDisposable {
@@ -24,7 +26,7 @@ public sealed class P11ObservedProcess : IDisposable {
 }
 '@
 $known=@('SandboxieRpcSs','SandboxieDcomLaunch','SandboxieCrypto','SandboxieBITS','SbieSvc','WerFault','securerun-policy-probe','securerun-policy-probe-x86','securerun-policy-probe-x64')
-$held=@{};$history=@{};$events=[Collections.Generic.List[object]]::new();$reporters=[Collections.Generic.List[object]]::new();$clock=[Diagnostics.Stopwatch]::StartNew();$samples=0;$failures=0;$bounded=$false;$firstBoundMs=$null
+$held=@{};$history=@{};$events=[Collections.Generic.List[object]]::new();$reporters=[Collections.Generic.List[object]]::new();$pendingMetadata=[Collections.Generic.List[object]]::new();$clock=[Diagnostics.Stopwatch]::StartNew();$samples=0;$failures=0;$bounded=$false;$firstBoundMs=$null
 # Ten environments reverify earlier siblings (55 environment verifications),
 # each with native/x86/emulated-x64 parent/child probes and RPC companions.
 # Reporter capacity is independent: normal workload events cannot starve it.
@@ -69,7 +71,7 @@ try{
        }
       }
      }catch{$failures++}
-     $reporters.Add($record);Save-Observer
+     $reporters.Add($record);$pendingMetadata.Add(@{record=$record;attempts=0;next_ms=0});Save-Observer
     }
    }catch{$failures++}finally{$process.Dispose();if(-not $keep -and $null -ne $watched){$watched.Dispose()}}
   }
@@ -81,6 +83,13 @@ try{
      $entry.process.Dispose();$held.Remove($id)
     }
    }catch{$failures++}
+  }
+  foreach($pending in $pendingMetadata){
+   if($pending.attempts -ge 4 -or $clock.ElapsedMilliseconds -lt $pending.next_ms){continue}
+   if($pending.record.ContainsKey('live_fault_metadata') -and @($pending.record.live_fault_metadata.reports).Count -gt 0){continue}
+   $pending.attempts++;$pending.record.live_metadata_attempts=$pending.attempts
+   try{$pending.record.live_fault_metadata=Get-P11LiveFaultMetadata -Since $sinceUtc}catch{$failures++}
+   $pending.next_ms=[long]$clock.ElapsedMilliseconds+500;Save-Observer
   }
   if($samples % 20 -eq 0){Save-Observer}
   Start-Sleep -Milliseconds 100

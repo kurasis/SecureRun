@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "source_commit": "96483f3e03da4d32a777949c87410d49926fd0c9",
+  "run_id": 39111501581,
+  "artifact_id": 12131470213,
+  "classification": "FAILED_DIAGNOSTIC_ONLY_LIVE_BIRTH_ASSOCIATION_NOT_COMPONENT_AUTHENTICATION",
+  "facts": "Full workload refused DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED at SEEDING_ENVIRONMENT_01. Observer recorded12 known lifetimes and1 reporter, zero query errors, no capacity exhaustion. WerFault numeric target resolved to a previously observed SandboxieRpcSs.exe-named lifetime; a fresh query/synchronize handle matched its birth while still live. Reporter was observed at833207ms, after that target first appeared832988ms and before x86 parent completion837020ms. The target later exited837129ms with0000004f, the existing scoped cleanup code, which does not identify the original report trigger. The preceding native-probe RpcSs exited4f and DcomLaunch exited0. No DcomLaunch lifetime was observed for the failing x86 verification. Reporting precedes cleanup; a speculative teardown reordering is not established as a cause/fix. Process name and matched birth do not authenticate image bytes or establish an exception/module. Existing post-failure WER logs still have no exception/module metadata. Next diagnosis reads bounded live temporary WER XML/reports and already enabled channels, without debugger, process VM access, termination changes or Windows/reporting setting changes.",
+  "privacy_review": "All selected originals parsed, scanned and reviewed. No raw process IDs, paths, SIDs, target arguments or report text retained. Names are observations; no new process authority or phase pass is derived. Original bytes preserved.",
+  "files": [
+    {
+      "path": "windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "54e020ecad0e764fd4c466079d9e74af83c92cff695a54c973c243d0ed4ca7f8"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "92b03aa8e213bfee47974d6da798fdf474031095b94f5a6ef3d46486bd660b57"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "01f970c6435aacf3a956c8c7188a37d3f221890037e6c3bebfd8b349b264a4df"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "af44bcc2b89080c97449a82886e97c5b799325931a3be6d4a87ed3de9dc1b5f4"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "4148f3092ede9c71acf08c0526eefbeb07c0d1bd0f3e9812df6f643550729353"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "1631910c564ae2ba4ec90a5514da8b198888b7dc02bfd528687c1821cbd11051"
+    },
+    {
+      "path": "windows-11-arm/image-status-1a1eb4920f234cacb36d533558556297-de2ee586e58940708a853bf51223a045.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "b0f028794a4cfeb69d5800b3e028f4611efb4215014cdf8d9dc1548b00dec3a3"
+    },
+    {
+      "path": "windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "04b67d8dbafa3620e379f7044b65ac7ef0cdafd9b216e07f924ecb29903ebd2e"
+    },
+    {
+      "path": "windows-11-arm/reporter-lifecycle.json",
+      "size": 3681,
+      "sha256": "7d03f52a5778e0cfa4ff66f3912e0395f426312cdbeee1abe540e032d5f70308"
+    }
+  ]
+}

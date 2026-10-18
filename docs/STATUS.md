@@ -68,7 +68,13 @@ before DcomLaunch. At roughly 0.5-0.8% per start, the cancelled 24-pair sample w
 usually miss it. On 2026-10-18 the owner authorized one bounded single-VM stress
 reproduction instead: up to 200 rounds of fresh ARM64/x64/x86 scopes (600 starts,
 40-minute budget) with the calibrated original crash filter, parent and child both
-requesting COM. It is diagnostic only and closes no gate.
+requesting COM. It is diagnostic only and closes no gate. [Run 39148830651](evidence/p11/investigation-08594d4-arm-stress-not-reproduced/review.json)
+completed all 600 scopes in about eight minutes: every probe exited 0 with RpcSs
+alive, and no RpcSs crash or dump occurred (only the synthetic control). Zero in
+600 has roughly a 3-5% chance at the observed rate, so bare original startup with
+an emulated caller is unlikely to be the sole trigger. All retained faults ran in
+product-compiled scopes; the next discriminating step is the same stress inside
+such scopes. Exception and module remain unknown; no gate is promoted.
 
 [Static ARM source review](P11_ARM_SOURCE_REVIEW.md) confirms the known 1.15.5 ARM
 fixes remain in pinned 1.18.8. No newer core fix was found at checked upstream

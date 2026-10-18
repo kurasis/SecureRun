@@ -82,6 +82,11 @@ The owner therefore authorized a single dispatched stress run on 2026-10-18: up 
 200 rounds across ARM64, emulated x64 and x86 within 40 minutes, with the parent and
 child probe both requesting the denied BITS activation so original RpcSs starts in
 every fresh scope. Calibration, cleanup and privacy constraints are unchanged.
+[Run 39148830651](../evidence/p11/investigation-08594d4-arm-stress-not-reproduced/review.json)
+passed calibration and completed all 600 scopes with exit 0 and RpcSs alive after
+each probe; the service log recorded no RpcSs crash and no RpcSs dump was written.
+Because every retained fault occurred in a product-compiled scope, the minimal
+original-engine box is now considered an insufficient trigger, by inference only.
 
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust

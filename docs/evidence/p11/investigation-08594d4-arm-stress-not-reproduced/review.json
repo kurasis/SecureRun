@@ -1,0 +1,13 @@
+{
+  "classification": "ORIGINAL_ENGINE_STRESS_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "tested_commit": "08594d4536a2dcf3f27a9ff9e9ba83d6d2df6665",
+  "run_id": 39148830651,
+  "artifact_id": 12144776191,
+  "artifact_zip_sha256": "2f24f7a23e1afc39b38b6ce08792a9eed8d64bb0697a2f2edeb677964d073008",
+  "conclusion": "success",
+  "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+  "original_bytes_unchanged": true,
+  "facts": "Owner-authorized single ARM VM. Calibration again captured the synthetic e0424242 KERNELBASE dump without a debugger. Then 600 fresh minimal original-engine scopes (200 rounds of ARM64, emulated x64 and x86 parent/child pairs, both requesting the denied BITS activation) all exited 0 with SandboxieRpcSs alive after every probe, in about eight minutes and within the 40-minute budget. The original service log recorded no RpcSs crash: its only SBIE2224 is the withheld-name synthetic control, plus 400 NtCreateLowBoxToken FFS warnings. No RpcSs dump was written and the LogFile value was restored.",
+  "inference": "At the 0.5-0.8% per-start rate seen in retained manager traces, zero faults in 600 starts (400 emulated) has roughly a 3-5% chance. Bare original RpcSs startup with an emulated caller is therefore unlikely to be the sole trigger. The retained faults all occurred in boxes carrying the compiled product policy (manager verification scopes and a product 7-Zip launch), so the next discriminating experiment should run the same stress inside product-compiled scopes. This is an inference, not an established cause; the original exception and module remain unknown.",
+  "privacy_review": "Both originals parsed and scanned; no raw paths, process IDs, SIDs, arguments, dumps or log text retained."
+}

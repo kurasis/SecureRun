@@ -3441,6 +3441,21 @@
       "path": "investigation-static-arm-source-review/review.json",
       "size": 3704,
       "sha256": "c1a5a34da07c8e8aec18e1c647b5b9ca1f493bff5f7760d6f429f5b320754ce8"
+    },
+    {
+      "path": "investigation-08594d4-arm-stress-not-reproduced/original-crash-reproducer.json",
+      "size": 88124,
+      "sha256": "fdac25615ec949ef331c8e1104b87635829ba58106fafa15356f8d54c9e56cd3"
+    },
+    {
+      "path": "investigation-08594d4-arm-stress-not-reproduced/original-service-log.json",
+      "size": 1135,
+      "sha256": "f4f7391a38f2303f6255112df9398ee8ae93eb436aeae0425c7440fadfb27187"
+    },
+    {
+      "path": "investigation-08594d4-arm-stress-not-reproduced/review.json",
+      "size": 1723,
+      "sha256": "d90eb31404c494d44a6d619fc97012d815865d249b74f6ced92268a5fed951d8"
     }
   ],
   "next_action": "CONTINUE_P11_DEPENDENCY_DIAGNOSIS_NOT_P12",

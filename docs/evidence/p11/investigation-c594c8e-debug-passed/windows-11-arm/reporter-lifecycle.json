@@ -1,0 +1,6855 @@
+{
+  "name_observations_are_not_authentication": true,
+  "observer_active_during_workload": true,
+  "raw_paths_arguments_ids_and_absolute_times_retained": false,
+  "debugger_attachment_assumption": "AUTHENTICATED_SCOPE_REQUESTS_ONLY",
+  "exception_capture": {
+    "explicit_termination_requests_dispatched": false,
+    "active_monitors_left_for_vm_cleanup": 0,
+    "process_memory_dumping_enabled": true,
+    "active_session_limit": 8,
+    "tool_failures": 0,
+    "attach_requests": 174,
+    "scope_refusals": 3,
+    "tool_observed_exception_codes": {},
+    "dump_and_tool_output_upload_allowed": false,
+    "exceptions": [],
+    "engine_payload_pins_ready": true,
+    "dump_parser_failure_codes": {},
+    "attachment_bound_reached": false,
+    "completed_without_exception_dump": 174,
+    "tool_exit_codes": {
+      "0": 174
+    },
+    "completed_with_live_undebugged_target": 0,
+    "pin_preparation_failures": 0,
+    "debugger_present_target_count": 174,
+    "classification": "DEBUGGER_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+    "capture_cleanup_failed": false,
+    "pin_failure_codes": {},
+    "attachment_limit": 512,
+    "debugging_changes_fault_delivery": true,
+    "scope_refusal_codes": {
+      "DIAGNOSTIC_HELPER_OWNER_SCOPE_REFUSED": 3
+    },
+    "authenticated_original_helper_sha256": "cb87989943637968911a75f1990b8459d7ae8ad4988896e89a3b06f5c04b483b",
+    "debugger_mode_enabled": true,
+    "tool_pinned": true,
+    "tool_authenticode": "Valid",
+    "observer_existing_debug_privilege_enabled": true,
+    "debugger_presence_query_failures": 0,
+    "tool_status_counts": {},
+    "pin_preparation_refused_after_actor_creation": false
+  },
+  "classification": "DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "windows_security_or_wer_settings_modified": false,
+  "process_events": [
+    {
+      "kind": "SbieSvc.exe",
+      "completed": false,
+      "started_observation_ms": 624398,
+      "exit_code_hex": null
+    },
+    {
+      "started_observation_ms": 758993,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 762865,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "kind": "SbieSvc.exe",
+      "completed": false,
+      "started_observation_ms": 758993,
+      "exit_code_hex": null
+    },
+    {
+      "started_observation_ms": 758993,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 759110,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 759343,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 762865,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 759442,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 760234,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 759444,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 762865,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 764641,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 769267,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 764753,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 764891,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 765229,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 769267,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 765351,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 766632,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 765351,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 769267,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 765351,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 765461,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 770474,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 774746,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 770578,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 770700,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 771089,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 774856,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 771101,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 772112,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 771101,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 771214,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 771101,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 774856,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 776691,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 780470,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 776798,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 780470,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 776810,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 777751,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 776810,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 776937,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 776810,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 780470,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 781464,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 785667,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 781574,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 781702,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 781818,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 785667,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 781925,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 782976,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 781925,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 785667,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 786472,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 790543,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 786599,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 786755,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 786903,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 790544,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 786917,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 787919,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 786917,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 787026,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 786917,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 790544,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 791428,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 795296,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 791429,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 791536,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 791649,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 795296,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 791685,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 792666,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 791790,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 795296,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 796071,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 800276,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 796182,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 796294,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 796405,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 800276,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 796639,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 797635,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 796639,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 800276,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 800940,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 805068,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 801064,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 801180,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 801289,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 805068,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 801490,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 802375,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 801490,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 805068,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 806433,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 810339,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 806543,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 806654,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 806765,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 810339,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 806776,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 807668,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 806776,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 806891,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 806776,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 810339,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 810999,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 815191,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 811112,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 811218,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 811449,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 815301,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 811466,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 812568,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 811466,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 815301,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 811466,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 811581,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 815852,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 819942,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 815964,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 816073,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 816185,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 819942,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 816232,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 817328,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 816342,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 819942,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 820827,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 824708,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 820827,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 820938,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 821049,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 824708,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 821089,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 822070,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 821193,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 824708,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 825372,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 829565,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 825483,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 825595,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 825704,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 829565,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 825831,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 826933,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 825831,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 829565,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 825831,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 825942,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 830277,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 834380,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 830389,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 830497,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 830615,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 834380,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 830796,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 831682,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 830796,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 834380,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 835984,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 836596,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 836314,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 836703,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 836333,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 836596,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 836333,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 836489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 836333,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 836703,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 837386,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 838298,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 837495,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 837605,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 837834,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 838298,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 837851,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 838189,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 837851,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 838298,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 837851,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 837970,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 839739,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 840453,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 839850,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 839961,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 840102,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 840560,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 840122,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 840452,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 840122,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 840560,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 840122,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 840227,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 841774,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 842453,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 841883,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 841997,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 842106,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 842453,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 842117,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 842343,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 842117,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 842238,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 842117,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 842453,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 843117,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 844012,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 843231,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 843338,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 843558,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 844122,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 843575,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 843903,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 843575,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 844122,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 844791,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 845479,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 844895,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 845006,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 845122,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 845589,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 845141,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 845479,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 845141,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 845589,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 845141,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 845259,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 846586,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 850489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 846586,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 846701,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 846842,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 850489,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 846854,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 847849,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 846854,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 846965,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 846854,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 850489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 851061,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 855258,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 851169,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 851279,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 851500,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 855371,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 851522,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 852626,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 851522,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 855371,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 856301,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 860500,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 856416,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 856522,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 856831,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 860500,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 856845,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 857876,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 856845,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 856950,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 856845,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 860499,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 861275,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 865136,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 861385,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 861493,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 861625,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 865248,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 861636,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 862514,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 861636,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 861750,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 861637,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 865248,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 865909,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 870071,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 866019,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 866133,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 866241,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 870182,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 866369,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 867457,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 866369,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 870181,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 866369,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 866478,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 870733,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 874828,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 870844,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 870955,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 871070,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 874828,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 871135,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 872105,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 871237,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 874828,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 875600,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 879555,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 875710,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 875824,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 875943,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 879555,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 875955,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 876937,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 875955,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 876060,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 875955,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 879555,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 880105,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 884387,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 880215,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 880433,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 880553,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 884387,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 880576,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 881665,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 880576,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 884387,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 884933,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 888999,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 885043,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 885152,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 885262,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 888999,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 885299,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 886385,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 885406,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 888999,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 890209,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 894094,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 890209,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 890319,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 890433,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 894094,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 890483,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 891472,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 890600,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 894094,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 894753,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 898976,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 894863,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 894974,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 895089,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 898976,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 895274,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 896252,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 895274,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 898976,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 899637,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 903708,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 899748,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 899858,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 899993,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 903708,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 900015,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 900996,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 900015,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 903708,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 900015,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 900125,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 904477,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 905089,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 904587,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 904755,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 904705,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 905089,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 904755,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 904980,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 904755,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 904874,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 904874,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 905089,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 905756,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 906666,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 905864,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 905974,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 906083,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 906666,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 906116,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 906555,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 906223,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 906666,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 906223,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 906333,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 907326,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 908012,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 907661,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 908119,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 907673,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 908012,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 907673,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 908119,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 907673,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 907787,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 908892,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 912816,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 909003,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 909116,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 909224,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 912816,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 909235,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 910219,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 909235,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 909349,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 909235,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 912817,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 913482,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 917625,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 913591,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 913700,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 913814,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 917625,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 913940,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 914924,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 913940,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 917625,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 913940,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 914051,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 918285,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 922357,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 918394,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 918504,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 918619,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 922357,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 918655,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 919653,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 918775,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 922357,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 923255,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 927220,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 923367,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 923479,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 923602,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 927220,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 923624,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 924610,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 923625,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 923732,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 923625,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 927220,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 927882,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 932029,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 927992,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 928121,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 928102,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 932028,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 928230,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 929316,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 928230,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 932029,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 928230,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 928341,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 932697,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 936617,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 932802,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 932928,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 932911,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 936617,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 932928,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 934017,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 933037,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 936617,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 933037,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 933148,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 937390,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 941346,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 937500,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 937610,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 937745,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 941346,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 937763,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 938747,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 937763,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 937876,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 937764,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 941346,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 942007,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 946163,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 942119,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 942229,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 942456,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 946272,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 942468,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 943558,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 942468,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 946272,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 942468,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 942577,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 946824,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 950877,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 946931,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 947041,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 947259,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 950986,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 947270,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 948259,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 947270,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 950986,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 947270,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 947388,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 952099,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 955976,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 952099,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 952207,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 952317,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 955976,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 952358,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 953364,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 952474,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 955976,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 956527,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 960684,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 956637,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 956748,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 956858,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 960685,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 956983,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 958070,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 956983,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 960684,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 956983,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 957094,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 961343,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 965415,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 961455,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 961564,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 961675,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 965415,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 961833,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 962809,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 961833,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 965415,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 966301,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 966981,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 966413,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 966525,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 966635,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 966981,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 966646,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 966871,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 966646,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 966761,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 966646,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 966981,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 967644,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 968648,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 967755,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 967865,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 967977,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 968648,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 968103,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 968430,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 968103,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 968648,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 968103,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 968213,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 969316,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 970005,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 969316,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 969425,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 969657,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 970005,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 969669,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 969895,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 969669,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 970004,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 969669,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 969785,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 970887,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 974849,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 970997,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 971107,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 971219,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 974849,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 971230,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 972214,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 971230,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 971347,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 971230,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 974849,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 975399,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 979641,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 975509,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 975616,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 975838,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 979641,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 975850,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 976935,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 975850,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 979641,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 975850,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 975961,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 980191,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 984206,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 980303,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 980413,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 980534,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 984311,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 980607,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 981583,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 980713,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 984311,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 985199,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 989031,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 985418,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 989140,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 985562,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 986427,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 985562,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 989140,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 989691,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 993984,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 990146,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 993984,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 990170,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 991268,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 990171,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 993984,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 994533,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 998581,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 994646,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 994752,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 994864,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 998581,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 994990,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 995972,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 994990,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 998581,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 994990,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 995100,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 999355,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1003291,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 999467,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 999581,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 999688,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1003291,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 999699,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1000685,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 999699,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 999814,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 999699,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1003291,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1003954,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1008114,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1004064,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1004172,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1004394,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1008222,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1004409,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1005497,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1004409,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1008222,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1004409,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1004519,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1008882,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1012948,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1008995,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1009104,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1009233,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1012948,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1009251,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1010235,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1009251,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1012948,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1009251,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1009357,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1013832,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1017677,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1013832,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1013943,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1014054,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1017677,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1014090,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1015065,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1014090,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1014195,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1014195,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1017677,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1018341,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1022515,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1018451,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1018558,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1018685,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1022515,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1018702,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1019793,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1018702,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1022515,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1023070,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1027044,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1023188,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1023290,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1023430,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1027154,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1023445,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1024434,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1023445,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1027154,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1023445,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1023558,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1028264,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1032198,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1028375,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1028485,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1028601,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1032199,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1028613,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1029593,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1028613,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1028722,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1028613,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1032198,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1032862,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1037134,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1032976,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1033081,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1033305,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1037135,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1033333,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1034428,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1033333,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1037134,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1037796,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1041836,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1037796,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1037908,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1038129,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1041836,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1038139,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1039128,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1038139,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1041836,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1038139,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1038259,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1042609,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1043284,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1042717,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1042827,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1042947,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1043285,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1042961,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1043176,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1042961,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1043066,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1042961,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1043284,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1043961,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1044870,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1044076,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1044181,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1044401,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1044870,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1044429,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1044763,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1044429,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1044871,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1045538,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1046380,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1045648,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1045759,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1045868,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1046380,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1046054,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1046271,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1046054,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1046380,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1047376,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1051254,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1047376,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1047479,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1047590,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1051254,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1047638,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1048625,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1047750,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1051254,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1051917,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1056112,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1052028,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1052136,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1052285,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1056112,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1052309,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1053400,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1052309,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1056112,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1052309,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1052419,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1056772,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1060716,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1057104,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1060716,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1057117,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1058101,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1057117,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1060716,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1057117,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1057226,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1061709,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1065555,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1061709,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1061820,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1061947,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1065556,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1061966,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1062945,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1061966,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1062074,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1062074,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1065556,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1066220,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1070311,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1066332,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1066442,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1066588,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1070311,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1066611,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1067702,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1066611,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1070311,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1066611,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1066725,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1070975,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1075038,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1071090,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1071195,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1071416,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1075038,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1071427,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1072413,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1071427,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1075038,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1071427,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1071548,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1076028,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1079901,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1076028,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1076137,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1076295,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1079901,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1076315,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1077181,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1076315,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1076420,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1076315,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1079901,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1080562,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1084832,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1080673,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1080784,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1081018,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1084833,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1081033,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1082126,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1081033,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1084832,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1081033,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1081145,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1085384,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1089429,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1085495,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1085607,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1085716,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1089429,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1085840,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1086823,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1085840,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1089429,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1085840,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1085949,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1090312,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1094243,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1090424,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1090533,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1090644,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1094244,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1090656,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1091641,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1090656,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1090771,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1090656,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1094244,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1094904,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1099048,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1095012,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1095124,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1095346,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1099155,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1095364,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1096444,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1095364,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1099155,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1095364,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1095469,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1099818,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1103747,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1099818,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1099927,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1100146,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1103858,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1100156,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1101146,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1100156,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1103858,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1100156,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1100272,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1104739,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1108594,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1104739,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1104851,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1104970,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1108594,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1105012,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1105992,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1105116,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1108594,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1109261,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1113417,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1109367,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1109477,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1109588,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1113417,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1109605,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1110701,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1109605,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1113417,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1114081,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1118181,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1114191,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1114300,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1114415,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1118181,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1114468,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1115450,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1114584,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1118181,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1119288,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1123170,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1119544,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1123170,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1119588,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1120570,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1119588,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1119699,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1119699,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1123170,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1123833,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1127989,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1124164,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1127989,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1124178,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1125271,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1124178,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1127989,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1128653,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1132737,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1128760,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1128870,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1129033,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1132736,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1129046,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1130027,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1129047,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1132736,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1129047,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1129154,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1133628,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1134232,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1133877,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1134232,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1133896,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1134123,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1133896,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1134018,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1133896,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1134231,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1134893,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1135786,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1135002,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1135115,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1135223,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1135786,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1135350,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1135677,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1135350,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1135786,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1135350,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1135459,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1136445,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1137294,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1136555,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1136666,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1136837,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1137294,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1136855,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1137186,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1136855,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1137294,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1136855,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1136964,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1138069,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1142006,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1138179,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1138309,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1138292,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1142006,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1138416,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1139399,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1138416,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1138527,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1138416,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1142006,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1142558,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1146732,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1142668,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1142779,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1142888,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1146732,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1142914,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1144014,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1143027,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1146732,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1143027,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1143137,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1147508,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1151439,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1147508,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1147614,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1147834,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1151546,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1147845,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1148838,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1147845,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1151546,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1147845,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1147962,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1152429,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1156274,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1152429,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1152540,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1152650,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1156274,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1152661,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1153653,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1152661,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1152775,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1152661,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1156274,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1156936,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1161142,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1157047,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1157158,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1157300,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1161141,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1157336,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1158419,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1157337,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1161141,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1161803,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1165829,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1161914,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1162027,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1162193,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1165939,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1162209,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1163201,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1162210,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1165939,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1162210,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1162322,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1166822,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1170673,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1167059,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1170673,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1167080,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1168069,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1167185,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1170673,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1171334,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1175489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1171438,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1171547,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1171661,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1175489,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1171684,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1172780,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1171684,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1175489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1171684,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1171802,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1176154,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1180229,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1176261,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1176370,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1176512,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1180229,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1176529,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1177515,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1176529,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1180229,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1176529,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1176640,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1181113,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1185061,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1181224,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1181335,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1181447,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1185061,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1181457,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1182442,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1181457,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1181572,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1181457,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1185062,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1185725,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1189871,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1185834,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1185946,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1186175,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1189980,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1186194,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1187285,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1186194,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1189980,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1186194,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1186307,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1190639,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1194586,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1190639,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1190749,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1190973,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1194695,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1190984,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1191972,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1190984,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1194695,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1190984,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1191098,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1195469,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1199293,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1195688,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1199402,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1195708,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1196690,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1195815,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1199402,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1199957,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1204127,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1200065,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1200173,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1200402,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1204235,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1200420,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1201530,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1200420,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1204235,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1200420,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1200532,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1204786,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1208886,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1204896,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1205005,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1205119,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1208886,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1205185,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1206156,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1205292,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1208886,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1209771,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1214068,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1210229,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1210337,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1210454,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1214068,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1210471,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1211461,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1210471,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1210587,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1210472,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1214068,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1214729,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1218936,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1214840,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1214951,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1215066,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1218936,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1215235,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1216212,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1215235,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1218936,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1215235,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1215344,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1219597,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1223709,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1219708,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1219817,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1219981,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1223709,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1220010,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1220991,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1220010,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1223708,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1220010,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1220116,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1224935,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1228902,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1225046,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1225155,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1225277,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1228902,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1225289,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1226278,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1225289,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1225407,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1225289,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1228902,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1229565,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1233845,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1229787,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1229897,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1230028,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1233845,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1230043,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1231128,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1230043,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1233845,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1234509,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1238554,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1234620,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1234728,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1234845,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1238554,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1234860,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1235948,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1234861,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1238554,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1234861,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1234966,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1239435,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1240017,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1239546,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1239692,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1239659,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1240017,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1239797,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1240017,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1239797,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1240017,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1240679,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1241700,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1240894,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1241004,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1241124,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1241700,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1241140,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1241477,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1241140,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1241700,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1242358,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1243155,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1242467,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1242577,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1242694,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1243155,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1242723,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1243047,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1242723,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1243155,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1242723,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1242831,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1244035,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1247975,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1244145,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1244254,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1244374,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1247975,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1244392,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1245381,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1244392,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1244507,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1244392,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1247975,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1248752,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1252917,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1248862,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1248971,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1249085,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1252917,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1249108,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1250199,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1249225,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1252917,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1253594,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1257653,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1253710,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1253926,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1254052,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1257761,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1254066,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1255044,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1254066,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1257761,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1254066,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1254174,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1258644,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1262578,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1258756,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1258865,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1258980,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1262578,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1258993,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1259967,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1258993,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1259100,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1258993,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1262578,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1263355,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1267552,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1263461,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1263571,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1263707,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1267552,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1263750,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1264849,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1263750,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1267552,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1268213,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1272278,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1268323,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1268433,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1268543,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1272278,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1268577,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1269666,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1268688,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1272278,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1273161,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1277092,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1273273,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1273382,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1273494,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1277092,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1273506,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1274489,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1273506,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1273618,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1273506,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1277092,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1277866,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1282051,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1278211,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1282051,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1278239,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1279332,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1278239,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1282051,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1282716,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1286760,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1282823,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1282932,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1283060,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1286760,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1283080,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1284163,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1283080,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1286760,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1283080,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1283184,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1287640,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1291482,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1287752,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1287861,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1287972,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1291591,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1287983,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1288976,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1287983,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1288099,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1287983,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1291591,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1292141,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1296413,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1292358,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1292472,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1292580,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1296413,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1292722,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1293705,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1292722,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1296413,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1292722,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1292832,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1297182,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1301211,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1297513,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1301211,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1297526,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1298504,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1297526,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1301211,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1297526,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1297640,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1302097,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1306036,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1302207,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1302318,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1302438,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1306036,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1302451,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1303420,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1302451,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1302553,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1302451,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1306036,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1306812,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1310959,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1307147,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1310959,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1307164,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1308249,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1307164,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1310959,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1307270,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1307380,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1311619,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1315611,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1311731,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1311840,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1311998,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1315611,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1312012,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1312997,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1312012,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1315611,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1312012,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1312123,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1316493,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1320455,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1316606,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1316712,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1316826,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1320455,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1316856,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1317834,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1316856,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1316963,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1316963,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1320455,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1321228,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1325360,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1321337,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1321462,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1321448,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1325360,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1321575,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1322658,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1321575,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1325360,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1321575,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1321683,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1326023,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1330059,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1326132,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1326241,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1326353,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1330060,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1326366,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1327349,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1326366,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1330059,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1326366,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1326484,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1330944,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1334897,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1331054,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1331165,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1331320,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1334897,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1331332,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1332298,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1331333,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1331432,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1331333,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1334896,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1335669,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1339755,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1335777,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1335887,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1336000,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1339863,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1336035,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1337133,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1336035,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1339862,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1340525,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1344580,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1340637,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1340746,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1340856,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1344580,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1340880,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1341962,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1340985,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1344580,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1340985,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1341092,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1345905,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1349842,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1346015,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1346125,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1346237,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1349843,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1346251,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1347230,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1346251,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1346365,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1346251,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1349842,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1350613,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1354682,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1350727,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1350839,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1350976,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1354790,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1350986,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1352077,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1350987,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1354790,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1350987,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1351101,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1355448,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1359453,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1355558,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1355673,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1355811,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1359561,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1355824,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1356809,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1355824,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1359453,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1355824,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1355938,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1360556,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1364509,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1360667,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1360905,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1360891,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1364509,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1360905,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1361898,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1360905,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1361017,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1360905,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1364509,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1365299,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1369474,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1365409,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1365520,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1365728,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1369474,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1365747,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1366747,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1365747,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1369474,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1365747,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1365856,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1370140,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1374201,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1370248,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1370358,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1370477,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1374201,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1370495,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1371601,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1370614,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1374201,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1375198,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1375824,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1375479,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1375824,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1375492,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1375716,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1375492,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1375608,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1375493,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1375824,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1376594,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1377512,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1376705,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1376817,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1376939,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1377512,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1376957,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1377290,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1376957,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1377512,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1378169,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1378972,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1378280,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1378388,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1378506,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1378972,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1378536,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1378863,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1378536,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1378972,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1378536,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1378643,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1380076,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1383916,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1380076,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1380186,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1380297,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1383916,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1380309,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1381297,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1380309,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1380423,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1380309,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1383916,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1384579,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1388774,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1384689,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1384800,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1385072,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1388774,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1385084,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1386066,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1385084,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1388774,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1385084,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1385195,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1389436,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1393548,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1389548,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1389658,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1389840,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1393548,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1389854,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1390829,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1389854,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1393548,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1389854,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1389957,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1394431,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1398371,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1394543,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1394651,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1394781,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1398371,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1394795,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1395776,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1394795,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1394902,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1394795,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1398371,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1399142,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1403300,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1399251,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1399360,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1399470,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1403409,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1399595,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1400734,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1399595,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1403409,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1399595,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1399706,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1404626,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1408594,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1404736,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1404846,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1404964,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1408702,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1404983,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1405972,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1404983,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1408702,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1404983,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1405097,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1409584,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1413578,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1409701,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1409805,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1409953,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1413578,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1409968,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1410948,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1409968,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1410075,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1409968,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1413578,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1414349,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1418485,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1414459,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1414570,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1414683,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1418485,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1414807,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1415892,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1414807,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1418485,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1414807,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1414917,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1419151,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1423209,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1419266,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1419375,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1419484,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1423208,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1419509,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1420608,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1419624,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1423208,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1419624,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1419734,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1424206,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1428132,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1424424,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1428131,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1424551,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1425422,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1424552,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1428132,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1428796,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1433073,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1428905,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1429019,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1429240,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1433073,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1429265,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1430362,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1429265,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1433073,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1433800,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1437871,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1433800,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1433917,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1434149,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1437871,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1434166,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1435155,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1434166,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1434285,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1434166,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1437871,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1438753,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1442680,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1438861,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1438969,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1439088,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1442790,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1439103,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1440075,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1439103,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1439206,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1439103,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1442680,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1443451,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1447671,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1443562,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1443672,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1443826,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1447671,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1443877,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1444970,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1443877,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1447671,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1448335,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1452388,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1448446,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1448558,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1448666,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1452388,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1448703,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1449782,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1448805,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1452388,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1453270,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1457203,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1453382,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1453493,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1453603,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1457203,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1453616,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1454602,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1453616,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1453729,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1453616,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1457203,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1457971,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1462147,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1458084,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1458195,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1458338,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1462147,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1458352,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1459438,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1458352,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1462147,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1462811,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1466836,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1462920,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1463031,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1463142,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1466945,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1463158,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1464249,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1463269,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1466945,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1463269,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1463380,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1467832,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1471766,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1467939,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1468049,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1468162,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1471766,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1468173,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1469167,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1468173,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1468287,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1468173,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1471766,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1472539,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1476700,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1472650,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1472759,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1472889,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1476700,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1472906,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1473992,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1473013,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1476700,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1473013,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1473126,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1477475,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1481460,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1477582,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1477694,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1477859,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1481567,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1477873,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1478851,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1477873,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1481567,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1477873,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1477978,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1611630,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1611737,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1611847,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1632795,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1611863,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1632794,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1634027,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1641786,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1634252,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1641786,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1645982,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1649938,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1646093,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1646202,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1646319,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1649938,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1646350,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "completed_observation_ms": 1647333,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1646350,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1646459,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1646459,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1649938,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1650711,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1654891,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1650821,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1650933,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1651045,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1654891,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1651185,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "completed_observation_ms": 1652272,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1651185,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1654891,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1651186,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1651293,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1655549,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1659643,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1655658,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1655769,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1655917,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1659644,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1655961,
+      "kind": "securerun-policy-probe-x64.exe",
+      "completed": true,
+      "completed_observation_ms": 1656942,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1655961,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1659644,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1655961,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1656069,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1745530,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1745646,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1745645,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1750781,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1745752,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1750781,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1842357,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1849494,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1842483,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1849493,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1842816,
+      "kind": "SandboxieCrypto.exe",
+      "completed": true,
+      "completed_observation_ms": 1849493,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1850926,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1851705,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1850937,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1851705,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1852806,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1853139,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1852817,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1853139,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1854249,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1854616,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1854278,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1854616,
+      "exit_code_hex": "40010004"
+    },
+    {
+      "started_observation_ms": 1858639,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1902460,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1858777,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1902460,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1858998,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1902576,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1882502,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1882636,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1883717,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1883826,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1902804,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1902913,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1903671,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "completed_observation_ms": 1903779,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "started_observation_ms": 1903892,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "completed_observation_ms": 1904232,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "started_observation_ms": 1903896,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "completed_observation_ms": 1904232,
+      "exit_code_hex": "0000004f"
+    }
+  ],
+  "record_bound_first_reached_ms": null,
+  "debugger_mode_enabled": true,
+  "reporter_event_limit": 128,
+  "known_process_event_count": 971,
+  "schema": 1,
+  "observation_failures": 0,
+  "reporter_event_count": 0,
+  "reporters": [],
+  "samples": 16997,
+  "record_bound_reached": false,
+  "termination_dispatched": false,
+  "known_process_event_limit": 2048
+}

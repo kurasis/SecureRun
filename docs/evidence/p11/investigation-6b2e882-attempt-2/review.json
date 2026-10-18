@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "source_commit": "6b2e8828a28b2660ef331106736bfc8f768aa433",
+  "run_id": 39082021205,
+  "run_attempt": 2,
+  "artifact_id": 12119959236,
+  "classification": "FAILED_INVESTIGATION_NOT_COMPLETION_PROOF",
+  "runner": "windows-11-arm",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "stage": "SEEDING_ENVIRONMENT_05",
+  "facts": "Readonly CIM associates WerFault with a live SandboxieRpcSs.exe. This is diagnostic association only; no crash cause or process authority inferred. Existing cleanup could wait for an unknown object before independently authorized helper termination. New cleanup defers unknown waits until reviewed members are stopped; no unknown termination, trust, deadline change or result waiver.",
+  "files": [
+    {
+      "path": "component-faults.json",
+      "size": 178,
+      "sha256": "578143ece877bb509994d8a5886c0d5b3ac11aca1dca9db575ff736125e9b846"
+    },
+    {
+      "path": "image-status-3ed3397e90a544fc9f64b9c04a8bd554.json",
+      "size": 182,
+      "sha256": "582acd0579f28941f3787493573d2b2d3287cd8138e0c38c8b6df48ce6ea8881"
+    },
+    {
+      "path": "live-fault-reporters.json",
+      "size": 400,
+      "sha256": "2f1d6d828ecff2a112f50afbc905751dec19ba01e46efcb4456a23cf79405567"
+    },
+    {
+      "path": "run-summary.json",
+      "size": 708,
+      "sha256": "dfad78f66a5356b9bbb79dddccd631713aeac8642eb3d6024a5ade35970c97b6"
+    },
+    {
+      "path": "standard-product.json",
+      "size": 291,
+      "sha256": "d577f6d0133288e89c69331a82139506ff75037c95cc9ff7d2d4601a153a20c8"
+    },
+    {
+      "path": "wer-metadata.json",
+      "size": 280,
+      "sha256": "8f61f1b3017dc04206e36be734a132170a4db71ff1ef5d059834173620fa7dc5"
+    }
+  ]
+}

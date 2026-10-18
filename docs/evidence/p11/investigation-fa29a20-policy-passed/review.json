@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "source_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+  "run_id": 39109837413,
+  "artifact_ids": {
+    "windows-2025": 12130203158,
+    "windows-11-arm": 12129499279
+  },
+  "classification": "SUCCESSFUL_PRIOR_FIX_SNAPSHOT_NOT_CURRENT_PHASE_GATE",
+  "facts": "Completed exact-branch P05 run passed45 native cases and62 adapter tests on each runner with zero failures. Both original cross-session reports confirm real sessions, production APPLY/CREATE STOP_REQUIRED_ALL_SESSIONS and no storage materialization. This supports atomic readiness publication. A separate PR Server cleanup failure remains failed and retained. Subsequent fixture/gate-source changes require current native regression; this historical successful snapshot does not close the current phase.",
+  "files": [
+    {
+      "path": "windows-2025/stage.json",
+      "size": 152,
+      "sha256": "536f0f605a1187d0cec165b5c7fc5e8e0de86ddaefe14a54348aee751bc5f001"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "cfcf1c71dfe614ee2e7c89e685a867d680d5b5a1160b35c9b0b417b03148763b"
+    },
+    {
+      "path": "windows-2025/policy-cases.json",
+      "size": 78786,
+      "sha256": "3c59f926a903a63d7841192ddbd809322cd88d3a840f845bad13deb5162b1901"
+    },
+    {
+      "path": "windows-2025/cross-session.json",
+      "size": 446,
+      "sha256": "c7d6d946e52fd8000a7868d5803eafc4cc6c3b6ac183ada68acb3c0378cf2c44"
+    },
+    {
+      "path": "windows-2025/standard-user.json",
+      "size": 279,
+      "sha256": "340197ac3bb0b76d6456b4c8810b06910e4b17d1bd1afd5b8184e5fb58ce4676"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 152,
+      "sha256": "b6a46b329875378fb3485f32a352e996efe70a025f9339d35b7e7da62d63fe64"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 702,
+      "sha256": "b9c17c44381795a3f60590f9334f30d056cdead305029215f035d55b27ca8dc5"
+    },
+    {
+      "path": "windows-11-arm/policy-cases.json",
+      "size": 109219,
+      "sha256": "5a59f32cc6ea58485512b74f0b056bbbd9e6c7779f1d2b931e5664b97c44beec"
+    },
+    {
+      "path": "windows-11-arm/cross-session.json",
+      "size": 446,
+      "sha256": "ba438f6d17e6b4d4934cc6a51f8a8cd5332dec77865e854c5f04bd2893cd6f97"
+    },
+    {
+      "path": "windows-11-arm/standard-user.json",
+      "size": 279,
+      "sha256": "52eb86ba81df603b93002737cee82317963c634c55502643818fcd9411a93b5e"
+    }
+  ],
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw paths, numeric process IDs, SIDs, credential values or target arguments retained. Fixed process names are observations, not authentication. Original bytes preserved."
+}

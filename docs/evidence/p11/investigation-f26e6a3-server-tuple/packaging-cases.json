@@ -1,0 +1,54 @@
+[
+  {
+    "status": "PASSED",
+    "name": "installer_rejects_user_writable_existing_code_directory",
+    "evidence": {
+      "user_writable_install_refused": true,
+      "manager_not_installed": true,
+      "exit_code": 7
+    },
+    "id": "T02"
+  },
+  {
+    "status": "PASSED",
+    "name": "installer_rejects_junction_without_touching_destination",
+    "evidence": {
+      "junction_refused": true,
+      "destination_unchanged": true,
+      "exit_code": 7
+    },
+    "id": "T02"
+  },
+  {
+    "status": "PASSED",
+    "name": "official_webview_prerequisite_matches_os_baseline",
+    "evidence": {
+      "runtime_sha256": "93acbcad0b6f390ae1ce6a1dbf1e09e165520a7f1196eb22323afa64a9bba96b",
+      "prerequisite": "MICROSOFT_SIGNED_HASH_PINNED_EVERGREEN_BOOTSTRAPPER",
+      "tested_state": "ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL",
+      "runtime_version": "155.0.4283.62",
+      "os_inbox_runtime_preserved": false,
+      "runtime_absent_before_install": true,
+      "security_settings_modified": false,
+      "previous_runtime_uninstall_exit": 19,
+      "setup_exit": 0,
+      "previous_runtime_version": "154.0.4258.62",
+      "runtime_signature": "Valid",
+      "missing_runtime_arm_installation_tested": false,
+      "runtime_uninstall_dispatched": true
+    },
+    "id": "T01"
+  },
+  {
+    "status": "PASSED",
+    "name": "clean_install_has_exact_reviewed_payload_and_native_architecture",
+    "evidence": {
+      "engine_bundled": false,
+      "all_payload_hashes_match": true,
+      "package": "0.3.0.10",
+      "signing": "UNSIGNED_DEVELOPMENT_ONLY",
+      "native_target": "x86_64-pc-windows-msvc"
+    },
+    "id": "T29"
+  }
+]

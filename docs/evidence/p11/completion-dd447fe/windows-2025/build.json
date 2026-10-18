@@ -1,0 +1,180 @@
+{
+  "tool_versions": {
+    "node": "v24.19.0",
+    "rust": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+    "npm": "11.17.0",
+    "msvc_toolset": "14.51.36231",
+    "windows_sdk": "10.0.26100.0"
+  },
+  "engine_bundled": false,
+  "source_commit": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+  "pe_dll_imports": {
+    "securerun-launch-probe.exe": [
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "vcruntime140.dll"
+    ],
+    "securerun-box-launcher.exe": [
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-time-l1-1-0.dll",
+      "api-ms-win-crt-utility-l1-1-0.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "vcruntime140.dll"
+    ],
+    "securerun-launch-probe-x86.exe": [
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "vcruntime140.dll"
+    ],
+    "securerun.exe": [
+      "advapi32.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-core-winrt-error-l1-1-0.dll",
+      "api-ms-win-crt-convert-l1-1-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-time-l1-1-0.dll",
+      "api-ms-win-crt-utility-l1-1-0.dll",
+      "bcryptprimitives.dll",
+      "combase.dll",
+      "comctl32.dll",
+      "dnsapi.dll",
+      "dwmapi.dll",
+      "gdi32.dll",
+      "imm32.dll",
+      "iphlpapi.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "ole32.dll",
+      "oleaut32.dll",
+      "shell32.dll",
+      "shlwapi.dll",
+      "user32.dll",
+      "wintrust.dll",
+      "ws2_32.dll",
+      "wtsapi32.dll"
+    ],
+    "securerun-policy-probe-x86.exe": [
+      "advapi32.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-time-l1-1-0.dll",
+      "api-ms-win-crt-utility-l1-1-0.dll",
+      "dnsapi.dll",
+      "iphlpapi.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "ole32.dll",
+      "vcruntime140.dll",
+      "ws2_32.dll"
+    ],
+    "securerun-policy-probe.exe": [
+      "advapi32.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-time-l1-1-0.dll",
+      "api-ms-win-crt-utility-l1-1-0.dll",
+      "dnsapi.dll",
+      "iphlpapi.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "ole32.dll",
+      "vcruntime140.dll",
+      "ws2_32.dll"
+    ],
+    "install-guard.exe": [
+      "advapi32.dll",
+      "kernel32.dll",
+      "ole32.dll",
+      "shell32.dll"
+    ]
+  },
+  "baseline": "SAME_REVIEWED_RUNTIME_SCHEMA_1_PACKAGING_REVISION_10",
+  "target": "x86_64-pc-windows-msvc",
+  "packages": [
+    {
+      "name": "SecureRun-Development-0.3.0.10-x64os.exe",
+      "signature": "NotSigned",
+      "size": 33558614,
+      "package_version": "0.3.0.10",
+      "sha256": "d4514a132cf78644c0ea2a0f6e5ff4111c4f17e932d355853776c666286cf5d8"
+    },
+    {
+      "name": "SecureRun-Development-0.3.0.11-x64os.exe",
+      "signature": "NotSigned",
+      "size": 33558613,
+      "package_version": "0.3.0.11",
+      "sha256": "ab46606ac2882a37c8fba297351b2face901b11b09aa919b87cc2cf9d125359a"
+    }
+  ],
+  "candidate": "PACKAGING_REVISION_11",
+  "signing_status": "UNSIGNED_DEVELOPMENT_ONLY",
+  "phase": "P11",
+  "prerequisite_trust": [
+    {
+      "file_version": "                    ",
+      "signature": "Valid",
+      "kind": "inno",
+      "size": 10592232,
+      "sha256": "9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732",
+      "publisher": "CN=Pyrsys B.V., O=Pyrsys B.V., S=Noord-Holland, C=NL"
+    },
+    {
+      "file_version": "1.3.291.9",
+      "signature": "Valid",
+      "kind": "webview2",
+      "size": 1867984,
+      "sha256": "c90f9cdcec5e1997e581127dd1cb4526c239551908e9adbfe63ad14671bdcc94",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    {
+      "file_version": "14.51.36247.0",
+      "signature": "Valid",
+      "kind": "vcredist",
+      "size": 6941536,
+      "sha256": "f0bab33a302b3cdb2e11113760d016f54fd3d2632c65ba7834fac4f0abd7f1a3",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    {
+      "file_version": "14.51.36247.0",
+      "signature": "Valid",
+      "kind": "vcredist",
+      "size": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    }
+  ]
+}

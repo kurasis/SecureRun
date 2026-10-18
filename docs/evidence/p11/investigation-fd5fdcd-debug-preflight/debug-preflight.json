@@ -1,0 +1,51 @@
+{
+  "result": "PASSED",
+  "debugger_present_confirmed": true,
+  "synthetic_code_sha256": "19c0b2f3bd3360ef2b45486dcec2047f602904376f97d310e1977449e6bdc111",
+  "tool_exit_code": 1,
+  "windows_security_or_wer_modified": false,
+  "target_left_for_vm_cleanup": false,
+  "tool_stderr": {
+    "character_count": 0,
+    "nul_characters_seen": 0,
+    "overlong_lines": 0,
+    "monitoring_target_matched": false,
+    "statuses": {},
+    "exception_codes": {}
+  },
+  "synthetic_source_sha256": "784209184908682fcd9e676f08328cfc9d9df9bcd2cf41837301346b1ee45f56",
+  "tool_stdout": {
+    "character_count": 2856,
+    "nul_characters_seen": 1428,
+    "overlong_lines": 0,
+    "monitoring_target_matched": true,
+    "statuses": {
+      "MONITOR_HEADER_MATCH": 1,
+      "MONITOR_INSTRUCTIONS_PRINTED": 1,
+      "DUMP_COUNT_REACHED": 1
+    },
+    "exception_codes": {
+      "OBSERVED_e0424242": 1,
+      "UNHANDLED_e0424242": 1
+    }
+  },
+  "existing_debug_privilege_restored": true,
+  "target_completed_naturally": true,
+  "monitor_completed": true,
+  "raw_output_uploaded": false,
+  "exception": {
+    "classification": "SYNTHETIC_HOST_DEBUG_PREFLIGHT_NOT_ENGINE_PROOF",
+    "exception_code_hex": "e0424242",
+    "fault_module_kind": "KERNELBASE.dll",
+    "module_relative_offset_hex": "0000000000124464",
+    "process_architecture": "ARM64",
+    "dump_target_id_matched": true,
+    "private_dump_sha256": "b1f03131be3067bf5ff8cd3ed6a18fbda17ff1f646a3ea683789b03c5ec2656b",
+    "private_dump_size": 267020,
+    "raw_dump_paths_ids_arguments_and_addresses_uploaded": false
+  },
+  "exception_dump_confirmed": true,
+  "classification": "SYNTHETIC_HOST_DEBUG_PREFLIGHT_NOT_ENGINE_PROOF",
+  "monitor_left_for_vm_cleanup": false,
+  "observer_existing_debug_privilege_enabled": true
+}

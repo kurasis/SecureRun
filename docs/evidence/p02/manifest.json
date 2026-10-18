@@ -85,7 +85,7 @@
       "id": 38557903464,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/38557903464",
       "tested_commit": "0cf59a67041364209d6f42ac393db3ecaa73e044",
-      "role": "current",
+      "role": "historical",
       "job_collection_conclusion": "success",
       "targets": [
         {
@@ -110,6 +110,186 @@
           "runner": "windows-11-arm",
           "tested_commit": "0cf59a67041364209d6f42ac393db3ecaa73e044",
           "evidence_directory": "completion-0cf59a6/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39086050127,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39086050127",
+      "tested_commit": "fa9b89faef79363c6f03bd972949e4c3eb257343",
+      "role": "historical",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "fa9b89faef79363c6f03bd972949e4c3eb257343",
+          "evidence_directory": "completion-fa9b89f/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "fa9b89faef79363c6f03bd972949e4c3eb257343",
+          "evidence_directory": "completion-fa9b89f/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39109835521,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39109835521",
+      "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+      "role": "historical",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+          "evidence_directory": "completion-fa29a20/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+          "evidence_directory": "completion-fa29a20/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39110907921,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39110907921",
+      "tested_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
+      "role": "historical",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
+          "evidence_directory": "completion-fdad6d7/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "fdad6d74998029ba244e7e41345a7c66a9837fc4",
+          "evidence_directory": "completion-fdad6d7/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39119550715,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39119550715",
+      "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+      "role": "current",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+          "evidence_directory": "completion-0d2600c/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+          "evidence_directory": "completion-0d2600c/windows-11-arm",
           "gate_result": "DONE",
           "smoke_counts": {
             "PASSED": 62,
@@ -219,6 +399,366 @@
       "size": 3677
     },
     {
+      "path": "completion-0d2600c/windows-11-arm/bootstrap-result.json",
+      "sha256": "54d4862d7cf4e0ac778dedcafde4882e918c40cbf03e0b7649a775f1c05a6b16",
+      "size": 123
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/bootstrap-stage.json",
+      "sha256": "c4995b316f1b3fee289923284426abbca213a94600ee9f16105f0f7a2304d0be",
+      "size": 149
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/feasibility-cases.json",
+      "sha256": "9b0f5f65597dbfe4abd6d10475ac81164a51b0d21b87c477914d96b2dd632248",
+      "size": 33558
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/installation.json",
+      "sha256": "f7915f748a34d4084969797cd77f5ee5cfcdb09b73042208b0a2f5329ed44287",
+      "size": 11146
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "e7b42b2d903744a6b0aab6a7ff6e46d5de30d9c287819ec801a01b1494fe1737",
+      "size": 277
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/phase-result.json",
+      "sha256": "cc8f256436803910aaaa4be23dccb1a81ff3094188e88d59a860893863eb712e",
+      "size": 702
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/probe-builds.json",
+      "sha256": "0f645842406d395f37d12b51fe8719e897c640cbc49641cbbd4ef35741b707a0",
+      "size": 980
+    },
+    {
+      "path": "completion-0d2600c/windows-11-arm/standard-user-result.json",
+      "sha256": "40ed5b9db8bac67911acd47338a3358ec73e0faf933697c47befab5872a6be83",
+      "size": 3678
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/bootstrap-result.json",
+      "sha256": "f6b879b27c79fabe852f5d41ec55619179d80d9a8efb9c670c7539108addd91d",
+      "size": 123
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/bootstrap-stage.json",
+      "sha256": "fa388d9e42001d96313a52aaaae3a0f117c16102ee58c3e7e2cc9b13da23998d",
+      "size": 149
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/feasibility-cases.json",
+      "sha256": "a83ef9d59c876ed619c743510979e14552fe0613255c73ada58dfce3ab8a745c",
+      "size": 27737
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/installation.json",
+      "sha256": "8628e6bbfcf8bff6b17ed85054b1b0e753aecd5c3df935926c54ca8dbbe1932c",
+      "size": 10893
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/native-cleanup-discovery.json",
+      "sha256": "3e3c1adadd2bc59d5fc3a962228a25ed28de4a5467162fb2b7a331fc879b70a3",
+      "size": 277
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/phase-result.json",
+      "sha256": "9007ce3e50956d10003400920ba6bb5b178aa4594d7251532b659bbe0145c1fd",
+      "size": 702
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/probe-builds.json",
+      "sha256": "609750d28360d2cd147bb7ee5410a2d30588b1552af96b68c9b912a60beef3d5",
+      "size": 730
+    },
+    {
+      "path": "completion-0d2600c/windows-2025/standard-user-result.json",
+      "sha256": "58e64cd7ea771d9643630997a13b047d9b55a23b8b10bc68dd1cf4f607a56023",
+      "size": 3677
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/bootstrap-result.json",
+      "sha256": "4d91c614d9ad7c5bc7b565ee9556ce71b9653ae86f69e5e3025bcce1c7ae9176",
+      "size": 123
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/bootstrap-stage.json",
+      "sha256": "42ec5bd77e1dfcbeab35b0d79aa6934cdd9263689263e7d6d13c863c136ee33a",
+      "size": 149
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/feasibility-cases.json",
+      "sha256": "5a05f83a45ec8d36e548287023834c04ffe55050e30f54a823c9ba7d4bff6a6a",
+      "size": 33558
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/installation.json",
+      "sha256": "b4311babd544627fc7d845fd86a082e9f0154615b1c6c2c7b64f7e71cc090050",
+      "size": 11146
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "a9605c3a94314d3b89617ce8243d810af1fed175f9fe6154dafcfa207ca2bcf3",
+      "size": 277
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/phase-result.json",
+      "sha256": "6d5f7ced016371af8d505c6f3d9df6e81f4c69c99f66913aacfdf033f2e6b95e",
+      "size": 702
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/probe-builds.json",
+      "sha256": "d2c15edf1b3228b664afb940bc3d4126b05acd628fc592048ec8c3b1b3527e12",
+      "size": 980
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/standard-user-result.json",
+      "sha256": "cd39df5a76188b49850f45375237787b6748a7a4e2ccb519a4e9dbcd3f2949a7",
+      "size": 3678
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/bootstrap-result.json",
+      "sha256": "a88afc399a3d7806d1a33e22400463f4c11abdd8d0583e03a0c2957304c06067",
+      "size": 123
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/bootstrap-stage.json",
+      "sha256": "be384c7de96dab41a662d64d456e2882ca2d37962657c8ed94bc5e83e224b56f",
+      "size": 149
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/feasibility-cases.json",
+      "sha256": "70541676e568799d33ee7ffe8d363925dadd0c8c2a02475521847055f009801c",
+      "size": 27737
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/installation.json",
+      "sha256": "e60d1fdaa52ccfb9378e80f199e5259942df8335b57b18d922b438054b9ded34",
+      "size": 10893
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/native-cleanup-discovery.json",
+      "sha256": "e7b42b2d903744a6b0aab6a7ff6e46d5de30d9c287819ec801a01b1494fe1737",
+      "size": 277
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/phase-result.json",
+      "sha256": "888350c9978e895be60c186957f6d5c71019e02082ce8ab54cc8b5605ea0c184",
+      "size": 702
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/probe-builds.json",
+      "sha256": "a97c3fdb46bf266a61f8d8d44e6ee77a1a85bd60535113bb49d64799581f8813",
+      "size": 730
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/standard-user-result.json",
+      "sha256": "5ad2d275db78c0cd51f5cc0bd73dc5bbd1c90394caab12fe5b21be1a8517d20c",
+      "size": 3677
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/bootstrap-result.json",
+      "sha256": "28b7bca1d881e73c6bf66011efb49adacfd0dd800ddaa51f91dbfd403e346ada",
+      "size": 123
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/bootstrap-stage.json",
+      "sha256": "2a71a3742ca52c05414b6bad66e54655e3e242b642a21d3f182c3b9528b53f3d",
+      "size": 149
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/feasibility-cases.json",
+      "sha256": "3fa02845ab265e160e86c603101a71d69c4c3eb69bc6851bb29bd34fe014bdf3",
+      "size": 33558
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/installation.json",
+      "sha256": "6a89e131557477f7464561640bff4c50f5776834c731e8b03e05e9331c376a72",
+      "size": 11146
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "3e3c1adadd2bc59d5fc3a962228a25ed28de4a5467162fb2b7a331fc879b70a3",
+      "size": 277
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/phase-result.json",
+      "sha256": "8f54c3b4677dbf9b6d916260f89e91e419281c478bac46433b4c130d1d7e42b1",
+      "size": 702
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/probe-builds.json",
+      "sha256": "b75247651018360cbb368be4e55e13d32c8269da2acad51a441129e3d7cf1d51",
+      "size": 980
+    },
+    {
+      "path": "completion-fa9b89f/windows-11-arm/standard-user-result.json",
+      "sha256": "1d239c64e673b415d57f0b938f08cf7547be79e191594f8c268c8a7a579ab967",
+      "size": 3678
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/bootstrap-result.json",
+      "sha256": "6fa62946767986f312f974b8c2b2c50e88913d0a44f43f3b8a67b4057aca99bf",
+      "size": 123
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/bootstrap-stage.json",
+      "sha256": "89385f3cc16d37c95e17997b222f11da358b3eeb4adefb4ec6fc70258f0712e7",
+      "size": 149
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/feasibility-cases.json",
+      "sha256": "86d7b1a12d23c9da5983fed5465800fdfb722878eb52ad1dbd5fa698e8f55f31",
+      "size": 27737
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/installation.json",
+      "sha256": "aa05d2deb92591076c22aaa1dec882dcc4f7b9b2a5b48f3057767e5a41378d5c",
+      "size": 10893
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/native-cleanup-discovery.json",
+      "sha256": "1c2a2e1650e416f931b1cf898a0321f28bdbc09653854304c38b226591aa4522",
+      "size": 277
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/phase-result.json",
+      "sha256": "12220a77dc2723ef7a4a22a9e57f57ddd5ab3848dff60741f98790e92da0c8a9",
+      "size": 702
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/probe-builds.json",
+      "sha256": "24f5fb45620beb450c7899ec3d449f045cd53b59e9cbb979cf99a687aa929fb1",
+      "size": 730
+    },
+    {
+      "path": "completion-fa9b89f/windows-2025/standard-user-result.json",
+      "sha256": "d90136c53604ae97966509990a249d4b694c5ea6ff9256a461f8781364d64bb2",
+      "size": 3677
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/bootstrap-result.json",
+      "sha256": "d3027ad0845e07cd3be61565937cc0d999739a013d17c034652b41fa5058db39",
+      "size": 123
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/bootstrap-stage.json",
+      "sha256": "ebae07b873da36f56543f1184b00c3861d9e4fdfca948605017b1c3e91fc95a7",
+      "size": 149
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/feasibility-cases.json",
+      "sha256": "826e590b4ba7619acd10b5f8cfc58aa716aaa42cbb2023723d3713ececc4cabe",
+      "size": 33558
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/installation.json",
+      "sha256": "86c7d4ce4218dd494e1ad57c87cd4ca1672580d1baae6e98a3e093faf7817846",
+      "size": 11146
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "1c2a2e1650e416f931b1cf898a0321f28bdbc09653854304c38b226591aa4522",
+      "size": 277
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/phase-result.json",
+      "sha256": "859f73633d1aaaa5b2b1b0b8b2770dcba3ea16cd33d2adf0ee128e8400ab7ffc",
+      "size": 702
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/probe-builds.json",
+      "sha256": "dd4ebc58f9828fc8ce23033e8fcbac8a7159055118d4aea5bbd845446e9e62cd",
+      "size": 980
+    },
+    {
+      "path": "completion-fdad6d7/windows-11-arm/standard-user-result.json",
+      "sha256": "2e7d90fa5b004ef39b8847844742da03b3114a678f5413bdaa7bf488e8a6fa6d",
+      "size": 3678
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/bootstrap-result.json",
+      "sha256": "7c9fa69d5c95a41cfd36b078043bfc25abd3506ecb344571f41ca7c46b6ce031",
+      "size": 123
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/bootstrap-stage.json",
+      "sha256": "8948492fb8d028cf970e82f9a887854ce90e9e93c60a991efa7bd033635423b4",
+      "size": 149
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/feasibility-cases.json",
+      "sha256": "5156799181ec063658d0f126ae49028a5671444ff41093f493e54f63861899ba",
+      "size": 27737
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/installation.json",
+      "sha256": "37e426d57a047c25ce9f4a25aaedf4494827549d378cc629c4b3479e0d3b6d8d",
+      "size": 10893
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/native-cleanup-discovery.json",
+      "sha256": "03e5a2ccd08acf6a6739f58874da3ebe332be8c66f03fe20205434e603dd638f",
+      "size": 277
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/phase-result.json",
+      "sha256": "0cf24c7127d801b81d1aca27c691b882dbe4bd30a8a5a36af83dde57316686a5",
+      "size": 702
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/probe-builds.json",
+      "sha256": "8c16fd3a41d9193a4a64717b52a1072987fb15fb8acfe2633dca54b246db1d34",
+      "size": 730
+    },
+    {
+      "path": "completion-fdad6d7/windows-2025/standard-user-result.json",
+      "sha256": "873d183957c0e32884c428a903d39538542e5e3c045f47b371ae04995ae115fc",
+      "size": 3677
+    },
+    {
       "path": "windows-11-arm/bootstrap-result.json",
       "sha256": "40b67245a4281c03273a5723a87bcb37d8b67397d70ba26ea6d74b7aa13b6d0d",
       "size": 123
@@ -303,6 +843,11 @@
   "note": "Completed representative P02 feasibility only. Historical blocked evidence is preserved; no production acceptance or supported release tuple.",
   "tested_sources": [
     {
+      "path": "docs/engine-candidate.json",
+      "sha256": "5bd3a2b098fcdfbfe4af1e504a3b21b6698f2482cf31cd64e26c4ca02984ec74",
+      "size": 1676
+    },
+    {
       "path": ".github/workflows/p02.yml",
       "sha256": "94fe1c758577a38053d67e2ffd4fa9f1fdfc8458e88facc547a799172040e57f",
       "size": 1360
@@ -329,18 +874,148 @@
     },
     {
       "path": "tools/probe/engine_bridge.cs",
-      "sha256": "2e35948e7338d139d5635ddd611fe5d835e89cede3f99f24a3992652660cf674",
+      "sha256": "8a0981ab4360faaef0c98e62a42db86a2cc36d9f9e2eaa0671d2c8924c1649cf",
       "size": 71287
     },
     {
       "path": "tools/probe/engine_inspect.c",
-      "sha256": "b3196d52b7cb3eb6432dcad35dd6a7d0c766c15678f797c09854c424c522568e",
+      "sha256": "277750ff634652523113b3053130d6eeb7961d3cd1746294588d681abd27acf9",
       "size": 2605
     },
     {
       "path": "tools/probe/feasibility_probe.c",
-      "sha256": "dc79f136bd62c2296dac66c8d1cabe48c03ec5bbf09909ec1cfb24fab4e2848c",
+      "sha256": "5a1f08d7a76e1ce71b2225e43b537d8db8c9b28c576340bad72b6f2c17ca5004",
       "size": 16911
+    },
+    {
+      "path": "tools/probe/p04_boxed.ps1",
+      "sha256": "4b89e1833405be6e821ba38b298b0b8bf87f38811578dcc42577b860ef7348bb",
+      "size": 1880
+    },
+    {
+      "path": "tools/probe/p04_standard.ps1",
+      "sha256": "e44719d583655cf3fbc1978cda32f75750ac107099f88f169abc964094585f75",
+      "size": 3477
+    },
+    {
+      "path": "tools/probe/p05_acl.ps1",
+      "sha256": "c9005bf9b475755ba4c1c882300af04e39cf0e16b5f2ddbb1cd4463606a04987",
+      "size": 887
+    },
+    {
+      "path": "tools/probe/p05_boxed.ps1",
+      "sha256": "0d3b980c3c1fc95e26ee8f20407c973ca89c92d7a0b6559228f87362f389527e",
+      "size": 3460
+    },
+    {
+      "path": "tools/probe/p05_fault.ps1",
+      "sha256": "1fa4efce676ddcc557947d6e20391baf1d563a0532c703128de275ad786f3ebb",
+      "size": 5332
+    },
+    {
+      "path": "tools/probe/p05_lab.cs",
+      "sha256": "85c04a9e1df2b56c5b94f97053fedf323a98205d2599c87236d669da6e62df91",
+      "size": 19562
+    },
+    {
+      "path": "tools/probe/p05_metadata.ps1",
+      "sha256": "e83ddfee874e0721030ba74a96cd2b636fc3c5b27664b134757456a1c78d3b54",
+      "size": 3317
+    },
+    {
+      "path": "tools/probe/p05_noenforcement.ps1",
+      "sha256": "ce3c3d9565d74a5d511eef0047e2b78c6bc70640cf7b1584885e3e2e47790992",
+      "size": 2566
+    },
+    {
+      "path": "tools/probe/p05_session_probe.c",
+      "sha256": "b6dce566d9449182735eacf8e401650280f21bba25aa16a282f632f5167a6d9b",
+      "size": 5754
+    },
+    {
+      "path": "tools/probe/p05_sessions.ps1",
+      "sha256": "17527da3df36bc6bde86b391f31851496b1352215c88c519c17e84b706d1a33d",
+      "size": 5675
+    },
+    {
+      "path": "tools/probe/p05_standard.ps1",
+      "sha256": "7515b5ebabd85ad36bef101a2cf4789d61bbba5bb8d2249512ffcbe796c0608a",
+      "size": 3512
+    },
+    {
+      "path": "tools/probe/p05_view_probe.c",
+      "sha256": "89161deb0c9a4c96cc87e8f088ccbc659d609836d4277586415adea9fe7e58a2",
+      "size": 4203
+    },
+    {
+      "path": "tools/probe/p06_initialize.ps1",
+      "sha256": "da9c347ecc925f3b6e30fb4cdbf07648bf047942dc9df3a89600d265fe06fe8d",
+      "size": 520
+    },
+    {
+      "path": "tools/probe/p06_standard.ps1",
+      "sha256": "1764149141ad7cc0f00fdefc4306592420e892d7680b75f42528445b16293d04",
+      "size": 29474
+    },
+    {
+      "path": "tools/probe/p07_initialize.ps1",
+      "sha256": "da9c347ecc925f3b6e30fb4cdbf07648bf047942dc9df3a89600d265fe06fe8d",
+      "size": 520
+    },
+    {
+      "path": "tools/probe/p07_standard.ps1",
+      "sha256": "2bcfa1d53f5f2dd05e157eb1261ff78d5db27952322fe0029ff761aebf73f24a",
+      "size": 32015
+    },
+    {
+      "path": "tools/probe/p08_desktop.cs",
+      "sha256": "df0f0f8a44627f9f30ca3ae819c35270a372791d8cc2d76af3490cb1f45697fe",
+      "size": 5719
+    },
+    {
+      "path": "tools/probe/p08_initialize.ps1",
+      "sha256": "da9c347ecc925f3b6e30fb4cdbf07648bf047942dc9df3a89600d265fe06fe8d",
+      "size": 520
+    },
+    {
+      "path": "tools/probe/p08_standard.ps1",
+      "sha256": "49707497c37a40f3066f09436215e2738dc0df7f63b44931e3f9d49451d2fbda",
+      "size": 48008
+    },
+    {
+      "path": "tools/probe/p09_accessibility.ps1",
+      "sha256": "7607dd8b120463424229b54510e7a4ed980c7f649c434fbf61cbf79d64a302ea",
+      "size": 98383
+    },
+    {
+      "path": "tools/probe/p09_browser.cs",
+      "sha256": "532a38618828e0833757cefdb3e8324371ef80241c38d91f413c37bfcd03b719",
+      "size": 8298
+    },
+    {
+      "path": "tools/probe/p09_cdp.ps1",
+      "sha256": "e98a03d24b965ee85dde29d0e18bac0839209ae474364b514ca4048d03424781",
+      "size": 4635
+    },
+    {
+      "path": "tools/probe/p09_desktop.cs",
+      "sha256": "3e2057578ff75bf180d9e04895dc959b6bcdd661e946c848a4d6b17eb4b95d37",
+      "size": 14003
+    },
+    {
+      "path": "tools/probe/p09_ocr.ps1",
+      "sha256": "bc813ae7456ac73efb95ee89b837aaab00b1cfad6ac94b85fc5a589925b5f66d",
+      "size": 6628
+    },
+    {
+      "path": "tools/probe/p09_protocol_probe.c",
+      "sha256": "4ee05b07530e36c45a760731151b812486f82b9af3a94658b9a6d86dba22d962",
+      "size": 3526
+    },
+    {
+      "path": "tools/probe/p09_standard.ps1",
+      "sha256": "12dec518dbafc44c2971ebf5efc8598c2ab9cb41212f7c72455855dbae6d007d",
+      "size": 58366
     },
     {
       "path": "tools/probe/standard_user_probe.ps1",

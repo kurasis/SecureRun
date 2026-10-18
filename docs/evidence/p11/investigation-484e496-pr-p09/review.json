@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "source_commit": "cd763726f8a51be9e51e1ca420dbdfbdb352cc3c",
+  "pr_head": "484e496f9b29eaca3c2dd3207a6e59888020d769",
+  "run_id": 39092130618,
+  "job_id": 117570918300,
+  "artifact_id": 12123571657,
+  "classification": "FAILED_HISTORICAL_PR_NOT_COMPLETION_PROOF",
+  "facts": "ARM failed at SEEDING_ENVIRONMENT_06 with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED. A live WerFault had no surviving CIM target or fixed-component event/report when inspected after failure. This is historical failed proof; the instrumented observer at fa29a20 is a separate diagnostic, not a passing gate.",
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw paths, SIDs, credentials or target arguments retained. Secret-related test labels and refusal classifications contain no secret values. Original bytes preserved.",
+  "files": [
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "d9e1acc788dd0b9a11b164a540634058461dadc88985885de1d67df7810ea014"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "cbc81397936a6f2cccd97266538cbdcb59c8381adfc8c0348d5a5ef17286c6ba"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "1132eb56b7ab99df29ac474eff672680c283c59bd0d187b22b21b475be8c4aed"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "b4d3b8896e05d55c0620e6f93bf83c37e8f50cf3b3b51ea771e197de7578db7f"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "783ea16a04dd603ed11025dccb350f4edf61185878f8e5cfefd54f87a61ea7c0"
+    },
+    {
+      "path": "windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "28d73960633714fee7ef0a5ac8e51430be4e866b4804a789ad7b10e88e0088fb"
+    },
+    {
+      "path": "windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "64b04650f97ca71f7760195fd8a0fd8615c78c1d88a0d2802ded42bed43c4f2e"
+    },
+    {
+      "path": "windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "1441acaedf2452702781ce2c89c7cb9560d33d14edd84cdcfd7727f68c520f04"
+    }
+  ]
+}

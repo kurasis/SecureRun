@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "source_commit": "2a9c789ed286be7393f959c1b88cf936d15d5230",
+  "pr_head": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+  "run_id": 39109830843,
+  "job_id": 117623357846,
+  "artifact_id": 12130625741,
+  "classification": "FAILED_PR_NOT_COMPLETION_PROOF",
+  "facts": "Server passed44 native cases and62 adapter tests; real other-session T16 passed with production APPLY/CREATE STOP_REQUIRED_ALL_SESSIONS. T60 running_sibling_prevents_any_new_storage failed with LAB_PROCESS_IDENTITY_CHANGED at line285 in the finally fixture-cleanup call. The combined predicate does not identify which identity check failed, and the cleanup exception can mask an earlier exception; no successful T60 assertion is inferred. The cleanup code now handles only confirmed completion of the same held object and retains bounded scalar diagnostics for any live mismatch. Fresh native proof is required.",
+  "privacy_review": "Selected originals parsed and reviewed; no raw paths, SIDs, credential values or target arguments retained. Original bytes preserved.",
+  "files": [
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "d81263fe593cf5ff0856bb42346010d5041ed9c8bb1cefa544d6ac73ba53ac69"
+    },
+    {
+      "path": "windows-2025/policy-cases.json",
+      "size": 78764,
+      "sha256": "22facf7da7cf2640911c1621258f4043fd0fbbf9a7599eaf6b208f22172b861a"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 152,
+      "sha256": "5a8247cec94344636b7c1bdda8aaad187a18a5b80045b34cdc9d760f2900548a"
+    },
+    {
+      "path": "windows-2025/cross-session.json",
+      "size": 446,
+      "sha256": "96be2ae7ac79a16cc66fb39b7c67eaae4c16dd30aeb8044fad072a2ff9e614d1"
+    }
+  ]
+}

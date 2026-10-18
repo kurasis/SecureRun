@@ -17,7 +17,11 @@ try{
     $policy=@{schema=1;preset='STANDARD_OFFLINE';grants=@()};$r=Policy @{action='CREATE';display_name='Cross-session stopped gate';operation_id=[Guid]::NewGuid().ToString();policy=$policy};Require ($r.reason -eq 'OBSERVED') $r.reason;$e=$r.environments[0]
     Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'p05_lab.cs')))
     $lab=[P05Lab]::new($EngineHome,$Fixture,$PSScriptRoot);$box='SR_'+$e.id.Replace('-','');$lab.Register($box);$lab.Set($box,'Enabled','y')
-    @{box=$box;owner_sid=$identity.User.Value}|ConvertTo-Json|Set-Content (Join-Path $Fixture 'results/session-ready.json') -Encoding utf8
+    # Publish only complete JSON. The parent uses existence as readiness; opening
+    # the final path before writing allowed it to observe an empty document.
+    $ready=Join-Path $Fixture 'results/session-ready.json';$temporary=$ready+'.'+[Guid]::NewGuid().ToString('N')+'.tmp'
+    [IO.File]::WriteAllText($temporary,(@{box=$box;owner_sid=$identity.User.Value}|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
+    [IO.File]::Move($temporary,$ready)
     $clock=[Diagnostics.Stopwatch]::StartNew()
     $result.stage='OBSERVING_OTHER_SESSION'
     do{$o=Observe;$b=@($o.boxes|Where-Object name -eq $box);if($b.Count -eq 1 -and $b[0].complete -and @($b[0].processes|Where-Object session -eq 0).Count -ge 1){break};Start-Sleep -Milliseconds 100}while($clock.ElapsedMilliseconds -lt 30000)

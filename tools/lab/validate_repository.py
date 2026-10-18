@@ -318,17 +318,45 @@ def validate(root: Path) -> None:
                 verify_file(path, entry['sha256'], entry['size'])
 
     cleanup = json.loads((root / 'crates/sandboxie-adapter/cleanup-compatibility-v1.json').read_text())
-    if (cleanup['schema'] != 1 or cleanup['upstream_commit'] != 'cdba7096240b93d79c5373aa81a75a1c5c71b883'
+    compatibility = json.loads((root / 'crates/sandboxie-adapter/compatibility-v1.json').read_text())
+    if (cleanup['schema'] != 1 or cleanup['upstream_commit'] != compatibility['release']['source_commit']
         or cleanup['native_export'] != '?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z'):
         raise ValueError('P08 cleanup upstream ABI pin changed')
+    inventories = cleanup.get('source_inventories', [])
+    if len(inventories) != 2 or {i['runner'] for i in inventories} != {'windows-2025', 'windows-11-arm'}:
+        raise ValueError('P08 cleanup needs both authenticated source inventories')
+    current = [run for run in manifest['runs'] if run.get('role') == 'current']
+    if len(current) != 1 or current[0]['job_collection_conclusion'] != 'success':
+        raise ValueError('P08 cleanup needs the current successful P02 inventory')
     expected_targets = []
     for runner, architecture in (('windows-2025', 'x86_64'), ('windows-11-arm', 'aarch64')):
-        inventory = json.loads((root / f'docs/evidence/p02/completion-0cf59a6/{runner}/installation.json').read_text(encoding='utf-8-sig'))
+        target = next(t for t in current[0]['targets'] if t['runner'] == runner)
+        relative = target['evidence_directory'] + '/installation.json'
+        reference = next(i for i in inventories if i['runner'] == runner)
+        bound = next((f for f in manifest['files'] if f['path'] == relative), None)
+        if (reference['path'] != 'docs/evidence/p02/' + relative or bound is None
+                or {k: reference[k] for k in ('sha256', 'size')} != {k: bound[k] for k in ('sha256', 'size')}):
+            raise ValueError('P08 cleanup source inventory is not independently hash-bound')
+        source = (root / reference['path']).resolve()
+        if not source.is_relative_to((root / 'docs/evidence/p02').resolve()):
+            raise ValueError('P08 unsafe source inventory path')
+        verify_file(source, reference['sha256'], reference['size'])
+        inventory = json.loads(source.read_text(encoding='utf-8-sig'))
+        discovery = json.loads((source.parent / 'native-cleanup-discovery.json').read_text(encoding='utf-8-sig'))
+        if (inventory['source_commit'] != cleanup['upstream_commit']
+                or inventory['manager_commit'] != current[0]['tested_commit']
+                or inventory['installer_signature'] != 'Valid'
+                or any(not c.get('authenticated_payload_match') for c in inventory['components'])
+                or not discovery['component_present'] or cleanup['native_export'] not in discovery['exports']):
+            raise ValueError('P08 cleanup inventory is not authenticated')
+        os_pin = next(t for t in compatibility['targets'] if t['architecture'] == architecture)
+        if (os_pin['os_base'] != inventory['os']['Version']
+                or os_pin['os_product_type'] != inventory['os']['ProductType']
+                or os_pin['os_update_build_revision'] != inventory['os_update_build_revision']):
+            raise ValueError('Release OS tuple differs from authenticated P02 observations')
         components = [{key: component[key] for key in ('name', 'sha256', 'signature')}
                       for component in inventory['components']
                       if component['name'].lower().endswith('.dll') and '/' not in component['name'] and '\\' not in component['name']]
-        if inventory['source_commit'] != cleanup['upstream_commit'] or any(not c.get('authenticated_payload_match') for c in inventory['components']):
-            raise ValueError('P08 cleanup inventory is not authenticated')
         expected_targets.append({'architecture': architecture, 'components': components})
     if cleanup['targets'] != expected_targets:
         raise ValueError('P08 cleanup component pins differ from authenticated P02 inventory')
@@ -412,7 +440,7 @@ def validate(root: Path) -> None:
     p10_path = root / 'docs/evidence/p10/manifest.json'
     if p10_path.exists():
         p10 = json.loads(p10_path.read_text())
-        if (p10['phase'] != 'P10' or p10['result'] != 'DONE'
+        if (p10['phase'] != 'P10' or p10['result'] not in {'DONE', 'BLOCKED'}
                 or not re.fullmatch('[0-9a-f]{40}', p10['tested_commit'])
                 or p10['run_id'] <= 0
                 or p10['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p10['run_id']}"
@@ -420,26 +448,39 @@ def validate(root: Path) -> None:
                 or p10['review_kind'] != 'INTERNAL_IMPLEMENTATION_REVIEW_NOT_INDEPENDENT_AUDIT'
                 or p10['production_acceptance_scenarios_passed'] != 0):
             raise ValueError('Invalid P10 integration closure')
+        if p10['result'] == 'BLOCKED':
+            if not p10.get('blocked_reason'):
+                raise ValueError('Blocked P10 needs an explicit stale-evidence reason')
+            for entry in p10['files']:
+                verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
+        else:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('p10_gate', root / 'tools/lab/retain_p10_evidence.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            proof, dependencies = module.check_integrated(root, p10['tested_commit'])
+            if p10['dependencies'] != dependencies:
+                raise ValueError('P10 dependencies changed after integration review')
+            if len(p10['files']) != 1 or p10['files'][0]['path'] != 'integration-catalog.json':
+                raise ValueError('P10 scenario catalog must be hash-bound')
+            entry = p10['files'][0]
+            verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
+            if json.loads((p10_path.parent / entry['path']).read_text()) != module.catalog(proof, root):
+                raise ValueError('P10 scenario dispositions disagree with actual native cases')
+            if {entry['path'] for entry in p10['tested_sources']} != set(module.source_paths(root)):
+                raise ValueError('P10 protected source binding incomplete')
+            for entry in p10['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P10 source path')
+                verify_file(path, entry['sha256'], entry['size'])
+    if (root / 'docs/evidence/p11/manifest.json').exists():
         import importlib.util
-        spec = importlib.util.spec_from_file_location('p10_gate', root / 'tools/lab/retain_p10_evidence.py')
+        spec = importlib.util.spec_from_file_location('p11_gate', root / 'packaging/retain.py')
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        proof, dependencies = module.check_integrated(root, p10['tested_commit'])
-        if p10['dependencies'] != dependencies:
-            raise ValueError('P10 dependencies changed after integration review')
-        if len(p10['files']) != 1 or p10['files'][0]['path'] != 'integration-catalog.json':
-            raise ValueError('P10 scenario catalog must be hash-bound')
-        entry = p10['files'][0]
-        verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
-        if json.loads((p10_path.parent / entry['path']).read_text()) != module.catalog(proof, root):
-            raise ValueError('P10 scenario dispositions disagree with actual native cases')
-        if {entry['path'] for entry in p10['tested_sources']} != set(module.source_paths(root)):
-            raise ValueError('P10 protected source binding incomplete')
-        for entry in p10['tested_sources']:
-            path = (root / entry['path']).resolve()
-            if not path.is_relative_to(root.resolve()):
-                raise ValueError('Unsafe P10 source path')
-            verify_file(path, entry['sha256'], entry['size'])
+        module.validate(root)
+
 
 
 if __name__ == '__main__':

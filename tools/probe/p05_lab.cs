@@ -20,6 +20,7 @@ public sealed class P05Lab {
     [DllImport("kernel32",SetLastError=true)] static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);
     [DllImport("kernel32",SetLastError=true)] static extern bool GetProcessTimes(IntPtr process,out long created,out long exited,out long kernel,out long user);
     [DllImport("kernel32",SetLastError=true)] static extern bool IsProcessCritical(IntPtr process,[MarshalAs(UnmanagedType.Bool)]out bool critical);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool QueryFullProcessImageNameW(IntPtr process,uint flags,StringBuilder path,ref uint length);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate uint Update(char op,string password,string section,string key,string value);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate int Conf(string section,string key,uint index,StringBuilder value,uint size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int Reload(uint session,uint flags);
@@ -126,6 +127,10 @@ public sealed class P05Lab {
     public void FenceFixture(string box) {
         // Lab-owned synthetic targets may leave original service companions.
         // This fixture has no product command and never stops a numeric PID.
+        bool reporterPresent=false;
+        try{foreach(string image in new[]{"WerFault","WerFaultSecure"})foreach(var process in Process.GetProcessesByName(image)){reporterPresent=true;process.Dispose();}}
+        catch{throw new InvalidOperationException("LAB_REPORTER_STATE_UNKNOWN");}
+        if(reporterPresent)throw new InvalidOperationException("LAB_UNREVIEWED_REPORTER_STOP_REFUSED");
         Register(box);Set(box,"Enabled","n");
         if(reload((uint)Process.GetCurrentProcess().SessionId,0)!=0)throw new InvalidOperationException("LAB_FENCE_FAILED");
         string owner=WindowsIdentity.GetCurrent().User.Value;
@@ -135,9 +140,39 @@ public sealed class P05Lab {
             for(int i=0;i<actual;i++){
                 IntPtr held=OpenProcess(0x100001|0x1000,false,pids[i]);if(held==IntPtr.Zero){if(Marshal.GetLastWin32Error()==87)continue;throw new InvalidOperationException("LAB_PROCESS_HANDLE_UNKNOWN");}
                 try{if(WaitForSingleObject(held,0)==0)continue;
-                    long birth,exit,kernel,user,observed;bool critical;uint session;var name=new StringBuilder(40);var sid=new StringBuilder(96);
-                    if(!GetProcessTimes(held,out birth,out exit,out kernel,out user)||!IsProcessCritical(held,out critical)||critical||query((IntPtr)pids[i],0,name,null,sid,out session,out observed)!=0||name.ToString()!=box||sid.ToString()!=owner||observed!=birth)throw new InvalidOperationException("LAB_PROCESS_IDENTITY_CHANGED");
-                    if(!TerminateProcess(held,99)||WaitForSingleObject(held,5000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");
+                    long birth,exit,kernel,user,observed=0;bool critical;uint session;var name=new StringBuilder(40);var sid=new StringBuilder(96);
+                    bool birthKnown=GetProcessTimes(held,out birth,out exit,out kernel,out user);
+                    bool criticalKnown=IsProcessCritical(held,out critical);
+                    bool queryAttempted=birthKnown&&criticalKnown&&!critical;
+                    int queryStatus=queryAttempted?query((IntPtr)pids[i],0,name,null,sid,out session,out observed):-1;
+                    // A default birth never substitutes for a successful query.
+                    bool sameBirth=queryAttempted&&queryStatus==0&&observed==birth;
+                    bool sameBox=queryAttempted&&queryStatus==0&&name.ToString()==box;
+                    bool sameOwner=queryAttempted&&queryStatus==0&&sid.ToString()==owner;
+                    if(!birthKnown||!criticalKnown||critical||queryStatus!=0||!sameBox||!sameOwner||!sameBirth){
+                        // Driver membership may vanish before this retained
+                        // object signals exit. Completion permits only skipping
+                        // this object, never terminating an unverified live one.
+                        uint waited=WaitForSingleObject(held,1000);if(waited==0)continue;
+                        var failure=new InvalidOperationException("LAB_PROCESS_IDENTITY_CHANGED");
+                        failure.Data["birth_known"]=birthKnown;failure.Data["critical_state_known"]=criticalKnown;
+                        failure.Data["critical"]=critical;failure.Data["driver_query_attempted"]=queryAttempted;
+                        if(queryAttempted)failure.Data["driver_query_status"]=queryStatus;
+                        failure.Data["same_box"]=sameBox;failure.Data["same_owner"]=sameOwner;
+                        failure.Data["same_birth"]=sameBirth;failure.Data["completion_wait_status"]=waited;
+                        throw failure;
+                    }
+                    // A concurrent exit can make TerminateProcess fail. Only
+                    // signaling of this same held object confirms completion.
+                    var imagePath=new StringBuilder(32768);uint imageLength=32768;
+                    if(!QueryFullProcessImageNameW(held,0,imagePath,ref imageLength)){
+                        if(WaitForSingleObject(held,1000)==0)continue;
+                        throw new InvalidOperationException("LAB_FIXTURE_IMAGE_UNKNOWN");
+                    }
+                    string imageName=Path.GetFileName(imagePath.ToString());
+                    if(String.Equals(imageName,"WerFault.exe",StringComparison.OrdinalIgnoreCase)||String.Equals(imageName,"WerFaultSecure.exe",StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("LAB_UNREVIEWED_REPORTER_STOP_REFUSED");
+                    TerminateProcess(held,99);
+                    if(WaitForSingleObject(held,5000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");
                 }finally{CloseHandle(held);}
             }
         }

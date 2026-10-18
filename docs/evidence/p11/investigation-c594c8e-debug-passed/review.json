@@ -1,0 +1,17 @@
+{
+  "classification": "DEBUGGER_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "tested_commit": "c594c8ec27598621f9d5ae13be128f0832bc6287",
+  "run_id": 39122053169,
+  "job_id": 117659465712,
+  "artifact_id": 12135122856,
+  "conclusion": "success",
+  "full_native_cases_passed": 22,
+  "full_ui_cases_passed": 101,
+  "failed": 0,
+  "actual_debugger_presence_confirmed_targets": 174,
+  "scope_refusals": 3,
+  "reporters_observed": 0,
+  "exceptions_captured": 0,
+  "raw_original_bytes_unchanged": true,
+  "facts": "Own native preflight confirmed debugger presence and exact PID-bound synthetic exception e0424242 in KERNELBASE.dll, then restored its prior token privilege. During the full engine workload174 authenticated requested targets were actually observed debugged, all174 tools exited0 without a dump, three owner-scope refusals were preserved, no reporter observed, no pin/query/bound/cleanup error. Full22+101 passed only with this diagnostic active; separate ordinary ARM failures remain failed. No original exception/module is determined and no fault resolution or performance certification is claimed. The preflight tool stdout had2856 characters but all parsed states/codes were empty; the earlier parser did not recognize that native output. New code handles NUL-interleaved text and requires readable expected native control output. This is a parser correction, not a retroactive diagnosis of empty old dictionaries. Raw dumps/tool output were never uploaded."
+}

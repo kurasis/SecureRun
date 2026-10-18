@@ -1,0 +1,13 @@
+{
+  "classification": "DEBUGGER_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "tested_commit": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+  "run_id": 39119544472,
+  "job_id": 117652144956,
+  "artifact_id": 12134466272,
+  "conclusion": "failure",
+  "stage": "SEEDING_ENVIRONMENT_09",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "original_bytes_unchanged": true,
+  "original_exception_and_module": "UNDETERMINED",
+  "facts": "Authenticated installer/reference/installed helper/driver pins prepared before actor creation without error. Pinned Microsoft ARM64 ProcDump12.02 received135 scope-checked requests. All135 exited0, no dump was produced, no scope/tool/parser failures recorded by the earlier collector. Zero exit is NOT proof that the debugger attached; that collector did not read actual debugger presence or recognized tool states. The reporter matched a still-live RpcSs-named target birth; first target observation1353276ms,reporter1353527ms,target completed1358785ms with cleanup status0000004f. No capacity exhaustion/query errors:750 known lifetimes,1reporter. No monitors left at observer completion. Four bounded WER reads produced no exception/module. Raw dump/tool output was never uploaded. Next source adds actual debugger-presence queries, constant-storage fixed-state parsing and an own synthetic native exception preflight before the unchanged full workload."
+}

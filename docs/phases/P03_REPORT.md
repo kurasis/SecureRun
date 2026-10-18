@@ -1,3 +1,13 @@
+<!-- P11-CURRENT -->
+Current P11 revalidation: **BLOCKED**, source `ffdaeb60bd8c9d707959435b910c6a1027ecb770`,
+[run 39087328157](https://github.com/kurasis/SecureRun/actions/runs/39087328157).
+
+Both applicable native jobs passed, but the strict completion retainer requires a successful full integration run. The original individual-job reports are retained as [partial evidence](../evidence/p11/investigation-ffdaeb6-partial-integration/review.json), without promoting this phase manifest.
+See [current P11 gate](P11_REPORT.md) and [status](../STATUS.md). P12 remains NOT_STARTED.
+
+Earlier source-specific content below is historical.
+
+<!-- P11-HISTORY -->
 # P03 phase report — current P10 regression
 
 Status: DONE at `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`,

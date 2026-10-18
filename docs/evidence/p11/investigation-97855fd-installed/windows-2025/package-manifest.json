@@ -1,0 +1,146 @@
+{
+  "files": [
+    {
+      "name": "cleanup-compatibility-v1.json",
+      "size": 9555,
+      "sha256": "fcfbdacb54fb2362d9263fe88e1a9717a0db000de46d932e222ed178d9324069"
+    },
+    {
+      "name": "compatibility-v1.json",
+      "size": 4827,
+      "sha256": "a7a5decee3e957c7bc98d4ef42265d53368051f27f680c38ed88a07813b5efb7"
+    },
+    {
+      "name": "compatibility.json",
+      "size": 1802,
+      "sha256": "9d463c0af84ede52157513199854f543d7861d960ae1db94d1c02137003bd748"
+    },
+    {
+      "name": "dependency-inventory.json",
+      "size": 193632,
+      "sha256": "55bca9d2ff8dc6434e1a0a4c8857cedb3a7053f291e74959f8c95e762830087d"
+    },
+    {
+      "name": "DEVELOPMENT.txt",
+      "size": 1217,
+      "sha256": "8777a2217a4aad2183146bf23b28fac0194f56d2e1bfb8aa33919ecaafa4e5fa"
+    },
+    {
+      "name": "INNO_LICENSE.txt",
+      "size": 1521,
+      "sha256": "2e5346868c2a18434489824e11d65c3031620f792fefc415d05f19cd441abf5c"
+    },
+    {
+      "name": "install-guard.exe",
+      "pe_machine": "8664",
+      "size": 142336,
+      "sha256": "de2b3fea5f934c9e0c2bf42c0fe0889d63f290acc203da134271fb9a3946c9ca",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "MICROSOFT_WEBVIEW2_SDK_LICENSE.txt",
+      "size": 1487,
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55"
+    },
+    {
+      "name": "MICROSOFT_WEBVIEW2_SDK_NOTICE.txt",
+      "size": 3894,
+      "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    {
+      "name": "RETENTION.txt",
+      "size": 1030,
+      "sha256": "819c9193f269e5f5f2d171261bb84c19dfa4152cbcabb75ef17860b94c56b9b5"
+    },
+    {
+      "name": "securerun-box-launcher.exe",
+      "pe_machine": "8664",
+      "size": 1807872,
+      "sha256": "a28c6926a427bd8cd92f565273791d5708852d01799efc0bf9c028fef7210f44",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "securerun-launch-probe-x86.exe",
+      "pe_machine": "014c",
+      "size": 240640,
+      "sha256": "12a6c76f45142364e8ddc72e4d930f5fbd5de598ab33c2ec3ce5306225fe34cd",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "securerun-launch-probe.exe",
+      "pe_machine": "8664",
+      "size": 284160,
+      "sha256": "28c95eec033413e4a98b07a5e6533971e62b17c709fca31bbf64315eeb4ac4d4",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "securerun-policy-probe-x86.exe",
+      "pe_machine": "014c",
+      "size": 1694208,
+      "sha256": "ef7e5ba89c581b44fd12bc9ffe42827d2c9cef597d08a27223cee5ffe1f31132",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "securerun-policy-probe.exe",
+      "pe_machine": "8664",
+      "size": 2115584,
+      "sha256": "2fb0668c5aa5a19bf7b0020e621a2a5449bfdce39c5ae1281b2bc36bcccb5cb2",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "securerun.exe",
+      "pe_machine": "8664",
+      "size": 14721024,
+      "sha256": "a2d6c9bd3f0b524565d105a7f63c482f572880f13bb9932cb7c8d531a6cf7b8e",
+      "signature": "NotSigned"
+    },
+    {
+      "name": "THIRD_PARTY_NOTICES.txt",
+      "size": 2662543,
+      "sha256": "ddc7a63324f095d82e8fd081355a95b02d34116d11afdda2a44c6e483af34a51"
+    }
+  ],
+  "source_commit": "97855fd1f1795a2d12fc692114e2cd2e18ff735c",
+  "phase": "P11",
+  "schema": 1,
+  "product_version": "0.3.0",
+  "payload_revision": "P11_SOURCE_BOUND_RUNTIME_SCHEMA_1",
+  "signing_status": "UNSIGNED_DEVELOPMENT_ONLY",
+  "engine_bundled": false,
+  "target": "x86_64-pc-windows-msvc",
+  "features": [],
+  "prerequisite_trust": [
+    {
+      "file_version": "                    ",
+      "size": 10592232,
+      "sha256": "9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732",
+      "kind": "inno",
+      "publisher": "CN=Pyrsys B.V., O=Pyrsys B.V., S=Noord-Holland, C=NL",
+      "signature": "Valid"
+    },
+    {
+      "file_version": "1.3.291.9",
+      "size": 1867984,
+      "sha256": "c90f9cdcec5e1997e581127dd1cb4526c239551908e9adbfe63ad14671bdcc94",
+      "kind": "webview2",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "signature": "Valid"
+    },
+    {
+      "file_version": "14.51.36247.0",
+      "size": 6941536,
+      "sha256": "f0bab33a302b3cdb2e11113760d016f54fd3d2632c65ba7834fac4f0abd7f1a3",
+      "kind": "vcredist",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "signature": "Valid"
+    },
+    {
+      "file_version": "14.51.36247.0",
+      "size": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+      "kind": "vcredist",
+      "publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "signature": "Valid"
+    }
+  ]
+}

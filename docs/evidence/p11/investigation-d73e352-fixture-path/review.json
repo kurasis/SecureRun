@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "source_commit": "d73e352d810ace95ab0ec3358bbf775c44ee6b15",
+  "run_id": 39088655930,
+  "job_id": 117560462194,
+  "runner": "windows-2025",
+  "classification": "FAILED_LAB_SETUP_NOT_COMPLETION_PROOF",
+  "facts": "Both installer builds and native lab canary compilation completed. .NET ReadAllBytes used a relative file path and resolved the process current directory rather than the PowerShell location. No installed scenario ran in this Server attempt. Absolute compiler/output/copy/hash/read paths fix the lab setup; no assertion removed. Raw job log with machine paths is not retained.",
+  "files": [
+    {
+      "path": "package-manifest.json",
+      "sha256": "4cce2b18cd873dc9f2dc608e5e4c021fe36fecde2e938eb59bac95a5027579fb",
+      "size": 4864
+    },
+    {
+      "path": "dependency-inventory.json",
+      "sha256": "55bca9d2ff8dc6434e1a0a4c8857cedb3a7053f291e74959f8c95e762830087d",
+      "size": 193632
+    },
+    {
+      "path": "build.json",
+      "sha256": "1416118d37bf173cee0bda8b7201be10e7401b858b399eb27ad8cec24dcc0aeb",
+      "size": 5870
+    }
+  ]
+}

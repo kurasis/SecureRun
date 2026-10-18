@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "product": "SecureRun 0.3.0 development",
+  "status": "DEVELOPMENT_LAB_TUPLES_ONLY_NOT_FINAL_RELEASE_CERTIFICATION",
+  "engine": {
+    "plus": "1.18.8",
+    "core": "5.73.8",
+    "abi": "0x57230",
+    "source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+    "component_pins": "compatibility-v1.json",
+    "cleanup_pins": "cleanup-compatibility-v1.json",
+    "installation": "SEPARATE_OFFICIAL_ENGINE_NO_BUNDLE_UPDATE_DOWNGRADE_OR_UNINSTALL"
+  },
+  "targets": [
+    {
+      "native": "x86_64",
+      "os": "Windows Server 2025",
+      "base_build": 26100,
+      "role": "OWNER_SELECTED_X64_LAB",
+      "target_probes": [
+        "x86_64",
+        "x86"
+      ],
+      "webview_tested_baseline": "ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL",
+      "observed_update_build_revision": 33438
+    },
+    {
+      "native": "aarch64",
+      "os": "Windows 11 ARM64",
+      "base_build": 26200,
+      "role": "OWNER_SELECTED_ARM64_LAB",
+      "target_probes": [
+        "aarch64",
+        "x86",
+        "emulated_x86_64"
+      ],
+      "webview_tested_baseline": "WINDOWS_11_PREINSTALLED_RUNTIME",
+      "observed_update_build_revision": 9457
+    }
+  ],
+  "windows_11_x64_installed_acceptance": "NOT_CERTIFIED",
+  "webview2": "Microsoft Evergreen machine runtime, major >=120; actual version recorded by the lab",
+  "database_schemas": {
+    "foundation": 1,
+    "policy": 1,
+    "control": 1,
+    "files": 1,
+    "lifecycle": 1,
+    "history": 1
+  },
+  "elevated_product_helper": false,
+  "unsupported": [
+    "unreviewed engine/component hashes",
+    "different OS base builds",
+    "paid privacy preset",
+    "advertised clipboard/device restrictions",
+    "different OS update revisions or product types until explicitly reviewed"
+  ],
+  "updates_require": "Explicit compatibility and enforcement revalidation; no automatic fallback or engine downgrade",
+  "missing_runtime_windows_11_arm_test": "NOT_CLAIMED; preinstalled Windows 11 baseline is preserved"
+}

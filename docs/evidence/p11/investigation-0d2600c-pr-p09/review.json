@@ -1,0 +1,23 @@
+{
+  "classification": "ORIGINAL_FAILED_ARM_PR_SNAPSHOT_NOT_PHASE_GATE",
+  "requested_head": "0d2600c2c91ea0b399ab4b9191a90fc74c28ca10",
+  "actual_merge_commit": "d30841f063d1eed9375cc6ba3127c73f6b0978a1",
+  "run_id": 39119547942,
+  "arm_job_id": 117652155109,
+  "artifact_id": 12133129694,
+  "arm_job_conclusion": "failure",
+  "stage": "SEEDING_ENVIRONMENT_06",
+  "original_code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "native_and_ui_case_counts": "NOT_AVAILABLE_FAILURE_BEFORE_CASES",
+  "raw_evidence_bytes_unchanged": true,
+  "no_source_equivalence_claim": true,
+  "facts": "Uninstrumented full workload failed before cases in environment06. Read-only final snapshot found one WerFault reporter, target absent, no original exception/module. Lab reporter safeguards do not authorize ignoring this production diagnostic refusal. This separate failure remains failed; native debugging run39119544472 still in progress at review. The Server job passed22 native+101 UI, but this does not close the failed full run. No screenshots, saved diagnostic bytes or complete target collection are claimed independently reviewed here.",
+  "full_run_conclusion": "failure",
+  "server_job_conclusion": "success",
+  "server_artifact_id": 12134242690,
+  "server_native_cases_passed": 22,
+  "server_ui_cases_passed": 101,
+  "server_failed": 0,
+  "server_ui_failed": 0,
+  "server_engineering_budget_status": "MEASURED_DEVIATION"
+}

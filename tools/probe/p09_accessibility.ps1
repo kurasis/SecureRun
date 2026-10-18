@@ -493,9 +493,12 @@ function Picker([int]$id,[string]$path){
  $usedValue=($null -ne $edit);$result.native_filename_control_kinds=[P09Access]::FilenameKinds($window,$id,$ExpectedBox);$result.native_filename_field_present=($nativeField -ne [IntPtr]::Zero)
  if($Mode -eq 'EDITOR' -or $saving){
   $usedValue=$false;$script:stage='FOCUSING_NATIVE_SAVE_FILENAME';Focus-OwnedWindow $window $id;Need ([P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $window)
-  [Windows.Forms.SendKeys]::SendWait('%n');Start-Sleep -Milliseconds 150;$nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero)
+  Need ([P09Access]::Chord($window,$id,[uint16]78,[uint16]18));Start-Sleep -Milliseconds 150;$nativeField=[P09Access]::FocusedFilename($window,$id,$ExpectedBox);Need ($nativeField -ne [IntPtr]::Zero)
   $script:stage='TYPING_NATIVE_SAVE_FILENAME';Need ([P09Access]::OwnedWindow([P09Access]::GetForegroundWindow(),$id) -and [P09Access]::GetAncestor([P09Access]::GetForegroundWindow(),2) -eq $window -and [P09Access]::FocusWithin($nativeField))
-  [Windows.Forms.SendKeys]::SendWait('^a');Send-LiteralKeys $path;$clock.Restart()
+  Need ([P09Access]::Chord($window,$id,[uint16]65,[uint16]17))
+  $typed=[P09Access]::TypeText($window,$id,$path)
+  $result.native_filename_input_result=[P09Access]::LastTextInputResult;$result.native_filename_input_count=[P09Access]::LastTextInputCount;$result.native_filename_input_error=[P09Access]::LastTextInputError
+  Need $typed;$clock.Restart()
   do{if([P09Access]::FilenameEquals($nativeField,$path)){break};Start-Sleep -Milliseconds 50}while($clock.ElapsedMilliseconds -lt 3000)
   $script:stage='VERIFYING_NATIVE_SAVE_FILENAME';Need ([P09Access]::FilenameEquals($nativeField,$path));$result.native_filename_keyboard_verified=$true;$result.native_filename_field_present=$true;$result.native_filename_mnemonic_focus_verified=$true
   if($Mode -eq 'EDITOR'){$result.editor_filename_actual_keyboard=$true}

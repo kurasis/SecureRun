@@ -1,0 +1,53 @@
+[
+  {
+    "evidence": {
+      "product_helper": false,
+      "new_code_file_denied": true,
+      "standard_user": true,
+      "manager_write_denied": true
+    },
+    "name": "reinstall_ordinary_user_cannot_modify_installed_code",
+    "status": "PASSED",
+    "id": "T02"
+  },
+  {
+    "evidence": {
+      "real_webview_window_observed": true,
+      "normal_features": true,
+      "actual_installed_executable": true,
+      "ordinary_user": true
+    },
+    "name": "reinstall_installed_manager_opens_real_webview_and_closes",
+    "status": "PASSED",
+    "id": "T01"
+  },
+  {
+    "evidence": {
+      "same_account": true,
+      "retained_data_unchanged": true,
+      "automatic_cleanup": false,
+      "owned_environment_revalidated": true
+    },
+    "name": "reinstall_same_account_reopens_verified_retained_environment_and_file",
+    "status": "PASSED",
+    "id": "T48"
+  },
+  {
+    "evidence": {
+      "fake_start_path_and_cwd": true,
+      "also_ids": [
+        "T02"
+      ],
+      "impostor_sha256": "40b3ba570f08375484e6491eb12571fcef803fd31c8e404b3a3ab4649d7a3665",
+      "installed_launcher_used": true,
+      "real_target_boxed": true,
+      "impostor_positive_control": true,
+      "host_output_absent": true,
+      "scoped_stop": true,
+      "impostor_executed": false
+    },
+    "name": "reinstall_installed_production_launcher_stays_boxed",
+    "status": "PASSED",
+    "id": "T05"
+  }
+]

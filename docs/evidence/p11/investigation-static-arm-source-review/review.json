@@ -1,0 +1,90 @@
+{
+  "classification": "STATIC_UPSTREAM_AND_RETAINED_EVIDENCE_REVIEW_NO_RUNTIME_TEST",
+  "engine_source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+  "reviewed_fix_commit": "91b70a8e58cedd1cef2913476f82522530165e13",
+  "fix_is_ancestor_of_engine_pin": true,
+  "upstream_tip_checked": "596bfa802f6fe69d3edf2aa56c294523ce4d6881",
+  "latest_official_release_checked": "v1.18.8",
+  "core_runtime_changes_after_pin_at_checked_tip": [],
+  "retained_fix_checks": [
+    {
+      "file": "Sandboxie/core/dll/dllhook.c",
+      "finding": "ARM hook changes protect exactly the target16-byte region, retained at lines1059-1060."
+    },
+    {
+      "file": "Sandboxie/core/dll/gdi.c",
+      "finding": "ARM/ARM64EC GdiDllInitialize resolution through gdi32full.dll remains at line866."
+    },
+    {
+      "file": "Sandboxie/core/dll/file.c",
+      "finding": "Existing ARM64EC xtajit64 NtOpenFile handling remains at lines2963-2986; no new workaround is introduced."
+    },
+    {
+      "file": "Sandboxie/core/dll/ldr.c",
+      "finding": "The Ldr NtTerminateProcess hook disabled by the old ARM fix remains commented at line455."
+    }
+  ],
+  "source_files_reviewed": [
+    {
+      "path": "Sandboxie/core/dll/dllhook.c",
+      "size": 64330,
+      "sha256": "4804845657381148ca7c870e03598e83d9a25fa5a63d18f4ad444dca5e4b1758"
+    },
+    {
+      "path": "Sandboxie/core/dll/gdi.c",
+      "size": 34126,
+      "sha256": "ba53683945a44c0b8f31cdc67cf8eacb6ab2fbc95ed0ccc32556dae92d9246fb"
+    },
+    {
+      "path": "Sandboxie/core/dll/file.c",
+      "size": 279312,
+      "sha256": "eb0dc4d6a549e9573d06902751589693cea52f6647d921f1ac29ef92e22ec098"
+    },
+    {
+      "path": "Sandboxie/core/dll/ldr.c",
+      "size": 46912,
+      "sha256": "6c1bc1c3ac24a30595a041a4f086dbe31ccd029f88518fa4b8caa4c818fe571d"
+    },
+    {
+      "path": "Sandboxie/core/dll/dllmain.c",
+      "size": 31684,
+      "sha256": "e518a550960e9b976fa8d93cc705e1a54b086d60daa5f4a5096203f42eef1df2"
+    },
+    {
+      "path": "Sandboxie/Sandbox32.props",
+      "size": 2034,
+      "sha256": "ee81b0021931c4d535f7de1497179e61eddb91b99d55a27780149e314e2916cd"
+    }
+  ],
+  "temporal_observations_not_causal_or_authentication_proof": [
+    {
+      "run_id": 39111501581,
+      "active_probe_kind": "securerun-policy-probe-x86.exe",
+      "rpcss_named_lifetime_before_reporter_ms": 219
+    },
+    {
+      "run_id": 39119544472,
+      "active_probe_kind": "securerun-policy-probe-x64.exe",
+      "rpcss_named_lifetime_before_reporter_ms": 251
+    },
+    {
+      "run_id": 39126844625,
+      "active_probe_kind": "securerun-policy-probe-x64.exe",
+      "rpcss_named_lifetime_before_reporter_ms": 216
+    }
+  ],
+  "counterexample_to_emulation_only_explanation": {
+    "run_id": 39113908733,
+    "artifact_id": 12132960203,
+    "case": "official_archive_gui_and_create_extract_round_trip",
+    "failure": "ARCHIVE_EXTRACT_P09_APPLICATION_EXIT_TIMEOUT",
+    "selected_archive_distribution_architecture": "arm64",
+    "raw_inventory": "docs/evidence/p11/investigation-f374409-observer/windows-11-arm/official-applications.json",
+    "limits": "No independently authenticated faulting thread/exception/module; do not assume identical root causes from reporter timing."
+  },
+  "root_exception_and_module": "UNDETERMINED",
+  "new_actions_runs_started": 0,
+  "cancelled_isolated_reproduction": "NOT_RUN_OWNER_CANCELLED",
+  "conclusion": "Known old ARM fixes are already present. No current upstream core patch identified. Observed emulated-probe association is not universal proof or an instruction to remove architectures. No binary substitution, policy weakening, Windows protection change or passing phase claim.",
+  "review_date_utc": "2026-10-18"
+}

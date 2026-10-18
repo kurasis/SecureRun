@@ -1,0 +1,20 @@
+{
+  "classification": "ORIGINAL_SERVICE_LOG_DIAGNOSTIC_FAILURE_NO_PHASE_GATE",
+  "tested_commit": "f6e10426feae10ab82499867f8e25f0e62469ec9",
+  "run_id": 39126844625,
+  "job_id": 117674114483,
+  "artifact_id": 12137080924,
+  "conclusion": "failure",
+  "stage": "SEEDING_ENVIRONMENT_04",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "original_service_collector_result": "COMPLETE_WITH_PRIOR_REGISTRY_VALUE_RESTORED",
+  "private_bytes_read": 2986,
+  "original_message_counts": {
+    "SBIE2329": 20,
+    "SBIE2224": 1,
+    "SBIE2204": 2
+  },
+  "original_exception_and_module": "UNDETERMINED",
+  "original_bytes_unchanged": true,
+  "facts": "No observer engine debugger or memory dump was requested. Original inputs authenticated and synthetic private calibration completed before the actor. The collector succeeded without a bound/read failure and restored the prior LogFile value. The unchanged full workload failed in environment04. Passive observer retained174known lifetimes and1WerFault; targetRpcSs-named lifetime birth was revalidated while live. Target first483332ms,reporter483548ms,target ended487071ms with cleanup status0000004f. No query/capacity exhaustion. Original message catalog labels2329 as FFS sequence lookup failure,2224 as sandboxed program crash,2204 as sandboxed service startup failure. Their coexistence does NOT prove2329 caused2224 or identify an exception/module. A follow-up parser retains only pinned public hook symbols, fixed known crash image kinds, optional source-shaped exception codes and startup status tokens; it never uploads private names/box IDs or guesses numeric radix."
+}

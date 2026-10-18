@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 39068949002,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/39068949002",
   "tested_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
@@ -1555,5 +1555,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed.",
+  "blocked_reason": "Fresh exact-source production and installed gates required for manually authenticated original Plus1.18.8/core5.73.8 component/complete cleanup pins, OS cumulative-update identity and strict deferred unknown-process cleanup. Historical raw evidence remains unchanged."
 }

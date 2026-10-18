@@ -1,0 +1,54 @@
+[
+  {
+    "evidence": {
+      "exit_code": 7,
+      "user_writable_install_refused": true,
+      "manager_not_installed": true
+    },
+    "name": "installer_rejects_user_writable_existing_code_directory",
+    "id": "T02",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "exit_code": 7,
+      "destination_unchanged": true,
+      "junction_refused": true
+    },
+    "name": "installer_rejects_junction_without_touching_destination",
+    "id": "T02",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "tested_state": "WINDOWS_11_PREINSTALLED_RUNTIME",
+      "runtime_absent_before_install": false,
+      "runtime_version": "155.0.4283.45",
+      "security_settings_modified": false,
+      "setup_exit": 0,
+      "runtime_sha256": "dcc9e45be52773c7641a37613ba3d673e85477247933c2613ba724aa245296cb",
+      "previous_runtime_version": "155.0.4283.45",
+      "prerequisite": "MICROSOFT_SIGNED_HASH_PINNED_EVERGREEN_BOOTSTRAPPER",
+      "os_inbox_runtime_preserved": true,
+      "previous_runtime_uninstall_exit": null,
+      "missing_runtime_arm_installation_tested": false,
+      "runtime_uninstall_dispatched": false,
+      "runtime_signature": "Valid"
+    },
+    "name": "official_webview_prerequisite_matches_os_baseline",
+    "id": "T01",
+    "status": "PASSED"
+  },
+  {
+    "evidence": {
+      "signing": "UNSIGNED_DEVELOPMENT_ONLY",
+      "native_target": "aarch64-pc-windows-msvc",
+      "all_payload_hashes_match": true,
+      "package": "0.3.0.10",
+      "engine_bundled": false
+    },
+    "name": "clean_install_has_exact_reviewed_payload_and_native_architecture",
+    "id": "T29",
+    "status": "PASSED"
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "source_commit": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+  "mandatory_integration_run": 39087328157,
+  "mandatory_installed_run": 39089078904,
+  "classification": "DUPLICATE_QUEUED_WORKFLOWS_NOT_COMPLETION_PROOF",
+  "runs": [
+    {
+      "conclusion": "",
+      "databaseId": 39089081267,
+      "headSha": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+      "status": "pending",
+      "workflowName": "P08 lifecycle cleanup and recovery",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR phase workflow. All 155 protected production/workflow/lab inputs are byte-identical to ffdaeb6 full P10 run39087328157, which remains mandatory and active. Only packaging fixture paths differ. Main has no required branch checks. Active native jobs and all actual failures are preserved; no scenario or assertion is removed."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39089081276,
+      "headSha": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+      "status": "queued",
+      "workflowName": "P05 policy and safe provisioning",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR phase workflow. All 155 protected production/workflow/lab inputs are byte-identical to ffdaeb6 full P10 run39087328157, which remains mandatory and active. Only packaging fixture paths differ. Main has no required branch checks. Active native jobs and all actual failures are preserved; no scenario or assertion is removed."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39089081260,
+      "headSha": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+      "status": "pending",
+      "workflowName": "P09 product UX and application compatibility",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR phase workflow. All 155 protected production/workflow/lab inputs are byte-identical to ffdaeb6 full P10 run39087328157, which remains mandatory and active. Only packaging fixture paths differ. Main has no required branch checks. Active native jobs and all actual failures are preserved; no scenario or assertion is removed."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39089081264,
+      "headSha": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+      "status": "queued",
+      "workflowName": "P07 safe file transfers and boxed executables",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR phase workflow. All 155 protected production/workflow/lab inputs are byte-identical to ffdaeb6 full P10 run39087328157, which remains mandatory and active. Only packaging fixture paths differ. Main has no required branch checks. Active native jobs and all actual failures are preserved; no scenario or assertion is removed."
+    }
+  ]
+}

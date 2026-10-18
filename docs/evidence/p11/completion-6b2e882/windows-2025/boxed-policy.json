@@ -1,0 +1,37 @@
+{
+  "worker_boundaries": [
+    {
+      "actual_boxed_execution": true,
+      "mode": "control",
+      "claimed_unboxed_parent_accepted": false,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    {
+      "actual_boxed_execution": true,
+      "mode": "files",
+      "claimed_unboxed_parent_accepted": false,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    {
+      "actual_boxed_execution": true,
+      "mode": "lifecycle",
+      "claimed_unboxed_parent_accepted": false,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    },
+    {
+      "actual_boxed_execution": true,
+      "mode": "product",
+      "claimed_unboxed_parent_accepted": false,
+      "reason": "MANAGER_CONTEXT_UNSAFE"
+    }
+  ],
+  "actual_boxed_manager_executed": true,
+  "manager_reason": "MANAGER_CONTEXT_UNSAFE",
+  "worker_reason": "MANAGER_CONTEXT_UNSAFE",
+  "actual_boxed_worker_executed": true,
+  "production_target_launches": 0,
+  "claimed_unboxed_parent_accepted": false,
+  "control_dispatched": false,
+  "privileged_helper": false,
+  "status": "PASSED"
+}

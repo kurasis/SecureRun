@@ -1,0 +1,80 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "manager_write_denied": true,
+      "standard_user": true,
+      "new_code_file_denied": true,
+      "product_helper": false
+    },
+    "name": "seed_ordinary_user_cannot_modify_installed_code",
+    "id": "T02"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "ordinary_user": true,
+      "normal_features": true,
+      "real_webview_window_observed": true,
+      "actual_installed_executable": true
+    },
+    "name": "seed_installed_manager_opens_real_webview_and_closes",
+    "id": "T01"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_offline": true,
+      "enforcement_evidence_bound": true,
+      "root_identity_bound": true,
+      "owner_from_os": true,
+      "native_policy_verifier": true
+    },
+    "name": "installed_build_provisions_and_verifies_real_offline_policy",
+    "id": "T08"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "parent_child_and_live_server_controls": true,
+      "actual_installed_verifier": true,
+      "network_egress_observed": false,
+      "original_probe_reports": [
+        "seed-probe-evidence-5dc295c2a8e34bdba3d97f8a307d3001.json",
+        "seed-probe-evidence-7963bd32d7a848d596580cf19bf71599.json",
+        "seed-probe-evidence-e720e17153b04a3c9dae4aa2afafb029.json"
+      ]
+    },
+    "name": "installed_offline_baseline_has_parent_child_and_server_observations",
+    "id": "T12"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "internet_zone_verified": true,
+      "import_export_actual": true,
+      "host_auto_execution": false,
+      "byte_hash_match": true
+    },
+    "name": "installed_import_export_preserves_bytes_and_provenance",
+    "id": "T21"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "impostor_positive_control": true,
+      "installed_launcher_used": true,
+      "also_ids": [
+        "T02"
+      ],
+      "scoped_stop": true,
+      "impostor_sha256": "40b3ba570f08375484e6491eb12571fcef803fd31c8e404b3a3ab4649d7a3665",
+      "impostor_executed": false,
+      "fake_start_path_and_cwd": true,
+      "real_target_boxed": true,
+      "host_output_absent": true
+    },
+    "name": "seed_installed_production_launcher_stays_boxed",
+    "id": "T05"
+  }
+]

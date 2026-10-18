@@ -1,0 +1,37 @@
+{
+  "classification": "ORIGINAL_FAILED_PR_SNAPSHOT_NOT_PHASE_GATE",
+  "tested_source_head": "f3744094cba77ddce156bd0d430a72a0fcab1af2",
+  "actual_merge_commit": "486d64993da28d4c76ba06553bf88c85d5f724df",
+  "no_source_equivalence_claim": true,
+  "runs": [
+    {
+      "phase": "p06",
+      "run_id": 39113911650,
+      "artifact_id": 12130924434,
+      "arm_job_id": 117635672477,
+      "conclusion": "failure",
+      "native_cases_passed": 21,
+      "failed": 1,
+      "first_failure_code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+      "later_failure_codes": [],
+      "original_exception_and_module": "UNDETERMINED",
+      "server_job_conclusion": "success"
+    },
+    {
+      "phase": "p08",
+      "run_id": 39113911712,
+      "artifact_id": 12132415854,
+      "arm_job_id": 117637488533,
+      "conclusion": "failure",
+      "native_cases_passed": 32,
+      "failed": 6,
+      "first_failure_code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+      "later_failure_codes": [
+        "OWNERSHIP_NOT_FOUND"
+      ],
+      "original_exception_and_module": "UNDETERMINED",
+      "server_job_conclusion": "success"
+    }
+  ],
+  "review": "Selected original JSON reviewed for private paths, SID, arguments and environments; only scalar/known structured fixture result fields retained. Original bytes unchanged. Server jobs succeeded; ARM cases below failed. Names or failure codes do not establish original exception/module."
+}

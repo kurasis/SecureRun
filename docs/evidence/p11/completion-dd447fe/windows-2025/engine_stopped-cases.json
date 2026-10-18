@@ -1,0 +1,16 @@
+[
+  {
+    "evidence": {
+      "actual_installed_worker": true,
+      "host_output_absent": true,
+      "actual_registered_target": true,
+      "ordinary_user": true,
+      "receipts_absent": true,
+      "refusal": "MANAGER_CONTEXT_UNSAFE",
+      "fixture": "engine_stopped"
+    },
+    "status": "PASSED",
+    "id": "T01",
+    "name": "installed_stopped_engine_refuses_registered_target_without_host_fallback"
+  }
+]

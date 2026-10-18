@@ -40,7 +40,7 @@ static int logon_fixture(const WCHAR *name) {
         wcscat_s(dll,1024,L"\\Sandboxie-Plus\\SbieDll.dll");
         module=LoadLibraryExW(dll,NULL,LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|LOAD_LIBRARY_SEARCH_SYSTEM32);if(!module)return 66;
         query=(query_fn)(void*)GetProcAddress(module,"SbieApi_QueryProcess");getVersion=(version_fn)(void*)GetProcAddress(module,"SbieApi_GetVersionEx");
-        if(!query||!getVersion||getVersion(version,&abi)!=0||abi!=0x57230UL||wcscmp(version,L"5.73.6")!=0||(ULONG)query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),selfBox,NULL,NULL,&session)!=0xc000000bUL)return 66;
+        if(!query||!getVersion||getVersion(version,&abi)!=0||abi!=0x57230UL||wcscmp(version,L"5.73.8")!=0||(ULONG)query((HANDLE)(ULONG_PTR)GetCurrentProcessId(),selfBox,NULL,NULL,&session)!=0xc000000bUL)return 66;
     }
     if(swprintf_s(pipePath,256,L"\\\\.\\pipe\\%s",name)<0)return 64;
     pipe=CreateFileW(pipePath,GENERIC_READ,0,NULL,OPEN_EXISTING,0,NULL);if(pipe==INVALID_HANDLE_VALUE)return 67;

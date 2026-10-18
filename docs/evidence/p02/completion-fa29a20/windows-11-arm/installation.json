@@ -1,0 +1,332 @@
+{
+  "containment_result": "NOT_RUN",
+  "os_update_build_revision": 9457,
+  "installer_name": "Sandboxie-Plus-ARM64-v1.18.8.exe",
+  "security": {
+    "device_guard": {
+      "VirtualizationBasedSecurityStatus": 2,
+      "SecurityServicesRunning": [
+        1
+      ],
+      "CodeIntegrityPolicyEnforcementStatus": 2
+    },
+    "defender": {
+      "AntivirusEnabled": true,
+      "RealTimeProtectionEnabled": true
+    },
+    "secure_boot": false
+  },
+  "manager_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+  "os": {
+    "Caption": "Microsoft Windows 11 Enterprise",
+    "Version": "10.0.26200",
+    "BuildNumber": "26200",
+    "OSArchitecture": "ARM 64-bit Processor",
+    "ProductType": 1
+  },
+  "services": [
+    {
+      "name": "SbieSvc",
+      "state": "Running"
+    },
+    {
+      "name": "SbieDrv",
+      "state": "Running"
+    }
+  ],
+  "components": [
+    {
+      "authenticated_payload_match": true,
+      "sha256": "4c38f91c6e003ac3b76de68c28b6d002b67e2b225be6169bb88da93f975d9de3",
+      "name": "SbieDrv.sys",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "4395054e92c4ec564cf72ee1fc5b96644d18a72e2f64e2c3cd1c6afe750d430a",
+      "name": "SbieSvc.exe",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "344b9a79a935d1acc61b74a6a2429726305c36d4f65523c95951ff99f07e4b70",
+      "name": "SbieDll.dll",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "73149ee7df53bd3eb39ac7623652501b39deed58998cfd3b72da37559c6df324",
+      "name": "SbieIni.exe",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "f8394f93bd5e00d636843fa8feddcbe82f0129954c37a2c7b5ccad343e4150e9",
+      "name": "Start.exe",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "5c46dff28c4ab8be4ce3523beb47da5ab987aaebca6b62a8c72ec744c79ba6f0",
+      "name": "SbieMsg.dll",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "fa279fd2029f21e72640d17bc720ace22804d55c0a3287529be8b4134c5a7373",
+      "name": "KmdUtil.exe",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "c447922c35900327347a980f0cb7941474cabfe67f448bd2022bccc0fd0a6443",
+      "name": "32/SbieDll.dll",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "561858c13b8a57b456337e8a09a4b887cc073704fc69e1a29c025c72134cc153",
+      "name": "64/SbieDll.dll",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "eadc5b8bdc2905dc93bef00a02db1aa8a876e616e41d08056c110ffa30074e31",
+      "name": "QSbieAPI.dll",
+      "file_version": "1.18.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "d812d02b93671d6c0eda69b0d0ef843ee8e829261cecca7063a9749d5c9c3447",
+      "name": "Qt6Core.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "12779984207ed7aa37ec1a945e71087a055872d2d891ceb3f25e08e68633123f",
+      "name": "MiscHelpers.dll",
+      "file_version": null,
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "7d12e4fee89c8e4ff499fde067454dea140eb551d8f3ded9bd488940ce4e31f7",
+      "name": "7z.dll",
+      "file_version": "23.01",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "4d761140a7edb32d23c4a8826a6d8cff10de93c824cc33625baf1a3de74f95f9",
+      "name": "concrt140.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "65bbb40dd2951e532092f4be2c60bfb2cf9a5a2c5153081c8dd71692a9221425",
+      "name": "libcrypto-1_1-arm64.dll",
+      "file_version": "1.1.1w",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "d21f75ab5266bb252e6b7a5ee3167adf7630b49e1fbd8efda8c8eae6cc821dfd",
+      "name": "libssl-1_1-arm64.dll",
+      "file_version": "1.1.1w",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "af9dd287c5e5d47186fec391099e140bf9e758245d39c78e94f8cb4ffaada1e5",
+      "name": "msvcp140_1.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "17dd07ea186d419e1803a4b25785644b59d4346dd1a00df709fb6eb403baa11e",
+      "name": "msvcp140_2.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "4384e35592b7be1f0b80718eba2f779060d73c3e232eb1bfadf8a4cb9b14601f",
+      "name": "msvcp140_atomic_wait.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "6e075254adab66a80e1624b656fbe81043c23149e5045871b2eccc4c7ff589ce",
+      "name": "msvcp140_codecvt_ids.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "045faeab0b5710816ae160ea20dae8495ffc11bb51feca15d22aaf7ff3752cb3",
+      "name": "msvcp140.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "7a5d27cac018bd7a45ed49408cdbe138e94259b3b636480c71af9b440cd5f094",
+      "name": "Qt6Gui.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "6f87bf053f2cc76ba70943caa26f2c478d4f796f0e1bee343a06a5d0d395dd91",
+      "name": "Qt6Network.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "722ce5f757ddabc602e97ee7a714d979d8020560bdc526351038475bdf1159df",
+      "name": "Qt6Qml.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "220e5152392253d8ad95810935696e982f2f6d6379047eaa7d3d0edd84f7ed44",
+      "name": "Qt6Widgets.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "3b9d56e9d94361ba4f37a4e66b4d6dfcb8b2b6fd72fedbc3f88d6621532039ab",
+      "name": "qtsingleapp.dll",
+      "file_version": null,
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "ea4afca05b0cd1417ad41e0722c71ab10915827a0643651801ffce4216c4ab64",
+      "name": "SbieShellExt.dll",
+      "file_version": null,
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "b0de5ba9f016bd6cecfb700726a936393f79865f3cc515c40d47be507a4bb72d",
+      "name": "SboxHostDll.dll",
+      "file_version": "5.73.8",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "db4fa91dc716d14d11d70fd19ed16fbdc90b94113ad4fe2d7ca62006ae4a60dd",
+      "name": "UGlobalHotkey.dll",
+      "file_version": null,
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "792667d0b4a1c37e10dd54df4f0c8ff185f27483dc58eb311c2e45f3050712e3",
+      "name": "vccorlib140.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "42b5f76f1f0ae03c93fc4c107adf83c5f14e86032474860032cfe672d0836546",
+      "name": "vcruntime140_1.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "165c779ae40e8c1a914537873629c17546d6866ecb3c24cc2022805053e6c77d",
+      "name": "vcruntime140_threads.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "d8a8513921544569837e400d37cc71302819967ae6defa932266a7ecb41dbaf9",
+      "name": "vcruntime140.dll",
+      "file_version": "14.44.35211.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "5a8d86eda558f4ecb8e5e57610a61896aadf63a907043f048e74f6a5aee13e35",
+      "name": "platforms/qdirect2d.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "2646dfc2612fec5e383eb1505835c9ff92ba4d51599351d9fa58660fcac298ef",
+      "name": "platforms/qminimal.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "7136d39543c351e33b949ccef628a7811124113f299c6328816c904707b238e6",
+      "name": "platforms/qoffscreen.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "053aae68e93e3c0155993a03817f8cd85da622245ec2d1e025c6835676bc8d39",
+      "name": "platforms/qwindows.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "04ea1e0b619f74f9e31c7f95831c95a82d779f29f48df41c09cc445ee1a2e986",
+      "name": "styles/qmodernwindowsstyle.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "5eaf7992d5254336f06e0e6df52721c6dcaf3762f31b4dc20a39d9027787bbd3",
+      "name": "tls/qcertonlybackend.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "98ccdf03fafb0eaebb28b594239aa6d4d574d69e46e43779292c563bddbc289a",
+      "name": "tls/qopensslbackend.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    },
+    {
+      "authenticated_payload_match": true,
+      "sha256": "0323d62461d5825e65dc5a52054435f23b3478fcca68e8cb0c0966aa5f7a1a81",
+      "name": "tls/qschannelbackend.dll",
+      "file_version": "6.8.3.0",
+      "signature": "Valid"
+    }
+  ],
+  "timestamp_utc": "2026-10-18T08:03:40.3500056Z",
+  "source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+  "teardown": "DISCARD_ACTIONS_VM",
+  "installer_signature": "Valid",
+  "installer_sha256": "a1e33199ae715c32faa15aeec5e7d4c8401dcd1a4d348d6829d3e0978bd62b96",
+  "security_settings_modified": false
+}

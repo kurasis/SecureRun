@@ -1,3 +1,14 @@
+<!-- P11-CURRENT -->
+Current P11 dependency revalidation is **BLOCKED** at ffdaeb6/run39087328157.
+Historical pass/performance numbers below are source-specific and do not close
+the changed runtime's integration gate. P11 separately passed 28 installed cases
+and 81 production tests on each laboratory, but is not DONE while P10 is blocked.
+No mandatory containment check, original performance target or workload is waived.
+See [phase report](phases/P11_REPORT.md) and [installed proof](P11_TEST_REPORT.md).
+
+Earlier source-specific content below is historical.
+
+<!-- P11-HISTORY -->
 # P10 internal security and integration review
 
 Review source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`.

@@ -1,0 +1,98 @@
+{
+  "source_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+  "run_id": 39109839082,
+  "artifact_ids": {
+    "windows-2025": 12130413725,
+    "windows-11-arm": 12130578629
+  },
+  "job_ids": {
+    "windows-2025": 117623384913,
+    "windows-11-arm": 117623384659
+  },
+  "facts": "Completed uninstrumented full P09 passed22 native and101 UI checks on each target with zero failures. All check_target assertions were independently rerun against the complete downloaded original folders. Native Save passed actual picker and reviewed-byte equality; original input reports record successful checked native delivery. Server startup3477.3973ms exceeded3000ms; ARM idle CPU1.2673191570845006% exceeded<1%. Other original budgets met. Each deviation and user impact remains in original reports. This successful fa29a20 snapshot does not erase the separate failed observer run on that same source, establish reporter-fault resolution, or close current P10/P11 gates after protected inputs changed.",
+  "schema": 1,
+  "classification": "SUCCESSFUL_SOURCE_SNAPSHOT_NOT_CURRENT_INTEGRATION_GATE",
+  "privacy_review": "Selected originals parsed, scalar/private-key patterns scanned and reviewed; no raw machine paths, process IDs, SIDs, credentials or target arguments retained. Screenshots are not copied in this partial review. Original JSON bytes preserved.",
+  "files": [
+    {
+      "path": "windows-2025/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "windows-2025/standard-product.json",
+      "size": 483,
+      "sha256": "584cc829a854ed48d3b4a441f9504feaa76b5e68a56a41f64ebd954de36fd51c"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 113,
+      "sha256": "104135979ddc829c48dc006d32938891edf791a9c1c3deb54ae8c4e9c7eb8a79"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 713,
+      "sha256": "47d26674070b7740be8a53c7cdc57e56a909b78c39bb8b48c61a815ebc72ac61"
+    },
+    {
+      "path": "windows-2025/product-cases.json",
+      "size": 11374,
+      "sha256": "95b4bd9835a033c60819abffa855460077fdf18a330b4f4171f2b7953b504a78"
+    },
+    {
+      "path": "windows-2025/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "6934be1db85555e7ef87f3f22556288609e5d93d648b5fb9f3bbc08838c817e0"
+    },
+    {
+      "path": "windows-2025/access-picker-61941a682c0444898b382ba3a653d556.json",
+      "size": 1633,
+      "sha256": "6a0c48d669865644ea6861f2214d58bb70ad3ef2c6f8749fbcbe7c4fbbcbc1db"
+    },
+    {
+      "path": "windows-2025/access-editor-2212b7f1de9645aeb334ec43d8ff8c0e.json",
+      "size": 2367,
+      "sha256": "d7b7f4442de853bcc0e3143345ff7050a35ec96481b67ae3b7e1c1f38875c178"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 483,
+      "sha256": "f3e0b36eb2939b9ff78e230c59d2b5ded3074d59376fe76890b6564ea12183ff"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 113,
+      "sha256": "aa53ec7565a95d9a395d5c65684cc88ba71fe038a6c6b880391718b4c10ab641"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 713,
+      "sha256": "8e7a49182d98be8d4b4eb0c45da927e9539b1e1c3f0aa08150b3e464a97a8c76"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 11381,
+      "sha256": "e9049ec2d93ac219620c284dcf03338d007527050efb42853d3c3f343ffa9f07"
+    },
+    {
+      "path": "windows-11-arm/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "5d11d86ae1e1e5483536c3d3fe21d45ce4cd06fc066c9ad75776fe7056136de9"
+    },
+    {
+      "path": "windows-11-arm/access-picker-f47355b00b654b71a185edc9c7ea6af1.json",
+      "size": 1633,
+      "sha256": "2e63cea106c10250b0d67d1aa070fb1accf4f84286aa34aeb1a28047a6d5345b"
+    },
+    {
+      "path": "windows-11-arm/access-editor-d7dd439938234c089dc09d0f0923e03a.json",
+      "size": 2367,
+      "sha256": "dca529fcc2275d471ba8d3cdd94f9d36f5dced2b1f770f03b68f2b0e9ee43e77"
+    }
+  ]
+}

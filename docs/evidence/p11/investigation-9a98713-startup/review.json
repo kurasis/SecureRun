@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "source_commit": "9a98713584cd526c013c23a940958f07572d8c87",
+  "run_id": 39113580938,
+  "job_id": 117634663509,
+  "classification": "FAILED_OBSERVER_STARTUP_NO_ENGINE_WORKLOAD",
+  "facts": "ARM parser/privacy regression step passed. Observer background startup then failed before Invoke-P09; uploader correctly found no result artifact. Actual local Start-Job -FilePath reproduction showed its transported script has an empty source directory, so joining PSScriptRoot to the new support script failed. Fix passes the resolved repository support path explicitly. The regression now starts the actual observer through Start-Job with a preexisting private stop marker, verifies zero samples and clean completion, and removes its own temporary data. This is a transport unit test, not Windows containment evidence. Startup failures now retain only error type/category/line rather than raw exception text. No engine workload was run or relabeled successful in this failed job.",
+  "privacy_review": "Only bounded run/job/step facts and reproduced diagnostic classification retained. Private raw CI log excluded; no machine paths, process IDs, arguments or credentials retained."
+}

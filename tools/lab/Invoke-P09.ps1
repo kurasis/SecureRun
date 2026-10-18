@@ -160,5 +160,15 @@ try {
  }catch{$liveFaultAvailable=$false}
  @{schema=1;readonly_cim_available=$liveFaultAvailable;records=@($liveFaults.ToArray());raw_arguments_paths_and_ids_retained=$false;termination_dispatched=$false;os_error_reporting_modified=$false}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $out 'live-fault-reporters.json') -Encoding utf8
  try{$labActorSid='';if($name){$labActor=Get-LocalUser -Name $name -ErrorAction Stop;$labActorSid=$labActor.SID.Value};$wer=& (Join-Path $PSScriptRoot 'Read-P09WerMetadata.ps1') -Since $labStarted -ActorSid $labActorSid;$wer|ConvertTo-Json -Depth 6|Set-Content (Join-Path $out 'wer-metadata.json') -Encoding utf8}catch{@{schema=1;read_only_wer_metadata_available=$false;records=@();raw_report_content_retained=$false;raw_paths_arguments_ids_retained=$false;os_error_reporting_modified=$false;termination_dispatched=$false}|ConvertTo-Json|Set-Content (Join-Path $out 'wer-metadata.json') -Encoding utf8}
+ # Fixed virtualized WER locations complement host metadata. Diagnostic only;
+ # association never grants process trust or termination authority.
+ try{
+  $actorProfile=Get-CimInstance Win32_UserProfile -Filter ("SID='"+$labActorSid+"'") -OperationTimeoutSec 5
+  if($null -ne $actorProfile -and $actorProfile.LocalPath){
+   $labProfile=Join-Path $actorProfile.LocalPath 'AppData/Local/SecureRun'
+   $fault=& (Join-Path $PSScriptRoot 'Read-DiagnosticFailureMetadata.ps1') -Since $labStarted -LabProfile $labProfile
+   $fault|ConvertTo-Json -Depth 8|Set-Content (Join-Path $out 'extended-fault-metadata.json') -Encoding utf8
+  }
+ }catch{}
  if($null -ne $password){$password.Dispose()};if($name){Disable-LocalUser -Name $name -ErrorAction SilentlyContinue};if($shareCreated){Remove-SmbShare -Name 'SecureRunP05Synthetic' -Force -Confirm:$false};Pop-Location
 }

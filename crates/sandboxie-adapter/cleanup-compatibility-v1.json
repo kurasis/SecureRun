@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "upstream_commit": "cdba7096240b93d79c5373aa81a75a1c5c71b883",
+  "upstream_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
   "native_export": "?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z",
   "targets": [
     {
@@ -8,47 +8,47 @@
       "components": [
         {
           "name": "SbieDll.dll",
-          "sha256": "c046ecfdc5772890f4ab29818876a80f6df2f8c593a7a30096a5285051977072",
+          "sha256": "12643b9b87a3813ef7865f7b9a7e2e53e5af8b6d763a08d2ab0fd068187a5ebd",
           "signature": "Valid"
         },
         {
           "name": "SbieMsg.dll",
-          "sha256": "f18d2ca1d55f3ce5af4c55ca05e0746881c46110cb1a2b4ffa5562072fd27c14",
+          "sha256": "003f9f5c267e54c16b0f59758f9c53058a65c1fd1b996349cbc06bfb0742beab",
           "signature": "Valid"
         },
         {
           "name": "QSbieAPI.dll",
-          "sha256": "3c9d03b25a60843cf3cb31426fef9d5e2124fe99b935b425096afa1a09339f80",
+          "sha256": "7f83c615e2b3d0af6cccf345691e8c3d36f7434a72a74ea5ec59159a9034235f",
           "signature": "Valid"
         },
         {
           "name": "Qt6Core.dll",
-          "sha256": "2eda0349e2b7cd0d8b48069eee572296452c256cc1156462fe4b7c436fdcb92e",
+          "sha256": "90de17b5094e0cc9b717caa063dae2991553c7d4378dc8d1f504a012e98598b3",
           "signature": "Valid"
         },
         {
           "name": "MiscHelpers.dll",
-          "sha256": "9eaa7177b9c0889e2bc1dc5d70556c38f2111c931cd1c9f277babe09edff4f48",
+          "sha256": "72a12b3e08f0750d8763b6ae216323007fcafbf6fa7f481f37cb635688f0b32d",
           "signature": "Valid"
         },
         {
           "name": "7z.dll",
-          "sha256": "58ed729e1536f6999c35cd88c1a8c9cd271c720b5cd5c7f83b88a671f4367a8b",
+          "sha256": "7f7b666e7730119a4dae3ebd13f2089a14e734ab6b46f0140f85977493f7844c",
           "signature": "Valid"
         },
         {
           "name": "concrt140.dll",
-          "sha256": "c463cb07e0d417fc6cab77d202f69ae99e6a4d029b6d51b650764ac55f846b50",
+          "sha256": "4860bc7facb98d8f96c6217a4997b34d585f32fb8e40d501cc7203facb057ad2",
           "signature": "Valid"
         },
         {
           "name": "libcrypto-3-x64.dll",
-          "sha256": "f388bd835a64dffcf46b32265de69350583cc74184e0ee9473ba9bd3d06ade48",
+          "sha256": "9e95ee103dd3029156d2b742a581cfdb47f984dd428627b8831274eab69ee782",
           "signature": "Valid"
         },
         {
           "name": "libssl-3-x64.dll",
-          "sha256": "d2d254c9bbed06b5f1b91fdc0d0191ba3c7d1a75e36a998166817869a8b139a5",
+          "sha256": "28eb39a40e252a7fc94c21f4f90c2e661c1a6fde3ab61c6011599b39fa85c27c",
           "signature": "Valid"
         },
         {
@@ -78,47 +78,47 @@
         },
         {
           "name": "Qt6Gui.dll",
-          "sha256": "a945bc24268949ed646ca3556ea1943f43da353dbdcf56c202e1c51541b6330e",
+          "sha256": "ae4a9975dab00121862a5f0170c913f4cb06f974054e6f5dd2b627cfdaf4f4ff",
           "signature": "Valid"
         },
         {
           "name": "Qt6Network.dll",
-          "sha256": "f94bb05b4d560f8ad2455d46ef37712b49081ca0bfc2c87a661e4b508f6b3188",
+          "sha256": "76d460cef258f8494164c441aee9ed94ba3e367b219a76c3fc98f3c1c2e6515f",
           "signature": "Valid"
         },
         {
           "name": "Qt6Qml.dll",
-          "sha256": "63e9c2a33a615f865b7097b04c6acee41f5ef084ea3b6343f89132c0a84bc1a7",
+          "sha256": "b093107f64e8ac321e26201a297177b17e21d084e0796bac66691abbea46f21f",
           "signature": "Valid"
         },
         {
           "name": "Qt6Widgets.dll",
-          "sha256": "8297b30dfe0b097b0709b4da4bf074a550e3e20559e086f4432abb694e650a17",
+          "sha256": "15ea2aafa393d5a66ed042b9a8b88256a826609cc48c140d61ba2801bd447d21",
           "signature": "Valid"
         },
         {
           "name": "qtsingleapp.dll",
-          "sha256": "2802664e7eb9e942da343cadcf2a72b25e3fea31a02d260ad89353b2cf79fbf6",
+          "sha256": "4a691ff2bce30d5f8b5dd66f60b5511e77b428bacc44de48ea5046e16d92c0ea",
           "signature": "Valid"
         },
         {
           "name": "SbieShellExt.dll",
-          "sha256": "62f42ffb4390eba1fa3e5efcef365274ec469c79f19b25cb561a442277ff7240",
+          "sha256": "2ad50313067d434ebf42e3603bbacaee8838069428f6aaaf067b4a4599ceb5a5",
           "signature": "Valid"
         },
         {
           "name": "SboxHostDll.dll",
-          "sha256": "de95c72967f6126d45e4eff5287601d017cd33d026b274a45396b3e0d2b3be39",
+          "sha256": "fa4d8aef237da8262193b1d28d06212e46cce2661da3394d67fda06f1ba5321d",
           "signature": "Valid"
         },
         {
           "name": "UGlobalHotkey.dll",
-          "sha256": "6b7329593cb6b26b9d98ef70035e8357baecf582d742b9a9da66642bb66eafbd",
+          "sha256": "744f95b6da987e26d6e8ea40179606d51b213dea8c8e1e86ee64b62a6a00dedf",
           "signature": "Valid"
         },
         {
           "name": "vccorlib140.dll",
-          "sha256": "46c526a4db456994211acbcde47a055053527cb2cf6eae90de3e0519625a0d51",
+          "sha256": "87e194916c98c804aa2542a0c8dec60cc8ee19c50d3448d63bc0173771f657a1",
           "signature": "Valid"
         },
         {
@@ -143,47 +143,47 @@
       "components": [
         {
           "name": "SbieDll.dll",
-          "sha256": "29af559779dd52a99cc80414c93906a58fe74f21723fbf1dd1088873ff033b90",
+          "sha256": "344b9a79a935d1acc61b74a6a2429726305c36d4f65523c95951ff99f07e4b70",
           "signature": "Valid"
         },
         {
           "name": "SbieMsg.dll",
-          "sha256": "0cebea6b6c89fa24c756589550235e4a9d64a7c20dac70cf9315e7c1fe4b1dde",
+          "sha256": "5c46dff28c4ab8be4ce3523beb47da5ab987aaebca6b62a8c72ec744c79ba6f0",
           "signature": "Valid"
         },
         {
           "name": "QSbieAPI.dll",
-          "sha256": "6eb58016a889efd5a8eb664ae353ec57f236fce2cbd99cdec43f984b95f902e0",
+          "sha256": "eadc5b8bdc2905dc93bef00a02db1aa8a876e616e41d08056c110ffa30074e31",
           "signature": "Valid"
         },
         {
           "name": "Qt6Core.dll",
-          "sha256": "ec688787b256070a1c2e4e70f7f2343adf3196b76d2283e731e9303a06f49afa",
+          "sha256": "d812d02b93671d6c0eda69b0d0ef843ee8e829261cecca7063a9749d5c9c3447",
           "signature": "Valid"
         },
         {
           "name": "MiscHelpers.dll",
-          "sha256": "604f779e1132d88d9ec33829f93e9be081a85daca1c46055014d3ccd36b528ce",
+          "sha256": "12779984207ed7aa37ec1a945e71087a055872d2d891ceb3f25e08e68633123f",
           "signature": "Valid"
         },
         {
           "name": "7z.dll",
-          "sha256": "32954d61a3ff09a3ae9f8f04f2274a8b4d3ec7478b3357a881c3a6a51dea0423",
+          "sha256": "7d12e4fee89c8e4ff499fde067454dea140eb551d8f3ded9bd488940ce4e31f7",
           "signature": "Valid"
         },
         {
           "name": "concrt140.dll",
-          "sha256": "0c67cdf1e9e42bf224339dd7817d6c8db0d4cb1d57a28eec515f76bc76fd9d52",
+          "sha256": "4d761140a7edb32d23c4a8826a6d8cff10de93c824cc33625baf1a3de74f95f9",
           "signature": "Valid"
         },
         {
           "name": "libcrypto-1_1-arm64.dll",
-          "sha256": "48dcb8ab8148a5eebf90c5ee01ecb8e9d55e736680f58f11cd49c08e2bc4a4e6",
+          "sha256": "65bbb40dd2951e532092f4be2c60bfb2cf9a5a2c5153081c8dd71692a9221425",
           "signature": "Valid"
         },
         {
           "name": "libssl-1_1-arm64.dll",
-          "sha256": "f26a24c66b7b75f4e40cd1c750bcdbd36a9136a0170a2f759a0e26ae3f65262a",
+          "sha256": "d21f75ab5266bb252e6b7a5ee3167adf7630b49e1fbd8efda8c8eae6cc821dfd",
           "signature": "Valid"
         },
         {
@@ -213,47 +213,47 @@
         },
         {
           "name": "Qt6Gui.dll",
-          "sha256": "2d1ef68cb9e2c5c8d94e8ed84731cdb98acd67efb497974747cad08410500ad4",
+          "sha256": "7a5d27cac018bd7a45ed49408cdbe138e94259b3b636480c71af9b440cd5f094",
           "signature": "Valid"
         },
         {
           "name": "Qt6Network.dll",
-          "sha256": "6d636443df8c99f1e603ae486bc49560ff1cbe7a2cf9e9873ffdf33805edf2a8",
+          "sha256": "6f87bf053f2cc76ba70943caa26f2c478d4f796f0e1bee343a06a5d0d395dd91",
           "signature": "Valid"
         },
         {
           "name": "Qt6Qml.dll",
-          "sha256": "bc09ae37d0d759cfeb0356a790578fb1876c054940e0fd868c5b7ea01e087404",
+          "sha256": "722ce5f757ddabc602e97ee7a714d979d8020560bdc526351038475bdf1159df",
           "signature": "Valid"
         },
         {
           "name": "Qt6Widgets.dll",
-          "sha256": "4783655558c8cdb7e3fccf230fc388a29e0d20c25b4f00128bb4e0e27c270f1d",
+          "sha256": "220e5152392253d8ad95810935696e982f2f6d6379047eaa7d3d0edd84f7ed44",
           "signature": "Valid"
         },
         {
           "name": "qtsingleapp.dll",
-          "sha256": "8823b0f4fbe95de7f5e081b84281858f4c71465bfac0db832d4ccce209c744a8",
+          "sha256": "3b9d56e9d94361ba4f37a4e66b4d6dfcb8b2b6fd72fedbc3f88d6621532039ab",
           "signature": "Valid"
         },
         {
           "name": "SbieShellExt.dll",
-          "sha256": "f32e2a31e0aa8dab30c8d8257ed27af2e952ce6899161084c000ed0dc77c2dd7",
+          "sha256": "ea4afca05b0cd1417ad41e0722c71ab10915827a0643651801ffce4216c4ab64",
           "signature": "Valid"
         },
         {
           "name": "SboxHostDll.dll",
-          "sha256": "06ec748913d53bfad78ae5379ff165ed6d412c379688f538e64ff23f7823607c",
+          "sha256": "b0de5ba9f016bd6cecfb700726a936393f79865f3cc515c40d47be507a4bb72d",
           "signature": "Valid"
         },
         {
           "name": "UGlobalHotkey.dll",
-          "sha256": "f482c155ddda01dbb986f776ce408a6f440a9c279dbc86c17c9aedbba1b5be4d",
+          "sha256": "db4fa91dc716d14d11d70fd19ed16fbdc90b94113ad4fe2d7ca62006ae4a60dd",
           "signature": "Valid"
         },
         {
           "name": "vccorlib140.dll",
-          "sha256": "9d665bd68ad399c60fc1ca0d1252d17809b3ac7b49ec78f93c98b4491f70aac8",
+          "sha256": "792667d0b4a1c37e10dd54df4f0c8ff185f27483dc58eb311c2e45f3050712e3",
           "signature": "Valid"
         },
         {
@@ -272,6 +272,20 @@
           "signature": "Valid"
         }
       ]
+    }
+  ],
+  "source_inventories": [
+    {
+      "runner": "windows-2025",
+      "path": "docs/evidence/p02/completion-0d2600c/windows-2025/installation.json",
+      "sha256": "8628e6bbfcf8bff6b17ed85054b1b0e753aecd5c3df935926c54ca8dbbe1932c",
+      "size": 10893
+    },
+    {
+      "runner": "windows-11-arm",
+      "path": "docs/evidence/p02/completion-0d2600c/windows-11-arm/installation.json",
+      "sha256": "f7915f748a34d4084969797cd77f5ee5cfcdb09b73042208b0a2f5329ed44287",
+      "size": 11146
     }
   ]
 }

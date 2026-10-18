@@ -1,0 +1,127 @@
+{
+  "raw_paths_arguments_ids_and_absolute_times_retained": false,
+  "reporter_event_count": 1,
+  "termination_dispatched": false,
+  "windows_security_or_wer_settings_modified": false,
+  "known_process_event_count": 12,
+  "classification": "DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "schema": 1,
+  "samples": 7931,
+  "reporter_event_limit": 128,
+  "record_bound_reached": false,
+  "name_observations_are_not_authentication": true,
+  "record_bound_first_reached_ms": null,
+  "debugger_attached": false,
+  "process_events": [
+    {
+      "kind": "SbieSvc.exe",
+      "started_observation_ms": 678280,
+      "exit_code_hex": null,
+      "completed": false
+    },
+    {
+      "completed_observation_ms": 831375,
+      "started_observation_ms": 827199,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "kind": "SbieSvc.exe",
+      "started_observation_ms": 827199,
+      "exit_code_hex": null,
+      "completed": false
+    },
+    {
+      "completed_observation_ms": 831375,
+      "started_observation_ms": 827737,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "completed_observation_ms": 828694,
+      "started_observation_ms": 827738,
+      "kind": "securerun-policy-probe.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 827849,
+      "started_observation_ms": 827738,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 831375,
+      "started_observation_ms": 827738,
+      "kind": "SandboxieDcomLaunch.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 837020,
+      "started_observation_ms": 832325,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 832655,
+      "started_observation_ms": 832547,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 837129,
+      "started_observation_ms": 832988,
+      "kind": "SandboxieRpcSs.exe",
+      "completed": true,
+      "exit_code_hex": "0000004f"
+    },
+    {
+      "completed_observation_ms": 834295,
+      "started_observation_ms": 833096,
+      "kind": "securerun-policy-probe-x86.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "completed_observation_ms": 833489,
+      "started_observation_ms": 833096,
+      "kind": "SbieSvc.exe",
+      "completed": true,
+      "exit_code_hex": "00000000"
+    },
+    {
+      "kind": "WerFault.exe",
+      "started_observation_ms": 833207,
+      "exit_code_hex": null,
+      "completed": false
+    }
+  ],
+  "observer_active_during_workload": true,
+  "known_process_event_limit": 2048,
+  "reporters": [
+    {
+      "target_birth_revalidated": true,
+      "observed_target_lifetime": {
+        "completed_observation_ms": 837129,
+        "started_observation_ms": 832988,
+        "kind": "SandboxieRpcSs.exe",
+        "completed": true,
+        "exit_code_hex": "0000004f"
+      },
+      "target_exit_code_hex": null,
+      "target_was_previously_observed": true,
+      "numeric_target_switch_observed": true,
+      "observed_ms": 833207,
+      "target_kind": "SandboxieRpcSs.exe",
+      "reporter_kind": "WerFault.exe",
+      "association_authorizes_no_action": true
+    }
+  ],
+  "observation_failures": 0
+}

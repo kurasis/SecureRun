@@ -2,10 +2,10 @@
   "schema_version": 1,
   "adapter_protocol": 1,
   "release": {
-    "plus": "1.18.6",
-    "core": "5.73.6",
+    "plus": "1.18.8",
+    "core": "5.73.8",
     "abi": 356912,
-    "source_commit": "cdba7096240b93d79c5373aa81a75a1c5c71b883",
+    "source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
     "evidence_kind": "P02_READ_ONLY_ROUTE_FEASIBILITY",
     "production_policy_acceptance": false
   },
@@ -13,119 +13,123 @@
     {
       "architecture": "x86_64",
       "os_base": "10.0.26100",
-      "evidence_run": 38557903464,
+      "evidence_run": 39119550715,
       "components": [
         {
+          "sha256": "96f220d2ff4b27bfaceeb7bc1f19621c5f1b9e594bfd8060d2d7ac6516cd6ee9",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "4b0d3e020228183e9c16db9d99f58b3e402a93c3b66373f0bf6d23447d8559eb",
-          "name": "SbieDrv.sys",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "SbieDrv.sys"
         },
         {
+          "sha256": "12b8ac8462f65d2c26504e01916e4d9411a9ab7e0a64e821bc7a6755c8dacb43",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "9b75308ba5e71feaa3e8d12acec6f506fa3fe721f4c11b69ac2363ccfc05bc50",
-          "name": "SbieSvc.exe",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "SbieSvc.exe"
         },
         {
+          "sha256": "12643b9b87a3813ef7865f7b9a7e2e53e5af8b6d763a08d2ab0fd068187a5ebd",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "c046ecfdc5772890f4ab29818876a80f6df2f8c593a7a30096a5285051977072",
-          "name": "SbieDll.dll",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "SbieDll.dll"
         },
         {
+          "sha256": "d41a9bb3fe7a42a8bf194eddac6b36479ed18c3ab396c9ccb341f07fa6d830e7",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "0419f7a826bd56c8c3a2398b85dd9a9b445daa5e5f297c48d424102f761c4d39",
-          "name": "SbieIni.exe",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "SbieIni.exe"
         },
         {
+          "sha256": "55820d96077bd59747cae8862cc5f642a43d16a1e7a62f29e1c6d7b530c60060",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "d7eb0fec102a21caab5fe479e66be1844adab5ca234fe859fbc7dac3b3df487f",
-          "name": "Start.exe",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "Start.exe"
         },
         {
+          "sha256": "003f9f5c267e54c16b0f59758f9c53058a65c1fd1b996349cbc06bfb0742beab",
           "signature": "Valid",
-          "file_version": "5.73.6",
-          "sha256": "f18d2ca1d55f3ce5af4c55ca05e0746881c46110cb1a2b4ffa5562072fd27c14",
-          "name": "SbieMsg.dll",
-          "authenticated_payload_match": true
+          "authenticated_payload_match": true,
+          "file_version": "5.73.8",
+          "name": "SbieMsg.dll"
         }
       ],
       "injected_libraries": [
         {
           "name": "32/SbieDll.dll",
-          "sha256": "889ab370db334e16aa68b23f984f164935774a751af16a5249f6a96abceaa630",
+          "sha256": "a440aeef8604b2283e4c7b404780a1d49713c2cc72fb005b9bdcb354387735e3",
           "machine": "014c"
         }
-      ]
+      ],
+      "os_product_type": 3,
+      "os_update_build_revision": 33438
     },
     {
       "architecture": "aarch64",
       "os_base": "10.0.26200",
-      "evidence_run": 38557903464,
+      "evidence_run": 39119550715,
       "components": [
         {
           "name": "SbieDrv.sys",
-          "sha256": "67cc09ee59f273be85c47bfb4b9fec327fa46b026c938e97304310607c529d4f",
+          "sha256": "4c38f91c6e003ac3b76de68c28b6d002b67e2b225be6169bb88da93f975d9de3",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         },
         {
           "name": "SbieSvc.exe",
-          "sha256": "46512cf779c57a5586e0ec11fe4c35c5e10cf96101e7728f55d987146cd5bb88",
+          "sha256": "4395054e92c4ec564cf72ee1fc5b96644d18a72e2f64e2c3cd1c6afe750d430a",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         },
         {
           "name": "SbieDll.dll",
-          "sha256": "29af559779dd52a99cc80414c93906a58fe74f21723fbf1dd1088873ff033b90",
+          "sha256": "344b9a79a935d1acc61b74a6a2429726305c36d4f65523c95951ff99f07e4b70",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         },
         {
           "name": "SbieIni.exe",
-          "sha256": "e83f2a08d1b150f08fe2d687b1d49f1f74a0814fd198228d029a2480d1d5c725",
+          "sha256": "73149ee7df53bd3eb39ac7623652501b39deed58998cfd3b72da37559c6df324",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         },
         {
           "name": "Start.exe",
-          "sha256": "09d20333106d8a026c7a34ead8d0021f1dbc8119390ba6d88001334b3ac4f0e9",
+          "sha256": "f8394f93bd5e00d636843fa8feddcbe82f0129954c37a2c7b5ccad343e4150e9",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         },
         {
           "name": "SbieMsg.dll",
-          "sha256": "0cebea6b6c89fa24c756589550235e4a9d64a7c20dac70cf9315e7c1fe4b1dde",
+          "sha256": "5c46dff28c4ab8be4ce3523beb47da5ab987aaebca6b62a8c72ec744c79ba6f0",
+          "file_version": "5.73.8",
           "signature": "Valid",
-          "authenticated_payload_match": true,
-          "file_version": "5.73.6"
+          "authenticated_payload_match": true
         }
       ],
       "injected_libraries": [
         {
           "name": "32/SbieDll.dll",
-          "sha256": "6f4e095f558391523fddcc590462a505a7a90a8c02f794bfc8410386edb4dca6",
+          "sha256": "c447922c35900327347a980f0cb7941474cabfe67f448bd2022bccc0fd0a6443",
           "machine": "014c"
         },
         {
           "name": "64/SbieDll.dll",
-          "sha256": "339bf8881215ed9d3902aba2b1e24fbf3db167a5071e37eb50327d1d3c65526c",
+          "sha256": "561858c13b8a57b456337e8a09a4b887cc073704fc69e1a29c025c72134cc153",
           "machine": "8664"
         }
-      ]
+      ],
+      "os_product_type": 1,
+      "os_update_build_revision": 9457
     }
   ],
   "policy_inheritance": {

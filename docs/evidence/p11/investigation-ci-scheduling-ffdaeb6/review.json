@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "source_commit": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+  "mandatory_integration_run": 39087328157,
+  "mandatory_installed_run": 39087328516,
+  "classification": "DUPLICATE_QUEUED_WORKFLOWS_NOT_COMPLETION_PROOF",
+  "runs": [
+    {
+      "conclusion": "",
+      "databaseId": 39087333223,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P04 trusted engine observation",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39087333335,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P03 foundation and IPC",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39087333216,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P06 launch and scoped process control",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39087333542,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P05 policy and safe provisioning",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39087333345,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P07 safe file transfers and boxed executables",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    },
+    {
+      "conclusion": "",
+      "databaseId": 39087333214,
+      "headSha": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+      "status": "queued",
+      "workflowName": "P09 product UX and application compatibility",
+      "cancel_requested": true,
+      "reason": "Queued optional duplicate PR workflow; identical default Invoke-P03..P09 scripts run on both same runners in the required exact-source full P10 matrix. Main has no required branch checks; no required test scenario or source input is removed. No completed/failed result relabeled. Full P10 and P11 still must succeed before phase closure."
+    }
+  ]
+}

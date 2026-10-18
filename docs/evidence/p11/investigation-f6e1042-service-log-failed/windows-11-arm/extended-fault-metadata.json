@@ -1,0 +1,21 @@
+{
+  "read_only_fault_log_available": true,
+  "read_only_wer_metadata_available": true,
+  "termination_dispatched": false,
+  "metadata_files_scanned": 0,
+  "raw_paths_arguments_ids_and_reports_retained": false,
+  "live_reporters": [
+    {
+      "reporter_kind": "WerFault.exe",
+      "cim_target_present": false,
+      "association_authorizes_no_action": true,
+      "numeric_target_switch_observed": true,
+      "associated_component_kind": "WITHHELD"
+    }
+  ],
+  "os_error_reporting_modified": false,
+  "fixed_component_events": [],
+  "schema": 1,
+  "readonly_cim_available": true,
+  "reports": []
+}

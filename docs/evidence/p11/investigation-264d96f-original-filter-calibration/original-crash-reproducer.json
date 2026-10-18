@@ -1,0 +1,29 @@
+{
+  "synthetic_exception_confirmed": true,
+  "dumps": [],
+  "result": "CALIBRATION_PASSED",
+  "classification": "ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE",
+  "control_exception": {
+    "classification": "SYNTHETIC_ORIGINAL_FILTER_CALIBRATION_NO_PHASE_GATE",
+    "exception_code_hex": "e0424242",
+    "fault_module_kind": "KERNELBASE.dll",
+    "module_relative_offset_hex": "0000000000124464",
+    "process_architecture": "ARM64",
+    "dump_target_id_matched": true,
+    "private_dump_sha256": "6139703b9f4c4391db0bf49d7b7da00fc4e3774f1f102c51f52f59a84a389a49",
+    "private_dump_size": 75551,
+    "raw_dump_paths_ids_arguments_and_addresses_uploaded": false
+  },
+  "raw_dump_upload_allowed": false,
+  "original_filter_changes_fault_delivery": true,
+  "cases": [],
+  "global_sandbox_settings_changed": false,
+  "debugger_attachment_requested": false,
+  "control_exit_code_hex": "e0424242",
+  "planned_parent_child_pairs": 0,
+  "production_policy_changed": false,
+  "windows_security_or_wer_settings_changed": false,
+  "calibration_only": true,
+  "original_service_log_restored": true,
+  "completed_parent_child_pairs": 0
+}

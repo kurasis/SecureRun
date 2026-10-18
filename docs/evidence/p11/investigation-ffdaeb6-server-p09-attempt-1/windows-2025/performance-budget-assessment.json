@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "status": "MEASURED_DEVIATION",
+  "mandatory_checks_waived": false,
+  "metrics": [
+    {
+      "metric": "STARTUP_INTERACTIVE",
+      "observed": 7326.8687,
+      "target": 3000,
+      "relation": "<=",
+      "unit": "ms",
+      "result": "DEVIATION",
+      "user_impact": "Opening the manager can take longer before its controls are interactive."
+    },
+    {
+      "metric": "IDLE_CPU",
+      "observed": 0.9690797281157366,
+      "target": 1,
+      "relation": "<",
+      "unit": "percent",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "IDLE_WORKING_SET",
+      "observed": 230939394,
+      "target": 250000000,
+      "relation": "<",
+      "unit": "bytes",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "PROCESS_UPDATE",
+      "observed": 127.79999999981374,
+      "target": 2000,
+      "relation": "<=",
+      "unit": "ms",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    },
+    {
+      "metric": "ADDED_LAUNCH",
+      "observed": 434,
+      "target": 1000,
+      "relation": "<",
+      "unit": "ms",
+      "result": "MET",
+      "user_impact": "No observed budget deviation."
+    }
+  ]
+}

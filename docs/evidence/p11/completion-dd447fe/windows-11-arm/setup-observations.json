@@ -1,0 +1,112 @@
+[
+  {
+    "exit_code": 7,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_69",
+      "P11_SETUP_GUARD_REFUSED"
+    ],
+    "expected_failure": true
+  },
+  {
+    "exit_code": 7,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_69",
+      "P11_SETUP_GUARD_REFUSED"
+    ],
+    "expected_failure": true
+  },
+  {
+    "exit_code": 0,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_CRT_AVAILABLE_ARM64",
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": false
+  },
+  {
+    "exit_code": 5,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.11-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_CRT_AVAILABLE_ARM64",
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": true
+  },
+  {
+    "exit_code": 0,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.11-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_CRT_AVAILABLE_ARM64",
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": false
+  },
+  {
+    "exit_code": 7,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": true
+  },
+  {
+    "exit_code": 0,
+    "log_close_waits": 9,
+    "file": "unins000.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": false
+  },
+  {
+    "exit_code": 0,
+    "log_close_waits": 0,
+    "file": "SecureRun-Development-0.3.0.11-arm64.exe",
+    "private_log_retained": false,
+    "final_log_closed": true,
+    "events": [
+      "P11_CRT_AVAILABLE_ARM64",
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "expected_failure": false
+  }
+]

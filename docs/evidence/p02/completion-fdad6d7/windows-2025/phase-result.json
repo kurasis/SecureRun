@@ -1,0 +1,30 @@
+{
+  "os_security_settings_modified": false,
+  "teardown": "DISCARD_ACTIONS_VM",
+  "result": "DONE",
+  "production_security_scenarios_passed": 0,
+  "passed_smoke_cases": 49,
+  "gate_blockers": [],
+  "mandatory_cleanup": "Original native routine with launch fence, retained namespace leases and sealed descendant DACLs",
+  "phase": "P02",
+  "blocked_smoke_cases": 0,
+  "lab_engine_wfp_enabled": true,
+  "failed_smoke_cases": 0,
+  "representative_required_ids": [
+    "T01",
+    "T05",
+    "T08",
+    "T09",
+    "T12",
+    "T33",
+    "T35",
+    "T36",
+    "T55",
+    "T57",
+    "T58",
+    "T60",
+    "T62"
+  ],
+  "not_run_smoke_cases": 0,
+  "not_applicable_smoke_cases": 2
+}

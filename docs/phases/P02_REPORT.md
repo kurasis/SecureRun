@@ -1,3 +1,14 @@
+Current P11 security refresh: **P02 DONE** on original Plus 1.18.8/core 5.73.8,
+source `bde0890108a563f5d72eb8e57085be2b37177218`.
+[Run 39119550715](https://github.com/kurasis/SecureRun/actions/runs/39119550715),
+manager/lab source `0d2600c2c91ea0b399ab4b9191a90fc74c28ca10`: Server 49 passed/2 N/A,
+ARM 62 passed/2 N/A, zero failed/blocked. See [the current manifest](../evidence/p02/manifest.json)
+and [engine security review](../P11_ENGINE_UPDATE.md). This is feasibility, not
+final installed acceptance. The complete signed component inventories and observed
+OS tuples match the prior fa9b89f security refresh byte-for-byte. Source inventory
+references were refreshed from the actual newly retained originals; no pin changed.
+The updated lab reporter-cleanup safeguards are included in the protected tested probes. Earlier source-specific results below are historical.
+
 # P02 phase report
 
 Status: DONE — representative Sandboxie feasibility. Requested scope: full P02,

@@ -1,0 +1,23 @@
+[
+  {
+    "architecture_verified": true,
+    "declared_architecture": "x64",
+    "sha256": "ef3933e3ed6490fd1ad2867dbe99372fa3272870dddf9b8f39ab390ae9a9c531",
+    "name": "engine_inspect.exe",
+    "observed_pe_machine": "8664"
+  },
+  {
+    "architecture_verified": true,
+    "declared_architecture": "x64",
+    "sha256": "d3fc4631d4e7e035d7ef29fc6edfd35086fd1fe164c9d14f890c30660f474972",
+    "name": "feasibility_probe_x64.exe",
+    "observed_pe_machine": "8664"
+  },
+  {
+    "architecture_verified": true,
+    "declared_architecture": "x86",
+    "sha256": "e1b7572c372e88f62cf692b36941d03ea4843e6fef9d50176170ea00177c828d",
+    "name": "feasibility_probe_x86.exe",
+    "observed_pe_machine": "014c"
+  }
+]

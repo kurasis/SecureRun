@@ -1,23 +1,27 @@
 # Release blockers and remaining prerequisites
 
-P10: DONE. **Zero unresolved mandatory containment findings** remain in the
-reviewed implemented scope on the two owner-selected laboratories.
+The current P11 implementation passed its native installed gate but the phase is
+**BLOCKED by required P10 revalidation**. Historical successes do not certify the
+changed runtime/engine source. This is not a production release or independent audit.
 
-| Item | Classification | State / requirement |
-|---|---|---|
-| P10-F01 native diagnostic Save context | Mandatory security finding | CLOSED: real Unknown-context refusal, consumed preview and successful unboxed native Save on both targets |
-| P10-F02 every custom command / denied origin | Mandatory assurance finding | CLOSED: all 17 commands actually attempted and ACL-denied from both forbidden windows on both targets |
-| P10-F03 boxed worker families | Mandatory assurance finding | CLOSED: actual boxed policy/control/file/lifecycle/history routes refuse a valid claimed host parent |
-| Exact-source P03–P09 integration | P10 exit gate | CLOSED: all 14 native jobs and portable CI passed, with matching source and original proof |
-| P11 installed artifacts | Remaining release prerequisite | NOT_STARTED: installer, reproducibility, licensing/signing status, upgrade/uninstall/retention |
-| P12 installed candidate | Remaining release prerequisite | NOT_STARTED: final installed T01–T66 acceptance on the declared release tuple |
+| Item | Actual state / requirement |
+|---|---|
+| Current full P10 integration | No complete passing current-source matrix; historical ffdaeb6/run39087328157 failed. Current matching installed P11 proof is also pending |
+| Unknown-reporter cleanup | Ordinary ARM P09 still failed at environments 06/08 in runs 39119547942/39120204559. The original exception/module remain undetermined; reporter names grant no trust/termination/hiding authority |
+| Server actual browser/Save observation | Checked native Save input passed in full fa29a20/run39109839082 on both targets; later ordinary Server jobs also passed 22+101. Original clipboard/Save failures remain historical failures |
+| Session and fixture teardown races | Atomic session-ready JSON and retained-object completion handling passed actual P05 b1e2129/run39120204407 on both targets (45 native+62 adapter each); no engine-fault resolution inferred |
+| ARM original-service diagnosis | f6e1042/run39126844625 failed environment 04. cff58d4/run 39129208572 passed 22+101 with no reporter and 112 NtCreateLowBoxToken FFS warnings. Diagnostic success is excluded from phase closure and does not establish a cause/correction |
+| Duplicate PR rapid Launch/Stop | Later P06/P08 ARM jobs first refused DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED; historical ENGINE_DISPATCH_REFUSED and uncertain-state assertions retained. No actual dispatch inferred from assertion labels |
+| P11 installed deployment/retention | 28/28 actual installed cases plus 81 production tests passed on each target; does not waive P10 dependency |
+| Production Authenticode infrastructure | Unavailable; all original artifacts explicitly UNSIGNED DEVELOPMENT ONLY; see signing policy |
+| Original manager license | Not selected by owner; production/commercial redistribution clearance not claimed |
+| P12 final installed acceptance | NOT_STARTED; all 66 T01–T66 entries remain unrun |
+| Windows 11 x64 installed release tuple | Not certified by owner-selected Server x64/Windows 11 ARM64 laboratories |
+| Stripped-OS missing-runtime ARM variant | Not claimed; actual missing runtime tested on Server, Windows 11 preinstalled runtime preserved on ARM |
 
-No mandatory failure is waived. Helper-only cases are N/A because no product
-helper/elevation route exists; applicable ownership/boxed-client tests passed.
-Unadvertised clipboard/device controls and unlicensed paid presets stay unavailable.
-
-The application is not declared ready for first release. Laboratory coverage,
-shared-kernel/desktop limitations, dependency warnings and measured performance
-deviations remain documented in [the internal review](SECURITY_REVIEW.md),
-[dependency review](DEPENDENCY_SECURITY_REVIEW.md) and
-[performance report](PRODUCT_PERFORMANCE_AND_DIAGNOSTICS.md).
+No mandatory check, workload or original performance target is waived. Historical
+performance reports remain source-specific; failed-attempt samples are not completion
+proof. No engine, persistent elevated helper or silent updater is bundled.
+Windows TLS/signatures/hashes, certificate policy and browser sandbox remain active.
+See [P11 phase report](phases/P11_REPORT.md), [installed checks](P11_TEST_REPORT.md),
+[artifact status](DEVELOPMENT_ARTIFACTS.md), [signing](SIGNING.md) and [status](STATUS.md).

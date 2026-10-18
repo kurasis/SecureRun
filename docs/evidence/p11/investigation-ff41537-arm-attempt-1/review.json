@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "classification": "FAILED_INVESTIGATION_NOT_COMPLETION_PROOF",
+  "source_commit": "ff41537925ed606df626cff0fc5729ae57689a18",
+  "run_id": 39083715273,
+  "run_attempt": 1,
+  "runner": "windows-11-arm",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "facts": "Setup/guard cases passed; actual installed offline provisioning failed closed. No original image-status/readonly fault metadata was emitted by this earlier packaging lab, so no specific image/crash cause is claimed. Add passive minimized collection without changing runtime cleanup authority.",
+  "files": [
+    {
+      "path": "seed-summary.json",
+      "size": 110,
+      "sha256": "a27576fff00a45d2b5f48daabca1bfa893df47dc6c367c7cee250139ae8d8584"
+    },
+    {
+      "path": "seed-cases.json",
+      "size": 779,
+      "sha256": "46e877e1af8ff206495f31550677964645c13b2012f6dc51c6465e11a62d7570"
+    },
+    {
+      "path": "packaging-cases.json",
+      "size": 1684,
+      "sha256": "a58b7bbd13c8db6ebb676c19d4e4d501759eed2387c3358a519bd9b05af50871"
+    },
+    {
+      "path": "setup-observations.json",
+      "size": 1089,
+      "sha256": "77e123b57969c7d68b8d2616c8e3928b92ea74d08572cc58e35174f39e0c8cb1"
+    }
+  ]
+}

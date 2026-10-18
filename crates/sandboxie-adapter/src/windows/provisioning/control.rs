@@ -156,14 +156,45 @@ impl NativeEngine {
             return Err("LAUNCH_REVISION_NOT_VERIFIED");
         }
         validate_owned(self, e, all)?;
-        // Release-family and actual kernel/product tuple, independent of the
-        // writable metadata proof. The underlying policy family was exercised
-        // in P05 run 38648135812 on precisely these two laboratories.
-        let tuple = if std::env::consts::ARCH == "aarch64" {
-            (10u32, 0u32, 26200u32, 1u8, "aarch64")
-        } else {
-            (10, 0, 26100, 3, "x86_64")
-        };
+        // The immutable compiled pin contains the exact P02-observed OS tuple.
+        // It is independent of writable metadata/enforcement receipts and shares
+        // the cumulative-update identity format used by policy verification.
+        let compatibility: serde_json::Value =
+            serde_json::from_str(COMPATIBILITY).map_err(|_| "MANIFEST_INVALID")?;
+        let pin = compatibility["targets"]
+            .as_array()
+            .and_then(|targets| {
+                targets
+                    .iter()
+                    .find(|target| target["architecture"] == std::env::consts::ARCH)
+            })
+            .ok_or("RELEASE_TUPLE_UNTESTED")?;
+        let version = pin["os_base"]
+            .as_str()
+            .ok_or("MANIFEST_INVALID")?
+            .split('.')
+            .map(str::parse::<u32>)
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| "MANIFEST_INVALID")?;
+        if version.len() != 3 {
+            return Err("MANIFEST_INVALID");
+        }
+        let revision = u32::try_from(
+            pin["os_update_build_revision"]
+                .as_u64()
+                .ok_or("MANIFEST_INVALID")?,
+        )
+        .map_err(|_| "MANIFEST_INVALID")?;
+        let product = u8::try_from(pin["os_product_type"].as_u64().ok_or("MANIFEST_INVALID")?)
+            .map_err(|_| "MANIFEST_INVALID")?;
+        let tuple = (
+            version[0],
+            version[1],
+            version[2],
+            revision,
+            product,
+            std::env::consts::ARCH,
+        );
         if self.os_identity != fingerprint(&tuple) || a.environment_id != e.id {
             return Err("RELEASE_TUPLE_UNTESTED");
         }

@@ -113,7 +113,7 @@ public sealed class P02Bridge {
     }
     public void RequireUnboxed() {
         var v=new StringBuilder(16); uint abi;
-        if (version(v,out abi)!=0 || v.ToString()!="5.73.6" || abi!=0x57230U) throw new InvalidOperationException("ENGINE_UNVERIFIED");
+        if (version(v,out abi)!=0 || v.ToString()!="5.73.8" || abi!=0x57230U) throw new InvalidOperationException("ENGINE_UNVERIFIED");
         uint session; long created;
         int status=query((IntPtr)GetCurrentProcessId(),0,new StringBuilder(40),null,null,out session,out created);
         if (unchecked((uint)status)!=0xc000000bU) throw new InvalidOperationException("MANAGER_CONTEXT_UNSAFE");
@@ -334,7 +334,7 @@ public sealed class P02Bridge {
             if(!RejectFencedProbe(box))throw new InvalidOperationException("EXTERNAL_LAUNCH_FENCE_FAILED");
             IntPtr module=LoadLibraryEx(Path.Combine(Home,"QSbieAPI.dll"),IntPtr.Zero,0x100|0x800);
             if(module==IntPtr.Zero)throw new InvalidOperationException("NATIVE_CLEANUP_MODULE_UNAVAILABLE");
-            // Exact exports observed in both authenticated v1.18.6 distributions.
+            // Exact exports observed in both authenticated v1.18.8 distributions.
             var remove=Bind<DeleteNative>(module,"?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z");
             // NT relative opens use an empty name to reopen RootDirectory; "." is invalid.
             IntPtr name=Marshal.StringToHGlobalUni("");IntPtr descriptor=Marshal.AllocHGlobal(Marshal.SizeOf<NtName>());

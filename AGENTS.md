@@ -23,3 +23,9 @@
 - Run the repository validator and tooling tests; run Windows CI for changes to
   lab scripts/probe. Publish changes as the user authorized; never force-push or
   override required branch checks.
+- Keep investigation CPU use low; avoid repeated costly Actions without a concrete
+  new finding. The owner cancelled the isolated 24-pair reproduction run; it stays
+  NOT_RUN unless subsequently authorized. Evidence-only updates may skip duplicate CI.
+- New Windows test targets must run in a disposable VM and a Sandboxie box. Keep
+  mandatory unboxed controls pending when this constraint prevents their execution;
+  do not remove them or report them as passed.

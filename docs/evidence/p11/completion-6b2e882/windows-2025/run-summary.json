@@ -1,0 +1,19 @@
+{
+  "teardown": "DISCARD_ACTIONS_VM",
+  "result": "PASSED",
+  "tested_commit": "6b2e8828a28b2660ef331106736bfc8f768aa433",
+  "os_build": 26100,
+  "installed_smoke_after_reinstall": true,
+  "phase": "P11",
+  "engine_bundled": false,
+  "webview_prerequisite_verified": true,
+  "installed_payload_verified": true,
+  "elevated_product_helper": false,
+  "cases_failed": 0,
+  "cases_passed": 25,
+  "os_security_settings_modified": false,
+  "final_acceptance_scenarios_passed": 0,
+  "target": "x86_64-pc-windows-msvc",
+  "retention_verified": true,
+  "signing": "UNSIGNED_DEVELOPMENT_ONLY"
+}

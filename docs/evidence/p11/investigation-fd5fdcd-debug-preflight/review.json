@@ -1,0 +1,9 @@
+{
+  "classification": "PASSED_SYNTHETIC_NATIVE_PREFLIGHT_NO_ENGINE_WORKLOAD",
+  "tested_commit": "fd5fdcd454800b52788c1ade629f8373885c58be",
+  "run_id": 39127011953,
+  "artifact_id": 12136835288,
+  "conclusion": "success",
+  "facts": "Actual Windows ARM64 debugger presence, exact synthetic expected exception dump, readable expected process header/code and prior token privilege restoration passed. Raw dump, tool text, process name/ID and arguments stayed private. No engine workload ran. This does not resolve the separate ordinary RpcSs reporter failure or close any phase.",
+  "original_bytes_unchanged": true
+}

@@ -1,0 +1,77 @@
+[
+  {
+    "evidence": {
+      "new_code_file_denied": true,
+      "product_helper": false,
+      "manager_write_denied": true,
+      "standard_user": true
+    },
+    "status": "PASSED",
+    "name": "upgrade_ordinary_user_cannot_modify_installed_code",
+    "id": "T02"
+  },
+  {
+    "evidence": {
+      "ordinary_user": true,
+      "actual_installed_executable": true,
+      "real_webview_window_observed": true,
+      "normal_features": true
+    },
+    "status": "PASSED",
+    "name": "upgrade_installed_manager_opens_real_webview_and_closes",
+    "id": "T01"
+  },
+  {
+    "evidence": {
+      "same_account": true,
+      "retained_data_unchanged": true,
+      "automatic_cleanup": false,
+      "owned_environment_revalidated": true
+    },
+    "status": "PASSED",
+    "name": "upgrade_same_account_reopens_verified_retained_environment_and_file",
+    "id": "T48"
+  },
+  {
+    "evidence": {
+      "impostor_sha256": "40b3ba570f08375484e6491eb12571fcef803fd31c8e404b3a3ab4649d7a3665",
+      "fake_start_path_and_cwd": true,
+      "also_ids": [
+        "T02"
+      ],
+      "real_target_boxed": true,
+      "host_output_absent": true,
+      "installed_launcher_used": true,
+      "scoped_stop": true,
+      "impostor_positive_control": true,
+      "impostor_executed": false
+    },
+    "status": "PASSED",
+    "name": "upgrade_installed_production_launcher_stays_boxed",
+    "id": "T05"
+  },
+  {
+    "evidence": {
+      "fixture_backup_restored_only_by_lab": true,
+      "refusal": "POLICY_JOURNAL_SCHEMA_UNSUPPORTED",
+      "database_hash_unchanged_on_failure": true,
+      "actual_installed_worker": true,
+      "schema_downgrade_attempted": false
+    },
+    "status": "PASSED",
+    "name": "future_schema_is_refused_without_downgrade",
+    "id": "T28"
+  },
+  {
+    "evidence": {
+      "fixture_backup_restored_only_by_lab": true,
+      "refusal": "POLICY_JOURNAL_FOREIGN_DATABASE",
+      "database_hash_unchanged_on_failure": true,
+      "actual_installed_worker": true,
+      "schema_downgrade_attempted": false
+    },
+    "status": "PASSED",
+    "name": "failed_initial_migration_is_refused_without_destroying_existing_data",
+    "id": "T28"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "status": "FAILED",
+  "mode": "reserved",
+  "standard_user": true,
+  "cases": [
+    {
+      "id": "T01",
+      "name": "required_prerequisites",
+      "exception_type": "System.Management.Automation.RuntimeException",
+      "status": "FAILED",
+      "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+      "native_stage": "CASE",
+      "line": 5
+    }
+  ]
+}

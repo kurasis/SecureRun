@@ -1,0 +1,16 @@
+{
+  "classification": "ORIGINAL_FAILED_ARM_PR_SNAPSHOT_NO_PHASE_GATE",
+  "requested_head": "b1e21291f7c7821decb13fe62451d0109b36d3cf",
+  "actual_merge_commit": "5464b79e6b88554bc49ba559eaf38b81c56163c7",
+  "run_id": 39120204559,
+  "artifact_id": 12134956231,
+  "conclusion": "failure",
+  "server_job_conclusion": "success",
+  "arm_job_conclusion": "failure",
+  "stage": "SEEDING_ENVIRONMENT_08",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "original_exception_and_module": "UNDETERMINED",
+  "raw_original_bytes_unchanged": true,
+  "no_blanket_source_equivalence_claim": true,
+  "facts": "Ordinary full P09 still failed before cases, with one live WerFault and no surviving target in the final read-only snapshot. No fixed-component fault event was found. This is retained separately from the successful c594 debugger-only run; no failure was reclassified."
+}

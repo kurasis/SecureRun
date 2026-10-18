@@ -51,7 +51,19 @@ try {
     function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
     function Case([string]$id,[string]$name,[scriptblock]$body){
         $c=@{id=$id;name=$name;status='IN_PROGRESS'};$cases.Add($c);Save
-        try{$c.evidence=(& $body);$c.status='PASSED'}catch{$c.status='FAILED';$c.exception_type=$_.Exception.GetBaseException().GetType().FullName;$c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}};Save;Write-Host ("P05 "+$id+" "+$name+" "+$c.status+$(if($c.ContainsKey('code')){" "+$c.code}else{''}))
+        try{$c.evidence=(& $body);$c.status='PASSED'}catch{
+            $cause=$_.Exception.GetBaseException();$c.status='FAILED';$c.exception_type=$cause.GetType().FullName;$c.line=$_.InvocationInfo.ScriptLineNumber
+            $c.code=if($_.Exception.Message -cmatch '\b([A-Z][A-Z0-9_]{3,80})\b'){$Matches[1]}else{'POLICY_CASE_FAILED'}
+            # Fixed scalar diagnostics only; exception text/paths/IDs stay private.
+            $details=@{}
+            foreach($key in @('birth_known','critical_state_known','critical','driver_query_attempted','driver_query_status','same_box','same_owner','same_birth','completion_wait_status')){
+                if($cause.Data.Contains($key)){
+                    $value=$cause.Data[$key]
+                    if($value -is [bool] -or $value -is [int] -or $value -is [uint32]){$details[$key]=$value}
+                }
+            }
+            if($details.Count -gt 0){$c.fixture_cleanup=$details}
+        };Save;Write-Host ("P05 "+$id+" "+$name+" "+$c.status+$(if($c.ContainsKey('code')){" "+$c.code}else{''}))
     }
     function Policy($request){
         $start=[Diagnostics.ProcessStartInfo]::new($app);$start.UseShellExecute=$false;$start.WorkingDirectory=$managerHome

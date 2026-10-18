@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "source_commit": "97855fd1f1795a2d12fc692114e2cd2e18ff735c",
+  "run_id": 39084999608,
+  "runner": "windows-11-arm",
+  "classification": "FAILED_INVESTIGATION_NOT_COMPLETION_PROOF",
+  "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+  "stage": "SEEDING_ENVIRONMENT_03",
+  "facts": "Unknown WerFault remained live after reviewed helpers stopped and unchanged 60000 ms wait. No live CIM target remained, no termination dispatched. Cleanup reordering did not resolve orphan reporter behavior; no passing gate or fixed upstream crash cause claimed.",
+  "files": [
+    {
+      "path": "wer-metadata.json",
+      "size": 280,
+      "sha256": "1df5401487fa2530c59e697a18da826c3d1dd01265c68c4a3b1a79b92153c1b2"
+    },
+    {
+      "path": "standard-product.json",
+      "size": 291,
+      "sha256": "7cb98abb651f507a29b1f4ee78d900d3832a50d5cb900d9204877f49770867e5"
+    },
+    {
+      "path": "run-summary.json",
+      "size": 708,
+      "sha256": "4368805daa939945372b7f52f64de0f1bf3c82e33600cf2fa85b49718c47edab"
+    },
+    {
+      "path": "live-fault-reporters.json",
+      "size": 391,
+      "sha256": "d0bc5c97a4ecf1bf9ecbcfdcd71464d5354e73904ac231a905637fe202e384aa"
+    },
+    {
+      "path": "image-status-2dac39b6972a4ea288f1f29c66606a49-e9ec27c9c06c4cbe93ee7f7674f49c04.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "component-faults.json",
+      "size": 178,
+      "sha256": "8b0cabd10734523dcd498f6fef8c5717001e2b4de547411ff592ba87d4e1d1d2"
+    }
+  ]
+}

@@ -74,10 +74,32 @@ fn os_identity() -> R<String> {
     if unsafe { version((&mut info as *mut OSVERSIONINFOEXW).cast()) } != 0 {
         return Err("OS_VERSION_UNKNOWN");
     }
+    // Cumulative updates retain the base build number. Include the protected
+    // machine update revision so retained enforcement cannot survive an OS
+    // patch merely because RtlGetVersion still reports the same base build.
+    use windows_sys::Win32::System::Registry::*;
+    let mut revision = 0u32;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    if unsafe {
+        RegGetValueW(
+            HKEY_LOCAL_MACHINE,
+            wide("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion").as_ptr(),
+            wide("UBR").as_ptr(),
+            RRF_RT_REG_DWORD | RRF_SUBKEY_WOW6464KEY,
+            ptr::null_mut(),
+            (&mut revision as *mut u32).cast(),
+            &mut size,
+        )
+    } != 0
+        || size != std::mem::size_of::<u32>() as u32
+    {
+        return Err("OS_VERSION_UNKNOWN");
+    }
     Ok(fingerprint(&(
         info.dwMajorVersion,
         info.dwMinorVersion,
         info.dwBuildNumber,
+        revision,
         info.wProductType,
         std::env::consts::ARCH,
     )))
@@ -1970,6 +1992,11 @@ impl NativeEngine {
             if processes.len() > 16 {
                 return Err("DIAGNOSTIC_PROCESS_BOUND");
             }
+            // Unknown reporters can be waiting for a reviewed helper to exit.
+            // Driver enumeration order must not block independently authorized
+            // cleanup. Hold unknown objects, stop only reviewed members, then
+            // wait for natural completion without ever terminating the unknowns.
+            let mut unreviewed = Vec::new();
             for process in processes {
                 let raw = unsafe {
                     OpenProcess(
@@ -2003,7 +2030,7 @@ impl NativeEngine {
                     return Err("DIAGNOSTIC_PROCESS_BIRTH_OR_BOX_OWNER_CHANGED");
                 }
                 let token_owner = process_sid(held.0)?;
-                let _service_helper = if token_owner != self.owner {
+                if token_owner != self.owner {
                     // Original RunSandboxedGetToken chooses a session token or
                     // SYSTEM for RpcSs. The driver's box SID remains the owner.
                     // Token_RestrictHelper substitutes Anonymous Logon in the
@@ -2033,111 +2060,74 @@ impl NativeEngine {
                         .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
                         return Err("DIAGNOSTIC_PROCESS_TOKEN_OWNER_CHANGED");
                     }
-                    let mut path = [0u16; 32768];
-                    let mut length = path.len() as u32;
-                    if unsafe {
-                        QueryFullProcessImageNameW(held.0, 0, path.as_mut_ptr(), &mut length)
-                    } == 0
-                    {
-                        let error = unsafe { GetLastError() };
-                        // Image teardown can precede process-object signaling.
-                        // Only completion of this retained object permits skip;
-                        // no live unknown image is authorized for termination.
-                        let waited = unsafe { WaitForSingleObject(held.0, 5000) };
-                        if waited == WAIT_OBJECT_0 {
-                            continue;
-                        }
-                        let status = serde_json::json!({"schema":1,"query_error":error,"wait_status":waited,"complete":false});
-                        std::fs::write(
-                            self.profile
-                                .join("metadata")
-                                .join(format!("image-status-{}.json", diagnostic.id.simple())),
-                            serde_json::to_vec(&status)
-                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
-                        )
-                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-                        return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
+                }
+                let mut path = [0u16; 32768];
+                let mut length = path.len() as u32;
+                if unsafe { QueryFullProcessImageNameW(held.0, 0, path.as_mut_ptr(), &mut length) }
+                    == 0
+                {
+                    let error = unsafe { GetLastError() };
+                    // Image teardown can precede process-object signaling.
+                    // Only completion of this retained object permits skip;
+                    // no live unknown image is authorized for termination.
+                    let waited = unsafe { WaitForSingleObject(held.0, 5000) };
+                    if waited == WAIT_OBJECT_0 {
+                        continue;
                     }
-                    let image = PathBuf::from(text(&path)?);
-                    // The pinned original apps/com implementations provide both
-                    // RpcSs and its DcomLaunch companion. Accept only these two
-                    // protected, signed installed images in our fresh scope.
-                    let original_helper = ["SandboxieRpcSs.exe", "SandboxieDcomLaunch.exe"]
-                        .iter()
-                        .any(|name| {
-                            image.to_string_lossy().eq_ignore_ascii_case(
-                                &self.trusted.home.join(name).to_string_lossy(),
-                            )
-                        });
-                    if !original_helper {
-                        // A short-lived OS reporter can finish while its image is
-                        // being inspected. Waiting on this same held object is
-                        // not authority to terminate an unreviewed live process.
-                        if unsafe { WaitForSingleObject(held.0, 60_000) } == WAIT_OBJECT_0 {
-                            let data = serde_json::json!({"schema":1,"unreviewed_process_completed":true,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
-                            let mut record = OpenOptions::new()
-                                .write(true)
-                                .create_new(true)
-                                .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
-                                .open(self.profile.join("metadata").join(format!(
-                                    "image-status-{}-{}.json",
-                                    diagnostic.id.simple(),
-                                    Uuid::new_v4().simple()
-                                )))
-                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-                            record
-                                .write_all(
-                                    &serde_json::to_vec(&data)
-                                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
-                                )
-                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-                            record
-                                .sync_all()
-                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-                            continue;
-                        }
-                        let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
-                        let allowed_name = [
-                            "SandboxieRpcSs.exe",
-                            "SandboxieDcomLaunch.exe",
-                            "SandboxieCrypto.exe",
-                            "SandboxieBITS.exe",
-                            "SbieSvc.exe",
-                            "WerFault.exe",
-                            "conhost.exe",
-                            "securerun-policy-probe.exe",
-                        ]
-                        .iter()
-                        .find(|v| name.eq_ignore_ascii_case(v))
-                        .copied()
-                        .unwrap_or("UNREVIEWED_NAME_WITHHELD");
-                        let location = if image.starts_with(&self.trusted.home) {
-                            "ENGINE_HOME"
-                        } else if image.starts_with(self.profile.join("boxes")) {
-                            "DIAGNOSTIC_STORAGE"
-                        } else if image.starts_with(system_directory()?) {
-                            "OS_SYSTEM_DIRECTORY"
-                        } else {
-                            "OTHER_LOCATION"
-                        };
-                        let data = serde_json::json!({"schema":1,"image_kind":allowed_name,"location_kind":location,"unreviewed_process_completed":false,"natural_completion_wait_bound_ms":60000,"termination_dispatched":false});
-                        std::fs::write(
-                            self.profile
-                                .join("metadata")
-                                .join(format!("image-status-{}.json", diagnostic.id.simple())),
-                            serde_json::to_vec(&data)
-                                .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
-                        )
-                        .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
-                        return Err("DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED");
-                    }
-                    let file = lease(&image, false)?;
-                    protected(&file)?;
-                    signature(&image, &file)?;
-                    Some(file)
-                } else {
-                    None
-                };
+                    let status = serde_json::json!({"schema":1,"query_error":error,"wait_status":waited,"complete":false});
+                    std::fs::write(
+                        self.profile
+                            .join("metadata")
+                            .join(format!("image-status-{}.json", diagnostic.id.simple())),
+                        serde_json::to_vec(&status)
+                            .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                    )
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                    return Err("DIAGNOSTIC_HELPER_IMAGE_UNKNOWN");
+                }
+                let image = PathBuf::from(text(&path)?);
+                // The pinned original apps/com implementations provide both
+                // RpcSs and its DcomLaunch companion. Accept only these two
+                // protected, signed installed images in our fresh scope.
+                let original_helper = ["SandboxieRpcSs.exe", "SandboxieDcomLaunch.exe"]
+                    .iter()
+                    .any(|name| {
+                        image
+                            .to_string_lossy()
+                            .eq_ignore_ascii_case(&self.trusted.home.join(name).to_string_lossy())
+                    });
+                if !original_helper {
+                    let name = image.file_name().and_then(|s| s.to_str()).unwrap_or("");
+                    let allowed_name = [
+                        "SandboxieRpcSs.exe",
+                        "SandboxieDcomLaunch.exe",
+                        "SandboxieCrypto.exe",
+                        "SandboxieBITS.exe",
+                        "SbieSvc.exe",
+                        "WerFault.exe",
+                        "conhost.exe",
+                        "securerun-policy-probe.exe",
+                    ]
+                    .iter()
+                    .find(|v| name.eq_ignore_ascii_case(v))
+                    .copied()
+                    .unwrap_or("UNREVIEWED_NAME_WITHHELD");
+                    let location = if image.starts_with(&self.trusted.home) {
+                        "ENGINE_HOME"
+                    } else if image.starts_with(self.profile.join("boxes")) {
+                        "DIAGNOSTIC_STORAGE"
+                    } else if image.starts_with(system_directory()?) {
+                        "OS_SYSTEM_DIRECTORY"
+                    } else {
+                        "OTHER_LOCATION"
+                    };
+                    unreviewed.push((held, allowed_name, location));
+                    continue;
+                }
+                let file = lease(&image, false)?;
+                protected(&file)?;
+                signature(&image, &file)?;
+                let _service_helper = file;
                 let mut name = [0u16; 40];
                 let mut sid = [0u16; 96];
                 let mut session = 0;
@@ -2209,6 +2199,33 @@ impl NativeEngine {
                 }
                 if waited != WAIT_OBJECT_0 {
                     return Err("DIAGNOSTIC_STOP_UNCONFIRMED");
+                }
+            }
+            for (held, image_kind, location_kind) in unreviewed {
+                // These exact retained objects have no cleanup authority. A
+                // live unknown member still fails closed after the same bound.
+                let completed = unsafe { WaitForSingleObject(held.0, 60_000) } == WAIT_OBJECT_0;
+                let data = serde_json::json!({"schema":1,"image_kind":image_kind,"location_kind":location_kind,"unreviewed_process_completed":completed,"natural_completion_wait_bound_ms":60000,"reviewed_members_stopped_before_natural_wait":true,"termination_dispatched":false});
+                let mut record = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                    .open(self.profile.join("metadata").join(format!(
+                        "image-status-{}-{}.json",
+                        diagnostic.id.simple(),
+                        Uuid::new_v4().simple()
+                    )))
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                record
+                    .write_all(
+                        &serde_json::to_vec(&data).map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?,
+                    )
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                record
+                    .sync_all()
+                    .map_err(|_| "DIAGNOSTIC_JOURNAL_UNAVAILABLE")?;
+                if !completed {
+                    return Err("DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED");
                 }
             }
         }

@@ -55,7 +55,7 @@ def retain(download, commit, run_id):
                         'gate_result': phase['result'], 'smoke_counts': counts,
                         'os': installation['os'], 'ubr': installation['os_update_build_revision']})
     sources = []
-    paths = ['.github/workflows/p02.yml', 'tools/lab/Build-P02.ps1',
+    paths = ['docs/engine-candidate.json', '.github/workflows/p02.yml', 'tools/lab/Build-P02.ps1',
              'tools/lab/Initialize-P02.ps1', 'tools/lab/Invoke-P02.ps1'] + [
              path.relative_to(ROOT).as_posix() for path in sorted((ROOT / 'tools/probe').glob('*'))
              if path.is_file() and path.name != 'lab_probe.c' and path.suffix in {'.ps1', '.cs', '.c'}]

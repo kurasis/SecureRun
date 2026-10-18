@@ -1,0 +1,56 @@
+[
+  {
+    "conclusion": "",
+    "databaseId": 39086663426,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "queued",
+    "workflowName": "P03 foundation and IPC",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  },
+  {
+    "conclusion": "",
+    "databaseId": 39086663434,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "queued",
+    "workflowName": "P08 lifecycle cleanup and recovery",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  },
+  {
+    "conclusion": "",
+    "databaseId": 39086663462,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "in_progress",
+    "workflowName": "P07 safe file transfers and boxed executables",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  },
+  {
+    "conclusion": "",
+    "databaseId": 39086663446,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "in_progress",
+    "workflowName": "P09 product UX and application compatibility",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  },
+  {
+    "conclusion": "",
+    "databaseId": 39086660704,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "in_progress",
+    "workflowName": "P11 installed packaging and retention",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  },
+  {
+    "conclusion": "",
+    "databaseId": 39086660726,
+    "headSha": "f26e6a386aaf6f62bb7c6460195f6e87a0b8739c",
+    "status": "in_progress",
+    "workflowName": "P10 adversarial integration",
+    "cancel_requested": true,
+    "reason": "Superseded after deterministic UBR/launch-tuple format mismatch was fixed with independently authenticated immutable OS pins. Original Server refusal retained; fresh complete current-source gates required, no pass claimed for cancelled runs."
+  }
+]

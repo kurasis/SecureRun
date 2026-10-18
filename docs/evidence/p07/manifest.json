@@ -1,6 +1,6 @@
 {
   "phase": "P07",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
   "run_id": 39068949002,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/39068949002",
@@ -1647,5 +1647,6 @@
       "result": "BLOCKED",
       "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
     }
-  ]
+  ],
+  "blocked_reason": "Fresh exact-source production and installed gates required for manually authenticated original Plus1.18.8/core5.73.8 component/complete cleanup pins, OS cumulative-update identity and strict deferred unknown-process cleanup. Historical raw evidence remains unchanged."
 }

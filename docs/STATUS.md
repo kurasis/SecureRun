@@ -1,11 +1,11 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-17 UTC. Completed scope: full P10.
+Specification: 1.3. Updated: 2026-10-18 UTC. P11 security refresh is IN_PROGRESS; P03–P10 require fresh exact-source Windows proof on the reviewed 1.18.8 engine.
 
 | Phase | Status | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | BLOCKED | [Report](phases/P02_REPORT.md) |
+| P02 | DONE | [Report](phases/P02_REPORT.md) |
 | P03 | BLOCKED | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | BLOCKED | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
@@ -17,7 +17,9 @@ Specification: 1.3. Updated: 2026-10-17 UTC. Completed scope: full P10.
 | P11 | IN_PROGRESS | Protected development installer and installed Windows checks in progress |
 | P12 | NOT_STARTED | Final installed acceptance |
 
-Exact runtime/lab source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`. [Full integration run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002) completed successfully: one portable job and all 14 native jobs.
+Historical 1.18.6 baseline below; current engine review is [documented separately](P11_ENGINE_UPDATE.md).
+
+Historical runtime/lab source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`. [Full integration run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002) completed successfully: one portable job and all 14 native jobs.
 
 Run window: 2026-10-17T20:58:22Z to 2026-10-17T22:02:38Z (UTC), including runner queues. Each scenario below inherits this run/source context and its linked target report. Native summaries bind manager/probe hashes and OS builds; engine components/policy fingerprints are retained in the matching phase proof.
 

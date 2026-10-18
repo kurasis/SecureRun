@@ -866,7 +866,7 @@ fn observe_retained(
         }
         report.core_version = Some(text(&version)?);
         report.abi = Some(abi);
-        if report.core_version.as_deref() != Some("5.73.6") || abi != 0x57230 {
+        if report.core_version.as_deref() != Some("5.73.8") || abi != 0x57230 {
             return Err("ENGINE_VERSION_UNTESTED");
         }
         report.bridge_context = api.context(unsafe { GetCurrentProcessId() });

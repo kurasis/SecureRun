@@ -1,0 +1,46 @@
+[
+  {
+    "status": "PASSED",
+    "id": "T02",
+    "name": "reinstall_ordinary_user_cannot_modify_installed_code",
+    "evidence": {
+      "manager_write_denied": true,
+      "product_helper": false,
+      "new_code_file_denied": true,
+      "standard_user": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T01",
+    "name": "reinstall_installed_manager_opens_real_webview_and_closes",
+    "evidence": {
+      "ordinary_user": true,
+      "real_webview_window_observed": true,
+      "actual_installed_executable": true,
+      "normal_features": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T48",
+    "name": "reinstall_same_account_reopens_verified_retained_environment_and_file",
+    "evidence": {
+      "same_account": true,
+      "automatic_cleanup": false,
+      "retained_data_unchanged": true,
+      "owned_environment_revalidated": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T05",
+    "name": "reinstall_installed_production_launcher_stays_boxed",
+    "evidence": {
+      "scoped_stop": true,
+      "host_output_absent": true,
+      "real_target_boxed": true,
+      "installed_launcher_used": true
+    }
+  }
+]

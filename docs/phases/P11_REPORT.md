@@ -64,3 +64,12 @@ bde0890108a563f5d72eb8e57085be2b37177218. No automatic engine update, engine
 bundling or unsupported security switch is introduced. P02 is BLOCKED until
 authenticated installers/components and real feasibility pass on both labs;
 production adapter/cleanup hashes will only be updated from those observations.
+
+The original 1.18.8 candidate passed P02 on both labs (49/62 passed cases plus
+2 N/A each), run 39086050127/source fa9b89f. Production component and full cleanup
+DLL pins now derive only from those authenticated originals. Independent current
+P02 inventory paths/hashes, exact observed export and full component lists remain
+mandatory. The substitution test also rejects identical inventory bytes at an
+unbound path. The complete P10 source inventory adds the installer pin and shared
+read-only metadata module. OS enforcement identity now includes the protected UBR
+for cumulative-update cache invalidation. See [manual engine review](../P11_ENGINE_UPDATE.md).

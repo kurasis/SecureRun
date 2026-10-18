@@ -1,0 +1,10 @@
+{
+  "foundation_unit_tests": 1,
+  "future_schema_tests": "foundation and adapter production journal tests",
+  "source_commit": "97855fd1f1795a2d12fc692114e2cd2e18ff735c",
+  "adapter_tests": 62,
+  "foundation_integration_tests": 18,
+  "partial_transaction_rollback_test": "store::migration_tests::t28_partial_migration_failure_rolls_back_schema_and_version",
+  "foundation_tests": 19,
+  "production_tests_passed": true
+}

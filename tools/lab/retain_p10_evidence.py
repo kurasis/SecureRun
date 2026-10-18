@@ -24,6 +24,7 @@ def record(path, relative):
 
 def source_paths(root=ROOT):
     paths = {'Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', '.cargo/config.toml',
+             'docs/engine-candidate.json',
              'package.json', 'package-lock.json', 'index.html', 'tsconfig.json', 'vite.config.ts', '.gitattributes'}
     paths.update(p.relative_to(root).as_posix()
                  for base in ('crates', 'src-tauri', 'ui', 'tools') for p in (root / base).rglob('*')

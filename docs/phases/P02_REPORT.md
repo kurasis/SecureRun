@@ -1,3 +1,11 @@
+Current P11 security refresh: **P02 DONE** on original Plus 1.18.8/core 5.73.8,
+source `bde0890108a563f5d72eb8e57085be2b37177218`.
+[Run 39086050127](https://github.com/kurasis/SecureRun/actions/runs/39086050127),
+manager/lab source `fa9b89faef79363c6f03bd972949e4c3eb257343`: Server 49 passed/2 N/A,
+ARM 62 passed/2 N/A, zero failed/blocked. See [the current manifest](../evidence/p02/manifest.json)
+and [engine security review](../P11_ENGINE_UPDATE.md). This is feasibility, not
+final installed acceptance. Earlier source-specific results below are historical.
+
 # P02 phase report
 
 Status: DONE — representative Sandboxie feasibility. Requested scope: full P02,

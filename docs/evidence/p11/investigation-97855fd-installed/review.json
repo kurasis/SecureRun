@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "source_commit": "97855fd1f1795a2d12fc692114e2cd2e18ff735c",
+  "run_id": 39085001456,
+  "classification": "PASSED_INSTALL_TESTS_HISTORICAL_ENGINE_NOT_PHASE_COMPLETION",
+  "facts": "Both installed25/25 and1+18+62 actual production tests passed on original engine1.18.6; corresponding full integration ARM seeding failed. Phase gate not closed. Subsequent manually reviewed1.18.8 security update requires fresh full current-source integration andinstalled proof. No original EXE download-byte verification claimed for this historical run.",
+  "files": [
+    {
+      "path": "windows-2025/upgrade-summary.json",
+      "size": 197,
+      "sha256": "22815f0e43332b90765477e3dcf7e4da619ff937f64c7ce7e17e10ae0fbba0fb"
+    },
+    {
+      "path": "windows-2025/upgrade-cases.json",
+      "size": 1968,
+      "sha256": "7e3e90c05a9405dd71508076a9411b5f0a99f3193448a814a2c40eea636a8909"
+    },
+    {
+      "path": "windows-2025/setup-observations.json",
+      "size": 2786,
+      "sha256": "685f422cf1a7ca96e4b8f1e4110a40f7f04d6ee974c570b1cc21381a9352163c"
+    },
+    {
+      "path": "windows-2025/seed-summary.json",
+      "size": 194,
+      "sha256": "e2a1c9ca6bb9e4ee89ddacc6469d1e1a905e1556e0ece0fa1469f628e9f1d1e3"
+    },
+    {
+      "path": "windows-2025/seed-cases.json",
+      "size": 1493,
+      "sha256": "7f7e9dde4d0e072f8550605c9d1aeaae18a37b943eba0c96f55c6e13b250d037"
+    },
+    {
+      "path": "windows-2025/scope.json",
+      "size": 377,
+      "sha256": "0d2603cc4fab45b816db251ed10dd7283210059ee9523a3045621efb677c3d09"
+    },
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 604,
+      "sha256": "7486a6f3d3eb8d2f30c6c34f871105cc3b02eecb20b94e59360c33f28fd51a52"
+    },
+    {
+      "path": "windows-2025/reinstall-summary.json",
+      "size": 199,
+      "sha256": "2f1cf64e3a6bdee412c62a7747d8eabd88b3aab0221d1ddf3ab43c4a91898942"
+    },
+    {
+      "path": "windows-2025/reinstall-cases.json",
+      "size": 1192,
+      "sha256": "1c9f2cee724fc9ecb8883ccb87c6bbe3a49d18c4fee34425b396b08a61a529c4"
+    },
+    {
+      "path": "windows-2025/packaging-cases.json",
+      "size": 4635,
+      "sha256": "70c7c8828d68e48a7e0c73135e1fb4e185ee32da1a9cb63e6d43a771b3b9466d"
+    },
+    {
+      "path": "windows-2025/package-manifest.json",
+      "size": 4863,
+      "sha256": "d74c98c45fa9c62249abce964526883c6bda4fd31a270d9ae62f528389d2c6c2"
+    },
+    {
+      "path": "windows-2025/migration-unit-tests.json",
+      "size": 430,
+      "sha256": "672ed7d3d5d35502ee877abc16524b097450292b24735222a34cc7dff95df697"
+    },
+    {
+      "path": "windows-2025/build.json",
+      "size": 5870,
+      "sha256": "f111594f049b7c695d8c0155262dde02941f9d3e9ce7c9aab69f345f1a69b946"
+    },
+    {
+      "path": "windows-2025/dependency-inventory.json",
+      "size": 193632,
+      "sha256": "55bca9d2ff8dc6434e1a0a4c8857cedb3a7053f291e74959f8c95e762830087d"
+    },
+    {
+      "path": "windows-2025/boxed-policy.json",
+      "size": 1063,
+      "sha256": "93871001f65945fd412e1ce3b469b6798b3ada6becdda2220a36fdb7d5611d1c"
+    },
+    {
+      "path": "windows-11-arm/upgrade-summary.json",
+      "size": 197,
+      "sha256": "51e7966515cb46a123d523d68168dc73c645e513032f06a5492d649d26f23ff8"
+    },
+    {
+      "path": "windows-11-arm/upgrade-cases.json",
+      "size": 1968,
+      "sha256": "fd37b8f60a91405f4ff5ed38324430b28b94e33ec513cba4a0f71e8096baba9d"
+    },
+    {
+      "path": "windows-11-arm/setup-observations.json",
+      "size": 2883,
+      "sha256": "5c26b561e99c41010663d30851aa3aa0d6733d860a37cf94303f64a5a2495751"
+    },
+    {
+      "path": "windows-11-arm/seed-summary.json",
+      "size": 194,
+      "sha256": "a96111fe85c890aaf4fbe386f81a5b0488827ccbe2f6687ea1707c41e10f572e"
+    },
+    {
+      "path": "windows-11-arm/seed-cases.json",
+      "size": 1493,
+      "sha256": "1c2c506ba9e664141fc23fc769dd621f057f436bab4da6e1e33e50ffe12a9aff"
+    },
+    {
+      "path": "windows-11-arm/scope.json",
+      "size": 377,
+      "sha256": "cd3b3233c9b86661622004eafcb148c4bba8cebe3911984dc9958564413d1fe0"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 605,
+      "sha256": "2195808cbc68f71e01f98a49e31fe04016bbb54009f7ae12f0bad9f05cd2c8ac"
+    },
+    {
+      "path": "windows-11-arm/reinstall-summary.json",
+      "size": 199,
+      "sha256": "aaa490bdf74b1ddcb472759fdf3adc29504c2e685a7e40f939da5a098824ba9e"
+    },
+    {
+      "path": "windows-11-arm/reinstall-cases.json",
+      "size": 1192,
+      "sha256": "897cdaf5f06a86368f4da7800acd64816e55d4a2ae5500cd927108e5f5cfbcc9"
+    },
+    {
+      "path": "windows-11-arm/packaging-cases.json",
+      "size": 4634,
+      "sha256": "fe38af43470b57d524ca562a86f0d67fdb868a2e9f2b677cd20aa2bf7d597d44"
+    },
+    {
+      "path": "windows-11-arm/package-manifest.json",
+      "size": 5655,
+      "sha256": "975a4d1429ba2350e11f444e5df4ac2e1b179012b06dadb8a377fe3440252215"
+    },
+    {
+      "path": "windows-11-arm/migration-unit-tests.json",
+      "size": 430,
+      "sha256": "ace1c066f183afbc835272245634b0afe3499c19ef4df214c3b8a6a6e7bb4930"
+    },
+    {
+      "path": "windows-11-arm/build.json",
+      "size": 7175,
+      "sha256": "4b893c010352962cbc3a5d8e5d087c7869f2ee37f005ae457d4e18b220cb3a5b"
+    },
+    {
+      "path": "windows-11-arm/boxed-policy.json",
+      "size": 1063,
+      "sha256": "240061ded78193f72377d95aff2ccf83e5da33bb0dddc6ff7c8a01235ec0209b"
+    },
+    {
+      "path": "windows-11-arm/dependency-inventory.json",
+      "size": 194131,
+      "sha256": "981e648758904f954f6c24aa9fbce48b63cedc54a4c9eba087a8e9722d2b6df8"
+    }
+  ]
+}

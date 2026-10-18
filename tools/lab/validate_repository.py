@@ -318,17 +318,40 @@ def validate(root: Path) -> None:
                 verify_file(path, entry['sha256'], entry['size'])
 
     cleanup = json.loads((root / 'crates/sandboxie-adapter/cleanup-compatibility-v1.json').read_text())
-    if (cleanup['schema'] != 1 or cleanup['upstream_commit'] != 'cdba7096240b93d79c5373aa81a75a1c5c71b883'
+    compatibility = json.loads((root / 'crates/sandboxie-adapter/compatibility-v1.json').read_text())
+    if (cleanup['schema'] != 1 or cleanup['upstream_commit'] != compatibility['release']['source_commit']
         or cleanup['native_export'] != '?NtIo_DeleteFolderRecursively@@YAJPEAU_OBJECT_ATTRIBUTES@@P6A_NPEB_WPEAX@Z2@Z'):
         raise ValueError('P08 cleanup upstream ABI pin changed')
+    inventories = cleanup.get('source_inventories', [])
+    if len(inventories) != 2 or {i['runner'] for i in inventories} != {'windows-2025', 'windows-11-arm'}:
+        raise ValueError('P08 cleanup needs both authenticated source inventories')
+    current = [run for run in manifest['runs'] if run.get('role') == 'current']
+    if len(current) != 1 or current[0]['job_collection_conclusion'] != 'success':
+        raise ValueError('P08 cleanup needs the current successful P02 inventory')
     expected_targets = []
     for runner, architecture in (('windows-2025', 'x86_64'), ('windows-11-arm', 'aarch64')):
-        inventory = json.loads((root / f'docs/evidence/p02/completion-0cf59a6/{runner}/installation.json').read_text(encoding='utf-8-sig'))
+        target = next(t for t in current[0]['targets'] if t['runner'] == runner)
+        relative = target['evidence_directory'] + '/installation.json'
+        reference = next(i for i in inventories if i['runner'] == runner)
+        bound = next((f for f in manifest['files'] if f['path'] == relative), None)
+        if (reference['path'] != 'docs/evidence/p02/' + relative or bound is None
+                or {k: reference[k] for k in ('sha256', 'size')} != {k: bound[k] for k in ('sha256', 'size')}):
+            raise ValueError('P08 cleanup source inventory is not independently hash-bound')
+        source = (root / reference['path']).resolve()
+        if not source.is_relative_to((root / 'docs/evidence/p02').resolve()):
+            raise ValueError('P08 unsafe source inventory path')
+        verify_file(source, reference['sha256'], reference['size'])
+        inventory = json.loads(source.read_text(encoding='utf-8-sig'))
+        discovery = json.loads((source.parent / 'native-cleanup-discovery.json').read_text(encoding='utf-8-sig'))
+        if (inventory['source_commit'] != cleanup['upstream_commit']
+                or inventory['manager_commit'] != current[0]['tested_commit']
+                or inventory['installer_signature'] != 'Valid'
+                or any(not c.get('authenticated_payload_match') for c in inventory['components'])
+                or not discovery['component_present'] or cleanup['native_export'] not in discovery['exports']):
+            raise ValueError('P08 cleanup inventory is not authenticated')
         components = [{key: component[key] for key in ('name', 'sha256', 'signature')}
                       for component in inventory['components']
                       if component['name'].lower().endswith('.dll') and '/' not in component['name'] and '\\' not in component['name']]
-        if inventory['source_commit'] != cleanup['upstream_commit'] or any(not c.get('authenticated_payload_match') for c in inventory['components']):
-            raise ValueError('P08 cleanup inventory is not authenticated')
         expected_targets.append({'architecture': architecture, 'components': components})
     if cleanup['targets'] != expected_targets:
         raise ValueError('P08 cleanup component pins differ from authenticated P02 inventory')

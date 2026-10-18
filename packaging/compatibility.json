@@ -3,10 +3,10 @@
   "product": "SecureRun 0.3.0 development",
   "status": "DEVELOPMENT_LAB_TUPLES_ONLY_NOT_FINAL_RELEASE_CERTIFICATION",
   "engine": {
-    "plus": "1.18.6",
-    "core": "5.73.6",
+    "plus": "1.18.8",
+    "core": "5.73.8",
     "abi": "0x57230",
-    "source_commit": "cdba7096240b93d79c5373aa81a75a1c5c71b883",
+    "source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
     "component_pins": "compatibility-v1.json",
     "cleanup_pins": "cleanup-compatibility-v1.json",
     "installation": "SEPARATE_OFFICIAL_ENGINE_NO_BUNDLE_UPDATE_DOWNGRADE_OR_UNINSTALL"
@@ -21,7 +21,8 @@
         "x86_64",
         "x86"
       ],
-      "webview_tested_baseline": "ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL"
+      "webview_tested_baseline": "ABSENT_OFFICIAL_BOOTSTRAPPER_INSTALL",
+      "observed_update_build_revision": 33438
     },
     {
       "native": "aarch64",
@@ -33,7 +34,8 @@
         "x86",
         "emulated_x86_64"
       ],
-      "webview_tested_baseline": "WINDOWS_11_PREINSTALLED_RUNTIME"
+      "webview_tested_baseline": "WINDOWS_11_PREINSTALLED_RUNTIME",
+      "observed_update_build_revision": 9457
     }
   ],
   "windows_11_x64_installed_acceptance": "NOT_CERTIFIED",

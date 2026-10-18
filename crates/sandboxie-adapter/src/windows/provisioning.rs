@@ -74,10 +74,32 @@ fn os_identity() -> R<String> {
     if unsafe { version((&mut info as *mut OSVERSIONINFOEXW).cast()) } != 0 {
         return Err("OS_VERSION_UNKNOWN");
     }
+    // Cumulative updates retain the base build number. Include the protected
+    // machine update revision so retained enforcement cannot survive an OS
+    // patch merely because RtlGetVersion still reports the same base build.
+    use windows_sys::Win32::System::Registry::*;
+    let mut revision = 0u32;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    if unsafe {
+        RegGetValueW(
+            HKEY_LOCAL_MACHINE,
+            wide("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion").as_ptr(),
+            wide("UBR").as_ptr(),
+            RRF_RT_REG_DWORD | RRF_SUBKEY_WOW6464KEY,
+            ptr::null_mut(),
+            (&mut revision as *mut u32).cast(),
+            &mut size,
+        )
+    } != 0
+        || size != std::mem::size_of::<u32>() as u32
+    {
+        return Err("OS_VERSION_UNKNOWN");
+    }
     Ok(fingerprint(&(
         info.dwMajorVersion,
         info.dwMinorVersion,
         info.dwBuildNumber,
+        revision,
         info.wProductType,
         std::env::consts::ARCH,
     )))

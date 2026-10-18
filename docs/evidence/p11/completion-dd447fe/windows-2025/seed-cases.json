@@ -1,0 +1,79 @@
+[
+  {
+    "name": "seed_ordinary_user_cannot_modify_installed_code",
+    "evidence": {
+      "standard_user": true,
+      "product_helper": false,
+      "new_code_file_denied": true,
+      "manager_write_denied": true
+    },
+    "status": "PASSED",
+    "id": "T02"
+  },
+  {
+    "name": "seed_installed_manager_opens_real_webview_and_closes",
+    "evidence": {
+      "normal_features": true,
+      "ordinary_user": true,
+      "real_webview_window_observed": true,
+      "actual_installed_executable": true
+    },
+    "status": "PASSED",
+    "id": "T01"
+  },
+  {
+    "name": "installed_build_provisions_and_verifies_real_offline_policy",
+    "evidence": {
+      "enforcement_evidence_bound": true,
+      "root_identity_bound": true,
+      "native_policy_verifier": true,
+      "owner_from_os": true,
+      "standard_offline": true
+    },
+    "status": "PASSED",
+    "id": "T08"
+  },
+  {
+    "name": "installed_offline_baseline_has_parent_child_and_server_observations",
+    "evidence": {
+      "network_egress_observed": false,
+      "original_probe_reports": [
+        "seed-probe-evidence-76e67cfde830405a994a72b048d48fce.json",
+        "seed-probe-evidence-7b57c2e1ae2a44b089b4a2b8ac238acc.json"
+      ],
+      "parent_child_and_live_server_controls": true,
+      "actual_installed_verifier": true
+    },
+    "status": "PASSED",
+    "id": "T12"
+  },
+  {
+    "name": "installed_import_export_preserves_bytes_and_provenance",
+    "evidence": {
+      "import_export_actual": true,
+      "byte_hash_match": true,
+      "internet_zone_verified": true,
+      "host_auto_execution": false
+    },
+    "status": "PASSED",
+    "id": "T21"
+  },
+  {
+    "name": "seed_installed_production_launcher_stays_boxed",
+    "evidence": {
+      "real_target_boxed": true,
+      "host_output_absent": true,
+      "also_ids": [
+        "T02"
+      ],
+      "fake_start_path_and_cwd": true,
+      "impostor_sha256": "e296d870cf3df4a8d5f739aa0e4ad2f24faaf4ecb655080a26440027065585a8",
+      "installed_launcher_used": true,
+      "impostor_executed": false,
+      "scoped_stop": true,
+      "impostor_positive_control": true
+    },
+    "status": "PASSED",
+    "id": "T05"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "status": "PASSED",
+    "id": "T02",
+    "name": "installed_changed_engine_binary_refuses_registered_target_without_host_fallback",
+    "evidence": {
+      "refusal": "MANAGER_CONTEXT_UNSAFE",
+      "host_output_absent": true,
+      "actual_installed_worker": true,
+      "fixture": "engine_changed",
+      "ordinary_user": true,
+      "actual_registered_target": true,
+      "receipts_absent": true
+    }
+  }
+]

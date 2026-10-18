@@ -1,6 +1,6 @@
 # Development status
 
-Specification: 1.3. Updated: 2026-10-18 UTC. P11 security refresh is IN_PROGRESS; P03–P10 require fresh exact-source Windows proof on the reviewed 1.18.8 engine.
+Specification: 1.3. Updated: 2026-10-18 UTC. P11 installed tests passed; its phase gate remains BLOCKED by full P10 regression on the reviewed 1.18.8 engine.
 
 | Phase | Status | Evidence |
 |---|---|---|
@@ -14,7 +14,7 @@ Specification: 1.3. Updated: 2026-10-18 UTC. P11 security refresh is IN_PROGRESS
 | P08 | BLOCKED | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
 | P09 | BLOCKED | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
 | P10 | BLOCKED | [Report](phases/P10_REPORT.md), [manifest](evidence/p10/manifest.json) |
-| P11 | IN_PROGRESS | Protected development installer and installed Windows checks in progress |
+| P11 | BLOCKED | [28 installed +81 production tests passed on each target](P11_TEST_REPORT.md); Both P09 dependency jobs failed; one unchanged-source repeat is running |
 | P12 | NOT_STARTED | Final installed acceptance |
 
 Historical 1.18.6 baseline below; current engine review is [documented separately](P11_ENGINE_UPDATE.md).

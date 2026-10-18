@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "tested_commit": "dd447fec88de966fa839b03fc0fd4eb6b41776a4",
+  "run_id": 39089078904,
+  "run_url": "https://github.com/kurasis/SecureRun/actions/runs/39089078904",
+  "signing": "UNSIGNED_DEVELOPMENT_ONLY",
+  "downloaded_artifact_ids": [
+    12122600283,
+    12122356753
+  ],
+  "installers": [
+    {
+      "runner": "windows-2025",
+      "target": "x86_64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+      "size": 33558614,
+      "sha256": "d4514a132cf78644c0ea2a0f6e5ff4111c4f17e932d355853776c666286cf5d8",
+      "downloaded_bytes_match": true
+    },
+    {
+      "runner": "windows-2025",
+      "target": "x86_64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.11-x64os.exe",
+      "size": 33558613,
+      "sha256": "ab46606ac2882a37c8fba297351b2face901b11b09aa919b87cc2cf9d125359a",
+      "downloaded_bytes_match": true
+    },
+    {
+      "runner": "windows-11-arm",
+      "target": "aarch64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+      "size": 45517190,
+      "sha256": "51e1e525fc8a88733b61608c6abe7be446315cc1339aa979dba478e7810fc760",
+      "downloaded_bytes_match": true
+    },
+    {
+      "runner": "windows-11-arm",
+      "target": "aarch64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.11-arm64.exe",
+      "size": 45517163,
+      "sha256": "a41755302999879894580efd2fa6baf97169814195ba2d4d1b6a799d5f3b6383",
+      "downloaded_bytes_match": true
+    }
+  ],
+  "scope": "Actual downloaded baseline/candidate installer bytes match original native build reports; this is artifact identity, not production publisher trust."
+}

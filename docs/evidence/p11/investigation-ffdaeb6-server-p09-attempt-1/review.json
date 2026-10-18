@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "source_commit": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+  "run_id": 39087328157,
+  "run_attempt": 1,
+  "job_id": 117556533764,
+  "artifact_id": 12122570634,
+  "classification": "FAILED_P09_NOT_COMPLETION_PROOF",
+  "facts": "Server21/22 native and101/101 UI checks passed. browser_own_content_sandbox_remains_enabled failed P09_ACCESSIBILITY_FAILED: actual owned about:support navigation/address checks passed, but read-only clipboard observation failed P09_CLIPBOARD_BUSY at original bounded clipboard read. No effective content sandbox level was obtained or inferred. Actual performance sample remains a failed-attempt sample, not completion. No browser security preference/argument, assertion, timeout or workload was changed.",
+  "privacy_review": "All selected original JSON bytes reviewed; no raw paths, SIDs, tokens, arguments or browser content retained.",
+  "files": [
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 713,
+      "sha256": "e124503e1f5598ad62c07b48b781b7c1d2cdbe3f0574dcf969fcc2b231c99e3d"
+    },
+    {
+      "path": "windows-2025/standard-product.json",
+      "size": 483,
+      "sha256": "60d23514c7bc4e0cd50b29ca703ed6b013aa08a656095aeea0e166431ea89b58"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 112,
+      "sha256": "2d15ab71010ae664e183d3656a2616b5f489267998027dd64e635eca7e06ba66"
+    },
+    {
+      "path": "windows-2025/product-cases.json",
+      "size": 11258,
+      "sha256": "f06b3ba741f70b38a403b67e1f9d6d1c0262d0dd4ee2f67100d43db78a29a444"
+    },
+    {
+      "path": "windows-2025/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "windows-2025/performance-budget-assessment.json",
+      "size": 1316,
+      "sha256": "f6724be69c1d4f012bdd046ba5e30a6b8fc5a71c7a7ca01f929213a0b7cc941b"
+    },
+    {
+      "path": "windows-2025/extended-fault-metadata.json",
+      "size": 387,
+      "sha256": "a030d18c089bb9817c66db6ab58a9903a45a6c37dc20362725d5a126819f3565"
+    },
+    {
+      "path": "windows-2025/access-browser_sandbox-ee104e688ea744beb72c3bb8ff57a725.json",
+      "size": 2250,
+      "sha256": "46bad0898c760c25bc4730c6bb7ea9a69866b6ce7e6c6a50d259d822ef8d7222"
+    }
+  ]
+}

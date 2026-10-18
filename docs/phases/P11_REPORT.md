@@ -1,17 +1,43 @@
 # P11 — Packaging, upgrades, signing and retention
 
-Status: IN_PROGRESS. Dependency: P10, with its exact-source regression being
-refreshed for the new packaging workflow and raw-evidence attributes.
+Status: **BLOCKED pending P10 integration**, 2026-10-18 UTC.
 
-Implementation is additive under `packaging/`; the production runtime and original
-specification are unchanged. The candidate is explicitly an unsigned development
+The actual installed gate succeeded on both Server x64 and Windows 11 ARM64:
+**28/28 installed cases plus 81 production tests (1+18+62) each**, package source
+`dd447fec88de966fa839b03fc0fd4eb6b41776a4`,
+[run 39089078904](https://github.com/kurasis/SecureRun/actions/runs/39089078904).
+Four downloaded baseline/candidate installer sizes and SHA-256 values match the
+original build reports. See [actual test matrix](../P11_TEST_REPORT.md),
+[development downloads/checksums](../DEVELOPMENT_ARTIFACTS.md) and
+[download-byte verification](../evidence/p11/installer-download-verification.json).
+
+The full P10 run at `ffdaeb60bd8c9d707959435b910c6a1027ecb770`
+(39087328157) passed P03–P08 on both runners but ARM P09 failed at
+SEEDING_ENVIRONMENT_09: an unreviewed WerFault remained alive after the unchanged
+60000 ms natural-completion bound. Read-only metadata found no surviving target
+or fixed-component WER report/event. Its cause remains undetermined.
+[Original failed evidence](../evidence/p11/investigation-ffdaeb6-arm-p09-attempt-1/review.json)
+is preserved separately. Server P09 passed 21/22 native and all 101 UI checks,
+but its actual Firefox about:support observation failed P09_CLIPBOARD_BUSY.
+No effective browser sandbox level was obtained or inferred; its
+[original failed observations](../evidence/p11/investigation-ffdaeb6-server-p09-attempt-1/review.json)
+are also retained. One targeted unchanged-source clean-runner repeat of both
+failed P09 jobs is running. No assertion, workload, timeout or trust boundary
+changed. P11 cannot be DONE until its dependency passes.
+
+Packaging is additive under `packaging/`. Runtime changes authenticate every
+remaining diagnostic image, defer natural waits until independently authorized
+helper stops, and include the protected OS UBR in verification/launch identity.
+Original Plus 1.18.8/core 5.73.8 pins were independently reauthenticated through
+P02; this is a manual security refresh, not a product updater. All 26 original
+specification documents are unchanged. The candidate is explicitly an unsigned development
 artifact. Original manager licensing has not been selected by the owner.
 
 The Windows gate must prove the official missing-WebView2 prerequisite branch,
 administrator-controlled installation, exact installed hashes/architectures,
 standard-user installed smoke, boxed-manager/worker refusal, failed and successful
 package upgrades, schema refusal/transaction rollback, retained-data uninstall
-and same-account reinstall. No result is claimed before actual execution.
+and same-account reinstall. Actual results are now linked above; these do not waive the P10 dependency.
 
 No privileged product helper exists: helper enrollment and different-account
 helper UAC portions are N/A. Applicable installed-manager context checks remain

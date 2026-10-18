@@ -1,0 +1,153 @@
+[
+  {
+    "name": "installer_rejects_user_writable_existing_code_directory",
+    "evidence": {
+      "user_writable_install_refused": true,
+      "manager_not_installed": true,
+      "exit_code": 7
+    },
+    "status": "PASSED",
+    "id": "T02"
+  },
+  {
+    "name": "installer_rejects_junction_without_touching_destination",
+    "evidence": {
+      "destination_unchanged": true,
+      "junction_refused": true,
+      "exit_code": 7
+    },
+    "status": "PASSED",
+    "id": "T02"
+  },
+  {
+    "name": "official_webview_prerequisite_matches_os_baseline",
+    "evidence": {
+      "missing_runtime_arm_installation_tested": false,
+      "os_inbox_runtime_preserved": true,
+      "tested_state": "WINDOWS_11_PREINSTALLED_RUNTIME",
+      "previous_runtime_uninstall_exit": null,
+      "runtime_absent_before_install": false,
+      "security_settings_modified": false,
+      "setup_exit": 0,
+      "runtime_signature": "Valid",
+      "previous_runtime_version": "155.0.4283.45",
+      "runtime_uninstall_dispatched": false,
+      "runtime_version": "155.0.4283.45",
+      "prerequisite": "MICROSOFT_SIGNED_HASH_PINNED_EVERGREEN_BOOTSTRAPPER",
+      "runtime_sha256": "dcc9e45be52773c7641a37613ba3d673e85477247933c2613ba724aa245296cb"
+    },
+    "status": "PASSED",
+    "id": "T01"
+  },
+  {
+    "name": "clean_install_has_exact_reviewed_payload_and_native_architecture",
+    "evidence": {
+      "package": "0.3.0.10",
+      "all_payload_hashes_match": true,
+      "signing": "UNSIGNED_DEVELOPMENT_ONLY",
+      "native_target": "aarch64-pc-windows-msvc",
+      "engine_bundled": false
+    },
+    "status": "PASSED",
+    "id": "T29"
+  },
+  {
+    "name": "failed_upgrade_rolls_back_files_and_retains_profile",
+    "evidence": {
+      "exit_code": 5,
+      "old_payload_unchanged": true,
+      "profile_after": {
+        "files": 55,
+        "sha256": "ab5945b9a5c29f889c6e808ff6463c3c80b00c4b241b3351b6ac244b036f2aa6"
+      },
+      "schema_migration_by_installer": false,
+      "profile_before": {
+        "files": 55,
+        "sha256": "ab5945b9a5c29f889c6e808ff6463c3c80b00c4b241b3351b6ac244b036f2aa6"
+      },
+      "actual_file_lock_failure": true
+    },
+    "status": "PASSED",
+    "id": "T29"
+  },
+  {
+    "name": "upgrade_installs_candidate_without_elevated_profile_migration",
+    "evidence": {
+      "exit_code": 0,
+      "from": "0.3.0.10",
+      "same_runtime_schema_1": true,
+      "admin_migration": false,
+      "profile_before": {
+        "files": 55,
+        "sha256": "ab5945b9a5c29f889c6e808ff6463c3c80b00c4b241b3351b6ac244b036f2aa6"
+      },
+      "profile_after": {
+        "files": 55,
+        "sha256": "ab5945b9a5c29f889c6e808ff6463c3c80b00c4b241b3351b6ac244b036f2aa6"
+      },
+      "to": "0.3.0.11"
+    },
+    "status": "PASSED",
+    "id": "T29"
+  },
+  {
+    "name": "older_package_is_refused_without_database_downgrade",
+    "evidence": {
+      "older_package_refused": true,
+      "exit_code": 7,
+      "automatic_schema_downgrade": false
+    },
+    "status": "PASSED",
+    "id": "T29"
+  },
+  {
+    "name": "installed_boxed_manager_and_all_workers_refuse_unboxed_parent_claim",
+    "evidence": {
+      "all_worker_families_refused": true,
+      "unboxed_parent_claim_accepted": false,
+      "product_helper": false,
+      "actual_boxed_manager_exit": 78
+    },
+    "status": "PASSED",
+    "id": "T58"
+  },
+  {
+    "name": "uninstall_removes_only_code_and_retains_profile_engine_runtime",
+    "evidence": {
+      "exit_code": 0,
+      "code_removed": true,
+      "webview_runtime_retained": true,
+      "engine_unchanged": true,
+      "profile_before": {
+        "files": 56,
+        "sha256": "19b16913477e6cb00d38e971a9c814c4cd3176e648ba385daa5a357d22ff32da"
+      },
+      "registration_removed": true,
+      "profile_after": {
+        "files": 56,
+        "sha256": "19b16913477e6cb00d38e971a9c814c4cd3176e648ba385daa5a357d22ff32da"
+      },
+      "environment_cleanup_dispatched": false,
+      "all_owned_payload_removed": true
+    },
+    "status": "PASSED",
+    "id": "T48"
+  },
+  {
+    "name": "reinstall_preserves_data_before_owner_reconciliation",
+    "evidence": {
+      "profile_after": {
+        "files": 56,
+        "sha256": "19b16913477e6cb00d38e971a9c814c4cd3176e648ba385daa5a357d22ff32da"
+      },
+      "automatic_cleanup": false,
+      "profile_before": {
+        "files": 56,
+        "sha256": "19b16913477e6cb00d38e971a9c814c4cd3176e648ba385daa5a357d22ff32da"
+      },
+      "exit_code": 0
+    },
+    "status": "PASSED",
+    "id": "T48"
+  }
+]

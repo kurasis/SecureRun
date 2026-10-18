@@ -1,0 +1,109 @@
+[
+  {
+    "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_69",
+      "P11_SETUP_GUARD_REFUSED"
+    ],
+    "exit_code": 7,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": true
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_69",
+      "P11_SETUP_GUARD_REFUSED"
+    ],
+    "exit_code": 7,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": true
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+    "events": [
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0",
+      "P11_WEBVIEW_INSTALL_REQUIRED"
+    ],
+    "exit_code": 0,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": false
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.11-x64os.exe",
+    "events": [
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "exit_code": 5,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": true
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.11-x64os.exe",
+    "events": [
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "exit_code": 0,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": false
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "exit_code": 7,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": true
+  },
+  {
+    "file": "unins000.exe",
+    "events": [
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "exit_code": 0,
+    "private_log_retained": false,
+    "log_close_waits": 8,
+    "final_log_closed": true,
+    "expected_failure": false
+  },
+  {
+    "file": "SecureRun-Development-0.3.0.11-x64os.exe",
+    "events": [
+      "P11_CRT_AVAILABLE_X64",
+      "P11_CRT_AVAILABLE_X86",
+      "P11_GUARD_EXACT_BYTES_VERIFIED",
+      "P11_GUARD_EXIT_0"
+    ],
+    "exit_code": 0,
+    "private_log_retained": false,
+    "log_close_waits": 0,
+    "final_log_closed": true,
+    "expected_failure": false
+  }
+]

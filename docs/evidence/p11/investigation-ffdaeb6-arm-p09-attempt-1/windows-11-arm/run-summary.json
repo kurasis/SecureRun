@@ -1,0 +1,23 @@
+{
+  "build": "release",
+  "synthetic_profiles_only": true,
+  "real_normal_webview": true,
+  "phase": "P09",
+  "os_security_settings_modified": false,
+  "ui_failed": -1,
+  "ui_cases_passed": -1,
+  "os_build": 26200,
+  "workload_mode": "FULL",
+  "elevated_product_helper": false,
+  "engineering_budget_status": "NOT_MEASURED",
+  "browser_sandbox_disabled": false,
+  "browser_only": false,
+  "result": "FAILED",
+  "apps_only": false,
+  "manager_commit": "ffdaeb60bd8c9d707959435b910c6a1027ecb770",
+  "pe_machine": "aa64",
+  "failed": -1,
+  "manager_binary_sha256": "a1d41da7240d4b0d4c1a85a7cb30263a72a19b082ffae71ca3524434e9c529a3",
+  "native_cases_passed": -1,
+  "standard_user": true
+}

@@ -1,6 +1,6 @@
 {
   "phase": "P06",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
   "run_id": 39068949002,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/39068949002",
@@ -2361,5 +2361,6 @@
       "result": "BLOCKED",
       "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
     }
-  ]
+  ],
+  "blocked_reason": "P11 packaging workflow and repository-validator inputs changed; previous raw results retained as historical. Fresh exact-source P03-P10 regressions are required."
 }

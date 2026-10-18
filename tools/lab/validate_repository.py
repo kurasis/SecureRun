@@ -412,7 +412,7 @@ def validate(root: Path) -> None:
     p10_path = root / 'docs/evidence/p10/manifest.json'
     if p10_path.exists():
         p10 = json.loads(p10_path.read_text())
-        if (p10['phase'] != 'P10' or p10['result'] != 'DONE'
+        if (p10['phase'] != 'P10' or p10['result'] not in {'DONE', 'BLOCKED'}
                 or not re.fullmatch('[0-9a-f]{40}', p10['tested_commit'])
                 or p10['run_id'] <= 0
                 or p10['url'] != f"https://github.com/kurasis/SecureRun/actions/runs/{p10['run_id']}"
@@ -420,26 +420,39 @@ def validate(root: Path) -> None:
                 or p10['review_kind'] != 'INTERNAL_IMPLEMENTATION_REVIEW_NOT_INDEPENDENT_AUDIT'
                 or p10['production_acceptance_scenarios_passed'] != 0):
             raise ValueError('Invalid P10 integration closure')
+        if p10['result'] == 'BLOCKED':
+            if not p10.get('blocked_reason'):
+                raise ValueError('Blocked P10 needs an explicit stale-evidence reason')
+            for entry in p10['files']:
+                verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
+        else:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('p10_gate', root / 'tools/lab/retain_p10_evidence.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            proof, dependencies = module.check_integrated(root, p10['tested_commit'])
+            if p10['dependencies'] != dependencies:
+                raise ValueError('P10 dependencies changed after integration review')
+            if len(p10['files']) != 1 or p10['files'][0]['path'] != 'integration-catalog.json':
+                raise ValueError('P10 scenario catalog must be hash-bound')
+            entry = p10['files'][0]
+            verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
+            if json.loads((p10_path.parent / entry['path']).read_text()) != module.catalog(proof, root):
+                raise ValueError('P10 scenario dispositions disagree with actual native cases')
+            if {entry['path'] for entry in p10['tested_sources']} != set(module.source_paths(root)):
+                raise ValueError('P10 protected source binding incomplete')
+            for entry in p10['tested_sources']:
+                path = (root / entry['path']).resolve()
+                if not path.is_relative_to(root.resolve()):
+                    raise ValueError('Unsafe P10 source path')
+                verify_file(path, entry['sha256'], entry['size'])
+    if (root / 'docs/evidence/p11/manifest.json').exists():
         import importlib.util
-        spec = importlib.util.spec_from_file_location('p10_gate', root / 'tools/lab/retain_p10_evidence.py')
+        spec = importlib.util.spec_from_file_location('p11_gate', root / 'packaging/retain.py')
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        proof, dependencies = module.check_integrated(root, p10['tested_commit'])
-        if p10['dependencies'] != dependencies:
-            raise ValueError('P10 dependencies changed after integration review')
-        if len(p10['files']) != 1 or p10['files'][0]['path'] != 'integration-catalog.json':
-            raise ValueError('P10 scenario catalog must be hash-bound')
-        entry = p10['files'][0]
-        verify_file(p10_path.parent / entry['path'], entry['sha256'], entry['size'])
-        if json.loads((p10_path.parent / entry['path']).read_text()) != module.catalog(proof, root):
-            raise ValueError('P10 scenario dispositions disagree with actual native cases')
-        if {entry['path'] for entry in p10['tested_sources']} != set(module.source_paths(root)):
-            raise ValueError('P10 protected source binding incomplete')
-        for entry in p10['tested_sources']:
-            path = (root / entry['path']).resolve()
-            if not path.is_relative_to(root.resolve()):
-                raise ValueError('Unsafe P10 source path')
-            verify_file(path, entry['sha256'], entry['size'])
+        module.validate(root)
+
 
 
 if __name__ == '__main__':

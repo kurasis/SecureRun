@@ -8,13 +8,13 @@ Specification: 1.3. Updated: 2026-10-17 UTC. Completed scope: full P10.
 | P02 | DONE | [Report](phases/P02_REPORT.md) |
 | P03 | DONE | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | DONE | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
-| P05 | DONE | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
-| P06 | DONE | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
-| P07 | DONE | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
-| P08 | DONE | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
-| P09 | DONE | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
-| P10 | DONE | [Report](phases/P10_REPORT.md), [manifest](evidence/p10/manifest.json) |
-| P11 | NOT_STARTED | Packaging/install/upgrade/uninstall |
+| P05 | BLOCKED | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |
+| P06 | BLOCKED | [Report](phases/P06_REPORT.md), [manifest](evidence/p06/manifest.json) |
+| P07 | BLOCKED | [Report](phases/P07_REPORT.md), [manifest](evidence/p07/manifest.json) |
+| P08 | BLOCKED | [Report](phases/P08_REPORT.md), [manifest](evidence/p08/manifest.json) |
+| P09 | BLOCKED | [Report](phases/P09_REPORT.md), [manifest](evidence/p09/manifest.json) |
+| P10 | BLOCKED | [Report](phases/P10_REPORT.md), [manifest](evidence/p10/manifest.json) |
+| P11 | IN_PROGRESS | Protected development installer and installed Windows checks in progress |
 | P12 | NOT_STARTED | Final installed acceptance |
 
 Exact runtime/lab source: `75b6c0bab24e7ea0edd86a3be2adea6648456a6b`. [Full integration run 39068949002](https://github.com/kurasis/SecureRun/actions/runs/39068949002) completed successfully: one portable job and all 14 native jobs.
@@ -71,6 +71,8 @@ See [security review](SECURITY_REVIEW.md), [complete scoped test report](P10_TES
 [requirement traceability](REQUIREMENT_TRACEABILITY.md), [release prerequisites](RELEASE_BLOCKERS.md)
 and [dependency advisory review](DEPENDENCY_SECURITY_REVIEW.md).
 
-Next eligible phase: **P11**. The owner authorizes automatic publication of all
+P10 historical runtime checks passed; new packaging workflow and attribute inputs require a fresh integrated regression run before P11 closes.
+
+Current phase: **P11**. The owner authorizes automatic publication of all
 project files, including Markdown/reviewed evidence, and ordinary validated merge.
 Credentials, generated binaries and private inventories remain excluded.

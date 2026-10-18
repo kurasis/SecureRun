@@ -1,0 +1,31 @@
+[
+  {
+    "status": "PASSED",
+    "id": "T02",
+    "name": "seed_ordinary_user_cannot_modify_installed_code",
+    "evidence": {
+      "product_helper": false,
+      "standard_user": true,
+      "new_code_file_denied": true,
+      "manager_write_denied": true
+    }
+  },
+  {
+    "status": "PASSED",
+    "id": "T01",
+    "name": "seed_installed_manager_opens_real_webview_and_closes",
+    "evidence": {
+      "actual_installed_executable": true,
+      "real_webview_window_observed": true,
+      "normal_features": true,
+      "ordinary_user": true
+    }
+  },
+  {
+    "status": "FAILED",
+    "line": 8,
+    "id": "T08",
+    "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+    "name": "installed_build_provisions_and_verifies_real_offline_policy"
+  }
+]

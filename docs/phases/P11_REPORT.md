@@ -31,3 +31,14 @@ The migration test reporter now validates the actual foundation distribution
 (1 library +18 integration tests =19) and all62 adapter tests. Changing the P11
 workflow invalidates the broad P10 workflow-source identity, so a new complete
 exact-source integration run is required; no source list is reduced to reuse it.
+
+The final setup guard now checks ancestor ownership and mutation/deletion ACLs,
+including parent FILE_DELETE_CHILD, without changing Windows ACLs. Its Server
+installed gate passed. An ARM execution at ff41537 then refused diagnostic cleanup
+with DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED during actual installed provisioning;
+setup/guard cases had passed. Original failed actor/setup JSON is retained in
+`docs/evidence/p11/investigation-ff41537-arm-attempt-1/`. Its specific live image
+was not retained, so no particular crash cause is inferred for that P11 run.
+Read-only failure collection now retains bounded original image-status JSON and
+minimized WER/event/CIM classification, including fixed virtualized WER locations.
+No process trust/termination authority, assertion, retry or pass is added.

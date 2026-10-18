@@ -3,6 +3,7 @@ $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'P11_DISPOSABLE_VM_REQUIRED'}
 $results=Join-Path $Fixture 'results';$null=New-Item -ItemType Directory -Path $results -Force
 $cases=[Collections.Generic.List[object]]::new()
+$labStarted=[datetime]::UtcNow
 $env:USERPROFILE=[Environment]::GetFolderPath('UserProfile');$env:LOCALAPPDATA=[Environment]::GetFolderPath('LocalApplicationData');$env:APPDATA=[Environment]::GetFolderPath('ApplicationData')
 $env:TEMP=Join-Path $Fixture 'temp';$env:TMP=$env:TEMP;$null=New-Item -ItemType Directory -Path $env:TEMP -Force
 function Require([bool]$ok,[string]$code){if(-not $ok){throw $code}}
@@ -83,5 +84,15 @@ try{
  $e=Environment-View;@{profile=(Join-Path $env:LOCALAPPDATA 'SecureRun');root=$e.compiled.section.FileRootPath[0];environment_id=$e.id;root_identity=$e.root_identity;owner=$identity.User.Value;engine_box=('SR_'+$e.id.Replace('-',''))}|ConvertTo-Json|Set-Content (Join-Path $Fixture 'private-state.json') -Encoding utf8
  @{status='PASSED';mode=$Mode;cases_passed=$cases.Count;standard_user=$true;installed_manager_sha256=(Get-FileHash $Manager).Hash.ToLowerInvariant()}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8
 }catch{
- @{status='FAILED';mode=$Mode;line=$_.InvocationInfo.ScriptLineNumber;code=$(if($_.Exception.GetBaseException().Message -cmatch '^[A-Z][A-Z0-9_]{3,100}$'){$_.Exception.GetBaseException().Message}else{'P11_STANDARD_ACTOR_FAILED'})}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8;exit 1
+ $failure=$_
+ # Preserve minimized evidence of a refused diagnostic cleanup. No retry, trust,
+ # process termination, error-reporting policy change or synthetic pass is added.
+ try{
+  $profile=Join-Path $env:LOCALAPPDATA 'SecureRun'
+  $metadata=Join-Path $profile 'metadata'
+  if(Test-Path -LiteralPath $metadata){Get-ChildItem -LiteralPath $metadata -File -Filter 'image-status-*.json'|Where-Object {$_.CreationTimeUtc -ge $labStarted -and $_.Length -le 8192 -and -not($_.Attributes -band [IO.FileAttributes]::ReparsePoint)}|Select-Object -First 64|Copy-Item -Destination $results}
+  $fault=& (Join-Path $PSScriptRoot 'Read-FailureMetadata.ps1') -Since $labStarted -Profile $profile
+  $fault|ConvertTo-Json -Depth 8|Set-Content (Join-Path $results ($Mode+'-fault-metadata.json')) -Encoding utf8
+ }catch{}
+ @{status='FAILED';mode=$Mode;line=$failure.InvocationInfo.ScriptLineNumber;code=$(if($failure.Exception.GetBaseException().Message -cmatch '^[A-Z][A-Z0-9_]{3,100}$'){$failure.Exception.GetBaseException().Message}else{'P11_STANDARD_ACTOR_FAILED'})}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8;exit 1
 }

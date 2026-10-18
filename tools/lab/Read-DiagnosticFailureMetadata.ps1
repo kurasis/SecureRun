@@ -1,5 +1,5 @@
 # Disposable lab diagnosis only. Never authority to trust, terminate or pass a process.
-param([datetime]$Since,[string]$Profile)
+param([datetime]$Since,[string]$LabProfile)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $known=@('securerun-policy-probe.exe','securerun-policy-probe-x86.exe','securerun-policy-probe-x64.exe','SandboxieRpcSs.exe','SandboxieDcomLaunch.exe','SandboxieCrypto.exe','SandboxieBITS.exe','SbieSvc.exe','dllhost.exe','taskhostw.exe','rundll32.exe','svchost.exe')
 $modules=@('SbieDll.dll','ntdll.dll','KERNELBASE.dll','kernel32.dll','ucrtbase.dll','ole32.dll','combase.dll','rpcrt4.dll','wow64.dll','wow64win.dll','wow64cpu.dll','wowarmhw.dll','xtajit.dll')+$known
@@ -8,13 +8,13 @@ $werAvailable=$true;$cimAvailable=$true;$eventsAvailable=$true;$scanned=0
 function PlainDirectory([string]$Path){$item=Get-Item -LiteralPath $Path -ErrorAction SilentlyContinue;return ($null -ne $item -and $item.PSIsContainer -and -not($item.Attributes -band [IO.FileAttributes]::ReparsePoint))}
 function Canonical([string]$Value,$Allow){return @($Allow|Where-Object {$_ -ieq $Value}|Select-Object -First 1)[0]}
 try{
- $roots.Add((Join-Path $env:ProgramData 'Microsoft/Windows/WER'));$roots.Add((Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Microsoft/Windows/WER'))
+ $roots.Add((Join-Path $env:ProgramData 'Microsoft/Windows/WER'));$roots.Add((Join-Path (Split-Path $LabProfile) 'Microsoft/Windows/WER'))
  # WER itself may write into the diagnostic box's virtualized profile. Read only
  # fixed known WER locations, not arbitrary profile files or raw event messages.
- $boxes=Join-Path $Profile 'boxes'
- if(PlainDirectory $boxes){foreach($box in @(Get-ChildItem -LiteralPath $boxes -Directory|Select-Object -First 64)){
+ $boxes=Join-Path $LabProfile 'boxes'
+ if(PlainDirectory $boxes){foreach($box in @(Get-ChildItem -LiteralPath $boxes -Directory|Sort-Object CreationTimeUtc -Descending|Select-Object -First 64)){
   if($box.Attributes -band [IO.FileAttributes]::ReparsePoint){continue}
-  foreach($relative in @('user/current/AppData/Local/Microsoft/Windows/WER','user/current/Local Settings/Application Data/Microsoft/Windows/WER',('drive/'+$env:SystemDrive.Substring(0,1)+'/ProgramData/Microsoft/Windows/WER'))){
+  foreach($relative in @('user/current/AppData/Local/Microsoft/Windows/WER','user/current/Local Settings/Application Data/Microsoft/Windows/WER','user/all/Microsoft/Windows/WER','user/all/Application Data/Microsoft/Windows/WER',('drive/'+$env:SystemDrive.Substring(0,1)+'/ProgramData/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/SysWOW64/config/systemprofile/AppData/Local/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/ServiceProfiles/LocalService/AppData/Local/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/ServiceProfiles/NetworkService/AppData/Local/Microsoft/Windows/WER'))){
    $candidate=$box.FullName;$plain=$true
    foreach($part in $relative.Split('/')){$candidate=Join-Path $candidate $part;if(-not(PlainDirectory $candidate)){$plain=$false;break}}
    if($plain){$roots.Add($candidate)}

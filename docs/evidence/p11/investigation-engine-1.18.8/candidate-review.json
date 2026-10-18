@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "upstream_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+  "release": "https://github.com/sandboxie-plus/Sandboxie/releases/tag/v1.18.8",
+  "published_at": "2026-10-17T20:38:42Z",
+  "abi_from_original_header": "0x57230",
+  "declared_core_from_original_header": "5.73.8",
+  "reason": "Original v1.18.8 fixes GUI MapWindowPoints request-buffer out-of-bounds read; original component/compatibility refresh required. No claim that it fixes observed ARM RpcSs fault.",
+  "source_review": "Compared cdba7096240b93d79c5373aa81a75a1c5c71b883 to bde0890108a563f5d72eb8e57085be2b37177218: request-length guard, AppContainer security/event changes, root protection and API_RENAME_FILE changes need full native regressions; no permissive options enabled.",
+  "licenses_unchanged_and_hash_verified": true,
+  "installer_downloads": [
+    {
+      "name": "Sandboxie-Plus-x64-v1.18.8.exe",
+      "size": 24930680,
+      "sha256": "f27078ff74a07906fd51476079e1a7a8f5e20c8bb75a9d2ae86169d47179ae76",
+      "original_download_verified": true,
+      "authenticode": "PENDING_WINDOWS_OBSERVATION"
+    },
+    {
+      "name": "Sandboxie-Plus-ARM64-v1.18.8.exe",
+      "size": 22460504,
+      "sha256": "a1e33199ae715c32faa15aeec5e7d4c8401dcd1a4d348d6829d3e0978bd62b96",
+      "original_download_verified": true,
+      "authenticode": "PENDING_WINDOWS_OBSERVATION"
+    }
+  ],
+  "compatibility_status": "NOT_PROVEN_PENDING_P02_AND_PRODUCTION_GATES",
+  "automatic_engine_update_added": false,
+  "engine_bundled": false
+}

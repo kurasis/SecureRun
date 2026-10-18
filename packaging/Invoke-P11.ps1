@@ -63,7 +63,8 @@ try{
  Require (-not(Test-Path $installRoot)) 'P11_PREEXISTING_MANAGER_NOT_CHANGED'
  $run=[Guid]::NewGuid().ToString('N');$fixture=Join-Path $env:ProgramData "SecureRunLab/p02-p11-$run";$null=New-Item -ItemType Directory -Path $fixture -Force
  $labCode=Join-Path $env:ProgramFiles "SecureRun-P11-Lab-$run";$null=New-Item -ItemType Directory -Path $labCode
- foreach($f in @('standard.ps1','lab_native.cs','Read-FailureMetadata.ps1')){Copy-Item (Join-Path $PSScriptRoot $f) $labCode}
+ foreach($f in @('standard.ps1','lab_native.cs')){Copy-Item (Join-Path $PSScriptRoot $f) $labCode}
+ Copy-Item (Join-Path $repo 'tools/lab/Read-DiagnosticFailureMetadata.ps1') $labCode
  foreach($f in @('p05_lab.cs','p05_boxed.ps1','engine_bridge.cs','p08_initialize.ps1')){Copy-Item (Join-Path $repo "tools/probe/$f") $labCode}
  Case 'T02' 'installer_rejects_user_writable_existing_code_directory' {
   $null=New-Item -ItemType Directory -Path $installRoot

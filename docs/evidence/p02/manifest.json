@@ -1,6 +1,6 @@
 {
   "phase": "P02",
-  "result": "DONE",
+  "result": "BLOCKED",
   "runs": [
     {
       "id": 38550922299,
@@ -347,5 +347,6 @@
       "sha256": "b4de16a59c3d5026faf7657401c07c455c930b814c2e0b8efe2d9554afa53daa",
       "size": 3923
     }
-  ]
+  ],
+  "blocked_reason": "Review and authenticated Windows feasibility required for official 1.18.8 security update; original historical evidence retained."
 }

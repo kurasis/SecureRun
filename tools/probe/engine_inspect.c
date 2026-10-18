@@ -34,7 +34,7 @@ int wmain(int argc, wchar_t **argv) {
     health = get_version(version, &abi);
     context = query_process((HANDLE)(ULONG_PTR)GetCurrentProcessId(), 0, box, NULL, NULL, &session, NULL);
     info = driver_info(0, &flags, sizeof(flags));
-    matches = wcscmp(version, L"5.73.6") == 0 && abi == 0x57230UL;
+    matches = wcscmp(version, L"5.73.8") == 0 && abi == 0x57230UL;
     printf("{\"stage\":\"driver_query\",\"version_status\":\"%08lx\",\"abi\":%lu,"
            "\"context_status\":\"%08lx\",\"driver_info_status\":\"%08lx\","
            "\"driver_flags\":%lu,\"context\":\"%s\",\"version_matches_pin\":%s,\"result\":\"%s\"}\n",

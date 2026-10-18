@@ -88,10 +88,10 @@ try{
  # Preserve minimized evidence of a refused diagnostic cleanup. No retry, trust,
  # process termination, error-reporting policy change or synthetic pass is added.
  try{
-  $profile=Join-Path $env:LOCALAPPDATA 'SecureRun'
-  $metadata=Join-Path $profile 'metadata'
+  $labProfile=Join-Path $env:LOCALAPPDATA 'SecureRun'
+  $metadata=Join-Path $labProfile 'metadata'
   if(Test-Path -LiteralPath $metadata){Get-ChildItem -LiteralPath $metadata -File -Filter 'image-status-*.json'|Where-Object {$_.CreationTimeUtc -ge $labStarted -and $_.Length -le 8192 -and -not($_.Attributes -band [IO.FileAttributes]::ReparsePoint)}|Select-Object -First 64|Copy-Item -Destination $results}
-  $fault=& (Join-Path $PSScriptRoot 'Read-FailureMetadata.ps1') -Since $labStarted -Profile $profile
+  $fault=& (Join-Path $PSScriptRoot 'Read-DiagnosticFailureMetadata.ps1') -Since $labStarted -LabProfile $labProfile
   $fault|ConvertTo-Json -Depth 8|Set-Content (Join-Path $results ($Mode+'-fault-metadata.json')) -Encoding utf8
  }catch{}
  @{status='FAILED';mode=$Mode;line=$failure.InvocationInfo.ScriptLineNumber;code=$(if($failure.Exception.GetBaseException().Message -cmatch '^[A-Z][A-Z0-9_]{3,100}$'){$failure.Exception.GetBaseException().Message}else{'P11_STANDARD_ACTOR_FAILED'})}|ConvertTo-Json|Set-Content (Join-Path $results ($Mode+'-summary.json')) -Encoding utf8;exit 1

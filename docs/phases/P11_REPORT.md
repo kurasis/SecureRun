@@ -56,3 +56,11 @@ same-owner tokens. A SID match alone no longer authorizes termination of an
 unreviewed image. Only the two exact protected, signed original RPC companions
 can be stopped after both benign canary processes have completed; every other
 remaining object is only waited on and a live unknown still refuses completion.
+
+Upstream v1.18.8 (2026-10-17) fixes a GUI proxy MapWindowPoints request-length
+out-of-bounds read. The original v1.18.6 tuple is historical; the development
+compatibility candidate is being manually refreshed to original v1.18.8, source
+bde0890108a563f5d72eb8e57085be2b37177218. No automatic engine update, engine
+bundling or unsupported security switch is introduced. P02 is BLOCKED until
+authenticated installers/components and real feasibility pass on both labs;
+production adapter/cleanup hashes will only be updated from those observations.

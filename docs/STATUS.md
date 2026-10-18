@@ -5,7 +5,7 @@ Specification: 1.3. Updated: 2026-10-17 UTC. Completed scope: full P10.
 | Phase | Status | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | DONE | [Report](phases/P02_REPORT.md) |
+| P02 | BLOCKED | [Report](phases/P02_REPORT.md) |
 | P03 | BLOCKED | [Report](phases/P03_REPORT.md), [manifest](evidence/p03/manifest.json) |
 | P04 | BLOCKED | [Report](phases/P04_REPORT.md), [manifest](evidence/p04/manifest.json) |
 | P05 | BLOCKED | [Report](phases/P05_REPORT.md), [manifest](evidence/p05/manifest.json) |

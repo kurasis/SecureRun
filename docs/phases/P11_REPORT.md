@@ -97,3 +97,9 @@ T21 rather than being mislabeled as the T12 network scenario. These additions ar
 packaging-only and preserve all 155 protected P10 inputs byte-for-byte. Full
 installed T01 missing-engine/driver-unhealthy variants remain final P12 scope;
 P11's installed T01 smoke is the stopped-service variant.
+
+Expanded-suite source d73e352 Server built the installers and canary but failed
+before installed cases because .NET resolved a relative fixture path against the
+process current directory. Original partial build JSON is preserved separately.
+The lab now uses the same absolute fixture path for compiler output, copy, PE
+inspection and hashing; no product or required security assertion was changed.

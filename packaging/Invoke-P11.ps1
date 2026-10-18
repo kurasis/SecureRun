@@ -66,18 +66,19 @@ try{
  # Compile a fixed native canary that always records its own execution. It is
  # laboratory code outside the payload; no fixture is installed with the app.
  $labBuild=Join-Path $packages 'lab';$null=New-Item -ItemType Directory -Path $labBuild
+ $fixtureFile=Join-Path $labBuild 'p11-impostor.exe'
  $fixtureArch=if($build.target -eq 'aarch64-pc-windows-msvc'){'arm64'}else{'x64'}
  $fixtureCompiler=Join-Path $env:VCToolsInstallDir "bin/Host$fixtureArch/$fixtureArch/cl.exe"
  $fixtureSdk=$env:WindowsSDKVersion.TrimEnd('\','/')
  $env:LIB=@((Join-Path $env:VCToolsInstallDir "lib/$fixtureArch"),(Join-Path $env:WindowsSdkDir "Lib/$fixtureSdk/ucrt/$fixtureArch"),(Join-Path $env:WindowsSdkDir "Lib/$fixtureSdk/um/$fixtureArch")) -join ';'
  Push-Location $labBuild
  try{
-  & $fixtureCompiler /nologo /O2 /MT /W4 /WX /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'lab_impostor.c') /Fe:p11-impostor.exe
+  & $fixtureCompiler /nologo /O2 /MT /W4 /WX /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'lab_impostor.c') "/Fe:$fixtureFile"
   Require ($LASTEXITCODE -eq 0) 'P11_IMPOSTOR_FIXTURE_BUILD_FAILED'
-  Copy-Item 'p11-impostor.exe' $labCode
-  $fixtureBytes=[IO.File]::ReadAllBytes('p11-impostor.exe');$pe=[BitConverter]::ToInt32($fixtureBytes,0x3c);$machine=('{0:x4}' -f [BitConverter]::ToUInt16($fixtureBytes,$pe+4))
+  Copy-Item $fixtureFile $labCode
+  $fixtureBytes=[IO.File]::ReadAllBytes($fixtureFile);$pe=[BitConverter]::ToInt32($fixtureBytes,0x3c);$machine=('{0:x4}' -f [BitConverter]::ToUInt16($fixtureBytes,$pe+4))
   $expectedMachine=if($build.target -eq 'aarch64-pc-windows-msvc'){'aa64'}else{'8664'};Require ($machine -eq $expectedMachine) 'P11_IMPOSTOR_FIXTURE_ARCHITECTURE_WRONG'
-  @{source_commit=$build.source_commit;source_sha256=(Get-FileHash (Join-Path $PSScriptRoot 'lab_impostor.c')).Hash.ToLowerInvariant();fixture_sha256=(Get-FileHash 'p11-impostor.exe').Hash.ToLowerInvariant();pe_machine=$machine;shipped_in_payload=$false}|ConvertTo-Json|Set-Content (Join-Path $out 'lab-fixture.json') -Encoding utf8
+  @{source_commit=$build.source_commit;source_sha256=(Get-FileHash (Join-Path $PSScriptRoot 'lab_impostor.c')).Hash.ToLowerInvariant();fixture_sha256=(Get-FileHash $fixtureFile).Hash.ToLowerInvariant();pe_machine=$machine;shipped_in_payload=$false}|ConvertTo-Json|Set-Content (Join-Path $out 'lab-fixture.json') -Encoding utf8
  }finally{Pop-Location}
  foreach($f in @('standard.ps1','lab_native.cs')){Copy-Item (Join-Path $PSScriptRoot $f) $labCode}
  Copy-Item (Join-Path $repo 'tools/lab/Read-DiagnosticFailureMetadata.ps1') $labCode

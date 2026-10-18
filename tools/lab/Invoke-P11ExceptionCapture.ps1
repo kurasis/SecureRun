@@ -20,7 +20,7 @@ public sealed class P11PrivateToolOutput {
  static void Add(System.Collections.Generic.Dictionary<string,int> table,string key){if(table.Count>=64&&!table.ContainsKey(key))key="BOUND_REACHED";int n;table.TryGetValue(key,out n);table[key]=n+1;}
  void Line(string raw,uint expected){
   string line=Regex.Replace(raw.Trim(),@"^\[\d{2}:\d{2}:\d{2}\]\s*", "");
-  var pid=Regex.Match(line,@"^Monitoring PID:\s*(\d{1,10})$");uint parsed;
+  var pid=Regex.Match(line,@"^Monitoring PID:\s*(\d{1,10})$");if(!pid.Success)pid=Regex.Match(line,@"^Process:\s+.+ \((\d{1,10})\)$");uint parsed;
   if(pid.Success&&UInt32.TryParse(pid.Groups[1].Value,out parsed)&&parsed==expected){monitoring_target_matched=true;Add(statuses,"MONITOR_HEADER_MATCH");}
   var ex=Regex.Match(line,@"^(Exception|Unhandled): ([0-9a-fA-F]{8})(?:[ .]|$)");
   if(ex.Success)Add(exception_codes,(ex.Groups[1].Value=="Unhandled"?"UNHANDLED_":"OBSERVED_")+ex.Groups[2].Value.ToLowerInvariant());

@@ -68,3 +68,8 @@ $nulOutput=($utf16Ascii.ToCharArray()|ForEach-Object {[string]$_+[char]0}) -join
 $privateReader=[IO.StringReader]::new($nulOutput)
 try{$parsed=[P11PrivateToolOutput]::Read($privateReader,98765).GetAwaiter().GetResult();Require ($parsed.monitoring_target_matched -and $parsed.exception_codes['UNHANDLED_e0424242'] -eq 1 -and $parsed.statuses['DEBUG_ERROR'] -eq 1 -and $parsed.statuses['ACCESS_DENIED'] -eq 1);Require (($parsed|ConvertTo-Json -Depth 5) -notmatch 'PRIVATE_CANARY|98765')}finally{$privateReader.Dispose()}
 Write-Host 'PASS: NUL-interleaved redirected Sysinternals fixed-state output; no private strings'
+
+# The pinned native tool also prints Process: <private name> (<private PID>).
+$privateReader=[IO.StringReader]::new('Process:               PRIVATE_CANARY Process.exe (98765)'+"`n")
+try{$parsed=[P11PrivateToolOutput]::Read($privateReader,98765).GetAwaiter().GetResult();Require ($parsed.monitoring_target_matched -and $parsed.statuses['MONITOR_HEADER_MATCH'] -eq 1);Require (($parsed|ConvertTo-Json -Depth 5) -notmatch 'PRIVATE_CANARY|98765')}finally{$privateReader.Dispose()}
+Write-Host 'PASS: source-verified alternate process header binding without private fields'

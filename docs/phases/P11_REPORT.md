@@ -42,3 +42,17 @@ was not retained, so no particular crash cause is inferred for that P11 run.
 Read-only failure collection now retains bounded original image-status JSON and
 minimized WER/event/CIM classification, including fixed virtualized WER locations.
 No process trust/termination authority, assertion, retry or pass is added.
+
+Repeated P09 ARM seeding refusal at integration run 39082021205 attempt 2
+associated a live WerFault with SandboxieRpcSs through read-only CIM only. The
+cleanup loop could wait for an unreviewed process before stopping an already
+reviewed helper later in enumeration. It now holds unknown objects, completes
+independently authorized stops first, then waits on the exact retained unknown
+objects for the unchanged 60000 ms bound. It still refuses a live unknown and
+never terminates or trusts it. The specific upstream crash cause is not claimed
+fixed. Full exact-source P03–P10 and installed P11 evidence must be refreshed.
+The diagnostic image check now applies to every remaining process, including
+same-owner tokens. A SID match alone no longer authorizes termination of an
+unreviewed image. Only the two exact protected, signed original RPC companions
+can be stopped after both benign canary processes have completed; every other
+remaining object is only waited on and a live unknown still refuses completion.

@@ -1,6 +1,6 @@
 {
   "phase": "P03",
-  "result": "DONE",
+  "result": "BLOCKED",
   "run_id": 39068949002,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/39068949002",
   "tested_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
@@ -1555,5 +1555,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed."
+  "note": "Foundation paths only. No engine execution, production target launcher or P04 observation is claimed.",
+  "blocked_reason": "Fresh exact-source regression required after diagnostic cleanup now defers unknown-object natural waits until independently reviewed members are stopped; no authority or unknown termination added. Historical raw proof retained."
 }

@@ -1648,5 +1648,5 @@
       "note": "Previously completed source retained unchanged as history. P10 changes require exact-source Windows revalidation before current gate closure."
     }
   ],
-  "blocked_reason": "P11 packaging workflow and repository-validator inputs changed; previous raw results retained as historical. Fresh exact-source P03-P10 regressions are required."
+  "blocked_reason": "Fresh exact-source regression required after diagnostic cleanup now defers unknown-object natural waits until independently reviewed members are stopped; no authority or unknown termination added. Historical raw proof retained."
 }

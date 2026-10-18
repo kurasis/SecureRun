@@ -13396,5 +13396,5 @@
   ],
   "production_acceptance_scenarios_passed": 0,
   "note": "P05 production policy/provisioning paths and fixed synthetic diagnostics only; this regression executes no P06 user-target launch.",
-  "blocked_reason": "P11 packaging workflow and repository-validator inputs changed; previous raw results retained as historical. Fresh exact-source P03-P10 regressions are required."
+  "blocked_reason": "Fresh exact-source regression required after diagnostic cleanup now defers unknown-object natural waits until independently reviewed members are stopped; no authority or unknown termination added. Historical raw proof retained."
 }

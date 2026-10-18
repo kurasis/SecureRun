@@ -1,6 +1,6 @@
 {
   "phase": "P04",
-  "result": "DONE",
+  "result": "BLOCKED",
   "tested_commit": "75b6c0bab24e7ea0edd86a3be2adea6648456a6b",
   "run_id": 39068949002,
   "url": "https://github.com/kurasis/SecureRun/actions/runs/39068949002",
@@ -1289,5 +1289,6 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation."
+  "note": "Production read-only observation paths only; P02 supplies synthetic fixtures. This regression executes no product launch or mutation.",
+  "blocked_reason": "Fresh exact-source regression required after diagnostic cleanup now defers unknown-object natural waits until independently reviewed members are stopped; no authority or unknown termination added. Historical raw proof retained."
 }

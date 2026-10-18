@@ -135,9 +135,32 @@ public sealed class P05Lab {
             for(int i=0;i<actual;i++){
                 IntPtr held=OpenProcess(0x100001|0x1000,false,pids[i]);if(held==IntPtr.Zero){if(Marshal.GetLastWin32Error()==87)continue;throw new InvalidOperationException("LAB_PROCESS_HANDLE_UNKNOWN");}
                 try{if(WaitForSingleObject(held,0)==0)continue;
-                    long birth,exit,kernel,user,observed;bool critical;uint session;var name=new StringBuilder(40);var sid=new StringBuilder(96);
-                    if(!GetProcessTimes(held,out birth,out exit,out kernel,out user)||!IsProcessCritical(held,out critical)||critical||query((IntPtr)pids[i],0,name,null,sid,out session,out observed)!=0||name.ToString()!=box||sid.ToString()!=owner||observed!=birth)throw new InvalidOperationException("LAB_PROCESS_IDENTITY_CHANGED");
-                    if(!TerminateProcess(held,99)||WaitForSingleObject(held,5000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");
+                    long birth,exit,kernel,user,observed=0;bool critical;uint session;var name=new StringBuilder(40);var sid=new StringBuilder(96);
+                    bool birthKnown=GetProcessTimes(held,out birth,out exit,out kernel,out user);
+                    bool criticalKnown=IsProcessCritical(held,out critical);
+                    bool queryAttempted=birthKnown&&criticalKnown&&!critical;
+                    int queryStatus=queryAttempted?query((IntPtr)pids[i],0,name,null,sid,out session,out observed):-1;
+                    // A default birth never substitutes for a successful query.
+                    bool sameBirth=queryAttempted&&queryStatus==0&&observed==birth;
+                    bool sameBox=queryAttempted&&queryStatus==0&&name.ToString()==box;
+                    bool sameOwner=queryAttempted&&queryStatus==0&&sid.ToString()==owner;
+                    if(!birthKnown||!criticalKnown||critical||queryStatus!=0||!sameBox||!sameOwner||!sameBirth){
+                        // Driver membership may vanish before this retained
+                        // object signals exit. Completion permits only skipping
+                        // this object, never terminating an unverified live one.
+                        uint waited=WaitForSingleObject(held,1000);if(waited==0)continue;
+                        var failure=new InvalidOperationException("LAB_PROCESS_IDENTITY_CHANGED");
+                        failure.Data["birth_known"]=birthKnown;failure.Data["critical_state_known"]=criticalKnown;
+                        failure.Data["critical"]=critical;failure.Data["driver_query_attempted"]=queryAttempted;
+                        if(queryAttempted)failure.Data["driver_query_status"]=queryStatus;
+                        failure.Data["same_box"]=sameBox;failure.Data["same_owner"]=sameOwner;
+                        failure.Data["same_birth"]=sameBirth;failure.Data["completion_wait_status"]=waited;
+                        throw failure;
+                    }
+                    // A concurrent exit can make TerminateProcess fail. Only
+                    // signaling of this same held object confirms completion.
+                    TerminateProcess(held,99);
+                    if(WaitForSingleObject(held,5000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");
                 }finally{CloseHandle(held);}
             }
         }

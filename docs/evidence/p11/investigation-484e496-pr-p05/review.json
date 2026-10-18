@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "source_commit": "cd763726f8a51be9e51e1ca420dbdfbdb352cc3c",
+  "pr_head": "484e496f9b29eaca3c2dd3207a6e59888020d769",
+  "run_id": 39092130499,
+  "job_id": 117570917655,
+  "artifact_id": 12123019652,
+  "classification": "FAILED_HISTORICAL_PR_NOT_COMPLETION_PROOF",
+  "facts": "Server passed44 native cases and62 adapter tests; T16 actual_other_session_prevents_policy_and_sibling_mutation failed with PropertyNotFoundException. The old report has no invocation line. Atomic readiness publication and bounded numeric failure location were added at fa29a20; native revalidation remains pending.",
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw paths, SIDs, credentials or target arguments retained. Secret-related test labels and refusal classifications contain no secret values. Original bytes preserved.",
+  "files": [
+    {
+      "path": "windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "1dd3b6fb816917927b13b2c4a24ea32b3a62e0f7e517e2f11892186ac7f21aa0"
+    },
+    {
+      "path": "windows-2025/policy-cases.json",
+      "size": 77897,
+      "sha256": "962d59f279d12a1a9ec37c398f43f25f6f172da30b7bbc5b065fb5fc8eeeee99"
+    },
+    {
+      "path": "windows-2025/stage.json",
+      "size": 152,
+      "sha256": "f613fc2cf622c3b58c5a6cb9acd5dfbc474ff4f8e53308138a87ff596a458a6b"
+    }
+  ]
+}

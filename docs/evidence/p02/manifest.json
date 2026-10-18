@@ -130,7 +130,7 @@
       "id": 39086050127,
       "url": "https://github.com/kurasis/SecureRun/actions/runs/39086050127",
       "tested_commit": "fa9b89faef79363c6f03bd972949e4c3eb257343",
-      "role": "current",
+      "role": "historical",
       "job_collection_conclusion": "success",
       "targets": [
         {
@@ -155,6 +155,51 @@
           "runner": "windows-11-arm",
           "tested_commit": "fa9b89faef79363c6f03bd972949e4c3eb257343",
           "evidence_directory": "completion-fa9b89f/windows-11-arm",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 62,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows 11 Enterprise",
+            "Version": "10.0.26200",
+            "BuildNumber": "26200",
+            "OSArchitecture": "ARM 64-bit Processor",
+            "ProductType": 1
+          },
+          "ubr": 9457
+        }
+      ]
+    },
+    {
+      "id": 39109835521,
+      "url": "https://github.com/kurasis/SecureRun/actions/runs/39109835521",
+      "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+      "role": "current",
+      "job_collection_conclusion": "success",
+      "targets": [
+        {
+          "runner": "windows-2025",
+          "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+          "evidence_directory": "completion-fa29a20/windows-2025",
+          "gate_result": "DONE",
+          "smoke_counts": {
+            "PASSED": 49,
+            "NOT_APPLICABLE": 2
+          },
+          "os": {
+            "Caption": "Microsoft Windows Server 2025 Datacenter",
+            "Version": "10.0.26100",
+            "BuildNumber": "26100",
+            "OSArchitecture": "64-bit",
+            "ProductType": 3
+          },
+          "ubr": 33438
+        },
+        {
+          "runner": "windows-11-arm",
+          "tested_commit": "fa29a20ac9397f1f3222ce8bc2460f18954ed73c",
+          "evidence_directory": "completion-fa29a20/windows-11-arm",
           "gate_result": "DONE",
           "smoke_counts": {
             "PASSED": 62,
@@ -261,6 +306,96 @@
     {
       "path": "completion-0cf59a6/windows-2025/standard-user-result.json",
       "sha256": "95c8c61490f8edb7e5c56c630b94ac088597fac290538ce1d79d2b61d5de4cba",
+      "size": 3677
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/bootstrap-result.json",
+      "sha256": "4d91c614d9ad7c5bc7b565ee9556ce71b9653ae86f69e5e3025bcce1c7ae9176",
+      "size": 123
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/bootstrap-stage.json",
+      "sha256": "42ec5bd77e1dfcbeab35b0d79aa6934cdd9263689263e7d6d13c863c136ee33a",
+      "size": 149
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/engine-inspection.json",
+      "sha256": "4a027349d3abaf548ac459a2a16ae6ad6e6950413660f500bc0f24173afd9fa6",
+      "size": 216
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/feasibility-cases.json",
+      "sha256": "5a05f83a45ec8d36e548287023834c04ffe55050e30f54a823c9ba7d4bff6a6a",
+      "size": 33558
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/installation.json",
+      "sha256": "b4311babd544627fc7d845fd86a082e9f0154615b1c6c2c7b64f7e71cc090050",
+      "size": 11146
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/native-cleanup-discovery.json",
+      "sha256": "a9605c3a94314d3b89617ce8243d810af1fed175f9fe6154dafcfa207ca2bcf3",
+      "size": 277
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/phase-result.json",
+      "sha256": "6d5f7ced016371af8d505c6f3d9df6e81f4c69c99f66913aacfdf033f2e6b95e",
+      "size": 702
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/probe-builds.json",
+      "sha256": "d2c15edf1b3228b664afb940bc3d4126b05acd628fc592048ec8c3b1b3527e12",
+      "size": 980
+    },
+    {
+      "path": "completion-fa29a20/windows-11-arm/standard-user-result.json",
+      "sha256": "cd39df5a76188b49850f45375237787b6748a7a4e2ccb519a4e9dbcd3f2949a7",
+      "size": 3678
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/bootstrap-result.json",
+      "sha256": "a88afc399a3d7806d1a33e22400463f4c11abdd8d0583e03a0c2957304c06067",
+      "size": 123
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/bootstrap-stage.json",
+      "sha256": "be384c7de96dab41a662d64d456e2882ca2d37962657c8ed94bc5e83e224b56f",
+      "size": 149
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/engine-inspection.json",
+      "sha256": "df3119d12209651cb36e2eec47f13508ac2d027d6674519454be3119cfb4df9c",
+      "size": 215
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/feasibility-cases.json",
+      "sha256": "70541676e568799d33ee7ffe8d363925dadd0c8c2a02475521847055f009801c",
+      "size": 27737
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/installation.json",
+      "sha256": "e60d1fdaa52ccfb9378e80f199e5259942df8335b57b18d922b438054b9ded34",
+      "size": 10893
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/native-cleanup-discovery.json",
+      "sha256": "e7b42b2d903744a6b0aab6a7ff6e46d5de30d9c287819ec801a01b1494fe1737",
+      "size": 277
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/phase-result.json",
+      "sha256": "888350c9978e895be60c186957f6d5c71019e02082ce8ab54cc8b5605ea0c184",
+      "size": 702
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/probe-builds.json",
+      "sha256": "a97c3fdb46bf266a61f8d8d44e6ee77a1a85bd60535113bb49d64799581f8813",
+      "size": 730
+    },
+    {
+      "path": "completion-fa29a20/windows-2025/standard-user-result.json",
+      "sha256": "5ad2d275db78c0cd51f5cc0bd73dc5bbd1c90394caab12fe5b21be1a8517d20c",
       "size": 3677
     },
     {
@@ -435,7 +570,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Fresh exact-source feasibility is required after changing protected native lab scripts for Save input and atomic cross-session readiness. Earlier authenticated engine/component inventories remain unchanged historical snapshots; no source inventory is reduced.",
+  "note": "Exact fa29a20 native feasibility passed on both runners and originals are retained. A subsequently corrected lab fixture teardown race changes a protected probe source; fresh exact-source feasibility is required before current-source completion. Complete authenticated inventories and source lists remain preserved.",
   "tested_sources": [
     {
       "path": "docs/engine-candidate.json",
@@ -529,8 +664,8 @@
     },
     {
       "path": "tools/probe/p05_sessions.ps1",
-      "sha256": "9675015fa1aaf5e16845de6768e377ca23cd568807584f7aba69c32e7ff35067",
-      "size": 5363
+      "sha256": "17527da3df36bc6bde86b391f31851496b1352215c88c519c17e84b706d1a33d",
+      "size": 5675
     },
     {
       "path": "tools/probe/p05_standard.ps1",
@@ -579,8 +714,8 @@
     },
     {
       "path": "tools/probe/p09_accessibility.ps1",
-      "sha256": "b03257ce61dd7199a3f8ccefd5adf909617c4c7d9dd2dbc80e16720d27877ac5",
-      "size": 98094
+      "sha256": "7607dd8b120463424229b54510e7a4ed980c7f649c434fbf61cbf79d64a302ea",
+      "size": 98383
     },
     {
       "path": "tools/probe/p09_browser.cs",

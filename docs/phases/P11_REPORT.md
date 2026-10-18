@@ -10,6 +10,33 @@ only, without terminate/debug/VM rights. Names are not authentication. Raw IDs,
 paths and arguments stay in memory. Its instrumented run cannot close a phase or
 certify performance. Fresh full uninstrumented gates remain mandatory.
 
+The fixes are published at `fa29a20ac9397f1f3222ce8bc2460f18954ed73c`.
+Exact-branch native checks:
+[P02](https://github.com/kurasis/SecureRun/actions/runs/39109835521),
+[P05](https://github.com/kurasis/SecureRun/actions/runs/39109837413), and
+[full P09](https://github.com/kurasis/SecureRun/actions/runs/39109839082).
+P02 passed Server49/ARM62 checks with two explicit N/A each; the full signed
+component inventories and OS tuples match the previous authenticated refresh.
+The separate [ARM observer](https://github.com/kurasis/SecureRun/actions/runs/39109826510)
+is diagnostic only. P05/P09/observer results remain pending; starting a run is not passing evidence.
+The P05 readiness file is now published with a same-directory atomic move after
+complete UTF-8 JSON is written. The real other-session production gate is unchanged.
+The earlier [P05 failure](../evidence/p11/investigation-484e496-pr-p05/review.json)
+and [ARM P09 failure](../evidence/p11/investigation-484e496-pr-p09/review.json)
+are preserved as original failed evidence.
+
+The additional [Server PR P05 result](../evidence/p11/investigation-fa29a20-pr-p05/review.json)
+passed the real second-session case, but failed T60 in fixture cleanup with
+LAB_PROCESS_IDENTITY_CHANGED. Its combined old predicate cannot establish the
+specific cause, and a finally exception can mask an earlier failure. The fixture
+now permits skipping only a confirmed completed held object after membership
+loss, preserves refusal of a live mismatch, and records fixed scalar diagnostics.
+A concurrent refused termination also requires confirmation on that same held
+object. No process identity check or assertion was removed. This subsequent
+protected probe change requires another native P02/P05 validation; fa29a20 remains
+a successful historical P02 snapshot. The C# fixture compiles and PowerShell
+syntax checks pass locally.
+
 The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.

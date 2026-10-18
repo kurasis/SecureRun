@@ -10,7 +10,7 @@ The source-specific reports below remain historical snapshots, not proof for the
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | BLOCKED revalidation | Protected lab scripts changed; fresh exact-source native feasibility required |
+| P02 | BLOCKED revalidation | fa29a20 passed49/62; subsequent fixture teardown correction requires fresh native proof |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P05 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |

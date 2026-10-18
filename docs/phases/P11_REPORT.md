@@ -68,9 +68,24 @@ receipt is explicitly marked as internally consistent but independently
 unauthenticated; parsing never grants process action authority. All raw dumps,
 box roots and private logs stay on the disposable VM. Existing guarded fixture
 cleanup refuses reporters, and the original service LogFile value is restored.
-Reproduction results are pending. The redundant ordinary PR P09 run 39135254358
+The owner cancelled the reproduction before dispatch: **NOT_RUN**, not a pass.
+No replacement Actions run is scheduled. New Windows test targets must run in a
+disposable VM and a Sandboxie box; required unboxed controls remain pending where
+that constraint prevents execution. The redundant ordinary PR P09 run 39135254358
 was cancelled to avoid spending a full UI workload without a runtime correction;
 cancellation is not success. Mandatory phase workload sizes remain unchanged.
+
+Static follow-up checked the x86 calling-convention hypothesis against the pinned
+`Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust
+`extern "system"` imports therefore match the upstream x86 build; changing them
+to C calling convention on the basis of undecorated C declarations would be wrong.
+The source also shows a diagnostic collection limitation: `proc.c:1794` waits up
+to 30 seconds for WER, whereas `stop_diagnostic` can terminate authenticated
+original helpers before its natural wait on unreviewed members. Earlier retained
+target exit `0x4f` remains a cleanup status, not the original exception. This can
+interrupt collection; it does not establish why the initial crash occurred or
+justify reordering cleanup to manufacture a passing gate. No runtime change or
+new execution result is claimed from this static analysis.
 
 | Source/run | Actual result | Scope |
 |---|---|---|

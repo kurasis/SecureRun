@@ -52,10 +52,14 @@ debugger, WER/security change, global Sandboxie setting or original binary patch
 is involved. Only reviewed exception/module metadata may be uploaded. Native
 control at 264d96f/run 39135251485 passed: the exact synthetic `e0424242` exception
 and KERNELBASE module/RVA were read from an actual original-filter ARM64 dump;
-the prior LogFile value was restored. Reproduction is pending. At the owner's
+the prior LogFile value was restored. The owner cancelled the reproduction before
+dispatch; it is **NOT_RUN**, with no success inferred. At the owner's
 request, dispatch uses one VM with calibration first, eight rounds across all
 three architectures, no automatic repeat and no duplicate full UI run. This
 smaller diagnostic sample changes no mandatory phase workload or exit gate.
+No new Actions run is scheduled. Further analysis currently uses retained evidence
+and pinned source only. New Windows test targets require both a disposable VM and
+a Sandboxie box; mandatory unboxed controls are pending where incompatible.
 
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are

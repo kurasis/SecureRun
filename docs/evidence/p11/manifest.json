@@ -584,8 +584,8 @@
     },
     {
       "path": "investigation-264d96f-original-filter-calibration/review.json",
-      "size": 976,
-      "sha256": "fc68f0b85067521b84c86bbe81a12a358a765bdde9a1d99220271d11ff928030"
+      "size": 1060,
+      "sha256": "516a5c7c7cc1fbcc399fc2e39b3cc7c099d8cdca73c4ed309a0a7e987130dbd6"
     },
     {
       "path": "investigation-484e496-pr-p05/review.json",
@@ -4322,7 +4322,7 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "BOUNDED_ISOLATED_ORIGINAL_ENGINE_REPRODUCTION_WITH_ORIGINAL_FILTER",
+    "next_diagnostic": "STATIC_SOURCE_AND_RETAINED_EVIDENCE_ANALYSIS_NO_NEW_ACTIONS_SCHEDULED",
     "live_metadata_run": 39113908733,
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
@@ -4361,6 +4361,8 @@
     "isolated_original_filter_calibration_run": 39135251485,
     "isolated_original_filter_calibration_result": "PASSED_REAL_ARM64_SYNTHETIC_EXCEPTION_AND_PID_BOUND_DUMP",
     "isolated_reproducer_scope": "ONE_VM_24_PAIRS_NO_PHASE_GATE_OWNER_CPU_LIMIT",
-    "cancelled_duplicate_pr_p09_run": 39135254358
+    "cancelled_duplicate_pr_p09_run": 39135254358,
+    "isolated_reproducer_result": "NOT_RUN_OWNER_CANCELLED_BEFORE_DISPATCH",
+    "new_windows_target_isolation": "DISPOSABLE_VM_AND_SANDBOXIE_REQUIRED_UNBOXED_CONTROLS_PENDING"
   }
 }

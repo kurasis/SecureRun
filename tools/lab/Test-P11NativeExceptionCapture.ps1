@@ -43,6 +43,7 @@ try{
   if($parsed['exception_code_hex'] -ceq 'e0424242'){$report.exception_dump_confirmed=$true;$parsed['classification']='SYNTHETIC_HOST_DEBUG_PREFLIGHT_NOT_ENGINE_PROOF';$report.exception=$parsed}
  }
  if(-not $report.exception_dump_confirmed){throw 'DIAGNOSTIC_PREFLIGHT_EXCEPTION_CAPTURE_UNAVAILABLE'}
+ if(-not $report.tool_stdout.monitoring_target_matched -or (-not $report.tool_stdout.exception_codes.ContainsKey('OBSERVED_e0424242') -and -not $report.tool_stdout.exception_codes.ContainsKey('UNHANDLED_e0424242'))){throw 'DIAGNOSTIC_PREFLIGHT_TOOL_STATUS_UNREADABLE'}
  $report.result='PASSED'
 }catch{
  $report.result='FAILED';$code=$_.Exception.GetBaseException().Message

@@ -14,7 +14,7 @@ public sealed class P11DebugPrivilege : IDisposable {
  public void Dispose(){if(token==IntPtr.Zero)return;try{if(previous.count!=0){Privileges discarded;uint returned;if(!AdjustTokenPrivileges(token,false,ref previous,(uint)Marshal.SizeOf<Privileges>(),out discarded,out returned)||Marshal.GetLastWin32Error()!=0)throw new InvalidOperationException("DIAGNOSTIC_DEBUG_PRIVILEGE_RESTORE_FAILED");}}finally{CloseHandle(token);token=IntPtr.Zero;}}
 }
 public sealed class P11PrivateToolOutput {
- public long character_count;public int overlong_lines;public bool monitoring_target_matched;
+ public long character_count,nul_characters_seen;public int overlong_lines;public bool monitoring_target_matched;
  public readonly System.Collections.Generic.Dictionary<string,int> statuses=new System.Collections.Generic.Dictionary<string,int>();
  public readonly System.Collections.Generic.Dictionary<string,int> exception_codes=new System.Collections.Generic.Dictionary<string,int>();
  static void Add(System.Collections.Generic.Dictionary<string,int> table,string key){if(table.Count>=64&&!table.ContainsKey(key))key="BOUND_REACHED";int n;table.TryGetValue(key,out n);table[key]=n+1;}
@@ -41,7 +41,7 @@ public sealed class P11PrivateToolOutput {
   else if(line=="Press Ctrl-C to end monitoring without terminating the process.")state="MONITOR_INSTRUCTIONS_PRINTED";
   if(state!=null)Add(statuses,state);
  }
- public static async Task<P11PrivateToolOutput> Read(TextReader reader,uint expected){var result=new P11PrivateToolOutput();var line=new StringBuilder();char[] buffer=new char[1024];bool overflow=false;int n;while((n=await reader.ReadAsync(buffer,0,buffer.Length).ConfigureAwait(false))!=0){result.character_count=Math.Min(65537,result.character_count+n);for(int i=0;i<n;i++){char c=buffer[i];if(c=='\n'||c=='\r'){if(overflow)result.overlong_lines++;else if(line.Length>0)result.Line(line.ToString(),expected);line.Clear();overflow=false;}else if(line.Length<2048)line.Append(c);else overflow=true;}}if(overflow)result.overlong_lines++;else if(line.Length>0)result.Line(line.ToString(),expected);return result;}
+ public static async Task<P11PrivateToolOutput> Read(TextReader reader,uint expected){var result=new P11PrivateToolOutput();var line=new StringBuilder();char[] buffer=new char[1024];bool overflow=false;int n;while((n=await reader.ReadAsync(buffer,0,buffer.Length).ConfigureAwait(false))!=0){result.character_count=Math.Min(65537,result.character_count+n);for(int i=0;i<n;i++){char c=buffer[i];if(c=='\0'){result.nul_characters_seen=Math.Min(65537,result.nul_characters_seen+1);continue;}if(c=='\n'||c=='\r'){if(overflow)result.overlong_lines++;else if(line.Length>0)result.Line(line.ToString(),expected);line.Clear();overflow=false;}else if(line.Length<2048)line.Append(c);else overflow=true;}}if(overflow)result.overlong_lines++;else if(line.Length>0)result.Line(line.ToString(),expected);return result;}
 }
 public sealed class P11DebugScope {
  [DllImport("kernel32.dll",SetLastError=true)]static extern IntPtr OpenProcess(uint access,bool inherit,uint id);

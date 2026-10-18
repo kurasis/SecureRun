@@ -1,0 +1,10 @@
+{
+  "classification": "FAILED_NATIVE_SYNTHETIC_PREFLIGHT_NO_ENGINE_WORKLOAD",
+  "tested_commit": "7d77cd4f10e9aef004eb5b6e86a97d5879c832d0",
+  "run_id": 39121941000,
+  "job_id": 117659133088,
+  "artifact_id": 12134149680,
+  "conclusion": "failure",
+  "original_bytes_unchanged": true,
+  "facts": "ARM64 native fixture compiled, pins verified, existing debug privilege enabled/restored. Preflight failed before monitor launch with SessionStateUnauthorizedAccessException line28: newly extracted start-info builder used reserved Home parameter. Full Sandboxie workload was skipped. Fixed in c594c8e by MonitorHome; local actual builder regression verifies separate PID/output arguments and private environment scrub. c594 native synthetic preflight subsequently PASSED; its full engine diagnosis is still running. No failed result relabeled and no synthetic result is engine containment proof."
+}

@@ -61,3 +61,10 @@ try{
  Require ($start.WorkingDirectory -ceq $syntheticHome -and -not $start.Environment.ContainsKey($privateEnvironmentName))
 }finally{$env:SystemRoot=$priorSystemRoot;[Environment]::SetEnvironmentVariable($privateEnvironmentName,$null)}
 Write-Host 'PASS: actual monitor start-info binding, separate arguments and environment scrubbing'
+
+# Sysinternals redirected output can be UTF16 without BOM, read as embedded NULs.
+$utf16Ascii='Monitoring PID: 98765'+"`n"+'Unhandled: E0424242.PRIVATE_CANARY'+"`n"+'Error debugging process:'+"`n"+'Access is denied.'+"`n"
+$nulOutput=($utf16Ascii.ToCharArray()|ForEach-Object {[string]$_+[char]0}) -join ''
+$privateReader=[IO.StringReader]::new($nulOutput)
+try{$parsed=[P11PrivateToolOutput]::Read($privateReader,98765).GetAwaiter().GetResult();Require ($parsed.monitoring_target_matched -and $parsed.exception_codes['UNHANDLED_e0424242'] -eq 1 -and $parsed.statuses['DEBUG_ERROR'] -eq 1 -and $parsed.statuses['ACCESS_DENIED'] -eq 1);Require (($parsed|ConvertTo-Json -Depth 5) -notmatch 'PRIVATE_CANARY|98765')}finally{$privateReader.Dispose()}
+Write-Host 'PASS: NUL-interleaved redirected Sysinternals fixed-state output; no private strings'

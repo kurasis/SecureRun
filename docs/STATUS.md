@@ -17,13 +17,15 @@ Debugger runs cannot close phases. Current complete matching P10/P11 remain pend
 
 Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
 
+The [c594c8e debugger-only run](evidence/p11/investigation-c594c8e-debug-passed/review.json) passed 22 native+101 UI with 174 actually observed debugger connections, three owner-scope refusals, zero reporters and no original exception dump. This does not resolve the [separate ordinary b1e2129 ARM failure](evidence/p11/investigation-b1e2129-pr-p09-arm/review.json) in environment 08. The next diagnostic uses the original SbieSvc private LogFile feature without attaching a debugger to the engine. A short independent native calibration must pass first. The signed-leader GetMessage restriction is preserved. Only the source-backed diagnostic LogFile registry value is temporarily changed and restored; Windows security, WER and containment policy are unchanged. Raw logs stay in an administrator/SYSTEM-only directory, and only fixed message IDs/source-shaped SXS status codes may be uploaded. Every such workflow remains excluded from phase closure.
+
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
 | P02 | DONE | 0d2600c/run 39119550715: Server 49, ARM 62 passed; two N/A each |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
-| P05 | BLOCKED revalidation | fdad6d7/run 39111146590 passed 45+62 per target; matching full integration pending |
+| P05 | BLOCKED revalidation | b1e2129 PR/run 39120204407 passed 45+62 per target; matching full integration pending |
 | P06 | BLOCKED revalidation | Full-matrix jobs passed; separate PR rapid-cycle failure retained |
 | P07 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P08 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |

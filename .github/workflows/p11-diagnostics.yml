@@ -1,6 +1,11 @@
 name: P11 failure diagnosis only
 on:
   workflow_dispatch:
+    inputs:
+      preflight_only:
+        description: Verify actual native debugger and output parsing without the engine workload
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -37,6 +42,7 @@ jobs:
         shell: pwsh
         run: ./tools/lab/Test-P11NativeExceptionCapture.ps1 -ToolHome '${{ steps.debug-tools.outputs.home }}'
       - name: Observe actual failure without trusting or terminating reporters
+        if: ${{ !inputs.preflight_only }}
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'

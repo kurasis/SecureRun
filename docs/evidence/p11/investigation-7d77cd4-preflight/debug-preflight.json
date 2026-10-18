@@ -1,0 +1,18 @@
+{
+  "exception_dump_confirmed": false,
+  "observer_existing_debug_privilege_enabled": true,
+  "synthetic_source_sha256": "784209184908682fcd9e676f08328cfc9d9df9bcd2cf41837301346b1ee45f56",
+  "windows_security_or_wer_modified": false,
+  "code": "DIAGNOSTIC_PREFLIGHT_FAILED",
+  "synthetic_code_sha256": "47f70db3a92ad38c6b057e1abf6340c76c908fe0e8b8960726f2a65e31f2cc4a",
+  "exception_type": "System.Management.Automation.SessionStateUnauthorizedAccessException",
+  "existing_debug_privilege_restored": true,
+  "debugger_present_confirmed": false,
+  "script_line": 28,
+  "tool_stderr": null,
+  "target_left_for_vm_cleanup": true,
+  "tool_stdout": null,
+  "raw_output_uploaded": false,
+  "classification": "SYNTHETIC_HOST_DEBUG_PREFLIGHT_NOT_ENGINE_PROOF",
+  "result": "FAILED"
+}

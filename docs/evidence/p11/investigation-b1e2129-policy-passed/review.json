@@ -1,0 +1,18 @@
+{
+  "classification": "PASSED_INDIVIDUAL_NATIVE_SNAPSHOT_NOT_P10_OR_P11_GATE",
+  "requested_head": "b1e21291f7c7821decb13fe62451d0109b36d3cf",
+  "actual_merge_commit": "5464b79e6b88554bc49ba559eaf38b81c56163c7",
+  "run_id": 39120204407,
+  "conclusion": "success",
+  "artifact_ids": {
+    "windows-2025": 12134336469,
+    "windows-11-arm": 12134615963
+  },
+  "native_cases_passed_per_target": 45,
+  "adapter_tests_passed_per_target": 62,
+  "native_not_applicable_per_target": 1,
+  "failed": 0,
+  "p05_lab_source_byte_equal_to_current": true,
+  "original_bytes_unchanged": true,
+  "scope": "Full native P05 jobs passed, including actual cross-session and fixture cleanup with reporter safeguards. Exact protected P05Lab source at the actual merge was read from Git and is byte-identical to current. No blanket complete P10/source-equivalence or phase closure claimed; ARM RpcSs fault remains separately unresolved."
+}

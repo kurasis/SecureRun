@@ -1,0 +1,112 @@
+name: P11 original service log diagnosis only
+on:
+  push:
+    branches: ['p11/**']
+    paths: ['.github/workflows/p11-service-log-diagnostics.yml', 'tools/lab/*P11*ServiceLog.ps1']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: windows-11-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Create private administrator and SYSTEM log directory
+        id: private
+        shell: pwsh
+        run: ./tools/lab/Prepare-P11ServiceLog.ps1
+      - name: Verify source-shaped parsing and privacy
+        shell: pwsh
+        run: ./tools/lab/Test-P11ServiceLog.ps1
+      - name: Install independently authenticated original engine for diagnostic calibration
+        shell: pwsh
+        run: ./tools/lab/Initialize-P02.ps1
+      - name: Verify original service log delivery and exact previous-value restoration
+        shell: pwsh
+        run: ./tools/lab/Test-P11ServiceLog.ps1 -Native -PrivateDirectory '${{ steps.private.outputs.home }}'
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p11-original-log-preflight-${{ github.sha }}
+          path: |
+            artifacts/p11-diagnostics/*.json
+            artifacts/p02/installation.json
+          if-no-files-found: error
+          retention-days: 14
+  observe:
+    if: github.event_name == 'workflow_dispatch'
+    needs: preflight
+    runs-on: windows-11-arm
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24.19.0'
+      - id: cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p11-service-log-${{ runner.arch }}-${{ hashFiles('Cargo.lock', 'Cargo.toml', 'crates/**/*.rs', 'crates/**/*.json', 'src-tauri/**/*.rs') }}
+          restore-keys: |
+            p11-service-log-${{ runner.arch }}-
+            p11-observer-${{ runner.arch }}-
+            p10-09-windows-11-arm-
+      - name: Create private log directory
+        id: private
+        shell: pwsh
+        run: ./tools/lab/Prepare-P11ServiceLog.ps1
+      - name: Verify diagnostic parser and background transport
+        shell: pwsh
+        run: |
+          ./tools/lab/Test-P11ServiceLog.ps1
+          ./tools/lab/Test-P11LiveFaultMetadata.ps1
+          ./tools/lab/Test-P11ReporterSafety.ps1
+      - name: Run unchanged full workload with original private logging and no engine debugger
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $PWD 'artifacts/p11-diagnostics';$null=New-Item -ItemType Directory -Path $out -Force
+          $result=Join-Path $out 'original-service-log.json';$lifecycle=Join-Path $out 'reporter-lifecycle.json';$stop=Join-Path $out 'observer.stop'
+          $support=(Resolve-Path ./tools/lab/Read-P11LiveFaultMetadata.ps1).Path
+          $control=(Resolve-Path ./tools/lab/Control-P11OriginalServiceLog.ps1).Path
+          $watch=Start-Job -FilePath ./tools/lab/Observe-P11Reporter.ps1 -ArgumentList $lifecycle,$stop,$support
+          $logger=Start-Job -FilePath ./tools/lab/Observe-P11OriginalServiceLog.ps1 -ArgumentList $result,$stop,$control,'${{ steps.private.outputs.home }}',$PWD.Path
+          try{
+            $clock=[Diagnostics.Stopwatch]::StartNew()
+            while(-not(Test-Path -LiteralPath $result) -or -not(Test-Path -LiteralPath $lifecycle)){
+              if($watch.State -eq 'Failed' -or $logger.State -eq 'Failed' -or $clock.ElapsedMilliseconds -gt 30000){throw 'P11_ORIGINAL_LOG_OBSERVER_START_FAILED'}
+              Start-Sleep -Milliseconds 100
+            }
+            # This source-backed diagnostic configuration affects logging/timing.
+            # No debugger is attached to any engine process; no phase gate uses it.
+            ./tools/lab/Invoke-P09.ps1
+          }finally{
+            [IO.File]::WriteAllText($stop,'STOP_OWN_DIAGNOSTIC_OBSERVERS')
+            $null=Wait-Job @($watch,$logger) -Timeout 15
+            foreach($job in @($watch,$logger)){if($job.State -eq 'Running'){Stop-Job $job};Remove-Job $job -Force}
+          }
+          $proof=Get-Content -LiteralPath $result -Raw|ConvertFrom-Json
+          if($proof.failed -or -not $proof.calibration_confirmed_before_actor -or -not $proof.previous_registry_value_restored -or $proof.bound_reached -or $proof.overlong_lines -gt 0){throw 'P11_ORIGINAL_LOG_DIAGNOSTIC_INCOMPLETE'}
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        if: always()
+        with:
+          name: p11-original-service-log-${{ github.sha }}
+          path: |
+            artifacts/p11-diagnostics/*.json
+            artifacts/p09/*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve compiled dependencies after a diagnostic failure
+        if: failure() && steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: p11-service-log-${{ runner.arch }}-${{ hashFiles('Cargo.lock', 'Cargo.toml', 'crates/**/*.rs', 'crates/**/*.json', 'src-tauri/**/*.rs') }}

@@ -12,6 +12,10 @@ live ownership/birth/session/critical mismatches remain refused.
 
 Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](../evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](../evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
 
+The [b1e2129 P05 snapshot](../evidence/p11/investigation-b1e2129-policy-passed/review.json) passed 45 native+62 adapter tests on each target, with one explicit N/A. The actual tested P05Lab source is byte-identical to current and includes reporter safeguards. The [7d77cd4 native preflight failure](../evidence/p11/investigation-7d77cd4-preflight/review.json) occurred before monitor launch because of the reserved Home parameter. c594c8e corrects it and adds an actual invocation regression; its native synthetic debugger/expected exception-dump preflight passed. Full original-engine diagnosis run 39122053169 remains in progress. These are individual/diagnostic facts, not P10/P11 closure.
+
+The [c594c8e debugger-only run](../evidence/p11/investigation-c594c8e-debug-passed/review.json) passed 22 native+101 UI with 174 actually observed debugger connections, three owner-scope refusals, zero reporters and no original exception dump. This does not resolve the [separate ordinary b1e2129 ARM failure](../evidence/p11/investigation-b1e2129-pr-p09-arm/review.json) in environment 08. The next diagnostic uses the original SbieSvc private LogFile feature without attaching a debugger to the engine. A short independent native calibration must pass first. The signed-leader GetMessage restriction is preserved. Only the source-backed diagnostic LogFile registry value is temporarily changed and restored; Windows security, WER and containment policy are unchanged. Raw logs stay in an administrator/SYSTEM-only directory, and only fixed message IDs/source-shaped SXS status codes may be uploaded. Every such workflow remains excluded from phase closure.
+
 | Source/run | Actual result | Scope |
 |---|---|---|
 | 0d2600c / 39119550715 | Server 49, ARM 62 passed; two explicit N/A each | Current P02 includes lab reporter safeguards |
@@ -214,3 +218,19 @@ launch/observation failures, then obtain fresh complete exact-source integration
 and matching installed proof. Do not reduce workloads, trust/kill reporters, hide
 unknown windows or manufacture a successful gate. P12 is not started or authorized
 by this phase report. Production signing/licensing remain explicit release prerequisites.
+
+
+## Source-backed original service logging diagnosis
+
+This CI-only mode temporarily sets the existing `HKLM\SYSTEM\CurrentControlSet\Services\SbieSvc` `LogFile` value to version `1;` followed by an administrator/SYSTEM-only private log path. It preserves/restores the previous value and type, refuses concurrent changes, and restores immediately on collector failure. It changes no global sandbox policy, Windows protection, WER configuration or signed-leader registration. It never requests engine debugger attachment or memory dumps.
+
+The original authenticated service performs its normal message collection and file writing. The wrapper uses only the pinned native `SbieApi_LogMsgEx(ULONG, ULONG, const WCHAR*, USHORT)` to send one explicitly synthetic calibration message before a test actor exists. This does not call the restricted GetMessage interface. A separate short native VM must prove delivery, the known message prefix, private parsing and restoration before the full workload is dispatched on a fresh VM. Raw UTF16 logs and secondary private log files are excluded from upload; only bounded fixed message counts and source-shaped RPCSS_SXS level/status pairs are retained, explicitly without target authentication. Repeated statuses are counted together so normal workloads cannot exhaust a per-event list.
+
+The publisher source is fixed at `bde0890108a563f5d72eb8e57085be2b37177218`:
+
+- [Service registry path and access](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/core/dll/support.c#L257).
+- [LogFile version/path format and original writer](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/core/svc/DriverAssistLog.cpp#L142).
+- [Native logging API signature](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/core/dll/sbieapi.h#L87).
+- [Fixed RPCSS_SXS level/status formatter](https://github.com/sandboxie-plus/Sandboxie/blob/bde0890108a563f5d72eb8e57085be2b37177218/Sandboxie/apps/com/RpcSs/sxs.c#L144).
+
+Local parser, incremental UTF16/BOM/partial-line, private-field suppression and PowerShell/CSharp checks pass. Native original-service calibration and the subsequent full no-debugger diagnosis are pending; neither can close P09/P10/P11. The existing debugger workflow also has a preflight-only option and now requires recognizable control output after NUL-tolerant parsing, in addition to independently verified debugger presence and the exact expected synthetic exception dump.

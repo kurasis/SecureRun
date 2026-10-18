@@ -62,26 +62,13 @@ try{
  $code=Join-Path $env:ProgramFiles ('SecureRun-P11-CrashProbe-'+$env:GITHUB_RUN_ID+'-'+$env:GITHUB_RUN_ATTEMPT);New-PrivateDirectory $code -Executable
  $vswhere=Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe';$vs=& $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
  if($LASTEXITCODE -ne 0 -or -not $vs){throw 'DIAGNOSTIC_REPRO_COMPILER_MISSING'}
- Import-Module (Join-Path $vs 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll');Enter-VsDevShell -VsInstallPath $vs -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'|Out-Null
- $vc=$env:VCToolsInstallDir;$sdk=$env:WindowsSdkDir;$version=$env:WindowsSDKVersion.TrimEnd('\','/')
- # cl.exe needs an explicit per-arch LIB below; cargo must not inherit it, or the
- # host ARM64 build script links against the last loop arch's x86 import libraries.
- foreach($arch in @('arm64','x64','x86')){
-  $env:LIB=@((Join-Path $vc "lib/$arch"),(Join-Path $sdk "Lib/$version/ucrt/$arch"),(Join-Path $sdk "Lib/$version/um/$arch")) -join ';'
-  $exe=Join-Path $code ('p11-original-crash-probe-'+$arch+'.exe');Push-Location $code
-  try{& (Join-Path $vc "bin/Hostarm64/$arch/cl.exe") /nologo /W4 /WX /wd4204 /O2 /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'p11-original-crash-probe.c') ole32.lib "/Fe:$exe" /link "/MACHINE:$($arch.ToUpperInvariant())";if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_BUILD_FAILED'}}finally{Pop-Location}
-  $bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,0x3c);if([BitConverter]::ToUInt16($bytes,$pe+4) -ne @{arm64=0xaa64;x64=0x8664;x86=0x014c}[$arch]){throw 'DIAGNOSTIC_REPRO_PE_MISMATCH'}
-  $binary=Open-P11PinnedFile $exe;$leases.Add($binary)
-  $report.probe_builds.Add(@{architecture=$arch;pe_machine=([BitConverter]::ToUInt16($bytes,$pe+4)).ToString('x4');sha256=(Get-P11StreamHash $binary)})
- }
  if($ProductPolicy){
-  # Product-compiled scopes: exact production compile output and the actual
-  # policy canary, built from this commit for all three architectures.
+  # Build the production policy compiler and the actual release policy canary
+  # before entering the VS Dev Shell, so rustc discovers the matching MSVC
+  # libraries per target itself, exactly as the P05 lab does. Inside the Dev
+  # Shell rustc would instead trust the shell's per-arch cl.exe LIB and break.
   $rustTarget='aarch64-pc-windows-msvc';$env:RUSTUP_TOOLCHAIN="1.90.0-$rustTarget"
   rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal;if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_RUST_INSTALL_FAILED'}
-  # Let rustc discover the matching MSVC libraries per target, as P05 does; the
-  # stale per-arch cl.exe LIB above would otherwise break host/cross linking.
-  $env:LIB='';$env:INCLUDE=''
   Push-Location $repo
   try{
    cargo build --locked -p securerun-sandboxie-adapter --example p11_compiled_policy --target $rustTarget;if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_POLICY_BUILD_FAILED'}
@@ -93,7 +80,20 @@ try{
     $binary=Open-P11PinnedFile $exe;$leases.Add($binary);$report.probe_builds.Add(@{architecture=$probe.architecture;kind='policy-canary';sha256=(Get-P11StreamHash $binary)})
    }
   }finally{Pop-Location}
+ }
+ Import-Module (Join-Path $vs 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll');Enter-VsDevShell -VsInstallPath $vs -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'|Out-Null
+ $vc=$env:VCToolsInstallDir;$sdk=$env:WindowsSdkDir;$version=$env:WindowsSDKVersion.TrimEnd('\','/')
+ foreach($arch in @('arm64','x64','x86')){
+  $env:LIB=@((Join-Path $vc "lib/$arch"),(Join-Path $sdk "Lib/$version/ucrt/$arch"),(Join-Path $sdk "Lib/$version/um/$arch")) -join ';'
+  $exe=Join-Path $code ('p11-original-crash-probe-'+$arch+'.exe');Push-Location $code
+  try{& (Join-Path $vc "bin/Hostarm64/$arch/cl.exe") /nologo /W4 /WX /wd4204 /O2 /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'p11-original-crash-probe.c') ole32.lib "/Fe:$exe" /link "/MACHINE:$($arch.ToUpperInvariant())";if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_BUILD_FAILED'}}finally{Pop-Location}
+  $bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,0x3c);if([BitConverter]::ToUInt16($bytes,$pe+4) -ne @{arm64=0xaa64;x64=0x8664;x86=0x014c}[$arch]){throw 'DIAGNOSTIC_REPRO_PE_MISMATCH'}
+  $binary=Open-P11PinnedFile $exe;$leases.Add($binary)
+  $report.probe_builds.Add(@{architecture=$arch;pe_machine=([BitConverter]::ToUInt16($bytes,$pe+4)).ToString('x4');sha256=(Get-P11StreamHash $binary)})
+ }
+ if($ProductPolicy){
   # Same lab WFP prerequisite as P05/P09; offline product scopes depend on it.
+  # The policy compiler and canaries were already built before the Dev Shell.
   Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $repo 'tools/probe/engine_bridge.cs')))
   $bridge=[P02Bridge]::new($engineHome,$root,[string[]]@());$bridge.EnableLabWfp();$report.lab_wfp_prerequisite='NetworkEnableWFP=y'
   $labMetadata=Join-Path $root 'metadata';$labSibling=Join-Path $root 'sibling';$labManager=Join-Path $root 'manager.bin'

@@ -61,6 +61,15 @@ No new Actions run is scheduled. Further analysis currently uses retained eviden
 and pinned source only. New Windows test targets require both a disposable VM and
 a Sandboxie box; mandatory unboxed controls are pending where incompatible.
 
+Retained observer traces contain four original `SandboxieRpcSs.exe` faults: 3 of
+393 RpcSs starts under x86/emulated-x64 policy probes, 0 of 197 under ARM64 probes,
+and one product 7-Zip launch. Each fault occurred about 220 ms after RpcSs start and
+before DcomLaunch. At roughly 0.5-0.8% per start, the cancelled 24-pair sample would
+usually miss it. On 2026-10-18 the owner authorized one bounded single-VM stress
+reproduction instead: up to 200 rounds of fresh ARM64/x64/x86 scopes (600 starts,
+40-minute budget) with the calibrated original crash filter, parent and child both
+requesting COM. It is diagnostic only and closes no gate.
+
 [Static ARM source review](P11_ARM_SOURCE_REVIEW.md) confirms the known 1.15.5 ARM
 fixes remain in pinned 1.18.8. No newer core fix was found at checked upstream
 tip 596bfa8. Three retained reporter observations overlap emulated probes, but an

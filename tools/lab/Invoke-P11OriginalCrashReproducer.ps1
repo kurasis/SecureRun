@@ -1,5 +1,5 @@
 # Original-engine isolation experiment only; never a manager/phase gate.
-param([Parameter(Mandatory)][string]$PrivateDirectory,[switch]$CalibrationOnly)
+param([Parameter(Mandatory)][string]$PrivateDirectory,[switch]$CalibrationOnly,[ValidateRange(1,200)][int]$Rounds=200,[ValidateRange(1,45)][int]$BudgetMinutes=40)
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 if($env:GITHUB_ACTIONS -ne 'true' -or $env:PROCESSOR_ARCHITECTURE -ne 'ARM64'){throw 'DISPOSABLE_ARM_ACTIONS_VM_REQUIRED'}
 $repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -27,7 +27,7 @@ public sealed class P11OriginalCrashEngine {
  public string Read(string section,string key,uint index){var value=new StringBuilder(4096);int status=conf(section,key,index,value,8192);if(unchecked((uint)status)==0xc000008bU||unchecked((uint)status)==0xc0000034U)return null;if(status!=0)throw new InvalidOperationException("DIAGNOSTIC_REPRO_QUERY_FAILED");return value.ToString();}
  void Set(string box,string key,string value){if(update('s',null,box,key,value)!=0)throw new InvalidOperationException("DIAGNOSTIC_REPRO_CONFIG_FAILED");}
  public string Fresh(string root,bool control){string id=Guid.NewGuid().ToString("N"),box="SR_"+id;if(Read(box,null,0x70000000U)!=null)throw new InvalidOperationException("DIAGNOSTIC_REPRO_PREEXISTING_BOX");Set(box,"Enabled","n");Set(box,"SecureRunOwner","v1:"+WindowsIdentity.GetCurrent().User.Value+":"+id);Set(box,"AutoDelete","n");Set(box,"AutoRecover","n");Set(box,"DropAdminRights","y");Set(box,"FileRootPath",root);Set(box,"EnableMiniDump","SandboxieRpcSs.exe,y");if(control&&update('a',null,box,"EnableMiniDump","p11-original-crash-probe-arm64.exe,y")!=0)throw new InvalidOperationException("DIAGNOSTIC_REPRO_CONFIG_FAILED");Set(box,"Enabled","y");if(reload((uint)System.Diagnostics.Process.GetCurrentProcess().SessionId,0)!=0)throw new InvalidOperationException("DIAGNOSTIC_REPRO_RELOAD_FAILED");boxes.Add(box);return box;}
- public uint Execute(string box,string architecture,bool crash,out uint processId){processId=0;if(!boxes.Contains(box)||(architecture!="arm64"&&architecture!="x64"&&architecture!="x86")||(crash&&architecture!="arm64"))throw new InvalidOperationException("DIAGNOSTIC_REPRO_SCOPE_REFUSED");string image=Path.Combine(code,"p11-original-crash-probe-"+architecture+".exe");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;if(!run(box,"\""+image+"\""+(crash?" crash":""),code,0x08000000U,ref startup,out receipt))throw new InvalidOperationException("DIAGNOSTIC_REPRO_DISPATCH_REFUSED");processId=receipt.pid;try{if(WaitForSingleObject(receipt.process,45000)!=0)throw new InvalidOperationException("DIAGNOSTIC_REPRO_OUTCOME_UNKNOWN");uint exit;if(!GetExitCodeProcess(receipt.process,out exit))throw new InvalidOperationException("DIAGNOSTIC_REPRO_EXIT_UNKNOWN");return exit;}finally{CloseHandle(receipt.thread);CloseHandle(receipt.process);}}
+ public uint Execute(string box,string architecture,bool crash,out uint processId){processId=0;if(!boxes.Contains(box)||(architecture!="arm64"&&architecture!="x64"&&architecture!="x86")||(crash&&architecture!="arm64"))throw new InvalidOperationException("DIAGNOSTIC_REPRO_SCOPE_REFUSED");string image=Path.Combine(code,"p11-original-crash-probe-"+architecture+".exe");var startup=new Startup{size=(uint)Marshal.SizeOf<Startup>()};Receipt receipt;if(!run(box,"\""+image+"\""+(crash?" crash":""),code,0x08000000U,ref startup,out receipt))throw new InvalidOperationException("DIAGNOSTIC_REPRO_DISPATCH_REFUSED");processId=receipt.pid;try{if(WaitForSingleObject(receipt.process,45000)!=0)return 0xffffffffU;uint exit;if(!GetExitCodeProcess(receipt.process,out exit))throw new InvalidOperationException("DIAGNOSTIC_REPRO_EXIT_UNKNOWN");return exit;}finally{CloseHandle(receipt.thread);CloseHandle(receipt.process);}}
 }
 '@
 function New-PrivateDirectory([string]$Path,[switch]$Executable){
@@ -39,7 +39,7 @@ function New-PrivateDirectory([string]$Path,[switch]$Executable){
  Set-Acl -LiteralPath $Path -AclObject $acl
 }
 $out=Join-Path $repo 'artifacts/p11-diagnostics';$null=New-Item -ItemType Directory -Path $out -Force
-$report=@{classification='ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE';result='IN_PROGRESS';production_policy_changed=$false;global_sandbox_settings_changed=$false;windows_security_or_wer_settings_changed=$false;debugger_attachment_requested=$false;original_filter_changes_fault_delivery=$true;raw_dump_upload_allowed=$false;calibration_only=[bool]$CalibrationOnly;synthetic_exception_confirmed=$false;completed_parent_child_pairs=0;planned_parent_child_pairs=$(if($CalibrationOnly){0}else{24});cases=[Collections.Generic.List[object]]::new();dumps=[Collections.Generic.List[object]]::new()}
+$report=@{classification='ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE';result='IN_PROGRESS';production_policy_changed=$false;global_sandbox_settings_changed=$false;windows_security_or_wer_settings_changed=$false;debugger_attachment_requested=$false;original_filter_changes_fault_delivery=$true;raw_dump_upload_allowed=$false;calibration_only=[bool]$CalibrationOnly;synthetic_exception_confirmed=$false;completed_parent_child_pairs=0;planned_parent_child_pairs=$(if($CalibrationOnly){0}else{3*$Rounds});time_budget_minutes=$BudgetMinutes;time_budget_reached=$false;rpcss_alive_after_probe_cases=0;cases=[Collections.Generic.List[object]]::new();dumps=[Collections.Generic.List[object]]::new()}
 $logger=$null;$leases=[Collections.Generic.List[object]]::new();$activeBox=$null;$lab=$null;$root=$null;$caseRoots=[Collections.Generic.List[string]]::new()
 try{
  $report.tested_source_commit=(& git -C $repo rev-parse HEAD).Trim()
@@ -63,7 +63,7 @@ try{
  foreach($arch in @('arm64','x64','x86')){
   $env:LIB=@((Join-Path $vc "lib/$arch"),(Join-Path $sdk "Lib/$version/ucrt/$arch"),(Join-Path $sdk "Lib/$version/um/$arch")) -join ';'
   $exe=Join-Path $code ('p11-original-crash-probe-'+$arch+'.exe');Push-Location $code
-  try{& (Join-Path $vc "bin/Hostarm64/$arch/cl.exe") /nologo /W4 /WX /wd4204 /O2 /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'p11-original-crash-probe.c') "/Fe:$exe" /link "/MACHINE:$($arch.ToUpperInvariant())";if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_BUILD_FAILED'}}finally{Pop-Location}
+  try{& (Join-Path $vc "bin/Hostarm64/$arch/cl.exe") /nologo /W4 /WX /wd4204 /O2 /DUNICODE /D_UNICODE (Join-Path $PSScriptRoot 'p11-original-crash-probe.c') ole32.lib "/Fe:$exe" /link "/MACHINE:$($arch.ToUpperInvariant())";if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_BUILD_FAILED'}}finally{Pop-Location}
   $bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,0x3c);if([BitConverter]::ToUInt16($bytes,$pe+4) -ne @{arm64=0xaa64;x64=0x8664;x86=0x014c}[$arch]){throw 'DIAGNOSTIC_REPRO_PE_MISMATCH'}
   $binary=Open-P11PinnedFile $exe;$leases.Add($binary)
   $report.probe_builds.Add(@{architecture=$arch;pe_machine=([BitConverter]::ToUInt16($bytes,$pe+4)).ToString('x4');sha256=(Get-P11StreamHash $binary)})
@@ -81,12 +81,19 @@ try{
  $lab.FenceFixture($activeBox);$activeBox=$null;Update-P11OriginalServiceLog $logger
  if($logger.reader.crash_report_counts.Keys -match '^SandboxieRpcSs.exe/'){$report.result='RPCSS_CRASH_REPRODUCED'}
  if(-not $CalibrationOnly -and $report.result -ne 'RPCSS_CRASH_REPRODUCED'){
-  for($index=0;$index -lt 8;$index++){
+  # Retained traces show about 0.5-0.8% of original RpcSs starts fault on ARM64,
+  # so 24 pairs would usually miss it. Bound by rounds and wall time instead.
+  $budget=[Diagnostics.Stopwatch]::StartNew()
+  for($index=0;$index -lt $Rounds;$index++){
+   if($budget.Elapsed.TotalMinutes -ge $BudgetMinutes){$report.time_budget_reached=$true;break}
    foreach($arch in @('arm64','x64','x86')){
     $caseRoot=Join-Path $root ('case-'+$index+'-'+$arch);$caseRoots.Add($caseRoot);$activeBox=$api.Fresh($caseRoot,$false);$lab.Register($activeBox)
-    $pidValue=[uint32]0;$exitCode=$api.Execute($activeBox,$arch,$false,[ref]$pidValue)
+    $started=[DateTime]::Now;$pidValue=[uint32]0;$exitCode=$api.Execute($activeBox,$arch,$false,[ref]$pidValue)
+    # Name/start-time observation only; it authorizes no process action.
+    $rpcss=@(Get-Process -Name 'SandboxieRpcSs' -ErrorAction SilentlyContinue|Where-Object {try{$_.StartTime -ge $started}catch{$false}}).Count -gt 0
+    if($rpcss){$report.rpcss_alive_after_probe_cases++}
     Update-P11OriginalServiceLog $logger
-    $report.cases.Add(@{ordinal=$report.cases.Count+1;architecture=$arch;exit_code_hex=$exitCode.ToString('x8')})
+    $report.cases.Add(@{ordinal=$report.cases.Count+1;architecture=$arch;exit_code_hex=$exitCode.ToString('x8');rpcss_alive_after_probe=$rpcss})
     if($logger.reader.crash_report_counts.Keys -match '^SandboxieRpcSs.exe/'){
      $report.result='RPCSS_CRASH_REPRODUCED'
      break

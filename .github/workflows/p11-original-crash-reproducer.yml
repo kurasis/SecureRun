@@ -33,7 +33,7 @@ jobs:
   reproduce:
     if: github.event_name == 'workflow_dispatch'
     runs-on: windows-11-arm
-    timeout-minutes: 15
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create private original-service log directory
@@ -43,7 +43,7 @@ jobs:
       - name: Install independently authenticated original engine
         shell: pwsh
         run: ./tools/lab/Initialize-P02.ps1
-      - name: Calibrate then exercise 24 fresh original-engine scopes across all three architectures
+      - name: Calibrate then stress up to 600 fresh original-engine scopes across all three architectures
         shell: pwsh
         run: ./tools/lab/Invoke-P11OriginalCrashReproducer.ps1 -PrivateDirectory '${{ steps.private.outputs.home }}'
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4

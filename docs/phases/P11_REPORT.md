@@ -75,6 +75,14 @@ that constraint prevents execution. The redundant ordinary PR P09 run 3913525435
 was cancelled to avoid spending a full UI workload without a runtime correction;
 cancellation is not success. Mandatory phase workload sizes remain unchanged.
 
+Trace re-analysis found four retained RpcSs faults (3/393 emulated-caller starts,
+0/197 ARM64-caller starts, one product 7-Zip launch), each about 220 ms after start
+and before DcomLaunch. A 24-pair sample has roughly a 30% chance to observe one.
+The owner therefore authorized a single dispatched stress run on 2026-10-18: up to
+200 rounds across ARM64, emulated x64 and x86 within 40 minutes, with the parent and
+child probe both requesting the denied BITS activation so original RpcSs starts in
+every fresh scope. Calibration, cleanup and privacy constraints are unchanged.
+
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust
 `extern "system"` imports therefore match the upstream x86 build; changing them

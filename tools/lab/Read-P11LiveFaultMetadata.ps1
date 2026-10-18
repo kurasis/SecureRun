@@ -65,8 +65,8 @@ function Get-P11LiveFaultMetadata([datetime]$Since){
   $profiles=@(Get-CimInstance Win32_UserProfile -OperationTimeoutSec 3)
   foreach($fixture in $fixtures){
    $nonce=$fixture.Name.Substring('p02-p09-'.Length);$name='SRP09_'+$nonce.Substring(0,10)
-   foreach($profile in @($profiles|Where-Object {$_.Loaded -and (Split-Path $_.LocalPath -Leaf) -ieq $name})){
-    $local=Join-Path $profile.LocalPath 'AppData/Local';$boxes=Join-Path $local 'SecureRun/boxes'
+   foreach($labUserProfile in @($profiles|Where-Object {$_.Loaded -and (Split-Path $_.LocalPath -Leaf) -ieq $name})){
+    $local=Join-Path $labUserProfile.LocalPath 'AppData/Local';$boxes=Join-Path $local 'SecureRun/boxes'
     foreach($box in @(Get-ChildItem -LiteralPath $boxes -Directory -ErrorAction SilentlyContinue|Where-Object {-not($_.Attributes -band [IO.FileAttributes]::ReparsePoint)}|Sort-Object CreationTimeUtc -Descending|Select-Object -First 64)){
      foreach($relative in @('user/current/AppData/Local/Microsoft/Windows/WER','user/current/AppData/Local/Temp','user/current/Local Settings/Temp','user/all/Microsoft/Windows/WER','user/all/Application Data/Microsoft/Windows/WER',('drive/'+$env:SystemDrive.Substring(0,1)+'/ProgramData/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/Temp'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/System32/config/systemprofile/AppData/Local/Microsoft/Windows/WER'),('drive/'+$env:SystemDrive.Substring(0,1)+'/Windows/System32/config/systemprofile/AppData/Local/Temp'),('drive/'+$env:SystemDrive.Substring(0,1)+'/ProgramData/SecureRunLab/'+$fixture.Name+'/owner/temp'))){Add-PlainRoot (Join-Path $box.FullName $relative)}
     }

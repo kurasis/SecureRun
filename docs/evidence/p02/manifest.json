@@ -1,6 +1,6 @@
 {
   "phase": "P02",
-  "result": "DONE",
+  "result": "BLOCKED",
   "runs": [
     {
       "id": 38550922299,
@@ -705,7 +705,7 @@
     }
   ],
   "production_acceptance_scenarios_passed": 0,
-  "note": "Completed representative P02 feasibility only. Historical blocked evidence is preserved; no production acceptance or supported release tuple.",
+  "note": "Completed fdad6d7 feasibility and authenticated original inventories remain retained. Subsequent lab-only reporter cleanup refusal changes protected p05_lab.cs/p09_standard.ps1; fresh native feasibility is required. No source inventory, signed component pin or mandatory phase assertion is reduced.",
   "tested_sources": [
     {
       "path": "docs/engine-candidate.json",

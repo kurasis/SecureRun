@@ -2,24 +2,22 @@
 
 Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
 The earlier native installed packaging implementation passed; required P10 revalidation did not.
-Checked native Save input and atomic session readiness passed full fa29a20 P09
-(22 native+101 UI) and P05 (45 native+62 adapter) on both targets. Subsequent held-object
-fixture teardown passed P05 at fdad6d7 on both targets. P02 at fdad6d7 is retained DONE.
-The capacity-corrected observer at96483f3/run39111501581 reproduced an ARM reporter
-refusal at environment01 without exhaustion/query errors. It associated a live
-RpcSs-named target by birth during x86 verification, before canary completion and
-cleanup. Subsequent exit4f is cleanup, not the original fault code. Exception/module
-remain unknown; bounded live WER collection is implemented. Its first native parser
-check passed but background startup failed before workload; explicit support-path
-transport and an actual background-start unit regression now correct that. Names and
-metadata do not grant trust. Successful snapshots do not establish fault resolution.
-Current complete matching P10/P11 gates remain required.
-The source-specific reports below remain historical snapshots.
+Checked native Save and atomic session readiness passed both full fa29a20 P09
+(22 native+101 UI per target) and P05. Held-object teardown passed fdad6d7 P05
+(45 native+62 adapter per target). Those successful source snapshots are retained.
+
+ARM diagnostics still report a live RpcSs-named target before cleanup. Latest
+f374409 diagnosis passed21 native+101 UI but archive exit timed out; four live WER
+reads produced no exception/module. Target and reporter were eventually observed
+exit4f. New lab safeguards refuse cleanup while reporters are present and require
+fresh P02 proof. Next diagnosis uses authenticated original RpcSs and pinned,
+Microsoft-signed ProcDump, with private dumps and minimized scalar output only.
+Debugger runs cannot close phases. Current complete matching P10/P11 remain pending.
 
 | Phase | Current source validation | Evidence |
 |---|---|---|
 | P01 | DONE | [Report](phases/P01_REPORT.md) |
-| P02 | DONE | Exact fdad6d7/run39110907921: Server49/ARM62 passed, two explicit N/A each |
+| P02 | BLOCKED revalidation | fdad6d7 passed49/62; new reporter-safety probes need fresh native proof |
 | P03 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P04 | BLOCKED revalidation | Applicable native jobs passed; full integrated retainer pending |
 | P05 | BLOCKED revalidation | fdad6d7/run39111146590 passed45+62 per target; matching full integration pending |

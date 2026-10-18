@@ -1,96 +1,70 @@
 # P11 — Packaging, upgrades, signing and retention
 
-Status: **Fixes IN_PROGRESS; gate BLOCKED**, 2026-10-18 UTC.
+Status: **Fixes IN_PROGRESS; gate BLOCKED**. P12 and all66 final installed
+acceptance entries remain **NOT_STARTED**.
 
-Current changes use foreground/owner-checked native SendInput for Save filename
-selection/typing while retaining exact filename readback, one confirmation and
-actual output-byte assertions. A disposable diagnostic observer records known
-process lifetimes and early reporter associations using query/synchronize handles
-only, without terminate/debug/VM rights. Names are not authentication. Raw IDs,
-paths and arguments stay in memory. Its instrumented run cannot close a phase or
-certify performance. Fresh full uninstrumented gates remain mandatory.
+Native Save uses checked foreground/owner-bound SendInput with unchanged exact
+filename readback, one confirmation and saved-byte equality. Session readiness is
+published only after complete JSON is written and atomically moved into place.
+Fixture teardown skips only confirmed completion of the same retained object;
+live ownership/birth/session/critical mismatches remain refused.
 
-The fixes are published at `fa29a20ac9397f1f3222ce8bc2460f18954ed73c`.
-Exact-branch native checks:
-[P02](https://github.com/kurasis/SecureRun/actions/runs/39109835521),
-[P05](https://github.com/kurasis/SecureRun/actions/runs/39109837413), and
-[full P09](https://github.com/kurasis/SecureRun/actions/runs/39109839082).
-P02 passed Server49/ARM62 checks with two explicit N/A each; the full signed
-component inventories and OS tuples match the previous authenticated refresh.
-The separate [ARM observer](https://github.com/kurasis/SecureRun/actions/runs/39109826510)
-is diagnostic only. P05/P09/observer results remain pending; starting a run is not passing evidence.
-The P05 readiness file is now published with a same-directory atomic move after
-complete UTF-8 JSON is written. The real other-session production gate is unchanged.
-The earlier [P05 failure](../evidence/p11/investigation-484e496-pr-p05/review.json)
-and [ARM P09 failure](../evidence/p11/investigation-484e496-pr-p09/review.json)
-are preserved as original failed evidence.
+| Source/run | Actual result | Scope |
+|---|---|---|
+| fdad6d7 /39110907921 | Server49, ARM62 passed; two explicit N/A each | Original P02 inventories retained; new probe safety changes require revalidation |
+| fdad6d7 /39111146590 | 45 native+62 adapter passed per target | [Actual session and teardown fixes](../evidence/p11/investigation-fdad6d7-policy-passed/review.json) |
+| fa29a20 /39109839082 | 22 native+101 UI passed per target | [Full uninstrumented snapshot](../evidence/p11/investigation-fa29a20-product-passed/review.json); real Save passed |
+| 96483f3 /39111501581 | Failed environment01; live RpcSs-named target birth matched | [Early reporter association](../evidence/p11/investigation-96483f3-observer/review.json), no original exception/module |
+| 96483f3 PR /39111504301 | ARM failed environment10; Server job succeeded | [Separate original failure](../evidence/p11/investigation-96483f3-pr-p09/review.json) |
+| f374409 /39113908733 | 21 native+101 UI passed; archive exit timed out | [Live metadata diagnosis](../evidence/p11/investigation-f374409-observer/review.json), no capacity/query failure |
 
-The additional [Server PR P05 result](../evidence/p11/investigation-fa29a20-pr-p05/review.json)
-passed the real second-session case, but failed T60 in fixture cleanup with
-LAB_PROCESS_IDENTITY_CHANGED. Its combined old predicate cannot establish the
-specific cause, and a finally exception can mask an earlier failure. The fixture
-now permits skipping only a confirmed completed held object after membership
-loss, preserves refusal of a live mismatch, and records fixed scalar diagnostics.
-A concurrent refused termination also requires confirmation on that same held
-object. No process identity check or assertion was removed. This subsequent
-protected probe change requires another native P02/P05 validation; fa29a20 remains
-a successful historical P02 snapshot. The C# fixture compiles and PowerShell
-syntax checks pass locally.
+Server startup3477.3973ms exceeded3000ms and ARM idle CPU1.2673191570845006%
+exceeded<1% in the successful fa29a20 sample; other budgets met. Original
+measurements and user-impact explanations remain unchanged. Successful snapshots
+do not erase same-source failures or establish reporter-fault resolution.
 
-Current P02 revalidation at `fdad6d7`, run39110907921, passed49/62 with two
-explicit N/A each and unchanged authenticated inventories/OS tuples. The earlier
-[complete P05 snapshot](../evidence/p11/investigation-fa29a20-policy-passed/review.json)
-passed45 native+62 adapter tests on each target; the subsequent fixture correction
-is being checked separately in run39111146590.
+The f374409 observer recorded1028 known lifetimes and1 reporter. Four live reads
+found4 plain roots and0 candidate WER files;1existing channel was enabled but no
+matching exception/module was obtained. Both RpcSs-named target and reporter were
+eventually observed exit4f; this is not the original exception and alone does not
+identify the termination dispatcher. Reporter presence now causes a conservative
+lab refusal before cleanup. Such refusal fails the case/run, preserves an earlier
+failure, and never becomes successful Stop evidence. The product's normal Stop
+ownership contract is unchanged; no name becomes process authority.
 
-The [first observer failure](../evidence/p11/investigation-fa29a20-observer/review.json)
-reproduced ARM environment08 refusal, but exhausted512 lifetime slots before
-WerFault appeared. Zero observer query errors do not compensate for incomplete
-coverage; the reporter cause remains undetermined. Normal workload capacity is
-now2048 events with an independent128-event reporter reserve, preserving the full
-workload and all process/security boundaries. The P09 retainer now rejects any
-workflow except actual P09/P10 gates, even if an instrumented full workload passes;
-two provenance tests verify diagnostic-path and failed/different-source rejection.
-Fresh uninstrumented integration and matching installed proof remain required.
+The next diagnostic uses original Microsoft ARM64 ProcDump, pinned by HTTPS ZIP
+and payload SHA256/size plus valid Microsoft Authenticode. Its code and private
+dump directories allow Administrators/SYSTEM only. Before the test actor exists,
+the observer leases and authenticates the pinned original engine installer,
+extracted/installed RpcSs match and compatibility-pinned driver API library.
+Debug requests additionally require the exact protected image, noncritical live
+kernel object, matching retained birth, original-driver owner/box/session and
+managed marker, and the dedicated current synthetic account. No reporter or
+unknown image is debugged or terminated; no target launch is replayed.
 
-The exact [fdad6d7 P05 snapshot](../evidence/p11/investigation-fdad6d7-policy-passed/review.json),
-run39111146590, passed45 native+62 adapter tests on each system, including both
-the running-sibling/storage and real second-session cases. Full uninstrumented
-[fa29a20 P09](../evidence/p11/investigation-fa29a20-product-passed/review.json),
-run39109839082, passed22 native+101 UI checks per target. Real native Save and
-reviewed-byte equality passed on both. Complete original downloaded folders also
-passed all independent retainer target assertions. Server startup3477.3973ms
-exceeded3000ms; ARM idle CPU1.2673191570845006% exceeded<1%; other budgets met.
-Original deviations/user-impact explanations remain unchanged.
+Debugger mode explicitly changes fault delivery/timing and **cannot close any
+phase or certify performance**. Raw dumps and tool output stay private inside the
+disposable VM and are never uploaded. The bounded dump parser verifies target ID
+and emits only exception code, an allowlisted public module/RVA, architecture and
+a private-source digest. It suppresses absolute addresses, paths, IDs, arguments
+and unknown names. Tool monitors receive only scoped graceful console cancellation;
+no debugger/debuggee is killed for cleanup. Windows security, TLS, signatures,
+checksums, browser sandbox and WER configuration remain enabled/unchanged.
 
-These are successful source-specific snapshots, not proof that the intermittent
-ARM reporter fault is corrected: the failed observer on fa29a20 is retained too.
-The capacity-corrected observer is running at `96483f3`, run39111501581. Current
-complete matching P10/P11 gates remain pending; P12 is not started.
+Local validation: repository validator,31 Python tests, PowerShell/CSharp syntax,
+XML privacy/UTF8+UTF16 DTD rejection, actual zero-sample Start-Job transport,
+synthetic filesystem traversal, dump bounds/target binding/privacy, and lab
+reporter-stop refusal/healthy dispatch checks passed. Synthetic checks are not
+Windows containment evidence. All original26 specification files are unchanged.
+The [startup transport failure](../evidence/p11/investigation-9a98713-startup/review.json)
+and every previous failed snapshot remain retained without relabeling.
 
-The [capacity-corrected observer](../evidence/p11/investigation-96483f3-observer/review.json),
-run39111501581, failed at environment01 with zero observation errors and no
-capacity exhaustion. Its reporter target was a still-live, birth-revalidated
-SandboxieRpcSs.exe-named lifetime during x86 verification. Reporting was observed
-before the canary completed and before scoped cleanup; subsequent exit4f is the
-cleanup code, not the original exception. Names/birth matching are not image
-authentication. No exception/module is established and no teardown-order fix is
-claimed. The next observer reads only bounded live WER temporary XML/reports and
-already enabled channels. XML DTD/external entities are prohibited; fixed scalar
-fields suppress paths, IDs, unknown module names and report text. Read metadata is
-name-matched diagnostic material, never process authentication or gate proof.
-Synthetic parser/privacy, event-layout and UTF8/UTF16 entity rejection checks pass.
+Current protected inputs require fresh complete matching P10 and installed P11
+proof after the actual compatibility correction. P02 must be refreshed for the
+new probe-only reporter safeguards. Automatic normal merge remains conditional on
+the real gates; no source inventory, assertion, workload or mandatory feature is
+removed. The separately successful older installed package below is historical.
 
-Live metadata run39113580938 at `9a98713` passed native parser/privacy checks
-but [failed observer startup](../evidence/p11/investigation-9a98713-startup/review.json)
-before any engine workload. Start-Job transports the script without PSScriptRoot;
-this was reproduced locally. The caller now passes its resolved support path.
-The regression exercises actual background startup and clean zero-sample shutdown,
-using a preexisting private stop marker; it is not Windows proof. Startup errors
-retain bounded type/category/line only. The failed run has no result artifact and
-is not relabeled as a backend failure or pass. New full diagnosis is required.
-
-The source-specific evidence below predates these fixes.
 The packaging implementation and its installed gate passed; the phase dependency did not.
 P12 and all final installed T01–T66 acceptance remain **NOT_STARTED**.
 

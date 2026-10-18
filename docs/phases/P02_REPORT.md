@@ -1,3 +1,7 @@
+Current-source revalidation: **BLOCKED** after lab-only reporter-cleanup safety
+changes to protected probe scripts. The fdad6d7 snapshot below passed; all original
+component inventories, OS tuples and source lists are preserved.
+
 Current P11 security refresh: **P02 DONE** on original Plus 1.18.8/core 5.73.8,
 source `bde0890108a563f5d72eb8e57085be2b37177218`.
 [Run 39110907921](https://github.com/kurasis/SecureRun/actions/runs/39110907921),

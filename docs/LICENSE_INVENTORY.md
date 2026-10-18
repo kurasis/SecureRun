@@ -64,3 +64,14 @@ Original reports are in [installed proof](P11_TEST_REPORT.md); artifact identiti
 actual tool versions are in [development artifacts](DEVELOPMENT_ARTIFACTS.md).
 The inventories include Cargo/npm, Microsoft loader/SDK, Rust standard-library and
 bundled SQLite notices. These do not select a license for original manager code.
+
+## Disposable P11 diagnostic tool
+
+Microsoft Sysinternals ProcDump is downloaded only for isolated Windows diagnosis,
+never redistributed in the manager/installer or tracked as a binary. Its original
+[license terms](https://learn.microsoft.com/sysinternals/license-terms) permit
+installation/use on the test device. The [archive/payload pin](../tools/lab/p11-diagnostic-tools.json)
+and valid Microsoft Authenticode are mandatory; no silent tool update is accepted.
+Private process dumps and raw tool output are excluded from Actions artifacts and
+Git. Diagnostic debugger observations are not production containment/performance
+proof and do not alter the original-manager licensing limitation.

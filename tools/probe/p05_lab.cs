@@ -20,6 +20,7 @@ public sealed class P05Lab {
     [DllImport("kernel32",SetLastError=true)] static extern IntPtr OpenProcess(uint access,bool inherit,uint pid);
     [DllImport("kernel32",SetLastError=true)] static extern bool GetProcessTimes(IntPtr process,out long created,out long exited,out long kernel,out long user);
     [DllImport("kernel32",SetLastError=true)] static extern bool IsProcessCritical(IntPtr process,[MarshalAs(UnmanagedType.Bool)]out bool critical);
+    [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool QueryFullProcessImageNameW(IntPtr process,uint flags,StringBuilder path,ref uint length);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate uint Update(char op,string password,string section,string key,string value);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl,CharSet=CharSet.Unicode)] delegate int Conf(string section,string key,uint index,StringBuilder value,uint size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int Reload(uint session,uint flags);
@@ -126,6 +127,10 @@ public sealed class P05Lab {
     public void FenceFixture(string box) {
         // Lab-owned synthetic targets may leave original service companions.
         // This fixture has no product command and never stops a numeric PID.
+        bool reporterPresent=false;
+        try{foreach(string image in new[]{"WerFault","WerFaultSecure"})foreach(var process in Process.GetProcessesByName(image)){reporterPresent=true;process.Dispose();}}
+        catch{throw new InvalidOperationException("LAB_REPORTER_STATE_UNKNOWN");}
+        if(reporterPresent)throw new InvalidOperationException("LAB_UNREVIEWED_REPORTER_STOP_REFUSED");
         Register(box);Set(box,"Enabled","n");
         if(reload((uint)Process.GetCurrentProcess().SessionId,0)!=0)throw new InvalidOperationException("LAB_FENCE_FAILED");
         string owner=WindowsIdentity.GetCurrent().User.Value;
@@ -159,6 +164,13 @@ public sealed class P05Lab {
                     }
                     // A concurrent exit can make TerminateProcess fail. Only
                     // signaling of this same held object confirms completion.
+                    var imagePath=new StringBuilder(32768);uint imageLength=32768;
+                    if(!QueryFullProcessImageNameW(held,0,imagePath,ref imageLength)){
+                        if(WaitForSingleObject(held,1000)==0)continue;
+                        throw new InvalidOperationException("LAB_FIXTURE_IMAGE_UNKNOWN");
+                    }
+                    string imageName=Path.GetFileName(imagePath.ToString());
+                    if(String.Equals(imageName,"WerFault.exe",StringComparison.OrdinalIgnoreCase)||String.Equals(imageName,"WerFaultSecure.exe",StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("LAB_UNREVIEWED_REPORTER_STOP_REFUSED");
                     TerminateProcess(held,99);
                     if(WaitForSingleObject(held,5000)!=0)throw new InvalidOperationException("LAB_STOP_INCOMPLETE");
                 }finally{CloseHandle(held);}

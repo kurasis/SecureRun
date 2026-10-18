@@ -1,0 +1,68 @@
+{
+  "source_commit": "08fc0d1d83b93616e34d8d488b721a9caf69ddfc",
+  "pr_head": "96483f3e03da4d32a777949c87410d49926fd0c9",
+  "run_id": 39111504301,
+  "job_id": 117628448185,
+  "artifact_id": 12131615737,
+  "classification": "FAILED_PR_NOT_COMPLETION_PROOF",
+  "facts": "ARM reproduced DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED at SEEDING_ENVIRONMENT_10. The Server job completed successfully; its detailed reports are not recollected here. This failed automatic PR snapshot remains separate from successful fa29a20 full P09 and diagnostic observations; no blanket reproducibility is claimed.",
+  "schema": 1,
+  "files": [
+    {
+      "path": "windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "73eb506b8eda759555216c646f57abf3c5f96cf44e7b20f92451084ca1c2720f"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "1a6b68583a5f700729636aa4377a15fb4f64aedcfe6dd731d8d4fa832ec1f045"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "5f54378420a1b39bded12bf77c3465b33cf93824f653a26c3ffd101692574004"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "aaca3272f18c015118bac719a14b8ac56a35001bc581823f3d6ae358ab3e4953"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "39970c01cc7c6508cbaa067b4a4e6df1071d3d872fadc6d5cd126888e3a55d47"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "6f9ed490cec7d35ce41664aa0b8fe3a4085b43bc3970e56b7ea0458ff57fc96f"
+    },
+    {
+      "path": "windows-11-arm/image-status-f4aafd3d7057463aab833dd30cb9ebd8-6c32bc8ce9474424a3a102a2579ea581.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "3a88e2b7fdcef81a9a48f685057897a0a994e49d811b4590c4b64b8ec1a0e206"
+    },
+    {
+      "path": "windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "a3cfc1feaf223566505a047b3b0cc523a772e307c3ae2a7ecbe3405018c99f59"
+    }
+  ],
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw process IDs, SIDs, machine paths, target arguments, raw reports or logs retained. Names are observations. Original bytes preserved."
+}

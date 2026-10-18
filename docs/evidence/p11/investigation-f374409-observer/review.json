@@ -1,0 +1,82 @@
+{
+  "source_commit": "f3744094cba77ddce156bd0d430a72a0fcab1af2",
+  "run_id": 39113908733,
+  "job_id": 117635636376,
+  "artifact_id": 12132960203,
+  "classification": "FAILED_DIAGNOSTIC_ONLY_NO_ORIGINAL_EXCEPTION_METADATA",
+  "facts": "Full instrumented workload passed101 UI and21 native cases; official_archive_gui_and_create_extract_round_trip failed P09_APPLICATION_EXIT_TIMEOUT. Observer held1028 known lifetime records and1 reporter with zero query failures and no exhaustion. Reporter again matched a live RpcSs-named target birth before cleanup. Four live WER reads found4 plain roots, visited18 entries and read0 candidate files;1existing WER channel was enabled but no matching exception/module report was obtained. Target and reporter both were eventually observed exited0000004f. These statuses do not reveal the original fault trigger or independently establish which component dispatched termination. Ordinary scoped product Stop can select all owned members; lab cleanup now conservatively refuses when reporters are present, preserves the original failure and cannot turn refusal into a pass. Next diagnosis uses authenticated scoped original RpcSs with pinned Microsoft ProcDump; debugger effects are explicit, private dumps never uploaded and no phase gate can use this run.",
+  "schema": 1,
+  "files": [
+    {
+      "path": "windows-11-arm/reporter-lifecycle.json",
+      "size": 208421,
+      "sha256": "dc6ef98e814216f723f59d873c82e46abc357e12c0b5cf9c86c2a61b48984469"
+    },
+    {
+      "path": "windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "92b13785c9fe528f96b2f21adaf0888a134cfc0857f3e251b52ee658d691b968"
+    },
+    {
+      "path": "windows-11-arm/ui-cases.json",
+      "size": 10269,
+      "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "windows-11-arm/standard-product.json",
+      "size": 483,
+      "sha256": "ca69081bf27b6fc942a45c5a262fb242ea1040f0b98521349b5fc7d334cc3b6d"
+    },
+    {
+      "path": "windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "096f1b86aab7fec8052ea088b4abeea132ded9409be4b4e3fdf1d6e3d6700a01"
+    },
+    {
+      "path": "windows-11-arm/run-summary.json",
+      "size": 713,
+      "sha256": "066e3a62ad1c1ee660ea2af7df49ff9daad0d5555c20bfebdcad4b944feefa2f"
+    },
+    {
+      "path": "windows-11-arm/product-cases.json",
+      "size": 11040,
+      "sha256": "9b28f198c400ceee8ac99a50b65b59b3c1e25b57b7e1fd7a11784eff34003a15"
+    },
+    {
+      "path": "windows-11-arm/live-fault-reporters.json",
+      "size": 201,
+      "sha256": "5e9bfa9e2d2dfef5bca339b78e170827d41bc8440102e0011fba244f97148617"
+    },
+    {
+      "path": "windows-11-arm/last-native-refusal.json",
+      "size": 170,
+      "sha256": "8f2b8c0cc7fd89ab8ba5a592615bd16cb6ae20d613a386e4a43cc1f1ec9d13ce"
+    },
+    {
+      "path": "windows-11-arm/extended-fault-metadata.json",
+      "size": 386,
+      "sha256": "9431af59369ddc1b5fd94126e7ecf73df84ce2617dd664794d5c245e9e35d225"
+    },
+    {
+      "path": "windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "3b213cd6c5168d1e16fba76539813aabcdb80f12a84436ab7879a7cd4de61327"
+    },
+    {
+      "path": "windows-11-arm/archive_extract-exit.json",
+      "size": 238,
+      "sha256": "bce31ea754a79df6c39bb9e9f85fcd153ba283da46506a33f8782398e5d62199"
+    },
+    {
+      "path": "windows-11-arm/archive_create-exit.json",
+      "size": 220,
+      "sha256": "c6e27c53aebf4b5ab0972288ae5ac51cd3e3c8c435d3b960e27eb7fb87185272"
+    },
+    {
+      "path": "windows-11-arm/application-exit.json",
+      "size": 238,
+      "sha256": "bce31ea754a79df6c39bb9e9f85fcd153ba283da46506a33f8782398e5d62199"
+    }
+  ],
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw process IDs, SIDs, machine paths, target arguments, raw reports or logs retained. Names are observations. Original bytes preserved."
+}

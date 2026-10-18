@@ -64,6 +64,8 @@ try{
  if($LASTEXITCODE -ne 0 -or -not $vs){throw 'DIAGNOSTIC_REPRO_COMPILER_MISSING'}
  Import-Module (Join-Path $vs 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll');Enter-VsDevShell -VsInstallPath $vs -SkipAutomaticLocation -DevCmdArguments '-arch=arm64 -host_arch=arm64'|Out-Null
  $vc=$env:VCToolsInstallDir;$sdk=$env:WindowsSdkDir;$version=$env:WindowsSDKVersion.TrimEnd('\','/')
+ # cl.exe needs an explicit per-arch LIB below; cargo must not inherit it, or the
+ # host ARM64 build script links against the last loop arch's x86 import libraries.
  foreach($arch in @('arm64','x64','x86')){
   $env:LIB=@((Join-Path $vc "lib/$arch"),(Join-Path $sdk "Lib/$version/ucrt/$arch"),(Join-Path $sdk "Lib/$version/um/$arch")) -join ';'
   $exe=Join-Path $code ('p11-original-crash-probe-'+$arch+'.exe');Push-Location $code
@@ -77,6 +79,9 @@ try{
   # policy canary, built from this commit for all three architectures.
   $rustTarget='aarch64-pc-windows-msvc';$env:RUSTUP_TOOLCHAIN="1.90.0-$rustTarget"
   rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal;if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_RUST_INSTALL_FAILED'}
+  # Let rustc discover the matching MSVC libraries per target, as P05 does; the
+  # stale per-arch cl.exe LIB above would otherwise break host/cross linking.
+  $env:LIB='';$env:INCLUDE=''
   Push-Location $repo
   try{
    cargo build --locked -p securerun-sandboxie-adapter --example p11_compiled_policy --target $rustTarget;if($LASTEXITCODE -ne 0){throw 'DIAGNOSTIC_REPRO_POLICY_BUILD_FAILED'}

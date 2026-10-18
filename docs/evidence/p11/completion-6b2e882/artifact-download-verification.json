@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "tested_commit": "6b2e8828a28b2660ef331106736bfc8f768aa433",
+  "run_id": 39082021691,
+  "scope": "Original downloaded Actions installer bytes, not a later rebuild",
+  "installers": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.10-x64os.exe",
+      "size": 33556546,
+      "sha256": "faee93fdeb7f8b9491730e514a3d5c97e039746b0955df7bdbf62291e9d912e7",
+      "downloaded_bytes_match": true
+    },
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.11-x64os.exe",
+      "size": 33556544,
+      "sha256": "65a0204930f620db9d369b94bbc81eb0669c7c57b952296f52234284123ecae3",
+      "downloaded_bytes_match": true
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.10-arm64.exe",
+      "size": 45514190,
+      "sha256": "11b8bdbb0bd7a4f437abb4e8d1eebad326a3c1a8ed43d462c536644c1eb99426",
+      "downloaded_bytes_match": true
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "file": "SecureRun-Development-0.3.0.11-arm64.exe",
+      "size": 45514090,
+      "sha256": "f615f4283b54b24052def05f2dcbdbe81ee43b9e56bc4ba2e00a18fa1288d1f3",
+      "downloaded_bytes_match": true
+    }
+  ]
+}

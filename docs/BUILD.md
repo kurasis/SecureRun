@@ -5,9 +5,10 @@ The P11 artifact is **UNSIGNED DEVELOPMENT ONLY**, product 0.3.0, packaging revi
 not selected. See [licensing](LICENSE_INVENTORY.md) and [phase evidence](phases/P11_REPORT.md).
 
 Use a clean checkout of the exact published source commit on Windows with Git,
-Python 3.12+, native PowerShell 7, Visual Studio 2022 C++ desktop tools (including
+Python 3.12+, native PowerShell 7, Visual Studio C++ desktop tools (including
 x86 and the native x64/ARM64 compiler and Windows SDK), Rust 1.90.0 and Node
-24.19.0/npm 11.9.0. ARM64 builds also require x64 cross-target libraries.
+24.19.0/npm 11.17.0. The reviewed builds used MSVC 14.51.36231 and Windows SDK
+10.0.26100.0. ARM64 builds also require x64 cross-target libraries.
 Use the existing checkout; no worktree is needed. Do not enable `foundation-ci`,
 `policy-ci`, `VITE_FOUNDATION_CI`, or arbitrary Rust flags in a distributable build.
 
@@ -66,3 +67,8 @@ preserves the Windows 11 ARM64 preinstalled runtime, and installs the
 separately pinned Sandboxie engine for containment tests. Run it only on the
 owner-selected throwaway laboratories; discard the VM afterwards. It is not an
 end-user installation script. P12 owns final candidate acceptance.
+
+The setup guard also checks every code-directory ancestor, including the volume
+root, for privileged ownership and unsafe mutation/deletion rights. Parent
+FILE_DELETE_CHILD cannot bypass a protected child DACL. Ordinary creation of new
+subdirectories at a volume root is allowed; replacing existing code ancestry is not.

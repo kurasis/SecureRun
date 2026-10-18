@@ -20,7 +20,7 @@ static BOOL privileged(PSID sid) {
         result=EqualSid(sid,admins)||EqualSid(sid,system)||EqualSid(sid,installer);
     LocalFree(admins);LocalFree(system);LocalFree(installer);return result;
 }
-static BOOL protected_path(const wchar_t *path) {
+static BOOL checked_path(const wchar_t *path, ACCESS_MASK denied_writes) {
     HANDLE f=CreateFileW(path,READ_CONTROL|FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,
         NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,NULL);
     BY_HANDLE_FILE_INFORMATION info;PSID owner=NULL;PACL dacl=NULL;PSECURITY_DESCRIPTOR sd=NULL;
@@ -34,11 +34,22 @@ static BOOL protected_path(const wchar_t *path) {
         ACE_HEADER *h=(ACE_HEADER*)raw;if(h->AceFlags&INHERIT_ONLY_ACE)continue;
         if(h->AceType==ACCESS_ALLOWED_ACE_TYPE) {
             ACCESS_ALLOWED_ACE *a=(ACCESS_ALLOWED_ACE*)raw;
-            if((a->Mask&(GENERIC_ALL|GENERIC_WRITE|DELETE|WRITE_DAC|WRITE_OWNER|0x156))&&!privileged(&a->SidStart))goto end;
+            if((a->Mask&denied_writes)&&!privileged(&a->SidStart))goto end;
         } else if(h->AceType!=ACCESS_DENIED_ACE_TYPE)goto end;
     }
     ok=TRUE;
 end: LocalFree(sd);CloseHandle(f);return ok;
+}
+static BOOL protected_path(const wchar_t *path) {
+    return checked_path(path,GENERIC_ALL|GENERIC_WRITE|DELETE|WRITE_DAC|WRITE_OWNER|0x156);
+}
+static BOOL protected_ancestor(const wchar_t *path) {
+    /* FILE_DELETE_CHILD on a parent can authorize replacement despite a child's
+       own DACL. Windows volume roots may legitimately allow creation of new
+       subdirectories; that does not authorize replacing existing code ancestry.
+       Reject ancestor mutation/ownership rights, but allow that creation right. */
+    return checked_path(path,GENERIC_ALL|GENERIC_WRITE|DELETE|WRITE_DAC|WRITE_OWNER|
+        FILE_DELETE_CHILD|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA);
 }
 static BOOL tree(const wchar_t *path, unsigned depth, unsigned *count) {
     wchar_t pattern[1024],child[1024];WIN32_FIND_DATAW data;
@@ -66,7 +77,7 @@ int wmain(int argc,wchar_t **argv) {
         wchar_t *slash=wcsrchr(parent,L'\\');if(!slash)return 66;
         if(slash==parent+2)slash[1]=0;else *slash=0;
         DWORD attr=GetFileAttributesW(parent);
-        if(attr==INVALID_FILE_ATTRIBUTES||(attr&FILE_ATTRIBUTE_REPARSE_POINT))return 66;
+        if(attr==INVALID_FILE_ATTRIBUTES||(attr&FILE_ATTRIBUTE_REPARSE_POINT)||!protected_ancestor(parent))return 66;
     }
     if(!GetVolumePathNameW(root,volume,16)||!GetVolumeInformationW(volume,NULL,0,NULL,NULL,NULL,fs,32)||
        _wcsicmp(fs,L"NTFS")||GetDriveTypeW(volume)!=DRIVE_FIXED)return 67;

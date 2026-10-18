@@ -48,3 +48,8 @@ the official Microsoft prerequisites also require the Microsoft publisher.
 Production signing and original-manager license selection remain visible P12
 release limitations. The P11 gate permits precisely labeled development builds;
 it does not claim public production distribution readiness.
+
+The setup guard also checks every code-directory ancestor, including the volume
+root, for privileged ownership and unsafe mutation/deletion rights. Parent
+FILE_DELETE_CHILD cannot bypass a protected child DACL. Ordinary creation of new
+subdirectories at a volume root is allowed; replacing existing code ancestry is not.

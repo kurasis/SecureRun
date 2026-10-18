@@ -1,0 +1,58 @@
+[
+  {
+    "name": "seed_ordinary_user_cannot_modify_installed_code",
+    "id": "T02",
+    "evidence": {
+      "new_code_file_denied": true,
+      "product_helper": false,
+      "manager_write_denied": true,
+      "standard_user": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "seed_installed_manager_opens_real_webview_and_closes",
+    "id": "T01",
+    "evidence": {
+      "normal_features": true,
+      "actual_installed_executable": true,
+      "ordinary_user": true,
+      "real_webview_window_observed": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "installed_build_provisions_and_verifies_real_offline_policy",
+    "id": "T08",
+    "evidence": {
+      "root_identity_bound": true,
+      "standard_offline": true,
+      "native_policy_verifier": true,
+      "enforcement_evidence_bound": true,
+      "owner_from_os": true
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "installed_import_export_preserves_bytes_and_provenance",
+    "id": "T12",
+    "evidence": {
+      "byte_hash_match": true,
+      "internet_zone_verified": true,
+      "import_export_actual": true,
+      "host_auto_execution": false
+    },
+    "status": "PASSED"
+  },
+  {
+    "name": "seed_installed_production_launcher_stays_boxed",
+    "id": "T05",
+    "evidence": {
+      "installed_launcher_used": true,
+      "scoped_stop": true,
+      "host_output_absent": true,
+      "real_target_boxed": true
+    },
+    "status": "PASSED"
+  }
+]

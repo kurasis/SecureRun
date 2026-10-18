@@ -1,0 +1,70 @@
+[
+  {
+    "status": "PASSED",
+    "evidence": {
+      "standard_user": true,
+      "new_code_file_denied": true,
+      "manager_write_denied": true,
+      "product_helper": false
+    },
+    "id": "T02",
+    "name": "upgrade_ordinary_user_cannot_modify_installed_code"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actual_installed_executable": true,
+      "ordinary_user": true,
+      "normal_features": true,
+      "real_webview_window_observed": true
+    },
+    "id": "T01",
+    "name": "upgrade_installed_manager_opens_real_webview_and_closes"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "automatic_cleanup": false,
+      "owned_environment_revalidated": true,
+      "retained_data_unchanged": true,
+      "same_account": true
+    },
+    "id": "T48",
+    "name": "upgrade_same_account_reopens_verified_retained_environment_and_file"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "host_output_absent": true,
+      "real_target_boxed": true,
+      "installed_launcher_used": true,
+      "scoped_stop": true
+    },
+    "id": "T05",
+    "name": "upgrade_installed_production_launcher_stays_boxed"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actual_installed_worker": true,
+      "schema_downgrade_attempted": false,
+      "refusal": "POLICY_JOURNAL_SCHEMA_UNSUPPORTED",
+      "fixture_backup_restored_only_by_lab": true,
+      "database_hash_unchanged_on_failure": true
+    },
+    "id": "T28",
+    "name": "future_schema_is_refused_without_downgrade"
+  },
+  {
+    "status": "PASSED",
+    "evidence": {
+      "actual_installed_worker": true,
+      "schema_downgrade_attempted": false,
+      "refusal": "POLICY_JOURNAL_FOREIGN_DATABASE",
+      "fixture_backup_restored_only_by_lab": true,
+      "database_hash_unchanged_on_failure": true
+    },
+    "id": "T28",
+    "name": "failed_initial_migration_is_refused_without_destroying_existing_data"
+  }
+]

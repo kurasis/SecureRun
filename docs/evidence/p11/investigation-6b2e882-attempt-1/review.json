@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "source_commit": "6b2e8828a28b2660ef331106736bfc8f768aa433",
+  "run_id": 39082021205,
+  "run_attempt": 1,
+  "classification": "FAILED_INVESTIGATION_NOT_COMPLETION_PROOF",
+  "failures": [
+    {
+      "phase": "P09",
+      "runner": "windows-11-arm",
+      "code": "DIAGNOSTIC_SYSTEM_IMAGE_UNREVIEWED",
+      "stage": "SEEDING_ENVIRONMENT_06",
+      "facts": "Unreviewed WerFault remained alive after 60000 ms; no termination or trust dispatched. Readonly metadata found no fixed-component crash reports and no live target association. Cause is undetermined; no security guard is waived."
+    },
+    {
+      "phase": "P05",
+      "runner": "windows-2025",
+      "code": "LAB_STOP_INCOMPLETE",
+      "case": "running_sibling_prevents_any_new_storage",
+      "facts": "44 applicable native cases passed, one failed during retained-handle synthetic fixture stop; no passing result claimed for this attempt."
+    }
+  ],
+  "files": [
+    {
+      "path": "p09-windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "6158f27fd218fc2a4fc5b6b1e05f35a619e18b5683619fd94158a2bdfb48a370"
+    },
+    {
+      "path": "p09-windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "e88ad3f75895ef07c6e80ef20abd63f1ada6b66fb428110a16b3a9cdcd2eb1c2"
+    },
+    {
+      "path": "p09-windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "5b35fffbf85f22f551b83dedaeebf90d8e2efc35f6f58da2fec1f3b1291aaaf5"
+    },
+    {
+      "path": "p09-windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "8c9ef69cf5096a30f4b3e18b58b21ab2ad162db9c41b5d1526cbaf8f052864cd"
+    },
+    {
+      "path": "p09-windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "1b5b4ac8f889506d5d2b4fc204a208fb20d1599b041dd0951e2fdceaefc2362b"
+    },
+    {
+      "path": "p09-windows-11-arm/image-status-be624cbfe88241c68579af6a4a215252.json",
+      "size": 182,
+      "sha256": "582acd0579f28941f3787493573d2b2d3287cd8138e0c38c8b6df48ce6ea8881"
+    },
+    {
+      "path": "p05-windows-2025/run-summary.json",
+      "size": 702,
+      "sha256": "c256a7090b93872e75d35a2c860ae10a174119087127b5302bdd75f035cff5de"
+    },
+    {
+      "path": "p05-windows-2025/policy-cases.json",
+      "size": 78737,
+      "sha256": "a4df58ad94648016c3c4c85526f24ebaf02ab0d4df502be873d5254ce075d3ed"
+    }
+  ]
+}

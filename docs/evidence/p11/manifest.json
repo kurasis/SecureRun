@@ -1534,8 +1534,8 @@
     },
     {
       "path": "investigation-f374409-observer/review.json",
-      "size": 3898,
-      "sha256": "a8099a9f440569db4f2e2d4679fd94b97a6aaa312c47030625908aaa86bd1bb7"
+      "size": 4436,
+      "sha256": "3a0468b51d12aaf12657a7944769599d991d8ab6b0385617f0e15b2d1f819ca2"
     },
     {
       "path": "investigation-f374409-observer/windows-11-arm/application-exit.json",
@@ -1571,6 +1571,11 @@
       "path": "investigation-f374409-observer/windows-11-arm/live-fault-reporters.json",
       "size": 201,
       "sha256": "5e9bfa9e2d2dfef5bca339b78e170827d41bc8440102e0011fba244f97148617"
+    },
+    {
+      "path": "investigation-f374409-observer/windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "833412b9a864d0164f8b4efa2911f8b9fe0e485f0c39524b8fa7000043d91931"
     },
     {
       "path": "investigation-f374409-observer/windows-11-arm/product-cases.json",
@@ -3431,6 +3436,11 @@
       "path": "investigation-ffdaeb6-server-p09-attempt-2/windows-2025/ui-cases.json",
       "size": 9486,
       "sha256": "13a105c496bec4f8c12399a100dc43618b98df995b248c31f880a829e6e659b9"
+    },
+    {
+      "path": "investigation-static-arm-source-review/review.json",
+      "size": 3704,
+      "sha256": "c1a5a34da07c8e8aec18e1c647b5b9ca1f493bff5f7760d6f429f5b320754ce8"
     }
   ],
   "next_action": "CONTINUE_P11_DEPENDENCY_DIAGNOSIS_NOT_P12",
@@ -4322,7 +4332,7 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "STATIC_SOURCE_AND_RETAINED_EVIDENCE_ANALYSIS_NO_NEW_ACTIONS_SCHEDULED",
+    "next_diagnostic": "STATIC_ANALYSIS_NO_NEW_ACTIONS_SCHEDULED_OWNER_CANCELLED_REPRODUCTION",
     "live_metadata_run": 39113908733,
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
@@ -4363,6 +4373,9 @@
     "isolated_reproducer_scope": "ONE_VM_24_PAIRS_NO_PHASE_GATE_OWNER_CPU_LIMIT",
     "cancelled_duplicate_pr_p09_run": 39135254358,
     "isolated_reproducer_result": "NOT_RUN_OWNER_CANCELLED_BEFORE_DISPATCH",
-    "new_windows_target_isolation": "DISPOSABLE_VM_AND_SANDBOXIE_REQUIRED_UNBOXED_CONTROLS_PENDING"
+    "new_windows_target_isolation": "DISPOSABLE_VM_AND_SANDBOXIE_REQUIRED_UNBOXED_CONTROLS_PENDING",
+    "static_upstream_review": "OLD_ARM_FIXES_RETAINED_NO_NEW_CORE_PATCH_FOUND",
+    "static_upstream_review_tip": "596bfa802f6fe69d3edf2aa56c294523ce4d6881",
+    "emulation_only_cause_established": false
   }
 }

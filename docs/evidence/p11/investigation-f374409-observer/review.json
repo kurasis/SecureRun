@@ -76,7 +76,13 @@
       "path": "windows-11-arm/application-exit.json",
       "size": 238,
       "sha256": "bce31ea754a79df6c39bb9e9f85fcd153ba283da46506a33f8782398e5d62199"
+    },
+    {
+      "path": "windows-11-arm/official-applications.json",
+      "size": 1936,
+      "sha256": "833412b9a864d0164f8b4efa2911f8b9fe0e485f0c39524b8fa7000043d91931"
     }
   ],
-  "privacy_review": "Selected original JSON parsed and reviewed; no raw process IDs, SIDs, machine paths, target arguments, raw reports or logs retained. Names are observations. Original bytes preserved."
+  "privacy_review": "Selected original JSON parsed and reviewed; no raw process IDs, SIDs, machine paths, target arguments, raw reports or logs retained. Names are observations. Original bytes preserved.",
+  "additional_static_review": "Original official-applications.json was independently re-downloaded from the same unexpired artifact12132960203 and retained unchanged. It identifies the ARM64 7-Zip26.04 package for the failed archive-extraction case. This does not authenticate the crashing RpcSs target or independently prove the faulting process architecture."
 }

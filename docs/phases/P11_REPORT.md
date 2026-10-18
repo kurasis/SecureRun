@@ -87,6 +87,16 @@ interrupt collection; it does not establish why the initial crash occurred or
 justify reordering cleanup to manufacture a passing gate. No runtime change or
 new execution result is claimed from this static analysis.
 
+The [follow-up upstream review](../P11_ARM_SOURCE_REVIEW.md) verified the actual
+1.15.5 ARM changes remain in pinned 1.18.8, including ARM hook protection, GDI
+lookup, existing ARM64EC file handling and the disabled Ldr termination hook.
+The checked newer upstream tip changes no core runtime file. Three retained
+observations overlap x86/x64 probes, while an additional failed archive case
+selected the ARM64 7-Zip distribution, now retained from the original artifact.
+These observations do not identify the faulting instruction or justify removing
+architecture coverage. No new VM or test program was launched and no runtime
+patch is claimed.
+
 | Source/run | Actual result | Scope |
 |---|---|---|
 | 0d2600c / 39119550715 | Server 49, ARM 62 passed; two explicit N/A each | Current P02 includes lab reporter safeguards |

@@ -61,6 +61,13 @@ No new Actions run is scheduled. Further analysis currently uses retained eviden
 and pinned source only. New Windows test targets require both a disposable VM and
 a Sandboxie box; mandatory unboxed controls are pending where incompatible.
 
+[Static ARM source review](P11_ARM_SOURCE_REVIEW.md) confirms the known 1.15.5 ARM
+fixes remain in pinned 1.18.8. No newer core fix was found at checked upstream
+tip 596bfa8. Three retained reporter observations overlap emulated probes, but an
+additional archive timeout used the ARM64 7-Zip distribution; a universal
+emulation-only cause is not established. Original exception/module remain unknown.
+No new Actions or test program was started for this review.
+
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are
 published as authorized; credentials, private logs/dumps and generated binaries

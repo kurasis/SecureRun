@@ -1,0 +1,10 @@
+{
+  "classification": "SYNTHETIC_NATIVE_ORIGINAL_SERVICE_LOG_CALIBRATION_NO_PHASE_GATE",
+  "tested_commit": "f6e10426feae10ab82499867f8e25f0e62469ec9",
+  "run_id": 39126501942,
+  "job_id": 117672644291,
+  "artifact_id": 12136038822,
+  "conclusion": "success",
+  "facts": "Authenticated installer, SbieSvc and SbieDll pins passed. Original source-backed LogFile setting delivered the fixed synthetic calibration into102private UTF16bytes and the exact prior value/type was restored. No debugger, dump, Windows security, WER, containment or signed-leader change. Full workload was skipped in this push-only preflight; no containment/phase pass.",
+  "original_bytes_unchanged": true
+}

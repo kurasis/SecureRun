@@ -1,23 +1,43 @@
 # Development status
 
 Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
-The earlier native installed packaging implementation passed; required P10 revalidation did not.
-Checked native Save and atomic session readiness passed both full fa29a20 P09
-(22 native+101 UI per target) and P05. Held-object teardown passed fdad6d7 P05
-(45 native+62 adapter per target). Those successful source snapshots are retained.
+P12 and all 66 final installed acceptance entries remain **NOT_STARTED**.
 
-ARM diagnostics still report a live RpcSs-named target before cleanup. Latest
-f374409 diagnosis passed 21 native+101 UI but archive exit timed out; four live WER
-reads produced no exception/module. Target and reporter were eventually observed
-exit 4f. New lab safeguards refuse cleanup while reporters are present and require
-fresh P02 proof, now passed on both targets. Current diagnosis uses authenticated original RpcSs and pinned,
-Microsoft-signed ProcDump, with private dumps and minimized scalar output only.
-Debugger runs cannot close phases. Current complete matching P10/P11 remain pending.
+Checked native Save input, atomic session-ready publication and retained-object
+fixture cleanup are implemented. Fresh P02 passed on both Windows targets at
+0d2600c/run 39119550715 (Server 49, ARM 62; two N/A each), with complete signed
+component inventories and strict OS tuples unchanged. P05 including the reporter
+safeguards passed 45 native+62 adapter tests on both targets at
+b1e2129 PR/run 39120204407, with one explicit N/A each.
 
+Ordinary full P09 still passed Server but failed ARM while seeding environments
+06 and 08. An unreviewed WerFault remained; the original exception/module is still
+undetermined. All original success/failure bytes are retained separately.
 
-Latest diagnostic at 0d2600c/run 39119544472 failed in environment 09: 135 authenticated ProcDump requests exited 0 without a dump. Actual debugger attachment was not observed by that collector; these exits are not proof of fault-free execution. [Original diagnosis](evidence/p11/investigation-0d2600c-debug/review.json) retains zero query/pin/scope errors and the live reporter association. The new diagnostic adds read-only actual debugger-presence checks, fixed-state/exception-code parsing without raw output, and an own native synthetic exception preflight. Full engine workload runs only after the preflight proves attachment and the exact expected exception dump. The full uninstrumented PR run 39119547942 separately passed Server 22+101 but failed ARM environment 06; [both original outcomes](evidence/p11/investigation-0d2600c-pr-p09/review.json) are retained.
+[Debugger-only c594c8e/run 39122053169](evidence/p11/investigation-c594c8e-debug-passed/review.json)
+passed 22 native+101 UI with 174 actually observed debugger connections, three
+owner-scope refusals, no reporter and no original exception dump. Instrumented
+success is excluded from phase closure and does not resolve ordinary failures.
+[Native debugger calibration](evidence/p11/investigation-fd5fdcd-debug-preflight/review.json)
+now also proves readable expected output, the exact synthetic exception dump and
+privilege restoration; previous native parser failures remain failed.
 
-The [c594c8e debugger-only run](evidence/p11/investigation-c594c8e-debug-passed/review.json) passed 22 native+101 UI with 174 actually observed debugger connections, three owner-scope refusals, zero reporters and no original exception dump. This does not resolve the [separate ordinary b1e2129 ARM failure](evidence/p11/investigation-b1e2129-pr-p09-arm/review.json) in environment 08. The next diagnostic uses the original SbieSvc private LogFile feature without attaching a debugger to the engine. A short independent native calibration must pass first. The signed-leader GetMessage restriction is preserved. Only the source-backed diagnostic LogFile registry value is temporarily changed and restored; Windows security, WER and containment policy are unchanged. Raw logs stay in an administrator/SYSTEM-only directory, and only fixed message IDs/source-shaped SXS status codes may be uploaded. Every such workflow remains excluded from phase closure.
+[Original service-log calibration](evidence/p11/investigation-f6e1042-service-calibration/review.json)
+passed on a separate ARM VM. The source-backed SbieSvc LogFile value is temporarily
+set to a protected private path and its prior value/type restored. No Windows
+security, WER, containment policy or signed-leader setting changes. Raw logs remain
+private; only bounded fixed message IDs and source-shaped SXS status codes may be
+retained, explicitly without target authentication. Full diagnosis without an
+engine debugger failed at f6e1042/run 39126844625 in environment 04. The collector
+restored its setting and reported SBIE2329×20, SBIE2224×1 and SBIE2204×2. These
+messages do not establish the exception/module or a causal link. The next parser
+retains only pinned public hook identifiers and fixed source-shaped status fields.
+It cannot certify performance or close a phase.
+
+Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
+normal merge requires the actual gates. Code, reports and reviewed evidence are
+published as authorized; credentials, private logs/dumps and generated binaries
+are excluded from Git.
 
 | Phase | Current source validation | Evidence |
 |---|---|---|

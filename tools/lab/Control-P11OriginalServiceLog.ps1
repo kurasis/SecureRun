@@ -15,10 +15,13 @@ public sealed class P11OriginalLogPublisher {
 function New-P11OriginalServiceLog([string]$PrivateDirectory,[string]$Repo){
  if($env:GITHUB_ACTIONS -ne 'true' -or $env:PROCESSOR_ARCHITECTURE -ne 'ARM64'){throw 'DISPOSABLE_ARM_ACTIONS_VM_REQUIRED'}
  if($PrivateDirectory -ine (Join-Path $env:ProgramFiles ('SecureRun-P11-ServiceLog-'+$env:GITHUB_RUN_ID+'-'+$env:GITHUB_RUN_ATTEMPT))){throw 'DIAGNOSTIC_LOG_HOME_INVALID'}
- $pin=(Get-Content (Join-Path $Repo 'docs/engine-candidate.json') -Raw|ConvertFrom-Json).lab_installer
+ $release=Get-Content (Join-Path $Repo 'docs/engine-candidate.json') -Raw|ConvertFrom-Json
+ $symbols=Get-Content (Join-Path $Repo 'tools/lab/p11-public-hook-symbols.json') -Raw|ConvertFrom-Json
+ if($symbols.source_commit -cne $release.source_commit){throw 'DIAGNOSTIC_LOG_SYMBOL_SOURCE_MISMATCH'}
+ $pin=$release.lab_installer
  $compat=Get-Content (Join-Path $Repo 'crates/sandboxie-adapter/compatibility-v1.json') -Raw|ConvertFrom-Json
  $target=@($compat.targets|Where-Object architecture -CEQ 'aarch64')[0]
- return @{repo=$Repo;home=$PrivateDirectory;pin=$pin;components=$target.components;key=$null;prior_present=$false;prior_value=$null;prior_kind=$null;our_value=$null;configured=$false;ready=$false;failed=$false;stopped=$false;leases=[Collections.Generic.List[object]]::new();reader=[P11OriginalLog]::new();log=(Join-Path $PrivateDirectory 'original-engine.log');public=@{classification='ORIGINAL_SERVICE_LOG_DIAGNOSTIC_ONLY_NO_PHASE_GATE';observer_debugger_attachment_requested=$false;observer_engine_memory_dump_requested=$false;windows_security_wer_or_containment_policy_modified=$false;original_service_log_registry_temporarily_configured=$false;previous_registry_value_restored=$false;raw_log_upload_allowed=$false;raw_paths_ids_arguments_messages_and_times_retained=$false;message_names_do_not_authenticate_targets=$true;calibration_confirmed_before_actor=$false;input_pins_ready=$false;collection_failures=0;failure_codes=@{}}}
+ return @{repo=$Repo;home=$PrivateDirectory;pin=$pin;components=$target.components;key=$null;prior_present=$false;prior_value=$null;prior_kind=$null;our_value=$null;configured=$false;ready=$false;failed=$false;stopped=$false;leases=[Collections.Generic.List[object]]::new();reader=[P11OriginalLog]::new([string[]]$symbols.symbols);log=(Join-Path $PrivateDirectory 'original-engine.log');public=@{classification='ORIGINAL_SERVICE_LOG_DIAGNOSTIC_ONLY_NO_PHASE_GATE';observer_debugger_attachment_requested=$false;observer_engine_memory_dump_requested=$false;windows_security_wer_or_containment_policy_modified=$false;original_service_log_registry_temporarily_configured=$false;previous_registry_value_restored=$false;raw_log_upload_allowed=$false;raw_paths_ids_arguments_messages_and_times_retained=$false;message_names_do_not_authenticate_targets=$true;calibration_confirmed_before_actor=$false;input_pins_ready=$false;collection_failures=0;failure_codes=@{}}}
 }
 function Update-P11OriginalServiceLog($Context){
  if($Context.failed){return}
@@ -68,6 +71,6 @@ function Stop-P11OriginalServiceLog($Context){
 }
 function Get-P11OriginalServiceLogReport($Context){
  $report=@{};foreach($key in $Context.public.Keys){$report[$key]=$Context.public[$key]}
- $report.failed=$Context.failed;$report.calibration_confirmed=$Context.reader.calibration_confirmed;$report.bytes_read=$Context.reader.bytes_read;$report.bound_reached=$Context.reader.bound_reached;$report.overlong_lines=$Context.reader.overlong_lines;$report.message_counts=$Context.reader.message_counts;$report.sxs_statuses=@($Context.reader.sxs_statuses.ToArray())
+ $report.failed=$Context.failed;$report.calibration_confirmed=$Context.reader.calibration_confirmed;$report.bytes_read=$Context.reader.bytes_read;$report.bound_reached=$Context.reader.bound_reached;$report.overlong_lines=$Context.reader.overlong_lines;$report.message_counts=$Context.reader.message_counts;$report.ffs_function_counts=$Context.reader.ffs_function_counts;$report.crash_report_counts=$Context.reader.crash_report_counts;$report.startup_report_counts=$Context.reader.startup_report_counts;$report.startup_code_radix_not_guessed=$true;$report.message_fields_are_not_exception_or_root_cause_proof=$true;$report.sxs_statuses=@($Context.reader.sxs_statuses.ToArray())
  return $report
 }

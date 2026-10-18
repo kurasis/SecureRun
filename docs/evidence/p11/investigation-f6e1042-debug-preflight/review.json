@@ -1,0 +1,10 @@
+{
+  "classification": "FAILED_SYNTHETIC_NATIVE_PREFLIGHT_NO_ENGINE_WORKLOAD",
+  "tested_commit": "f6e10426feae10ab82499867f8e25f0e62469ec9",
+  "run_id": 39126501339,
+  "job_id": 117672645611,
+  "artifact_id": 12136625976,
+  "conclusion": "failure",
+  "facts": "Actual debugger presence, PID-bound expected synthetic exception dump and privilege restoration succeeded. NUL-tolerant parsing recognized1428NULs, expected observed/unhandled e0424242, monitor instructions and dump-count completion. Overall preflight FAILED because only Monitoring PID header was accepted while the pinned binary used Process: <name> (<PID>). No engine workload ran. The alternate pinned-binary header is corrected and tested at fd5fdcd; this original failure remains failed.",
+  "original_bytes_unchanged": true
+}

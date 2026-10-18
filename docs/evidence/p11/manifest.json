@@ -1613,6 +1613,106 @@
       "sha256": "0f2d2a2a05e38f657324dedc669cfa9cd5b049c0e46387de61591ddd92d51507"
     },
     {
+      "path": "investigation-f6e1042-debug-preflight/debug-preflight.json",
+      "size": 1931,
+      "sha256": "3f115f8cafae3a410e9c711bc1c02f0ac929b3bba40e8492ae35542ae413f8fe"
+    },
+    {
+      "path": "investigation-f6e1042-debug-preflight/debug-tool-verification.json",
+      "size": 455,
+      "sha256": "fe6d8a78480382a9f8fea3b95f10adde69e328200cb4d6f29bfaa4cae3cbc610"
+    },
+    {
+      "path": "investigation-f6e1042-debug-preflight/review.json",
+      "size": 794,
+      "sha256": "adec748924d9a0400952a3daa352f21c75a28c87cd4dd3ef5b7b18cbf5e3513b"
+    },
+    {
+      "path": "investigation-f6e1042-service-calibration/installation.json",
+      "size": 11146,
+      "sha256": "ac7eb2e412a8b7892a310dbd8ab20013c52b23685c7f21342974086fa925b7f5"
+    },
+    {
+      "path": "investigation-f6e1042-service-calibration/original-service-log-preflight.json",
+      "size": 817,
+      "sha256": "dda985eb013daaf45298065720c7badc394e106c2b6e38e40311e26c118eebb9"
+    },
+    {
+      "path": "investigation-f6e1042-service-calibration/review.json",
+      "size": 682,
+      "sha256": "9807be2cf52a1295714d60ee3e9659ba2db485a9c3e33c7cf2c0f88b71a08157"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/review.json",
+      "size": 1622,
+      "sha256": "4604911a57d1428783314235fc237de852542827308972ffdf7d3d5529679252"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/component-faults.json",
+      "size": 178,
+      "sha256": "b097c917f14035ac289fd6c5401ed35a2623322a905b04830bf7b5eb42d2e812"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/extended-fault-metadata.json",
+      "size": 623,
+      "sha256": "d86d947c44ed87bc37520dc556363fb55256215ee429d87d3d3e9e08e0e6c38c"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/image-status-a40df9cd6218485da3634cdabd361f5b-1a41720ba96c49e3aed87b40f19b7a04.json",
+      "size": 234,
+      "sha256": "bf96282ef4081d4d5bdb21fb4563a5a20a59c06d2eb48f8f179f7e899e86440f"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/last-native-refusal.json",
+      "size": 146,
+      "sha256": "a7b1b1686c175bc6205f11f574a04e6d4f65503e353e5d4a636ff0f777d65c2d"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/live-fault-reporters.json",
+      "size": 391,
+      "sha256": "047abf5d5c0408b811241e64d6ca530b95823b6fea884ddb04271e03e84543d2"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/original-service-log.json",
+      "size": 882,
+      "sha256": "23a101366c4b67996df61368582d1c6e238f73053451660bf4610876d7a2e9c6"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/product-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/reporter-lifecycle.json",
+      "size": 37027,
+      "sha256": "a4a669c5a3cb94918546d67b1d26f811734d3c4eb5518b137d8c1d9eb0fdd3da"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/run-summary.json",
+      "size": 708,
+      "sha256": "8c1e4e00375eeaa6337c5445feb0ac18ea5859a13f045cb96f9698ecccf65a61"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/stage.json",
+      "size": 112,
+      "sha256": "8398c98970094d873b19276ad5498f72b38bdd733cb744513049dac9104cae45"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/standard-product.json",
+      "size": 291,
+      "sha256": "540dd5fdfe0e689cf5f5ca7d05bc2982c622568e53ade7b6816fe4d1e1492c25"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/ui-cases.json",
+      "size": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "investigation-f6e1042-service-log-failed/windows-11-arm/wer-metadata.json",
+      "size": 280,
+      "sha256": "65855c6a3b14a8bf4ed3525417185ae069a52df172cfcb67a3836bb28da317b9"
+    },
+    {
       "path": "investigation-fa29a20-observer/review.json",
       "size": 3369,
       "sha256": "0e64ebce4b4902b1a4c7d2762adcc36a3f112fa4d2bb62462dbd683afff84973"
@@ -1841,6 +1941,21 @@
       "path": "investigation-fa29a20-product-passed/windows-2025/ui-cases.json",
       "size": 10269,
       "sha256": "9ca535f06ae8766cc9eb25635557c5fe8ba323214832f37ce6bbc3ef13dada15"
+    },
+    {
+      "path": "investigation-fd5fdcd-debug-preflight/debug-preflight.json",
+      "size": 1814,
+      "sha256": "4ff0b848428eef1afedbba96cd87553fee0d42230f39e714d3195ea7bc270a77"
+    },
+    {
+      "path": "investigation-fd5fdcd-debug-preflight/debug-tool-verification.json",
+      "size": 455,
+      "sha256": "c5ff3fda304def1ab7dce6e6201bca9dd6d8526f03c75dc7e28efeeee79d1ad4"
+    },
+    {
+      "path": "investigation-fd5fdcd-debug-preflight/review.json",
+      "size": 617,
+      "sha256": "a1986e373f715ff871fe2d103a9c923756ef6e13b61efbca2bd021d9594dc5fe"
     },
     {
       "path": "investigation-fdad6d7-policy-passed/review.json",
@@ -4113,7 +4228,7 @@
     }
   ],
   "source_identity_note": "All original installed/runtime/workflow inputs match the successful native package source; identity alone does not close failed P10 dependency.",
-  "active_fix_source": "c594c8ec27598621f9d5ae13be128f0832bc6287",
+  "active_fix_source": "fd5fdcd454800b52788c1ade629f8373885c58be",
   "active_fix_validation": {
     "result": "IN_PROGRESS",
     "native_feasibility_run": 39119550715,
@@ -4132,7 +4247,7 @@
     "reporter_cause": "ORIGINAL_EXCEPTION_AND_MODULE_UNDETERMINED",
     "second_diagnostic_result": "FAILED_LIVE_RPCSS_NAMED_TARGET_BIRTH_MATCH_BEFORE_CLEANUP",
     "second_diagnostic_capacity_exhausted": false,
-    "next_diagnostic": "ORIGINAL_SVC_PRIVATE_LOG_WITHOUT_ENGINE_DEBUGGER_CALIBRATED_FIRST",
+    "next_diagnostic": "SOURCE_BOUND_PUBLIC_HOOK_SYMBOLS_KNOWN_CRASH_IMAGE_KIND_AND_PUBLISHER_STARTUP_STATUS_TOKENS",
     "live_metadata_run": 39113908733,
     "live_metadata_result": "FAILED_ARCHIVE_TIMEOUT_NO_WER_EXCEPTION_FIELDS",
     "startup_transport_fix": "EXPLICIT_SUPPORT_PATH_AND_REAL_START_JOB_UNIT_REGRESSION",
@@ -4153,6 +4268,17 @@
     "native_synthetic_preflight_passed_running_diagnostic_run": 39122053169,
     "uninstrumented_b1_pr_p09_run": 39120204559,
     "uninstrumented_b1_pr_p09_result": "FAILURE_ARM_ENVIRONMENT08_SERVER_SUCCESS",
-    "original_api_log_read_note": "GetMessage signed-leader access remains unavailable; not bypassed. Source-backed SbieSvc LogFile setting is temporarily configured/restored instead. No containment/global policy or WER setting change."
+    "original_api_log_read_note": "GetMessage signed-leader access remains unavailable; not bypassed. Source-backed SbieSvc LogFile setting is temporarily configured/restored instead. No containment/global policy or WER setting change.",
+    "native_original_service_log_preflight_run": 39126501942,
+    "native_original_service_log_preflight_result": "PASSED_INPUT_PINS_CALIBRATION_REGISTRY_RESTORATION_NO_PHASE_GATE",
+    "native_readable_debugger_preflight_run": 39127011953,
+    "native_readable_debugger_preflight_result": "PASSED_NO_ENGINE_WORKLOAD",
+    "current_original_service_log_full_run": 39126844625,
+    "current_original_service_log_full_result": "FAILED_ENV04_UNREVIEWED_REPORTER_COLLECTOR_COMPLETE_REGISTRY_RESTORED",
+    "original_service_message_counts": {
+      "SBIE2329": 20,
+      "SBIE2224": 1,
+      "SBIE2204": 2
+    }
   }
 }

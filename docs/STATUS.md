@@ -42,6 +42,16 @@ close a phase. Its original 1.1844013497178307% idle CPU deviation is retained;
 diagnostic timing cannot certify performance. No blind repeat is planned without
 a concrete new finding or correction.
 
+The next experiment uses the original source-backed in-process crash filter in
+separate disposable original-engine scopes. Production correctly rejects the
+`EnableMiniDump` setting; that allowlist and all manager assertions stay intact.
+A native synthetic exception control must prove the original filter and dump
+parser before a bounded 120 fresh-scope ARM64/x86/emulated-x64 parent/child test.
+It is an isolated reproduction experiment, not full P09 or phase proof. No
+debugger, WER/security change, global Sandboxie setting or original binary patch
+is involved. Only reviewed exception/module metadata may be uploaded. Native
+control and reproduction results are pending.
+
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are
 published as authorized; credentials, private logs/dumps and generated binaries

@@ -29,6 +29,20 @@ Add-P11CaptureCode $codes 'C:\PRIVATE_CANARY\bad.dmp' 'DIAGNOSTIC_DUMP_COLLECTIO
 Require ($codes.ContainsKey('DIAGNOSTIC_DUMP_COLLECTION_FAILED') -and ($codes|ConvertTo-Json) -notmatch 'PRIVATE_CANARY')
 Write-Output 'PASS: synthetic exception/module/RVA, target binding, bounds and private-field suppression'
 
+# A publisher-written dump has no independently held target receipt. Never
+# relabel its own PID stream as independent authentication.
+$privateDump=Join-Path ([IO.Path]::GetTempPath()) ('p11-publisher-dump-'+[Guid]::NewGuid().ToString('N'))
+try{
+ [IO.File]::WriteAllBytes($privateDump,$data)
+ $publisher=[P11ExceptionDump]::ReadPublisherDump($privateDump)
+ Require (-not $publisher['dump_target_id_matched'] -and -not $publisher['independent_live_target_authentication'] -and $publisher['dump_pid_internal_consistency_only'] -and $publisher['exception_code_hex'] -ceq 'c0000005')
+ Require (($publisher|ConvertTo-Json) -notmatch 'PRIVATE_CANARY|4242')
+ Set32 488 0;[IO.File]::WriteAllBytes($privateDump,$data)
+ $rejected=$false;try{$null=[P11ExceptionDump]::ReadPublisherDump($privateDump)}catch{$rejected=$true};Require $rejected
+ Set32 488 4242
+}finally{Remove-Item -LiteralPath $privateDump -Force}
+Write-Host 'PASS: publisher dump consistency never becomes independent live-target authentication'
+
 # Tool pipes are drained with constant storage; raw output is never returned.
 $privateReader=[IO.StringReader]::new(('x'*100000));try{$drain=[P11PrivateToolOutput]::Read($privateReader,4242);if($drain.GetAwaiter().GetResult().character_count -ne 65537){throw 'PRIVATE_OUTPUT_DRAIN_BOUND_FAILED'}}finally{$privateReader.Dispose()}
 Write-Host 'PASS: constant-storage private tool output drain'

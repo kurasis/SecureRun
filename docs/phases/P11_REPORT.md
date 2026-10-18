@@ -49,6 +49,24 @@ information, then complete matching P10 and installed P11 proof. Another unchang
 full repeat cannot establish the correction. No phase is promoted from diagnostic
 success; P12 remains NOT_STARTED.
 
+The next isolated experiment is `p11-original-crash-reproducer.yml`. Upstream
+`dllmain.c:618` conditionally installs `dump.c`'s original exception handler;
+`dump.c:112` logs the actual exception code and writes a private dump. Ordinary
+WER interception instead logs only an image/box string, explaining the missing
+code in earlier counts. This identifies an instrumentation gap, not a root cause.
+Production's strict inheritance allowlist rejects `EnableMiniDump`, so it is
+unchanged. The experiment uses separate fresh original-engine boxes and an
+image-scoped original filter; no manager policy/assertion is relaxed. Its own
+ARM64 synthetic exception must first produce the expected PID-bound dump and
+`e0424242` code. Only then does a separately dispatched VM run 120 fresh-box
+parent/child pairs across ARM64, x86 and emulated x64. This is not the full P09
+workload and cannot replace it. A publisher-written RpcSs dump without a live
+receipt is explicitly marked as internally consistent but independently
+unauthenticated; parsing never grants process action authority. All raw dumps,
+box roots and private logs stay on the disposable VM. Existing guarded fixture
+cleanup refuses reporters, and the original service LogFile value is restored.
+Native controls and reproduction results are pending.
+
 | Source/run | Actual result | Scope |
 |---|---|---|
 | 0d2600c / 39119550715 | Server 49, ARM 62 passed; two explicit N/A each | Current P02 includes lab reporter safeguards |

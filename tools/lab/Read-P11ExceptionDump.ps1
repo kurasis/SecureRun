@@ -21,5 +21,13 @@ public static class P11ExceptionDump {
   return new Dictionary<string,object>{{"classification","DEBUGGER_DIAGNOSTIC_ONLY_NO_PHASE_GATE"},{"exception_code_hex",code.ToString("x8")},{"fault_module_kind",module},{"module_relative_offset_hex",offset},{"process_architecture",architecture},{"dump_target_id_matched",true},{"private_dump_sha256",hash},{"private_dump_size",data.Length},{"raw_dump_paths_ids_arguments_and_addresses_uploaded",false}};
  }
  public static Dictionary<string,object> Read(string file,uint expectedProcess){using(var stream=new FileStream(file,FileMode.Open,FileAccess.Read,FileShare.Read)){if(stream.Length>Limit)throw new InvalidDataException("PRIVATE_DUMP_SIZE_BOUND");using(var reader=new BinaryReader(stream)){byte[] data=reader.ReadBytes((int)stream.Length);if(data.Length!=stream.Length)throw new InvalidDataException("PRIVATE_DUMP_SHORT_READ");return Parse(data,expectedProcess);}}}
+ public static Dictionary<string,object> ReadPublisherDump(string file){
+  byte[] data;using(var stream=new FileStream(file,FileMode.Open,FileAccess.Read,FileShare.Read)){if(stream.Length>Limit)throw new InvalidDataException("PRIVATE_DUMP_SIZE_BOUND");using(var reader=new BinaryReader(stream)){data=reader.ReadBytes((int)stream.Length);if(data.Length!=stream.Length)throw new InvalidDataException("PRIVATE_DUMP_SHORT_READ");}}
+  if(U32(data,0)!=0x504d444d)throw new InvalidDataException("PRIVATE_DUMP_HEADER");uint count=U32(data,8),directory=U32(data,12);if(count>128)throw new InvalidDataException("PRIVATE_DUMP_STREAM_BOUND");Bound(data,directory,(long)count*12);
+  uint id=0;bool found=false;for(uint i=0;i<count;i++){long p=(long)directory+i*12;if(U32(data,p)!=15)continue;if(found||U32(data,p+4)<12)throw new InvalidDataException("PRIVATE_DUMP_PROCESS_METADATA_INVALID");long misc=U32(data,p+8);Bound(data,misc,U32(data,p+4));if(U32(data,misc)<12||(U32(data,misc+4)&1)==0)throw new InvalidDataException("PRIVATE_DUMP_PROCESS_METADATA_INVALID");id=U32(data,misc+8);found=true;}
+  if(!found||id==0)throw new InvalidDataException("PRIVATE_DUMP_PROCESS_METADATA_INVALID");var result=Parse(data,id);
+  // Internal stream consistency is not an independently authenticated process.
+  result["classification"]="ORIGINAL_FILTER_DUMP_DIAGNOSTIC_ONLY_NO_PHASE_GATE";result["dump_target_id_matched"]=false;result["dump_pid_internal_consistency_only"]=true;result["independent_live_target_authentication"]=false;return result;
+ }
 }
 '@}

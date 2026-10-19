@@ -1,0 +1,34 @@
+{
+  "failure_codes": {},
+  "observer_engine_memory_dump_requested": false,
+  "ffs_function_counts": {
+    "NtCreateLowBoxToken": 632
+  },
+  "input_pins_ready": true,
+  "original_service_log_registry_temporarily_configured": true,
+  "crash_report_counts": {
+    "WITHHELD/UNAVAILABLE": 1
+  },
+  "collection_failures": 0,
+  "sxs_statuses": [],
+  "startup_report_counts": {},
+  "startup_code_radix_not_guessed": true,
+  "failed": false,
+  "previous_registry_value_restored": true,
+  "raw_paths_ids_arguments_messages_and_times_retained": false,
+  "calibration_confirmed_before_actor": true,
+  "observer_debugger_attachment_requested": false,
+  "bytes_read": 78724,
+  "windows_security_wer_or_containment_policy_modified": false,
+  "message_counts": {
+    "SBIE2224": 1,
+    "SBIE2329": 632
+  },
+  "calibration_confirmed": true,
+  "raw_log_upload_allowed": false,
+  "message_names_do_not_authenticate_targets": true,
+  "message_fields_are_not_exception_or_root_cause_proof": true,
+  "overlong_lines": 0,
+  "classification": "ORIGINAL_SERVICE_LOG_DIAGNOSTIC_ONLY_NO_PHASE_GATE",
+  "bound_reached": false
+}

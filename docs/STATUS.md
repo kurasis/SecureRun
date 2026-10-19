@@ -1,6 +1,6 @@
 # Development status
 
-Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
+Specification 1.3. Updated 2026-10-19 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
 P12 and all 66 final installed acceptance entries remain **NOT_STARTED**.
 
 Checked native Save input, atomic session-ready publication and retained-object
@@ -61,12 +61,53 @@ No new Actions run is scheduled. Further analysis currently uses retained eviden
 and pinned source only. New Windows test targets require both a disposable VM and
 a Sandboxie box; mandatory unboxed controls are pending where incompatible.
 
+Retained observer traces contain four original `SandboxieRpcSs.exe` faults: 3 of
+393 RpcSs starts under x86/emulated-x64 policy probes, 0 of 197 under ARM64 probes,
+and one product 7-Zip launch. Each fault occurred about 220 ms after RpcSs start and
+before DcomLaunch. At roughly 0.5-0.8% per start, the cancelled 24-pair sample would
+usually miss it. On 2026-10-18 the owner authorized one bounded single-VM stress
+reproduction instead: up to 200 rounds of fresh ARM64/x64/x86 scopes (600 starts,
+40-minute budget) with the calibrated original crash filter, parent and child both
+requesting COM. It is diagnostic only and closes no gate. [Run 39148830651](evidence/p11/investigation-08594d4-arm-stress-not-reproduced/review.json)
+completed all 600 scopes in about eight minutes: every probe exited 0 with RpcSs
+alive, and no RpcSs crash or dump occurred (only the synthetic control). Zero in
+600 has roughly a 3-5% chance at the observed rate, so bare original startup with
+an emulated caller is unlikely to be the sole trigger. All retained faults ran in
+product-compiled scopes; the next discriminating step is the same stress inside
+such scopes. Exception and module remain unknown; no gate is promoted.
+The owner then authorized one follow-up dispatch in production-compiled offline
+scopes: the section comes from the production `compile` function (including
+`ClosedIpcPath`, `BlockLocalLoop` and the lab WFP prerequisite), only the
+image-scoped original crash filter is added, and each round alternates the COM
+probe with the actual release policy canary for ARM64, x64 and x86 within the same
+40-minute budget. It remains diagnostic only. The first product-policy VM did not
+reproduce the fault (948 scopes), so on 2026-10-18 the owner authorized a larger
+multi-VM attempt (decision card option C). [Eight parallel ARM VMs](evidence/p11/investigation-069ac7d-arm-8vm-product-policy-not-reproduced/review.json)
+then ran 7596 more fresh product-policy scopes (arm64, emulated x64 and x86); with
+the first VM that is about 8544 scopes with zero RpcSs faults and no dump, while
+every VM calibration still captured the synthetic e0424242 KERNELBASE control. The
+bounded in-box COM/canary stress does not exercise the real trigger path; the
+original exception and module remain undetermined and no gate is promoted.
+
 [Static ARM source review](P11_ARM_SOURCE_REVIEW.md) confirms the known 1.15.5 ARM
 fixes remain in pinned 1.18.8. No newer core fix was found at checked upstream
 tip 596bfa8. Three retained reporter observations overlap emulated probes, but an
 additional archive timeout used the ARM64 7-Zip distribution; a universal
 emulation-only cause is not established. Original exception/module remain unknown.
 No new Actions or test program was started for this review.
+
+A separate rare transient was isolated in the P08 integration lab on PR #13 CI: a
+benign file-sharing `System.IO.IOException` in the lab coordination read (`Coordinate`,
+`tools/probe/p08_standard.ps1`), where the probe reads `lab-ack.txt` while the lab peer
+writes it. It is distinct from the undetermined original-engine ARM fault above and does
+not touch containment. Per owner decision (2026-10-19) the frozen harness is not edited to
+retry it: every probe/lab script is sha256-bound as `tested_sources` across P02(DONE)–P10
+and `observed_installed_source_identity` in P11, so any byte change fails the repository
+validator and would require re-sealing those phases' Windows evidence, including the P02
+DONE gate. The transient is handled by the sanctioned one-time job re-run and is deliberately
+not masked in-harness. It is not the P10 gate blocker: the current full exact-source
+integration fails on the P09 ARM unknown-reporter cleanup and the required fresh
+production/installed gates, so P10 stays BLOCKED on those, not on this transient.
 
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are

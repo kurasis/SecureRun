@@ -1,0 +1,6707 @@
+{
+  "calibration_only": false,
+  "control_exit_code_hex": "e0424242",
+  "completed_parent_child_pairs": 948,
+  "engine_source_commit": "bde0890108a563f5d72eb8e57085be2b37177218",
+  "probe_builds": [
+    {
+      "kind": "policy-canary",
+      "sha256": "5348d84350cc813b771ceeb6e0dbc84c5d1fade57a9f30f2c049a977b812c0ed",
+      "architecture": "arm64"
+    },
+    {
+      "kind": "policy-canary",
+      "sha256": "9ec2ccec9a1e16fd23cc882329ef736dbb53c0d1d9ac02beb04e1e7aba7fc656",
+      "architecture": "x64"
+    },
+    {
+      "kind": "policy-canary",
+      "sha256": "c7ab64bb688fef330a0d16cb9af742b6921b82d1c0154cd02ed3f5df6a341f51",
+      "architecture": "x86"
+    },
+    {
+      "sha256": "3d756498fb7fece2cd3e8173e0c54cf602b7124ecaba72b4ed657a40a0689053",
+      "pe_machine": "aa64",
+      "architecture": "arm64"
+    },
+    {
+      "sha256": "f6423805160b0707c0deaf6d475d42e222825870467071d3cb4af2ff9f1002c0",
+      "pe_machine": "8664",
+      "architecture": "x64"
+    },
+    {
+      "sha256": "20853b6da493067bf1eaf4b9a30259815f4e980d0b3a85321b38a105007a3c5a",
+      "pe_machine": "014c",
+      "architecture": "x86"
+    }
+  ],
+  "windows_security_or_wer_settings_changed": false,
+  "raw_dump_upload_allowed": false,
+  "original_service_log_restored": true,
+  "product_policy": true,
+  "lab_wfp_prerequisite": "NetworkEnableWFP=y",
+  "debugger_attachment_requested": false,
+  "classification": "ORIGINAL_ENGINE_CRASH_FILTER_EXPERIMENT_NO_PHASE_GATE",
+  "time_budget_minutes": 40,
+  "global_sandbox_settings_changed": false,
+  "production_policy_changed": false,
+  "control_exception": {
+    "classification": "SYNTHETIC_ORIGINAL_FILTER_CALIBRATION_NO_PHASE_GATE",
+    "exception_code_hex": "e0424242",
+    "fault_module_kind": "KERNELBASE.dll",
+    "module_relative_offset_hex": "0000000000124464",
+    "process_architecture": "ARM64",
+    "dump_target_id_matched": true,
+    "private_dump_sha256": "8f4d4cc1192134113b150e342d9f68a2c2f44bdc450213e2bae8f0b2244207d7",
+    "private_dump_size": 76259,
+    "raw_dump_paths_ids_arguments_and_addresses_uploaded": false
+  },
+  "tested_source_commit": "069ac7d9d3f33394a02592d5d1febaf09d8d43f9",
+  "policy_probe_nonzero_exits": 1,
+  "synthetic_source_sha256": "e7c8e505883bebe73a723efff4ec117c94c45cd181d4cb6a81e2af19fa5532f0",
+  "cases": [
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 1
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 2
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 3
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "ffffffff",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 4
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 5
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 6
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 7
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 8
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 9
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 10
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 11
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 12
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 13
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 14
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 15
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 16
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 17
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 18
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 19
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 20
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 21
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 22
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 23
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 24
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 25
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 26
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 27
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 28
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 29
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 30
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 31
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 32
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 33
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 34
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 35
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 36
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 37
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 38
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 39
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 40
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 41
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 42
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 43
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 44
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 45
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 46
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 47
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 48
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 49
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 50
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 51
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 52
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 53
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 54
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 55
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 56
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 57
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 58
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 59
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 60
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 61
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 62
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 63
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 64
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 65
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 66
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 67
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 68
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 69
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 70
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 71
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 72
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 73
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 74
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 75
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 76
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 77
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 78
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 79
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 80
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 81
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 82
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 83
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 84
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 85
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 86
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 87
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 88
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 89
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 90
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 91
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 92
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 93
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 94
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 95
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 96
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 97
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 98
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 99
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 100
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 101
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 102
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 103
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 104
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 105
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 106
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 107
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 108
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 109
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 110
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 111
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 112
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 113
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 114
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 115
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 116
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 117
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 118
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 119
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 120
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 121
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 122
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 123
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 124
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 125
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 126
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 127
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 128
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 129
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 130
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 131
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 132
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 133
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 134
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 135
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 136
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 137
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 138
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 139
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 140
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 141
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 142
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 143
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 144
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 145
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 146
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 147
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 148
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 149
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 150
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 151
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 152
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 153
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 154
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 155
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 156
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 157
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 158
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 159
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 160
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 161
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 162
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 163
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 164
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 165
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 166
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 167
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 168
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 169
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 170
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 171
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 172
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 173
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 174
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 175
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 176
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 177
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 178
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 179
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 180
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 181
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 182
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 183
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 184
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 185
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 186
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 187
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 188
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 189
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 190
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 191
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 192
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 193
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 194
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 195
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 196
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 197
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 198
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 199
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 200
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 201
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 202
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 203
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 204
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 205
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 206
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 207
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 208
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 209
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 210
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 211
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 212
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 213
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 214
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 215
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 216
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 217
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 218
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 219
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 220
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 221
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 222
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 223
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 224
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 225
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 226
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 227
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 228
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 229
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 230
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 231
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 232
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 233
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 234
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 235
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 236
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 237
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 238
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 239
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 240
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 241
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 242
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 243
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 244
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 245
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 246
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 247
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 248
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 249
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 250
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 251
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 252
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 253
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 254
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 255
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 256
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 257
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 258
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 259
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 260
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 261
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 262
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 263
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 264
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 265
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 266
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 267
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 268
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 269
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 270
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 271
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 272
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 273
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 274
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 275
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 276
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 277
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 278
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 279
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 280
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 281
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 282
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 283
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 284
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 285
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 286
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 287
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 288
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 289
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 290
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 291
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 292
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 293
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 294
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 295
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 296
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 297
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 298
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 299
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 300
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 301
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 302
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 303
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 304
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 305
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 306
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 307
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 308
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 309
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 310
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 311
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 312
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 313
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 314
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 315
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 316
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 317
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 318
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 319
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 320
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 321
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 322
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 323
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 324
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 325
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 326
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 327
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 328
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 329
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 330
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 331
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 332
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 333
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 334
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 335
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 336
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 337
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 338
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 339
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 340
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 341
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 342
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 343
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 344
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 345
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 346
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 347
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 348
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 349
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 350
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 351
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 352
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 353
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 354
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 355
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 356
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 357
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 358
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 359
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 360
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 361
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 362
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 363
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 364
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 365
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 366
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 367
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 368
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 369
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 370
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 371
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 372
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 373
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 374
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 375
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 376
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 377
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 378
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 379
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 380
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 381
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 382
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 383
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 384
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 385
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 386
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 387
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 388
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 389
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 390
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 391
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 392
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 393
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 394
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 395
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 396
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 397
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 398
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 399
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 400
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 401
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 402
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 403
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 404
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 405
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 406
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 407
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 408
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 409
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 410
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 411
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 412
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 413
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 414
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 415
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 416
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 417
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 418
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 419
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 420
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 421
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 422
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 423
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 424
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 425
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 426
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 427
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 428
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 429
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 430
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 431
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 432
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 433
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 434
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 435
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 436
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 437
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 438
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 439
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 440
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 441
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 442
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 443
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 444
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 445
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 446
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 447
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 448
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 449
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 450
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 451
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 452
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 453
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 454
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 455
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 456
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 457
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 458
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 459
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 460
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 461
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 462
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 463
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 464
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 465
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 466
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 467
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 468
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 469
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 470
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 471
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 472
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 473
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 474
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 475
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 476
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 477
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 478
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 479
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 480
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 481
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 482
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 483
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 484
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 485
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 486
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 487
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 488
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 489
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 490
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 491
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 492
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 493
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 494
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 495
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 496
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 497
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 498
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 499
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 500
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 501
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 502
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 503
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 504
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 505
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 506
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 507
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 508
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 509
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 510
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 511
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 512
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 513
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 514
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 515
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 516
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 517
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 518
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 519
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 520
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 521
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 522
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 523
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 524
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 525
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 526
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 527
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 528
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 529
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 530
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 531
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 532
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 533
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 534
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 535
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 536
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 537
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 538
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 539
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 540
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 541
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 542
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 543
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 544
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 545
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 546
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 547
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 548
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 549
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 550
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 551
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 552
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 553
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 554
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 555
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 556
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 557
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 558
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 559
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 560
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 561
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 562
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 563
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 564
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 565
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 566
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 567
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 568
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 569
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 570
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 571
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 572
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 573
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 574
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 575
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 576
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 577
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 578
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 579
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 580
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 581
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 582
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 583
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 584
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 585
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 586
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 587
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 588
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 589
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 590
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 591
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 592
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 593
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 594
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 595
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 596
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 597
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 598
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 599
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 600
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 601
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 602
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 603
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 604
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 605
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 606
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 607
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 608
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 609
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 610
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 611
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 612
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 613
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 614
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 615
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 616
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 617
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 618
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 619
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 620
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 621
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 622
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 623
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 624
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 625
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 626
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 627
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 628
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 629
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 630
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 631
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 632
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 633
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 634
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 635
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 636
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 637
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 638
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 639
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 640
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 641
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 642
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 643
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 644
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 645
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 646
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 647
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 648
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 649
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 650
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 651
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 652
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 653
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 654
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 655
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 656
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 657
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 658
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 659
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 660
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 661
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 662
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 663
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 664
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 665
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 666
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 667
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 668
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 669
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 670
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 671
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 672
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 673
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 674
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 675
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 676
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 677
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 678
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 679
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 680
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 681
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 682
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 683
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 684
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 685
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 686
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 687
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 688
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 689
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 690
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 691
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 692
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 693
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 694
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 695
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 696
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 697
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 698
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 699
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 700
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 701
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 702
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 703
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 704
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 705
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 706
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 707
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 708
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 709
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 710
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 711
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 712
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 713
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 714
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 715
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 716
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 717
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 718
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 719
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 720
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 721
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 722
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 723
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 724
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 725
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 726
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 727
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 728
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 729
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 730
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 731
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 732
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 733
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 734
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 735
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 736
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 737
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 738
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 739
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 740
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 741
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 742
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 743
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 744
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 745
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 746
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 747
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 748
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 749
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 750
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 751
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 752
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 753
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 754
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 755
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 756
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 757
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 758
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 759
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 760
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 761
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 762
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 763
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 764
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 765
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 766
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 767
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 768
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 769
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 770
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 771
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 772
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 773
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 774
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 775
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 776
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 777
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 778
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 779
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 780
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 781
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 782
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 783
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 784
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 785
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 786
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 787
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 788
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 789
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 790
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 791
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 792
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 793
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 794
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 795
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 796
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 797
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 798
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 799
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 800
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 801
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 802
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 803
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 804
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 805
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 806
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 807
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 808
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 809
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 810
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 811
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 812
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 813
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 814
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 815
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 816
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 817
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 818
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 819
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 820
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 821
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 822
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 823
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 824
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 825
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 826
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 827
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 828
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 829
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 830
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 831
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 832
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 833
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 834
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 835
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 836
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 837
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 838
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 839
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 840
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 841
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 842
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 843
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 844
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 845
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 846
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 847
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 848
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 849
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 850
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 851
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 852
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 853
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 854
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 855
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 856
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 857
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 858
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 859
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 860
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 861
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 862
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 863
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 864
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 865
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 866
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 867
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 868
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 869
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 870
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 871
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 872
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 873
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 874
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 875
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 876
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 877
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 878
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 879
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 880
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 881
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 882
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 883
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 884
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 885
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 886
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 887
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 888
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 889
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 890
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 891
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 892
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 893
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 894
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 895
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 896
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 897
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 898
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 899
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 900
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 901
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 902
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 903
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 904
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 905
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 906
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 907
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 908
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 909
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 910
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 911
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 912
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 913
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 914
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 915
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 916
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 917
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 918
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 919
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 920
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 921
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 922
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 923
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 924
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 925
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 926
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 927
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 928
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 929
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 930
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 931
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 932
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 933
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 934
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 935
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 936
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 937
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 938
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 939
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 940
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 941
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 942
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 943
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 944
+    },
+    {
+      "kind": "com",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 945
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "arm64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 946
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x64",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 947
+    },
+    {
+      "kind": "canary",
+      "exit_code_hex": "00000000",
+      "architecture": "x86",
+      "rpcss_alive_after_probe": true,
+      "ordinal": 948
+    }
+  ],
+  "planned_parent_child_pairs": 1200,
+  "rpcss_alive_after_probe_cases": 948,
+  "dumps": [],
+  "synthetic_exception_confirmed": true,
+  "result": "NOT_REPRODUCED_IN_BOUNDED_SAMPLE",
+  "original_filter_changes_fault_delivery": true,
+  "time_budget_reached": true
+}

@@ -75,6 +75,44 @@ that constraint prevents execution. The redundant ordinary PR P09 run 3913525435
 was cancelled to avoid spending a full UI workload without a runtime correction;
 cancellation is not success. Mandatory phase workload sizes remain unchanged.
 
+Trace re-analysis found four retained RpcSs faults (3/393 emulated-caller starts,
+0/197 ARM64-caller starts, one product 7-Zip launch), each about 220 ms after start
+and before DcomLaunch. A 24-pair sample has roughly a 30% chance to observe one.
+The owner therefore authorized a single dispatched stress run on 2026-10-18: up to
+200 rounds across ARM64, emulated x64 and x86 within 40 minutes, with the parent and
+child probe both requesting the denied BITS activation so original RpcSs starts in
+every fresh scope. Calibration, cleanup and privacy constraints are unchanged.
+[Run 39148830651](../evidence/p11/investigation-08594d4-arm-stress-not-reproduced/review.json)
+passed calibration and completed all 600 scopes with exit 0 and RpcSs alive after
+each probe; the service log recorded no RpcSs crash and no RpcSs dump was written.
+Because every retained fault occurred in a product-compiled scope, the minimal
+original-engine box is now considered an insufficient trigger, by inference only.
+The owner then authorized one follow-up dispatch in production-compiled offline
+scopes: the section comes from the production `compile` function (including
+`ClosedIpcPath`, `BlockLocalLoop` and the lab WFP prerequisite), only the
+image-scoped original crash filter is added, and each round alternates the COM
+probe with the actual release policy canary for ARM64, x64 and x86 within the same
+40-minute budget. It remains diagnostic only. The first product-policy VM did not
+reproduce the fault (948 scopes), so on 2026-10-18 the owner authorized a larger
+multi-VM attempt (decision card option C). [Eight parallel ARM VMs](../evidence/p11/investigation-069ac7d-arm-8vm-product-policy-not-reproduced/review.json)
+ran 7596 more fresh product-policy scopes; with the first VM that is about 8544
+scopes (arm64, emulated x64 and x86) with zero RpcSs faults and no dump, while
+every VM calibration still captured the synthetic e0424242 KERNELBASE control.
+The bounded in-box COM/canary stress does not reach the real trigger path, so the
+original exception and module stay undetermined from controlled reproduction; no
+gate is promoted. On 2026-10-19 the owner chose not to edit the frozen harness
+(decision card "Без правки harness"). Pinpointing the PR #13 CI failure showed its
+transient is a benign file-sharing `System.IO.IOException` in the P08 lab coordination
+read (`Coordinate`, `tools/probe/p08_standard.ps1` reading `lab-ack.txt` while the lab
+peer writes it), distinct from this original-engine ARM fault and not touching
+containment. A harness retry was ruled out because every probe/lab script is sha256-bound
+as `tested_sources` across P02(DONE)–P10 and `observed_installed_source_identity` in P11,
+so a byte change fails the repository validator and would require re-sealing those phases'
+Windows evidence, including the P02 DONE gate. The transient is therefore handled by the
+sanctioned one-time job re-run and documented, not masked in-harness. The genuine
+original-engine ARM fault remains undetermined and unresolved, so P10 stays BLOCKED on the
+P09 integration failures and the required fresh exact-source gates.
+
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust
 `extern "system"` imports therefore match the upstream x86 build; changing them

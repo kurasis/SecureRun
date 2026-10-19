@@ -100,9 +100,18 @@ scopes (arm64, emulated x64 and x86) with zero RpcSs faults and no dump, while
 every VM calibration still captured the synthetic e0424242 KERNELBASE control.
 The bounded in-box COM/canary stress does not reach the real trigger path, so the
 original exception and module stay undetermined from controlled reproduction; no
-gate is promoted. The remaining options are to tolerate the known transient in the
-integration harness (bounded retry that fails only if the box does not recover) or
-to keep the intermittent failure as a watched condition; this is for the owner.
+gate is promoted. On 2026-10-19 the owner chose not to edit the frozen harness
+(decision card "Без правки harness"). Pinpointing the PR #13 CI failure showed its
+transient is a benign file-sharing `System.IO.IOException` in the P08 lab coordination
+read (`Coordinate`, `tools/probe/p08_standard.ps1` reading `lab-ack.txt` while the lab
+peer writes it), distinct from this original-engine ARM fault and not touching
+containment. A harness retry was ruled out because every probe/lab script is sha256-bound
+as `tested_sources` across P02(DONE)–P10 and `observed_installed_source_identity` in P11,
+so a byte change fails the repository validator and would require re-sealing those phases'
+Windows evidence, including the P02 DONE gate. The transient is therefore handled by the
+sanctioned one-time job re-run and documented, not masked in-harness. The genuine
+original-engine ARM fault remains undetermined and unresolved, so P10 stays BLOCKED on the
+P09 integration failures and the required fresh exact-source gates.
 
 Static follow-up checked the x86 calling-convention hypothesis against the pinned
 `Sandbox32.props`, which sets `CallingConvention=StdCall`. Current Rust

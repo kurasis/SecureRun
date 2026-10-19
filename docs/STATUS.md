@@ -1,6 +1,6 @@
 # Development status
 
-Specification 1.3. Updated 2026-10-18 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
+Specification 1.3. Updated 2026-10-19 UTC. Current phase: **P11 fixes IN_PROGRESS; exit gate BLOCKED**.
 P12 and all 66 final installed acceptance entries remain **NOT_STARTED**.
 
 Checked native Save input, atomic session-ready publication and retained-object
@@ -95,6 +95,19 @@ tip 596bfa8. Three retained reporter observations overlap emulated probes, but a
 additional archive timeout used the ARM64 7-Zip distribution; a universal
 emulation-only cause is not established. Original exception/module remain unknown.
 No new Actions or test program was started for this review.
+
+A separate rare transient was isolated in the P08 integration lab on PR #13 CI: a
+benign file-sharing `System.IO.IOException` in the lab coordination read (`Coordinate`,
+`tools/probe/p08_standard.ps1`), where the probe reads `lab-ack.txt` while the lab peer
+writes it. It is distinct from the undetermined original-engine ARM fault above and does
+not touch containment. Per owner decision (2026-10-19) the frozen harness is not edited to
+retry it: every probe/lab script is sha256-bound as `tested_sources` across P02(DONE)–P10
+and `observed_installed_source_identity` in P11, so any byte change fails the repository
+validator and would require re-sealing those phases' Windows evidence, including the P02
+DONE gate. The transient is handled by the sanctioned one-time job re-run and is deliberately
+not masked in-harness. It is not the P10 gate blocker: the current full exact-source
+integration fails on the P09 ARM unknown-reporter cleanup and the required fresh
+production/installed gates, so P10 stays BLOCKED on those, not on this transient.
 
 Current matching full P10 and installed P11 proof remain pending. PR #12 is draft;
 normal merge requires the actual gates. Code, reports and reviewed evidence are
